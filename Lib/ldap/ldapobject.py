@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.135 2013/06/25 17:36:03 stroeder Exp $
+\$Id: ldapobject.py,v 1.136 2013/11/23 14:15:33 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -66,14 +66,14 @@ class SimpleLDAPObject:
     self._trace_file = trace_file or sys.stdout
     self._trace_stack_limit = trace_stack_limit
     self._uri = uri
-    self._ldap_object_lock = self._ldap_lock()
+    self._ldap_object_lock = self._ldap_lock('opcall')
     self._l = ldap.functions._ldap_function_call(ldap._ldap_module_lock,_ldap.initialize,uri)
     self.timeout = -1
     self.protocol_version = ldap.VERSION3
 
-  def _ldap_lock(self):
+  def _ldap_lock(self,desc=''):
     if ldap.LIBLDAP_R:
-      return ldap.LDAPLock(desc=self._uri)
+      return ldap.LDAPLock(desc='%s within %s' %(desc,repr(self)))
     else:
       return ldap._ldap_module_lock
 
@@ -728,8 +728,8 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self._uri = uri
     self._options = []
     self._last_bind = None
-    self._pending_reconnect = 0
     SimpleLDAPObject.__init__(self,uri,trace_level,trace_file,trace_stack_limit)
+    self._reconnect_lock = self._ldap_lock(desc='reconnect')
     self._retry_max = retry_max
     self._retry_delay = retry_delay
     self._start_tls = 0
@@ -750,6 +750,9 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self._trace_file = sys.stdout
     self.reconnect(self._uri)
 
+  def _store_last_bind(self,method,*args,**kwargs):
+    self._last_bind = (method,args,kwargs)
+
   def _apply_last_bind(self):
     if self._last_bind!=None:
       func,args,kwargs = self._last_bind
@@ -766,46 +769,45 @@ class ReconnectLDAPObject(SimpleLDAPObject):
   def reconnect(self,uri):
     # Drop and clean up old connection completely
     # Reconnect
-    while self._pending_reconnect:
-      time.sleep(0.01)
-    else:
-      self._pending_reconnect = 1
-    reconnect_counter = self._retry_max
-    while reconnect_counter:
-      if __debug__ and self._trace_level>=1:
-        self._trace_file.write('*** Try %d. reconnect to %s...\n' % (
-          self._retry_max-reconnect_counter+1,uri
-        ))
-      try:
-        # Do the connect
-        self._l = ldap.functions._ldap_function_call(ldap._ldap_module_lock,_ldap.initialize,uri)
-        self._restore_options()
-        # StartTLS extended operation in case this was called before
-        if self._start_tls:
-          self.start_tls_s()
-        # Repeat last simple or SASL bind
-        self._apply_last_bind()
-      except (ldap.SERVER_DOWN,ldap.TIMEOUT),e:
+    self._reconnect_lock.acquire()
+    try:
+      reconnect_counter = self._retry_max
+      while reconnect_counter:
         if __debug__ and self._trace_level>=1:
-          self._trace_file.write('*** %d. reconnect to %s failed\n' % (
+          self._trace_file.write('*** Try %d. reconnect to %s...\n' % (
             self._retry_max-reconnect_counter+1,uri
           ))
-        reconnect_counter = reconnect_counter-1
-        if not reconnect_counter:
-          raise
-        if __debug__ and self._trace_level>=1:
-          self._trace_file.write('=> delay %s...\n' % (self._retry_delay))
-        time.sleep(self._retry_delay)
-        SimpleLDAPObject.unbind_s(self)
-        del self._l
-      else:
-        if __debug__ and self._trace_level>=1:
-          self._trace_file.write('*** %d. reconnect to %s successful, last operation will be repeated\n' % (
-            self._retry_max-reconnect_counter+1,uri
-          ))
-        self._reconnects_done = self._reconnects_done + 1L
-        break
-    self._pending_reconnect = 0
+        try:
+          # Do the connect
+          self._l = ldap.functions._ldap_function_call(ldap._ldap_module_lock,_ldap.initialize,uri)
+          self._restore_options()
+          # StartTLS extended operation in case this was called before
+          if self._start_tls:
+            self.start_tls_s()
+          # Repeat last simple or SASL bind
+          self._apply_last_bind()
+        except (ldap.SERVER_DOWN,ldap.TIMEOUT),e:
+          if __debug__ and self._trace_level>=1:
+            self._trace_file.write('*** %d. reconnect to %s failed\n' % (
+              self._retry_max-reconnect_counter+1,uri
+            ))
+          reconnect_counter = reconnect_counter-1
+          if not reconnect_counter:
+            raise
+          if __debug__ and self._trace_level>=1:
+            self._trace_file.write('=> delay %s...\n' % (self._retry_delay))
+          time.sleep(self._retry_delay)
+          SimpleLDAPObject.unbind_s(self)
+          del self._l
+        else:
+          if __debug__ and self._trace_level>=1:
+            self._trace_file.write('*** %d. reconnect to %s successful, last operation will be repeated\n' % (
+              self._retry_max-reconnect_counter+1,uri
+            ))
+          self._reconnects_done = self._reconnects_done + 1L
+          break
+    finally:
+      self._reconnect_lock.release()
     return # reconnect()
 
   def _apply_method_s(self,func,*args,**kwargs):
@@ -827,12 +829,12 @@ class ReconnectLDAPObject(SimpleLDAPObject):
 
   def bind_s(self,*args,**kwargs):
     res = self._apply_method_s(SimpleLDAPObject.bind_s,*args,**kwargs)
-    self._last_bind = (self.bind_s,args,kwargs)
+    self._store_last_bind(SimpleLDAPObject.bind_s,*args,**kwargs)
     return res
 
   def simple_bind_s(self,*args,**kwargs):
     res = self._apply_method_s(SimpleLDAPObject.simple_bind_s,*args,**kwargs)
-    self._last_bind = (SimpleLDAPObject.simple_bind_s,args,kwargs)
+    self._store_last_bind(SimpleLDAPObject.simple_bind_s,*args,**kwargs)
     return res
 
   def start_tls_s(self,*args,**kwargs):
@@ -845,7 +847,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     sasl_interactive_bind_s(who, auth) -> None
     """
     res = self._apply_method_s(SimpleLDAPObject.sasl_interactive_bind_s,*args,**kwargs)
-    self._last_bind = (SimpleLDAPObject.sasl_interactive_bind_s,args,kwargs)
+    self._store_last_bind(SimpleLDAPObject.sasl_interactive_bind_s,*args,**kwargs)
     return res
 
   def add_ext_s(self,*args,**kwargs):
