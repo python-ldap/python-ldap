@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.136 2013/11/23 14:15:33 stroeder Exp $
+\$Id: ldapobject.py,v 1.137 2013/11/23 15:44:32 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -766,16 +766,16 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     for k,v in self._options:
       SimpleLDAPObject.set_option(self,k,v)
 
-  def reconnect(self,uri):
+  def reconnect(self,uri,retry_max=1,retry_delay=60.0):
     # Drop and clean up old connection completely
     # Reconnect
     self._reconnect_lock.acquire()
     try:
-      reconnect_counter = self._retry_max
+      reconnect_counter = retry_max
       while reconnect_counter:
         if __debug__ and self._trace_level>=1:
-          self._trace_file.write('*** Try %d. reconnect to %s...\n' % (
-            self._retry_max-reconnect_counter+1,uri
+          self._trace_file.write('*** Trying %d. (of %d) reconnect to %s...\n' % (
+            retry_max-reconnect_counter+1,retry_max,uri
           ))
         try:
           # Do the connect
@@ -788,21 +788,21 @@ class ReconnectLDAPObject(SimpleLDAPObject):
           self._apply_last_bind()
         except (ldap.SERVER_DOWN,ldap.TIMEOUT),e:
           if __debug__ and self._trace_level>=1:
-            self._trace_file.write('*** %d. reconnect to %s failed\n' % (
-              self._retry_max-reconnect_counter+1,uri
+            self._trace_file.write('*** %d. (of %d) reconnect to %s failed\n' % (
+              self._retry_max-reconnect_counter+1,retry_max,uri
             ))
           reconnect_counter = reconnect_counter-1
           if not reconnect_counter:
             raise
           if __debug__ and self._trace_level>=1:
-            self._trace_file.write('=> delay %s...\n' % (self._retry_delay))
-          time.sleep(self._retry_delay)
+            self._trace_file.write('=> delay %s...\n' % (retry_delay))
+          time.sleep(retry_delay)
           SimpleLDAPObject.unbind_s(self)
           del self._l
         else:
           if __debug__ and self._trace_level>=1:
-            self._trace_file.write('*** %d. reconnect to %s successful, last operation will be repeated\n' % (
-              self._retry_max-reconnect_counter+1,uri
+            self._trace_file.write('*** %d. (of %d) reconnect to %s successful, last operation will be repeated\n' % (
+              self._retry_max-reconnect_counter+1,retry_max,uri
             ))
           self._reconnects_done = self._reconnects_done + 1L
           break
@@ -812,14 +812,14 @@ class ReconnectLDAPObject(SimpleLDAPObject):
 
   def _apply_method_s(self,func,*args,**kwargs):
     if not self.__dict__.has_key('_l'):
-      self.reconnect(self._uri)
+      self.reconnect(self._uri,retry_max=self._retry_max,retry_delay=self._retry_delay)
     try:
       return func(self,*args,**kwargs)
     except ldap.SERVER_DOWN:
       SimpleLDAPObject.unbind_s(self)
       del self._l
       # Try to reconnect
-      self.reconnect(self._uri)
+      self.reconnect(self._uri,retry_max=self._retry_max,retry_delay=self._retry_delay)
       # Re-try last operation
       return func(self,*args,**kwargs)
 
