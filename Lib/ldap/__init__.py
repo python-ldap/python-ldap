@@ -3,7 +3,7 @@ ldap - base module
 
 See http://www.python-ldap.org/ for details.
 
-$Id: __init__.py,v 1.87 2013/07/04 16:06:53 stroeder Exp $
+$Id: __init__.py,v 1.88 2013/11/23 14:09:59 stroeder Exp $
 """
 
 # This is also the overall release version number
@@ -68,14 +68,14 @@ class LDAPLock:
     if __debug__:
       global _trace_level
       if _trace_level>=self._min_trace_level:
-        _trace_file.write('***%s %s.acquire()\n' % (self._desc,self.__class__.__name__))
+        _trace_file.write('***%s.acquire() %s %s\n' % (self.__class__.__name__,repr(self),self._desc))
     return self._lock.acquire()
 
   def release(self):
     if __debug__:
       global _trace_level
       if _trace_level>=self._min_trace_level:
-        _trace_file.write('***%s %s.release()\n' % (self._desc,self.__class__.__name__))
+        _trace_file.write('***%s.release() %s %s\n' % (self.__class__.__name__,repr(self),self._desc))
     return self._lock.release()
 
 
