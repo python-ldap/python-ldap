@@ -4,6 +4,8 @@ Released 2.4.15 2014-03-13
 Changes since 2.4.14:
 
 Lib/
+* Added missing modules ldap.controls.openldap and 
+  ldap.controls.pwdpolicy to setup.py
 
 Modules/
 
@@ -1085,4 +1087,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.311 2014/03/12 20:27:33 stroeder Exp $
+$Id: CHANGES,v 1.312 2014/03/12 20:29:23 stroeder Exp $
