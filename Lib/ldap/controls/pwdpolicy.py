@@ -5,16 +5,19 @@ ldap.controls.pwdpolicy - classes for Password Policy controls
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: pwdpolicy.py,v 1.1 2012/02/21 16:51:55 stroeder Exp $
+$Id: pwdpolicy.py,v 1.2 2014/03/12 20:30:50 stroeder Exp $
 """
 
 __all__ = [
   'ExpirationWarningControl'
 ]
 
+import struct
+
 # Imports from python-ldap 2.4+
 import ldap.controls
 from ldap.controls import RequestControl,ResponseControl,ValueLessRequestControl,KNOWN_RESPONSE_CONTROLS
+from ldap.controls.simple import OctetStringInteger
 
 
 class PasswordExpiringControl(OctetStringInteger):
