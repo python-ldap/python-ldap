@@ -7,6 +7,8 @@ Lib/
 * Added missing modules ldap.controls.openldap and 
   ldap.controls.pwdpolicy to setup.py
 * Added missing imports to ldap.controls.pwdpolicy
+* Fixed ldap.controls.pwdpolicy.decodeControlValue() to decode
+  string of digits
 
 Modules/
 
@@ -1088,4 +1090,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.313 2014/03/12 20:30:50 stroeder Exp $
+$Id: CHANGES,v 1.314 2014/03/12 21:16:05 stroeder Exp $
