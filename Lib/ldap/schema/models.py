@@ -3,7 +3,7 @@ schema.py - support for subSchemaSubEntry information
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: models.py,v 1.46 2012/12/13 08:22:48 stroeder Exp $
+\$Id: models.py,v 1.47 2014/03/12 21:44:10 stroeder Exp $
 """
 
 import UserDict,ldap.cidict
@@ -249,7 +249,9 @@ class AttributeType(SchemaElement):
     'SINGLE-VALUE':None,
     'COLLECTIVE':None,
     'NO-USER-MODIFICATION':None,
-    'USAGE':('userApplications',)
+    'USAGE':('userApplications',),
+    'X-ORIGIN':(None,),
+    'X-ORDERED':(None,),
   }
 
   def _set_attrs(self,l,d):
@@ -260,6 +262,8 @@ class AttributeType(SchemaElement):
     self.equality = d['EQUALITY'][0]
     self.ordering = d['ORDERING'][0]
     self.substr = d['SUBSTR'][0]
+    self.x_origin = d['X-ORIGIN'][0]
+    self.x_ordered = d['X-ORDERED'][0]
     try:
       syntax = d['SYNTAX'][0]
     except IndexError:
@@ -317,6 +321,8 @@ class AttributeType(SchemaElement):
         3:" USAGE dSAOperation",
       }[self.usage]
     )
+    result.append(self.key_attr('X-ORIGIN',self.x_origin,quoted=1))
+    result.append(self.key_attr('X-ORDERED',self.x_ordered,quoted=1))
     return '( %s )' % ''.join(result)
 
 
@@ -336,19 +342,24 @@ class LDAPSyntax(SchemaElement):
   token_defaults = {
     'DESC':(None,),
     'X-NOT-HUMAN-READABLE':(None,),
+    'X-BINARY-TRANSFER-REQUIRED':(None,),
+    'X-SUBST':(None,),
   }
 
   def _set_attrs(self,l,d):
     self.desc = d['DESC'][0]
+    self.x_subst = d['X-SUBST'][0]
     self.not_human_readable = \
       NOT_HUMAN_READABLE_LDAP_SYNTAXES.has_key(self.oid) or \
       d['X-NOT-HUMAN-READABLE'][0]=='TRUE'
+    self.x_binary_transfer_required = d['X-BINARY-TRANSFER-REQUIRED'][0]=='TRUE'
     assert self.desc is None or type(self.desc)==StringType
     return
                                   
   def __str__(self):
     result = [str(self.oid)]
     result.append(self.key_attr('DESC',self.desc,quoted=1))
+    result.append(self.key_attr('X-SUBST',self.x_subst,quoted=1))
     result.append(
       {0:'',1:" X-NOT-HUMAN-READABLE 'TRUE'"}[self.not_human_readable]
     )
