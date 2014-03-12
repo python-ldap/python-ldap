@@ -3,7 +3,7 @@ ldapurl - handling of LDAP URLs as described in RFC 4516
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapurl.py,v 1.63 2013/08/13 12:33:08 stroeder Exp $
+\$Id: ldapurl.py,v 1.64 2014/03/12 23:02:42 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.0+ since
@@ -30,8 +30,9 @@ from urllib import quote,unquote
 LDAP_SCOPE_BASE = 0
 LDAP_SCOPE_ONELEVEL = 1
 LDAP_SCOPE_SUBTREE = 2
+LDAP_SCOPE_SUBORDINATES = 3
 
-SEARCH_SCOPE_STR = {None:'',0:'base',1:'one',2:'sub'}
+SEARCH_SCOPE_STR = {None:'',0:'base',1:'one',2:'sub',3:'subordinates'}
 
 SEARCH_SCOPE = {
   '':None,
@@ -39,6 +40,8 @@ SEARCH_SCOPE = {
   'base':LDAP_SCOPE_BASE,
   'one':LDAP_SCOPE_ONELEVEL,
   'sub':LDAP_SCOPE_SUBTREE,
+  # from draft-sermersheim-ldap-subordinate-scope
+  'subordinates':LDAP_SCOPE_SUBORDINATES,
 }
 
 # Some widely used types
