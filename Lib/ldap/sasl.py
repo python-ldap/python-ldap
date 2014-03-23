@@ -3,7 +3,7 @@ sasl.py - support for SASL mechanism
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: sasl.py,v 1.15 2009/07/26 11:09:58 stroeder Exp $
+\$Id: sasl.py,v 1.16 2014/03/23 19:06:47 stroeder Exp $
 
 Description:
 The ldap.sasl module provides SASL authentication classes.
@@ -31,7 +31,7 @@ CB_LANGUAGE    = 0x4003
 CB_PASS        = 0x4004
 CB_ECHOPROMPT  = 0x4005
 CB_NOECHOPROMPT= 0x4006
-CB_GETREALM    = 0x4007
+CB_GETREALM    = 0x4008
 
 class sasl:
     """This class handles SASL interactions for authentication.
