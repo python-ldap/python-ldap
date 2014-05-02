@@ -160,6 +160,7 @@ while watcher_running:
       ldap_url.dn or '',
       ldap_url.scope or ldap.SCOPE_SUBTREE,
       mode = 'refreshAndPersist',
+      attrlist=ldap_url.attrs,
       filterstr = ldap_url.filterstr or '(objectClass=*)'
     )
 
