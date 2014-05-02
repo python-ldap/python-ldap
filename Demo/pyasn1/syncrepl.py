@@ -43,7 +43,7 @@ class SyncReplConsumer(ReconnectLDAPObject,SyncreplConsumer):
         # We need this for later internal use
         self.__presentUUIDs = dict()
 
-    def __del__(self):
+    def close_db(self):
             # Close the data store properly to avoid corruption
             self.__data.close()
 
@@ -109,6 +109,7 @@ def commenceShutdown(signum, stack):
 
     # Tear down the server connection
     if( ldap_connection ):
+            ldap_connection.close_db()
             del ldap_connection
 
     # Shutdown
