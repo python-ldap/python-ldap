@@ -3,7 +3,7 @@ functions.py - wraps functions of module _ldap
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: functions.py,v 1.28 2011/11/23 17:27:46 stroeder Exp $
+\$Id: functions.py,v 1.29 2014/05/20 20:27:55 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -24,6 +24,7 @@ __all__ = [
   'open','initialize','init',
   'explode_dn','explode_rdn',
   'get_option','set_option',
+  'escape_string',
 ]
 
 import sys,pprint,_ldap,ldap
@@ -130,3 +131,12 @@ def set_option(option,invalue):
   Set the value of an LDAP global option.
   """
   return _ldap_function_call(None,_ldap.set_option,option,invalue)
+
+
+def escape_str(escape_func,s,*args):
+  """
+  Applies escape_func() to all items of `args' and returns a string based 
+  on format string `s'.
+  """
+  escape_args = map(escape_func,args)
+  return s % tuple(escape_args)
