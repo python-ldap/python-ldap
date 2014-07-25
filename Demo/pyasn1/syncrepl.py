@@ -133,10 +133,10 @@ except IndexError,e:
                        '?(objectClass=*)'\
                        '?bindname=uid=admin%2ccn=users%2cdc=test,'\
                        'X-BINDPW=password\' db.shelve'
-  sys.exit(1)
+    sys.exit(1)
 except ValueError,e:
-  print 'Error parsing command-line arguments:',str(e)
-  sys.exit(1)
+    print 'Error parsing command-line arguments:',str(e)
+    sys.exit(1)
 
 while watcher_running:
     print 'Connecting to LDAP server now...'
