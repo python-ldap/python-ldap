@@ -6,6 +6,8 @@ Changes since 2.4.16:
 Lib/
 * New convenience function ldap.dn.is_dn()
 * New convenience function ldap.escape_str()
+* New convenience methods LDAPObject.read_s() and
+  LDAPObject.find_unique_entry()
 
 Modules/
 
@@ -1108,4 +1110,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.321 2014/05/20 20:27:55 stroeder Exp $
+$Id: CHANGES,v 1.322 2014/07/25 17:08:56 stroeder Exp $

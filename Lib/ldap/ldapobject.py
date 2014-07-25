@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.138 2014/02/19 20:05:57 stroeder Exp $
+\$Id: ldapobject.py,v 1.139 2014/07/25 17:08:56 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -39,6 +39,13 @@ from ldap.controls import LDAPControl,DecodeControlTuples,RequestControlTuples
 from ldap.extop import ExtendedRequest,ExtendedResponse
 
 from ldap import LDAPError
+
+
+class NO_UNIQUE_ENTRY(ldap.NO_SUCH_OBJECT):
+  """
+  Exception raised if a LDAP search returned more than entry entry
+  although assumed to return a unique single search result.
+  """
 
 
 class SimpleLDAPObject:
@@ -638,24 +645,59 @@ class SimpleLDAPObject:
     except IndexError:
       return None
 
+  def read_s(self,dn,filterstr=None,attrlist=None,serverctrls=None,clientctrls=None,timeout=-1):
+    """
+    Reads and returns a single entry specified by `dn'.
+    
+    Other attributes just like those passed to `search_ext_s()'
+    """
+    r = self.search_ext_s(
+      dn,
+      ldap.SCOPE_BASE,
+      filterstr or '(objectClass=*)',
+      attrlist=attrlist,
+      serverctrls=serverctrls,
+      clientctrls=clientctrls,
+      timeout=timeout,
+    )
+    if r:
+      return r[0][1]
+    else:
+      return ldap.NO_SUCH_OBJECT('Empty search result reading %s' % (repr(dn)))
+
   def read_subschemasubentry_s(self,subschemasubentry_dn,attrs=None):
     """
     Returns the sub schema sub entry's data
     """
-    attrs = attrs or SCHEMA_ATTRS
     try:
-      r = self.search_s(
-        subschemasubentry_dn,ldap.SCOPE_BASE,
-        '(objectClass=subschema)',
-        attrs
+      subschemasubentry = self.read_s(
+        subschemasubentry_dn,
+        filterstr='(objectClass=subschema)',
+        attrlist=attrs or SCHEMA_ATTRS
       )
     except ldap.NO_SUCH_OBJECT:
       return None
     else:
-      if r:
-        return r[0][1]
-      else:
-        return None
+      return subschemasubentry
+
+  def find_unique_entry(self,base,scope=ldap.SCOPE_SUBTREE,filterstr='(objectClass=*)',attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1):
+    """
+    Returns a unique entry, raises exception if not unique
+    """
+    r = self.search_ext_s(
+      base,
+      scope,
+      filterstr,
+      attrlist=attrlist or ['*'],
+      attrsonly=attrsonly,
+      serverctrls=serverctrls,
+      clientctrls=clientctrls,
+      timeout=timeout,
+      sizelimit=2,
+    )
+    if len(r)!=1:
+      raise NO_UNIQUE_ENTRY('No or non-unique search result for %s' % (repr(filterstr)))
+    return r[0]
 
 
 class NonblockingLDAPObject(SimpleLDAPObject):
