@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.139 2014/07/25 17:08:56 stroeder Exp $
+\$Id: ldapobject.py,v 1.140 2014/09/08 19:48:11 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -826,7 +826,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
           self._restore_options()
           # StartTLS extended operation in case this was called before
           if self._start_tls:
-            self.start_tls_s()
+            SimpleLDAPObject.start_tls_s()
           # Repeat last simple or SASL bind
           self._apply_last_bind()
         except (ldap.SERVER_DOWN,ldap.TIMEOUT),e:
