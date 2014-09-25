@@ -93,6 +93,9 @@ class SyncReplConsumer(ReconnectLDAPObject,SyncreplConsumer):
             for uuid in uuids:
                     self.__presentUUIDs[uuid] = True
 
+    def syncrepl_refreshdone(self):
+        print 'Initial synchronization is now done, persist phase begins'
+
     def perform_application_sync(self,dn,attributes,previous_attributes):
         print 'Performing application sync for:', dn
         return True
@@ -135,8 +138,8 @@ except IndexError,e:
                        'X-BINDPW=password\' db.shelve'
     sys.exit(1)
 except ValueError,e:
-    print 'Error parsing command-line arguments:',str(e)
-    sys.exit(1)
+  print 'Error parsing command-line arguments:',str(e)
+  sys.exit(1)
 
 while watcher_running:
     print 'Connecting to LDAP server now...'
