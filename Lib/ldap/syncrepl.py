@@ -4,7 +4,7 @@ ldap.syncrepl - for implementing syncrepl consumer (see RFC 4533)
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: syncrepl.py,v 1.4 2014/09/25 16:31:00 stroeder Exp $
+$Id: syncrepl.py,v 1.5 2014/09/26 12:18:05 stroeder Exp $
 """
 
 #__all__ = [
@@ -330,12 +330,6 @@ class SyncreplConsumer:
         self.__refreshDone = False
         return self.search_ext(base, scope, **search_args)
 
-    def _syncrepl_update_refreshdone(self, newvalue):
-        callback = newvalue and not self.__refreshDone
-        self.__refreshDone = newvalue
-        if callback:
-            self.syncrepl_refreshdone()
-
     def syncrepl_poll(self, msgid=-1, timeout=None, all=0):
         """
         polls for and processes responses to the syncrepl_search() operation.
@@ -399,12 +393,16 @@ class SyncreplConsumer:
                         self.syncrepl_present(None, refreshDeletes=False)
                         if 'cookie' in sim.refreshPresent:
                             self.syncrepl_set_cookie(sim.refreshPresent['cookie'])
-                        self._syncrepl_update_refreshdone(sim.refreshPresent['refreshDone'])
+                        if sim.refreshPresent['refreshDone']:
+                            self.__refreshDone = True
+                            self.syncrepl_refreshdone()
                     elif sim.refreshDelete is not None:
                         self.syncrepl_present(None, refreshDeletes=True)
                         if 'cookie' in sim.refreshDelete:
                             self.syncrepl_set_cookie(sim.refreshDelete['cookie'])
-                        self._syncrepl_update_refreshdone(sim.refreshDelete['refreshDone'])
+                        if sim.refreshDelete['refreshDone']:
+                            self.__refreshDone = True
+                            self.syncrepl_refreshdone()
                     elif sim.syncIdSet is not None:
                         if sim.syncIdSet['refreshDeletes'] is True:
                             self.syncrepl_delete(sim.syncIdSet['syncUUIDs'])

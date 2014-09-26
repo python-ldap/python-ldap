@@ -5,7 +5,7 @@ Changes since 2.4.16:
 
 Lib/
 * New hook syncrepl_refreshdone() in ldap.syncrepl.SyncReplConsumer
-  (thanks to Petr Spacek)
+  (thanks to Petr Spacek and Chris Mikkelson)
 
 Modules/
 * Added support for getting file descriptor of connection
@@ -1123,4 +1123,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.327 2014/09/25 16:31:00 stroeder Exp $
+$Id: CHANGES,v 1.328 2014/09/26 12:18:05 stroeder Exp $
