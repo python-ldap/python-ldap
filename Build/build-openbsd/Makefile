@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.4 2014/11/18 08:27:23 stroeder Exp $
+# $Id: Makefile,v 1.5 2014/11/18 08:28:48 stroeder Exp $
 
 WRKDIST=		${.CURDIR}/../..
 VERSION!=		sh ${WRKDIST}/Build/version.sh
@@ -6,7 +6,7 @@ VERSION!=		sh ${WRKDIST}/Build/version.sh
 PKGNAME=		python-ldap-${VERSION}
 RUN_DEPENDS=		python:lang/python
 CATEGORIES=		misc
-MAINATINER=		leonard@users.sourceforge.net
+MAINTAINER=		leonard@users.sourceforge.net
 HOMEPAGE=		http://www.python-ldap.org/
 
 FAKE=			Yes
