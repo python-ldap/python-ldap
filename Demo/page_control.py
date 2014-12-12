@@ -1,18 +1,24 @@
-url = "ldap://localhost:1390/"
+# -*- coding: utf-8 -*-
+
+url = "ldap://localhost:1390"
 base = "dc=stroeder,dc=de"
 search_flt = r'(objectClass=*)'
 page_size = 10
+binddn = ''
+bindpw = ''
+trace_level = 0
 
 import ldap,pprint
-from ldap.controls import SimplePagedResultsControl
+#from ldap.controls.libldap import SimplePagedResultsControl
+from ldap.controls.pagedresults import SimplePagedResultsControl
 
 searchreq_attrlist=['cn','entryDN','entryUUID','mail','objectClass']
 
 #ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
 ldap.set_option(ldap.OPT_REFERRALS, 0)
-l = ldap.initialize(url,trace_level=1)
+l = ldap.initialize(url,trace_level=trace_level)
 l.protocol_version = 3
-l.simple_bind_s("", "")
+l.simple_bind_s(binddn,bindpw)
 
 req_ctrl = SimplePagedResultsControl(True,size=page_size,cookie='')
 
@@ -32,11 +38,12 @@ msgid = l.search_ext(
 pages = 0
 while True:
     pages += 1
+    print '-'*60
     print "Getting page %d" % (pages)
     rtype, rdata, rmsgid, serverctrls = l.result3(msgid,resp_ctrl_classes=known_ldap_resp_ctrls)
     print '%d results' % len(rdata)
     print 'serverctrls=',pprint.pprint(serverctrls)
-#    pprint.pprint(rdata)
+    print 'rdata=',pprint.pprint(rdata)
     pctrls = [
       c
       for c in serverctrls
