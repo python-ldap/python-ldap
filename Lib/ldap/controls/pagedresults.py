@@ -5,7 +5,7 @@ ldap.controls.paged - classes for Simple Paged control
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: pagedresults.py,v 1.1 2014/12/12 09:59:40 stroeder Exp $
+$Id: pagedresults.py,v 1.2 2014/12/12 10:10:23 stroeder Exp $
 """
 
 __all__ = [
@@ -44,7 +44,6 @@ class SimplePagedResultsControl(RequestControl,ResponseControl):
     return encoder.encode(pc)
 
   def decodeControlValue(self,encodedControlValue):
-    print '***',self.__class__.__module__,self.__class__.__name__
     decodedValue,_ = decoder.decode(encodedControlValue,asn1Spec=PagedResultsControlValue())
     self.size = int(decodedValue.getComponentByName('size'))
     self.cookie = str(decodedValue.getComponentByName('cookie'))
