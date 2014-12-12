@@ -6,6 +6,8 @@ Changes since 2.4.18:
 Lib/
 * Fixed missing ReconnectLDAPObject._reconnect_lock when pickling
   (see SF#64, thanks to Dan O'Reilly)
+* Added ldap.controls.pagedresults which as pure Python implementation of 
+  Simple Paged Results Control (see RFC 2696)
 
 ----------------------------------------------------------------
 Released 2.4.18 2014-10-09
@@ -1141,4 +1143,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.334 2014/11/23 18:51:53 stroeder Exp $
+$Id: CHANGES,v 1.335 2014/12/12 09:59:40 stroeder Exp $
