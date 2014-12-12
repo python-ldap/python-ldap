@@ -9,8 +9,11 @@ bindpw = ''
 trace_level = 0
 
 import ldap,pprint
-#from ldap.controls.libldap import SimplePagedResultsControl
-from ldap.controls.pagedresults import SimplePagedResultsControl
+
+try:
+  from ldap.controls.pagedresults import SimplePagedResultsControl
+except ImportError:
+  from ldap.controls.libldap import SimplePagedResultsControl
 
 searchreq_attrlist=['cn','entryDN','entryUUID','mail','objectClass']
 
