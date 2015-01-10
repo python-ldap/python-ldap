@@ -9,6 +9,7 @@ Modules/
   - VLV control
   - server-side sorting control
 - Wrap libldif as faster drop-in replacement for module ldif?
+- Extract response controls in SASL bind responses
 - Attach response controls to LDAPError instances to deliver the
   controls to the calling application in case of an error
 - Attach more useful information to LDAPError instances, e.g. the filter used
@@ -27,4 +28,4 @@ Tests/
   holding the BLITS test data set
 
 ------------------------------------------------------------------
-$Id: TODO,v 1.38 2012/01/25 19:24:40 stroeder Exp $
+$Id: TODO,v 1.39 2015/01/10 16:58:52 stroeder Exp $
