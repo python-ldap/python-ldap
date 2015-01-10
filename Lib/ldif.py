@@ -3,13 +3,13 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See http://www.python-ldap.org/ for details.
 
-$Id: ldif.py,v 1.77 2014/10/08 17:16:05 stroeder Exp $
+$Id: ldif.py,v 1.78 2015/01/10 17:18:13 stroeder Exp $
 
 Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
 """
 
-__version__ = '2.4.18'
+__version__ = '2.4.19'
 
 __all__ = [
   # constants
