@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.143 2014/11/23 18:51:53 stroeder Exp $
+\$Id: ldapobject.py,v 1.144 2015/05/02 16:19:23 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -136,6 +136,14 @@ class SimpleLDAPObject:
         self.__class__.__name__,repr(name)
       )
 
+  def fileno():
+    """
+    Returns file description of LDAP connection.
+    
+    Just a convenience wrapper for LDAPObject.get_option(ldap.OPT_DESC)
+    """
+    return self.get_option(ldap.OPT_DESC)
+
   def abandon_ext(self,msgid,serverctrls=None,clientctrls=None):
     """
     abandon_ext(msgid[,serverctrls=None[,clientctrls=None]]) -> None
@@ -234,6 +242,12 @@ class SimpleLDAPObject:
     sasl_interactive_bind_s(who, auth [,serverctrls=None[,clientctrls=None[,sasl_flags=ldap.SASL_QUIET]]]) -> None
     """
     return self._ldap_call(self._l.sasl_interactive_bind_s,who,auth,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls),sasl_flags)
+
+  def sasl_bind_s(self,dn,mechanism,cred,serverctrls=None,clientctrls=None):
+    """
+    sasl_bind_s(dn, mechanism, cred [,serverctrls=None[,clientctrls=None]]) -> int|str
+    """
+    return self._ldap_call(self._l.sasl_bind_s,dn,mechanism,cred,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def compare_ext(self,dn,attr,value,serverctrls=None,clientctrls=None):
     """
@@ -893,6 +907,11 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     """
     res = self._apply_method_s(SimpleLDAPObject.sasl_interactive_bind_s,*args,**kwargs)
     self._store_last_bind(SimpleLDAPObject.sasl_interactive_bind_s,*args,**kwargs)
+    return res
+
+  def sasl_bind_s(self,dn,mechanism,cred,serverctrls=None,clientctrls=None):
+    res = self._apply_method_s(SimpleLDAPObject.sasl_bind_s,*args,**kwargs)
+    self._store_last_bind(SimpleLDAPObject.sasl_bind_s,*args,**kwargs)
     return res
 
   def add_ext_s(self,*args,**kwargs):

@@ -1,5 +1,5 @@
 /* See http://www.python-ldap.org/ for details.
- * $Id: LDAPObject.c,v 1.90 2011/04/11 11:29:59 stroeder Exp $ */
+ * $Id: LDAPObject.c,v 1.91 2015/05/02 16:19:23 stroeder Exp $ */
 
 #include "common.h"
 #include "patchlevel.h"
@@ -614,6 +614,59 @@ int py_ldap_sasl_interaction(   LDAP *ld,
     interact++;
   }
   return LDAP_SUCCESS;
+}
+
+static PyObject*
+l_ldap_sasl_bind_s( LDAPObject* self, PyObject* args )
+{
+    const char *dn;
+    const char *mechanism;
+    struct berval cred;
+    Py_ssize_t cred_len;
+
+    PyObject *serverctrls = Py_None;
+    PyObject *clientctrls = Py_None;
+    LDAPControl** server_ldcs = NULL;
+    LDAPControl** client_ldcs = NULL;
+
+    struct berval *servercred;
+    int ldaperror;
+
+    if (!PyArg_ParseTuple(args, "zzz#OO", &dn, &mechanism, &cred.bv_val, &cred_len, &serverctrls, &clientctrls ))
+        return NULL;
+
+    if (not_valid(self)) return NULL;
+
+    cred.bv_len = cred_len;
+
+    if (!PyNone_Check(serverctrls)) {
+        if (!LDAPControls_from_object(serverctrls, &server_ldcs))
+            return NULL;
+    }
+    if (!PyNone_Check(clientctrls)) {
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+            return NULL;
+    }
+
+    LDAP_BEGIN_ALLOW_THREADS( self );
+    ldaperror = ldap_sasl_bind_s(self->ldap,
+                                 dn,
+                                 mechanism,
+                                 cred.bv_val ? &cred : NULL,
+                                 (LDAPControl**) server_ldcs, 
+                                 (LDAPControl**) client_ldcs,
+                                 &servercred);
+    LDAP_END_ALLOW_THREADS( self );
+
+    LDAPControl_List_DEL( server_ldcs );
+    LDAPControl_List_DEL( client_ldcs );
+
+    if (ldaperror == LDAP_SASL_BIND_IN_PROGRESS) {
+        if (servercred && servercred->bv_val && *servercred->bv_val)
+            return PyString_FromStringAndSize( servercred->bv_val, servercred->bv_len );
+    } else if (ldaperror != LDAP_SUCCESS)
+        return LDAPerror( self->ldap, "l_ldap_sasl_bind_s" );
+    return PyInt_FromLong( ldaperror );
 }
 
 static PyObject* 
@@ -1317,6 +1370,7 @@ static PyMethodDef methods[] = {
     {"simple_bind",     (PyCFunction)l_ldap_simple_bind,        METH_VARARGS },
 #ifdef HAVE_SASL
     {"sasl_interactive_bind_s", (PyCFunction)l_ldap_sasl_interactive_bind_s,    METH_VARARGS },
+    {"sasl_bind_s", (PyCFunction)l_ldap_sasl_bind_s,    METH_VARARGS },
 #endif
     {"compare_ext",     (PyCFunction)l_ldap_compare_ext,        METH_VARARGS },
     {"delete_ext",      (PyCFunction)l_ldap_delete_ext,         METH_VARARGS },

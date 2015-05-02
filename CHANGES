@@ -1,4 +1,12 @@
 ----------------------------------------------------------------
+Released 2.4.20 2015-05-xx
+
+Changes since 2.4.19:
+
+* New wrapping of OpenLDAP's function ldap_sasl_bind_s() allows
+  to intercept the SASL handshake (thanks to René Kijewski)
+
+----------------------------------------------------------------
 Released 2.4.19 2015-01-10
 
 Changes since 2.4.18:
@@ -1144,4 +1152,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.338 2015/01/10 17:08:52 stroeder Exp $
+$Id: CHANGES,v 1.339 2015/05/02 16:19:23 stroeder Exp $
