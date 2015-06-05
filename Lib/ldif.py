@@ -3,7 +3,7 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See http://www.python-ldap.org/ for details.
 
-$Id: ldif.py,v 1.78 2015/01/10 17:18:13 stroeder Exp $
+$Id: ldif.py,v 1.79 2015/06/05 20:55:06 stroeder Exp $
 
 Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
@@ -165,7 +165,7 @@ class LDIFWriter:
     elif mod_len==3:
       changetype = 'modify'
     else:
-      raise ValueError,"modlist item of wrong length"
+      raise ValueError("modlist item of wrong length: %d" % (mod_len))
     self._unparseAttrTypeandValue('changetype',changetype)
     for mod in modlist:
       if mod_len==2:
@@ -174,7 +174,7 @@ class LDIFWriter:
         mod_op,mod_type,mod_vals = mod
         self._unparseAttrTypeandValue(MOD_OP_STR[mod_op],mod_type)
       else:
-        raise ValueError,"Subsequent modlist item of wrong length"
+        raise ValueError("Subsequent modlist item of wrong length")
       if mod_vals:
         for mod_val in mod_vals:
           self._unparseAttrTypeandValue(mod_type,mod_val)
@@ -197,7 +197,7 @@ class LDIFWriter:
     elif isinstance(record,types.ListType):
       self._unparseChangeRecord(record)
     else:
-      raise ValueError, "Argument record must be dictionary or list"
+      raise ValueError('Argument record must be dictionary or list instead of %s' % (repr(record)))
     # Write empty line separating the records
     self._output_file.write(self._line_sep)
     # Count records written
@@ -354,20 +354,20 @@ class LDIFParser:
         if attr_type=='dn':
           # attr type and value pair was DN of LDIF record
           if dn!=None:
-            raise ValueError, 'Two lines starting with dn: in one record.'
+            raise ValueError('Two lines starting with dn: in one record.')
           if not is_dn(attr_value):
-            raise ValueError, 'No valid string-representation of distinguished name %s.' % (repr(attr_value))
+            raise ValueError('No valid string-representation of distinguished name %s.' % (repr(attr_value)))
           dn = attr_value
         elif attr_type=='version' and dn is None:
           version = 1
         elif attr_type=='changetype':
           # attr type and value pair was DN of LDIF record
           if dn is None:
-            raise ValueError, 'Read changetype: before getting valid dn: line.'
+            raise ValueError('Read changetype: before getting valid dn: line.')
           if changetype!=None:
-            raise ValueError, 'Two lines starting with changetype: in one record.'
+            raise ValueError('Two lines starting with changetype: in one record.')
           if not valid_changetype_dict.has_key(attr_value):
-            raise ValueError, 'changetype value %s is invalid.' % (repr(attr_value))
+            raise ValueError('changetype value %s is invalid.' % (repr(attr_value)))
           changetype = attr_value
         elif attr_value!=None and \
              not self._ignored_attr_types.has_key(attr_type.lower()):
