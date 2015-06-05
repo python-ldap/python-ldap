@@ -8,7 +8,7 @@ Changes since 2.4.19:
 
 Lib/
 * Abandoned old syntax when raising ValueError in module ldif and
-  some more information in exceptions.
+  more information in some exceptions.
 
 ----------------------------------------------------------------
 Released 2.4.19 2015-01-10
@@ -1156,4 +1156,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.340 2015/06/05 20:55:05 stroeder Exp $
+$Id: CHANGES,v 1.341 2015/06/05 20:56:00 stroeder Exp $
