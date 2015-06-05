@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.27 2012/01/10 23:28:08 stroeder Exp $
+.. % $Id: ldap.rst,v 1.28 2015/06/05 20:49:04 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -649,9 +649,9 @@ and wait for and return with the server's result, or with
 
 .. py:method:: LDAPObject.bind_s(who, cred, method) -> None
 
-.. py:method:: LDAPObject.simple_bind([who='' [, cred='']]) -> int
+.. py:method:: LDAPObject.simple_bind([who='' [, cred='' [, serverctrls=None [, clientctrls=None]]]]) -> int
 
-.. py:method:: LDAPObject.simple_bind_s([who='' [, cred='']]) -> None
+.. py:method:: LDAPObject.simple_bind_s([who='' [, cred='' [, serverctrls=None [, clientctrls=None]]]]) -> None
 
    After an LDAP object is created, and before any other operations can be
    attempted over the connection, a bind operation must be performed.
