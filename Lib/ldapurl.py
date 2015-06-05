@@ -3,7 +3,7 @@ ldapurl - handling of LDAP URLs as described in RFC 4516
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapurl.py,v 1.70 2015/06/05 21:03:06 stroeder Exp $
+\$Id: ldapurl.py,v 1.71 2015/06/05 21:04:58 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.0+ since
@@ -11,7 +11,7 @@ This module only works with Python 2.0+ since
 2. list comprehensions are used.
 """
 
-__version__ = '2.4.19'
+__version__ = '2.4.20'
 
 __all__ = [
   # constants

@@ -11,7 +11,7 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 #
-# $Id: conf.py,v 1.20 2014/10/08 17:16:05 stroeder Exp $
+# $Id: conf.py,v 1.21 2015/06/05 21:05:37 stroeder Exp $
 
 import sys
 
@@ -44,7 +44,7 @@ copyright = '2008-2014, python-ldap project team'
 # The short X.Y version.
 version = '2.4'
 # The full version, including alpha/beta/rc tags.
-release = '2.4.18.0'
+release = '2.4.20.0'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
