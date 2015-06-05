@@ -3,7 +3,7 @@ ldapurl - handling of LDAP URLs as described in RFC 4516
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapurl.py,v 1.69 2015/01/10 17:18:13 stroeder Exp $
+\$Id: ldapurl.py,v 1.70 2015/06/05 21:03:06 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.0+ since
@@ -258,11 +258,11 @@ class LDAPUrl:
     urlscheme,host,dn,attrs,scope,filterstr,extensions
     """
     if not isLDAPUrl(ldap_url):
-      raise ValueError,'Parameter ldap_url does not seem to be a LDAP URL.'
+      raise ValueError('Value %s for ldap_url does not seem to be a LDAP URL.' % (repr(ldap_url)))
     scheme,rest = ldap_url.split('://',1)
     self.urlscheme = scheme.strip()
     if not self.urlscheme in ['ldap','ldaps','ldapi']:
-      raise ValueError,'LDAP URL contains unsupported URL scheme %s.' % (self.urlscheme)
+      raise ValueError('LDAP URL contains unsupported URL scheme %s.' % (self.urlscheme))
     slash_pos = rest.find('/')
     qemark_pos = rest.find('?')
     if (slash_pos==-1) and (qemark_pos==-1):
@@ -282,7 +282,7 @@ class LDAPUrl:
         # Do not eat question mark
         rest = rest[qemark_pos:]
       else:
-        raise ValueError,'Something completely weird happened!'
+        raise ValueError('Something completely weird happened!')
     paramlist=rest.split('?',4)
     paramlist_len = len(paramlist)
     if paramlist_len>=1:
@@ -294,7 +294,7 @@ class LDAPUrl:
       try:
         self.scope = SEARCH_SCOPE[scope]
       except KeyError:
-        raise ValueError,"Search scope must be either one of base, one or sub. LDAP URL contained %s" % (repr(scope))
+        raise ValueError('Invalid search scope %s' % (repr(scope)))
     if paramlist_len>=4:
       filterstr = paramlist[3].strip()
       if not filterstr:
@@ -404,9 +404,9 @@ class LDAPUrl:
       else:
         return None
     else:
-      raise AttributeError,"%s has no attribute %s" % (
+      raise AttributeError('%s has no attribute %s' % (
         self.__class__.__name__,name
-      )
+      ))
     return result # __getattr__()
 
   def __setattr__(self,name,value):
