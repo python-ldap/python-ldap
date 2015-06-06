@@ -5,7 +5,7 @@ ldap.controls.ppolicy - classes for Password Policy controls
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: ppolicy.py,v 1.3 2011/11/27 15:26:06 stroeder Exp $
+$Id: ppolicy.py,v 1.4 2015/06/06 09:21:38 stroeder Exp $
 """
 
 __all__ = [
@@ -91,6 +91,6 @@ class PasswordPolicyControl(ValueLessRequestControl,ResponseControl):
       self.error = None
     else:
       self.error = int(error)
-      
+
 
 KNOWN_RESPONSE_CONTROLS[PasswordPolicyControl.controlType] = PasswordPolicyControl

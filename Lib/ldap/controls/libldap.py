@@ -5,7 +5,7 @@ by OpenLDAP functions
 
 See http://www.python-ldap.org/ for details.
 
-$Id: libldap.py,v 1.2 2011/07/23 07:42:04 stroeder Exp $
+$Id: libldap.py,v 1.3 2015/06/06 09:21:38 stroeder Exp $
 """
 
 import _ldap,ldap
@@ -20,8 +20,8 @@ class AssertionControl(RequestControl):
     LDAP filter string specifying which assertions have to match
     so that the server processes the operation
   """
-  
-  controlType = ldap.CONTROL_ASSERT    
+
+  controlType = ldap.CONTROL_ASSERT
   def __init__(self,criticality=True,filterstr='(objectClass=*)'):
     self.criticality = criticality
     self.filterstr = filterstr
@@ -40,9 +40,9 @@ class MatchedValuesControl(RequestControl):
     LDAP filter string specifying which attribute values
     should be returned
   """
-  
+
   controlType = ldap.CONTROL_VALUESRETURNFILTER
-  
+
   def __init__(self,criticality=False,filterstr='(objectClass=*)'):
     self.criticality = criticality
     self.filterstr = filterstr

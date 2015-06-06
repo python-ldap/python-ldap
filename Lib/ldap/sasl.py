@@ -3,7 +3,7 @@ sasl.py - support for SASL mechanism
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: sasl.py,v 1.16 2014/03/23 19:06:47 stroeder Exp $
+\$Id: sasl.py,v 1.17 2015/06/06 09:21:38 stroeder Exp $
 
 Description:
 The ldap.sasl module provides SASL authentication classes.
@@ -63,7 +63,7 @@ class sasl:
         useful for writing generic sasl GUIs, which would need to know all
         the questions to ask, before the answers are returned to the sasl
         lib (in contrast to one question at a time)."""
-        
+
         # The following print command might be useful for debugging
         # new sasl mechanisms. So it is left here
         cb_result = self.cb_value_dict.get(cb_id,defresult) or ''
@@ -73,7 +73,7 @@ class sasl:
                 cb_id, challenge, prompt, repr(defresult), repr(self.cb_value_dict.get(cb_result))
               ))
         return cb_result
-    
+
 
 class cram_md5(sasl):
     """This class handles SASL CRAM-MD5 authentication."""

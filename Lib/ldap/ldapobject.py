@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.144 2015/05/02 16:19:23 stroeder Exp $
+\$Id: ldapobject.py,v 1.145 2015/06/06 09:21:38 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -139,7 +139,7 @@ class SimpleLDAPObject:
   def fileno():
     """
     Returns file description of LDAP connection.
-    
+
     Just a convenience wrapper for LDAPObject.get_option(ldap.OPT_DESC)
     """
     return self.get_option(ldap.OPT_DESC)
@@ -662,7 +662,7 @@ class SimpleLDAPObject:
   def read_s(self,dn,filterstr=None,attrlist=None,serverctrls=None,clientctrls=None,timeout=-1):
     """
     Reads and returns a single entry specified by `dn'.
-    
+
     Other attributes just like those passed to `search_ext_s()'
     """
     r = self.search_ext_s(

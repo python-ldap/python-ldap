@@ -3,7 +3,7 @@ ldap.async - handle async LDAP operations
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: async.py,v 1.33 2013/09/21 03:55:38 stroeder Exp $
+\$Id: async.py,v 1.34 2015/06/06 09:21:37 stroeder Exp $
 
 Python compability note:
 Tested on Python 2.0+ but should run on Python 1.5.x.
@@ -103,7 +103,7 @@ class AsyncSearchHandler:
 
   def afterFirstResult(self):
     """
-    Do anything you want right after successfully receiving but before 
+    Do anything you want right after successfully receiving but before
     processing first result
     """
 

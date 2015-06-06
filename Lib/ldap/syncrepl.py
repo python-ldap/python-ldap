@@ -4,7 +4,7 @@ ldap.syncrepl - for implementing syncrepl consumer (see RFC 4533)
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: syncrepl.py,v 1.6 2014/09/26 16:11:43 stroeder Exp $
+$Id: syncrepl.py,v 1.7 2015/06/06 09:21:38 stroeder Exp $
 """
 
 #__all__ = [
@@ -316,9 +316,9 @@ class SyncreplConsumer:
         methods to store the cookie appropriately, rather than
         passing it.
 
-        Only a single syncrepl search may be active on a SyncreplConsumer 
-        object.  Multiple concurrent syncrepl searches require multiple 
-        separate SyncreplConsumer objects and thus multiple connections 
+        Only a single syncrepl search may be active on a SyncreplConsumer
+        object.  Multiple concurrent syncrepl searches require multiple
+        separate SyncreplConsumer objects and thus multiple connections
         (LDAPObject instances).
         """
         if cookie is None:

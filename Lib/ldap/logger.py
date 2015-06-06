@@ -9,7 +9,7 @@ class logging_file_class:
 
   def __init__(self,logging_level):
     self._logging_level = logging_level
-  
+
   def write(self,msg):
     logging.log(self._logging_level,msg[:-1])
 

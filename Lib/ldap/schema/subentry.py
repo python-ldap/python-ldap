@@ -3,7 +3,7 @@ ldap.schema.subentry -  subschema subentry handling
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: subentry.py,v 1.34 2013/09/13 18:02:47 stroeder Exp $
+\$Id: subentry.py,v 1.35 2015/06/06 09:21:38 stroeder Exp $
 """
 
 import ldap.cidict,ldap.schema
@@ -75,7 +75,7 @@ class SubSchema:
   non_unique_oids
     List of OIDs used at least twice in the subschema
   non_unique_names
-    List of NAMEs used at least twice in the subschema for the same schema element 
+    List of NAMEs used at least twice in the subschema for the same schema element
   """
 
   def __init__(self,sub_schema_sub_entry,check_uniqueness=1):

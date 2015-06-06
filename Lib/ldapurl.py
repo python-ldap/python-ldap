@@ -3,7 +3,7 @@ ldapurl - handling of LDAP URLs as described in RFC 4516
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapurl.py,v 1.71 2015/06/05 21:04:58 stroeder Exp $
+\$Id: ldapurl.py,v 1.72 2015/06/06 09:21:37 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.0+ since
@@ -73,7 +73,7 @@ class LDAPUrlExtension:
   Usable class attributes:
     critical
           Boolean integer marking the extension as critical
-    extype    
+    extype
           Type of extension
     exvalue
           Value of extension
@@ -112,7 +112,7 @@ class LDAPUrlExtension:
         '!'*(self.critical>0),
         self.extype,quote(self.exvalue or '')
       )
-    
+
   def __str__(self):
     return self.unparse()
 
@@ -177,7 +177,7 @@ class LDAPUrlExtensions(UserDict.UserDict):
       "other has to be instance of %s" % (self.__class__)
     )
     return self.data==other.data
-    
+
   def parse(self,extListStr):
     for extension_str in extListStr.strip().split(','):
       if extension_str:
@@ -358,11 +358,11 @@ class LDAPUrl:
     if self.extensions:
       ldap_url = ldap_url+'?'+self.extensions.unparse()
     return ldap_url
-  
+
   def htmlHREF(self,urlPrefix='',hrefText=None,hrefTarget=None):
     """
     Returns a string with HTML link for this LDAP URL.
-    
+
     urlPrefix
         Prefix before LDAP URL (e.g. for addressing another web-based client)
     hrefText

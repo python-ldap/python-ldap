@@ -4,7 +4,7 @@ controls.py - support classes for LDAP controls
 
 See http://www.python-ldap.org/ for details.
 
-$Id: __init__.py,v 1.9 2013/05/29 20:27:32 stroeder Exp $
+$Id: __init__.py,v 1.10 2015/06/06 09:21:38 stroeder Exp $
 
 Description:
 The ldap.controls module provides LDAPControl classes.
@@ -45,7 +45,7 @@ except ImportError:
 class RequestControl:
   """
   Base class for all request controls
-  
+
   controlType
       OID as string of the LDAPv3 extended request control
   criticality

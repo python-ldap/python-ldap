@@ -4,7 +4,7 @@ ldap.controls.simple - classes for some very simple LDAP controls
 
 See http://www.python-ldap.org/ for details.
 
-$Id: simple.py,v 1.9 2012/08/09 07:01:20 stroeder Exp $
+$Id: simple.py,v 1.10 2015/06/06 09:21:38 stroeder Exp $
 """
 
 import struct,ldap
@@ -34,7 +34,7 @@ class ValueLessRequestControl(RequestControl):
 class OctetStringInteger(LDAPControl):
   """
   Base class with controlValue being unsigend integer values
-  
+
   integerValue
     Integer to be sent as OctetString
   """
@@ -49,7 +49,7 @@ class OctetStringInteger(LDAPControl):
 
   def decodeControlValue(self,encodedControlValue):
     self.integerValue = struct.unpack('!Q',encodedControlValue)[0]
-    
+
 
 class BooleanControl(LDAPControl):
   """
@@ -100,7 +100,7 @@ KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_RELAX] = RelaxRulesControl
 class ProxyAuthzControl(RequestControl):
   """
   Proxy Authorization Control
-  
+
   authzId
     string containing the authorization ID indicating the identity
     on behalf which the server should process the request
@@ -123,9 +123,9 @@ class AuthorizationIdentityRequestControl(ValueLessRequestControl):
 class AuthorizationIdentityResponseControl(ResponseControl):
   """
   Authorization Identity Request and Response Controls
-  
+
   Class attributes:
-  
+
   authzId
     decoded authorization identity
   """

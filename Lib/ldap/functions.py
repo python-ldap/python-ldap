@@ -3,7 +3,7 @@ functions.py - wraps functions of module _ldap
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: functions.py,v 1.30 2014/05/20 20:44:28 stroeder Exp $
+\$Id: functions.py,v 1.31 2015/06/06 09:21:37 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -135,7 +135,7 @@ def set_option(option,invalue):
 
 def escape_str(escape_func,s,*args):
   """
-  Applies escape_func() to all items of `args' and returns a string based 
+  Applies escape_func() to all items of `args' and returns a string based
   on format string `s'.
   """
   escape_args = map(escape_func,args)
