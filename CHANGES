@@ -9,6 +9,8 @@ Changes since 2.4.19:
 Lib/
 * Abandoned old syntax when raising ValueError in modules ldif and
   ldapurl, more information in some exceptions.
+* ldap.ldapobject.LDAPObject:
+  New convenience methods for SASL GSSAPI or EXTERNAL binds
 
 ----------------------------------------------------------------
 Released 2.4.19 2015-01-10
@@ -1156,4 +1158,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.342 2015/06/05 21:03:06 stroeder Exp $
+$Id: CHANGES,v 1.343 2015/06/11 15:13:44 stroeder Exp $
