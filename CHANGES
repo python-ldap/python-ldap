@@ -11,6 +11,16 @@ Lib/
   ldapurl, more information in some exceptions.
 * ldap.ldapobject.LDAPObject:
   New convenience methods for SASL GSSAPI or EXTERNAL binds
+* Refactored parts in ldif.LDIFParser:
+  - New class attributes line_counter and byte_counter contain
+    amount of LDIF data read so far
+  - Renamed some internally used methods
+  - Added support for parsing change records currently limited to
+    changetype: modify
+  - New separate methods parse_entry_records() (also called by parse())
+    and parse_change_records()
+  - Stricter order checking of dn:, changetype:, etc.
+  - Removed non-existent 'AttrTypeandValueLDIF' from ldif.__all__
 
 ----------------------------------------------------------------
 Released 2.4.19 2015-01-10
@@ -1158,4 +1168,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.343 2015/06/11 15:13:44 stroeder Exp $
+$Id: CHANGES,v 1.344 2015/06/20 14:09:45 stroeder Exp $
