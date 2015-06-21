@@ -30,8 +30,8 @@ Changes since 2.4.18:
 Lib/
 * Fixed missing ReconnectLDAPObject._reconnect_lock when pickling
   (see SF#64, thanks to Dan O'Reilly)
-* Added ldap.controls.pagedresults which is pure Python implementation of 
-  Simple Paged Results Control (see RFC 2696) and delivers the correct 
+* Added ldap.controls.pagedresults which is pure Python implementation of
+  Simple Paged Results Control (see RFC 2696) and delivers the correct
   result size
 
 ----------------------------------------------------------------
@@ -82,11 +82,11 @@ Lib/
   string of digits
 * Support for X-SUBST in schema element class LDAPSyntax
 * Support for X-ORDERED and X-ORIGIN in schema element class AttributeType
-* ldapurl: New scope 'subordinates' defined in 
+* ldapurl: New scope 'subordinates' defined in
   draft-sermersheim-ldap-subordinate-scope
 
 Modules/
-* New constant ldap.SCOPE_SUBORDINATE derived from ldap.h for 
+* New constant ldap.SCOPE_SUBORDINATE derived from ldap.h for
   draft-sermersheim-ldap-subordinate-scope
 * Fixed constant ldap.sasl.CB_GETREALM (thanks to Martin Pfeifer)
 
@@ -1168,4 +1168,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.344 2015/06/20 14:09:45 stroeder Exp $
+$Id: CHANGES,v 1.345 2015/06/21 19:08:16 stroeder Exp $
