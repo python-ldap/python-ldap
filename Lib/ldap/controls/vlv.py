@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-ldap.controls.vlv - classes for Simple Paged control
+ldap.controls.vlv - classes for Virtual List View
 (see draft-ietf-ldapext-ldapv3-vlv)
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: vlv.py,v 1.1 2015/06/22 16:47:08 stroeder Exp $
+$Id: vlv.py,v 1.2 2015/06/22 17:55:01 stroeder Exp $
 """
 
 __all__ = [
