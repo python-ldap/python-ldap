@@ -3,7 +3,7 @@ ldap.controls.openldap - classes for OpenLDAP-specific controls
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: openldap.py,v 1.2 2015/06/22 11:51:07 stroeder Exp $
+$Id: openldap.py,v 1.3 2015/06/22 17:56:50 stroeder Exp $
 """
 
 import ldap.controls
@@ -46,11 +46,11 @@ ldap.controls.KNOWN_RESPONSE_CONTROLS[SearchNoOpControl.controlType] = SearchNoO
 class SearchNoOpMixIn:
   """
   Mix-in class to be used with class LDAPObject and friends.
-  
+
   It adds a convenience method noop_search_st() to LDAPObject
   for easily using the no-op search control.
   """
-  
+
   def noop_search_st(self,base,scope=ldap.SCOPE_SUBTREE,filterstr='(objectClass=*)',timeout=-1):
     try:
       msg_id = self.search_ext(
