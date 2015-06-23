@@ -2,7 +2,7 @@
  * errors that arise from ldap use
  * Most errors become their own exception
  * See http://www.python-ldap.org/ for details.
- * $Id: errors.c,v 1.23 2012/01/11 10:04:48 stroeder Exp $ */
+ * $Id: errors.c,v 1.24 2015/06/23 09:44:04 stroeder Exp $ */
 
 #include "common.h"
 #include "errors.h"
@@ -141,8 +141,10 @@ LDAPinit_errors( PyObject*d ) {
   }
 
   seterrobj(ADMINLIMIT_EXCEEDED);
+  seterrobj(VLV_ERROR);
   seterrobj(AFFECTS_MULTIPLE_DSAS);
   seterrobj(ALIAS_DEREF_PROBLEM);
+  seterrobj(X_PROXY_AUTHZ_FAILURE);
   seterrobj(ALIAS_PROBLEM);
   seterrobj(ALREADY_EXISTS);
   seterrobj(AUTH_UNKNOWN);
@@ -150,6 +152,7 @@ LDAPinit_errors( PyObject*d ) {
   seterrobj(CLIENT_LOOP);
   seterrobj(COMPARE_FALSE);
   seterrobj(COMPARE_TRUE);
+  seterrobj(AUTH_METHOD_NOT_SUPPORTED);
   seterrobj(CONFIDENTIALITY_REQUIRED);
   seterrobj(CONNECT_ERROR);
   seterrobj(CONSTRAINT_VIOLATION);

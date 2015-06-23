@@ -6,6 +6,10 @@ Changes since 2.4.19:
 * New wrapping of OpenLDAP's function ldap_sasl_bind_s() allows
   to intercept the SASL handshake (thanks to René Kijewski)
 
+Modules/
+* Added exceptions ldap.VLV_ERROR, ldap.X_PROXY_AUTHZ_FAILURE and 
+  ldap.AUTH_METHOD_NOT_SUPPORTED
+
 Lib/
 * Abandoned old syntax when raising ValueError in modules ldif and
   ldapurl, more information in some exceptions.
@@ -1173,4 +1177,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.347 2015/06/22 16:47:08 stroeder Exp $
+$Id: CHANGES,v 1.348 2015/06/23 09:44:04 stroeder Exp $
