@@ -27,9 +27,10 @@ Lib/
   - Removed non-existent 'AttrTypeandValueLDIF' from ldif.__all__
 * New mix-in class ldap.controls.openldap.SearchNoOpMixIn
   adds convience method noop_search_st() to LDAPObject class
-* Added new experimental modules which implement the control classes
+* Added new modules which implement the control classes
   for Virtual List View (see draft-ietf-ldapext-ldapv3-vlv) and
   Server-side Sorting (see RFC 2891) (thanks to Benjamin Dauvergne)
+  Note: This is still experimental! Even the API can change later.
 
 ----------------------------------------------------------------
 Released 2.4.19 2015-01-10
@@ -1177,4 +1178,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.348 2015/06/23 09:44:04 stroeder Exp $
+$Id: CHANGES,v 1.349 2015/07/07 12:50:15 stroeder Exp $
