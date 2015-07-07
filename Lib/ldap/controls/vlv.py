@@ -5,7 +5,7 @@ ldap.controls.vlv - classes for Virtual List View
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: vlv.py,v 1.2 2015/06/22 17:55:01 stroeder Exp $
+$Id: vlv.py,v 1.3 2015/07/07 12:46:31 stroeder Exp $
 """
 
 __all__ = [
@@ -45,6 +45,7 @@ class VirtualListViewRequestType(univ.Sequence):
             namedtype.NamedType('target', TargetType()),
             namedtype.OptionalNamedType('contextID', univ.OctetString()))
 
+
 class VLVRequestControl(RequestControl):
     controlType = '2.16.840.1.113730.3.4.9'
 
@@ -59,9 +60,11 @@ class VLVRequestControl(RequestControl):
         context_id=None,
     ):
         RequestControl.__init__(self,self.controlType,criticality)
-        assert (offset is not None and content_count is not None) or greater_than_or_equal, 'offset and ' \
-            'content_count must be set together or greater_than_or_equal must be ' \
-            'used'
+        assert (offset is not None and content_count is not None) or \
+               greater_than_or_equal, \
+            ValueError(
+                'offset and content_count must be set together or greater_than_or_equal must be used'
+            )
         self.before_count = before_count
         self.after_count = after_count
         self.offset = offset
