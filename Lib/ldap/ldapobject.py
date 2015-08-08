@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.146 2015/06/11 15:13:43 stroeder Exp $
+\$Id: ldapobject.py,v 1.147 2015/08/08 13:37:41 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -695,7 +695,7 @@ class SimpleLDAPObject:
     if r:
       return r[0][1]
     else:
-      raise ldap.NO_SUCH_OBJECT('Empty search result reading entry %s' % (repr(dn)))
+      return None
 
   def read_subschemasubentry_s(self,subschemasubentry_dn,attrs=None):
     """

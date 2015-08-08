@@ -4,6 +4,8 @@ Released 2.4.21 2015-07-xx
 Changes since 2.4.20:
 
 Lib/
+* LDAPObject.read_s() now returns None instead of raising 
+  ldap.NO_SUCH_OBJECT in case the search operation returned emtpy result.
 
 ----------------------------------------------------------------
 Released 2.4.20 2015-07-07
@@ -1185,4 +1187,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.351 2015/08/08 13:36:30 stroeder Exp $
+$Id: CHANGES,v 1.352 2015/08/08 13:37:41 stroeder Exp $
