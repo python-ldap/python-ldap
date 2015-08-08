@@ -3,7 +3,7 @@ ldap.schema.subentry -  subschema subentry handling
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: subentry.py,v 1.35 2015/06/06 09:21:38 stroeder Exp $
+\$Id: subentry.py,v 1.36 2015/08/08 14:13:30 stroeder Exp $
 """
 
 import ldap.cidict,ldap.schema
@@ -483,6 +483,7 @@ def urlfetch(uri,trace_level=0):
     subschemasubentry_dn,s_temp = ldif_parser.all_records[0]
   # Work-around for mixed-cased attribute names
   subschemasubentry_entry = ldap.cidict.cidict()
+  s_temp = s_temp or {}
   for at,av in s_temp.items():
     if at in SCHEMA_CLASS_MAPPING:
       try:
