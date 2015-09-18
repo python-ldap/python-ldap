@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 ldap.controls.readentry - classes for the Read Entry controls
 (see RFC 4527)
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: readentry.py,v 1.4 2011/07/28 08:57:12 stroeder Exp $
+$Id: readentry.py,v 1.5 2015/09/18 17:24:55 stroeder Exp $
 """
 
 import ldap
