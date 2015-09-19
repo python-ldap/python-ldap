@@ -10,14 +10,14 @@ import pprint,ldap,ldap.modlist,ldap.resiter
 
 from ldap.controls.deref import DereferenceControl
 
-uri = "ldap://localhost:2071/"
+uri = "ldap://ipa.demo1.freeipa.org"
 
 class MyLDAPObject(ldap.ldapobject.LDAPObject,ldap.resiter.ResultProcessor):
   pass
 
 
 l = MyLDAPObject(uri,trace_level=0)
-l.simple_bind_s('uid=diradm,dc=example,dc=com','testsecret')
+l.simple_bind_s('uid=admin,cn=users,cn=accounts,dc=demo1,dc=freeipa,dc=org','Secret123')
 
 dc = DereferenceControl(
   True,
@@ -25,8 +25,8 @@ dc = DereferenceControl(
     'member':[
       'uid',
       'description',
-#      'cn',
-#      'mail',
+      'cn',
+      'mail',
     ],
   }
 )
@@ -35,7 +35,7 @@ print 'pyasn1 output of request control:'
 print dc._derefSpecs().prettyPrint()
 
 msg_id = l.search_ext(
-  'dc=example,dc=com',
+  'dc=demo1,dc=freeipa,dc=org',
   ldap.SCOPE_SUBTREE,
   '(objectClass=groupOfNames)',
   attrlist=['cn','objectClass','member','description'],
