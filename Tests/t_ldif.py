@@ -97,6 +97,14 @@ class TestParse(unittest.TestCase):
                 ('cn=x,cn=y,cn=z', {'attrib': [b'\t\0\n:%@']}),
             ])
 
+    def test_binary2(self):
+        self.check_roundtrip("""
+                dn: cn=x,cn=y,cn=z
+                attrib::CQAKOiVA
+            """, [
+                ('cn=x,cn=y,cn=z', {'attrib': [b'\t\0\n:%@']}),
+            ])
+
     def test_unicode(self):
         self.check_roundtrip("""
                 dn: cn=Michael Stroeder,dc=stroeder,dc=com
