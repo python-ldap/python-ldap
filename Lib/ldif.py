@@ -3,7 +3,7 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See http://www.python-ldap.org/ for details.
 
-$Id: ldif.py,v 1.84 2015/09/30 17:15:53 stroeder Exp $
+$Id: ldif.py,v 1.85 2015/09/30 17:17:28 stroeder Exp $
 
 Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
@@ -324,7 +324,7 @@ class LDIFParser:
     # if needed attribute value is BASE64 decoded
     value_spec = unfolded_line[colon_pos:colon_pos+2]
     if value_spec==': ':
-      attr_value = unfolded_line[colon_pos+2:]
+      attr_value = unfolded_line[colon_pos+2:].lstrip()
     elif value_spec=='::':
       # attribute value needs base64-decoding
       attr_value = base64.decodestring(unfolded_line[colon_pos+2:])
@@ -336,8 +336,8 @@ class LDIFParser:
         u = urlparse.urlparse(url)
         if self._process_url_schemes.has_key(u[0]):
           attr_value = urllib.urlopen(url).read()
-    elif value_spec==':\r\n' or value_spec=='\n':
-      attr_value = ''
+    else:
+      attr_value = unfolded_line[colon_pos+1:]
     return attr_type,attr_value
 
   def parse_entry_records(self):
