@@ -11,7 +11,7 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 #
-# $Id: conf.py,v 1.21 2015/06/05 21:05:37 stroeder Exp $
+# $Id: conf.py,v 1.22 2015/10/24 12:37:39 stroeder Exp $
 
 import sys
 
@@ -36,7 +36,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'python-ldap'
-copyright = '2008-2014, python-ldap project team'
+copyright = '2008-2015, python-ldap project team'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -44,7 +44,7 @@ copyright = '2008-2014, python-ldap project team'
 # The short X.Y version.
 version = '2.4'
 # The full version, including alpha/beta/rc tags.
-release = '2.4.20.0'
+release = '2.4.21.0'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
