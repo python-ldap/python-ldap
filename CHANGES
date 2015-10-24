@@ -7,6 +7,9 @@ Lib/
 * LDIFParser now also accepts value-spec without a space
   after the colon.
 
+Doc/
+* Started missing docs for sub-module ldap.sasl.
+
 ----------------------------------------------------------------
 Released 2.4.21 2015-09-25
 
@@ -1204,4 +1207,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.358 2015/09/30 17:17:28 stroeder Exp $
+$Id: CHANGES,v 1.359 2015/10/24 15:27:03 stroeder Exp $
