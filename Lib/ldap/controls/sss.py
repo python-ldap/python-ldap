@@ -5,13 +5,12 @@ ldap.controls.sss - classes for Server Side Sorting
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: sss.py,v 1.1 2015/06/22 16:47:08 stroeder Exp $
+$Id: sss.py,v 1.2 2015/10/24 15:52:23 stroeder Exp $
 """
 
 __all__ = [
     'SSSRequestControl',
     'SSSResponseControl',
-    'SSSVLVPagedLDAPObject'
 ]
 
 
