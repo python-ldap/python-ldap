@@ -1,4 +1,4 @@
-.. % $Id: ldap-sasl.rst,v 1.1 2015/10/24 12:49:41 stroeder Exp $
+.. % $Id: ldap-sasl.rst,v 1.2 2015/10/24 13:07:33 stroeder Exp $
 
 
 ********************************************
@@ -12,6 +12,7 @@ This module implements various authentication methods for SASL bind.
 .. seealso::
 
    :rfc:`4422` - Simple Authentication and Security Layer (SASL)
+   :rfc:`4513` - Lightweight Directory Access Protocol (LDAP): Authentication Methods and Security Mechanisms
 
 
 :py:mod:`ldap.sasl` SASL bind requests
@@ -64,6 +65,21 @@ Classes
 Examples for ldap.sasl
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+This example connects to a OpenLDAP server via LDAP over IPC and
+sends a SASL external bind request.
+
 ::
 
-   import ldap.sasl
+   import ldap, ldap.sasl, urllib
+
+   ldapi_path = '/tmp/openldap-socket'
+   ldap_conn = ldap.initialize(
+       'ldapi://%s' % (
+           urllib.quote_plus(ldapi_path)
+       )
+   )
+   # Send SASL bind request for mechanism EXTERNAL
+   ldap_conn.sasl_non_interactive_bind_s('EXTERNAL')
+   # Find out the SASL Authorization Identity
+   print ldap_conn.whoami_s()
+
