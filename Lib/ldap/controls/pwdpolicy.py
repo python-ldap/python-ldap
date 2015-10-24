@@ -5,11 +5,12 @@ ldap.controls.pwdpolicy - classes for Password Policy controls
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: pwdpolicy.py,v 1.4 2014/03/12 21:34:07 stroeder Exp $
+$Id: pwdpolicy.py,v 1.5 2015/10/24 15:55:07 stroeder Exp $
 """
 
 __all__ = [
-  'ExpirationWarningControl'
+  'PasswordExpiringControl',
+  'PasswordExpiredControl',
 ]
 
 # Imports from python-ldap 2.4+
