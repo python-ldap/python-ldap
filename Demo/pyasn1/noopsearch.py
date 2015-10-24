@@ -14,8 +14,6 @@ import sys,ldap,ldapurl,getpass
 
 from ldap.controls.openldap import SearchNoOpControl
 
-LDAPLimitErrors = (ldap.TIMEOUT,ldap.TIMELIMIT_EXCEEDED,ldap.SIZELIMIT_EXCEEDED,ldap.ADMINLIMIT_EXCEEDED)
-
 SEARCH_TIMEOUT=30.0
 
 try:
@@ -56,7 +54,11 @@ try:
     serverctrls=[SearchNoOpControl(criticality=True)],
   )
   _,_,_,search_response_ctrls = ldap_conn.result3(msg_id,all=1,timeout=SEARCH_TIMEOUT)
-except LDAPLimitErrors,e:
+except (
+  ldap.TIMEOUT,
+  ldap.TIMELIMIT_EXCEEDED,
+  ldap.SIZELIMIT_EXCEEDED,
+  ldap.ADMINLIMIT_EXCEEDED),e:
   ldap_conn.abandon(msg_id)
   sys.exit(1)
 
