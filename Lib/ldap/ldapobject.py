@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.148 2015/10/24 15:42:41 stroeder Exp $
+\$Id: ldapobject.py,v 1.149 2015/10/24 15:46:12 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -136,7 +136,7 @@ class SimpleLDAPObject:
         self.__class__.__name__,repr(name)
       )
 
-  def fileno():
+  def fileno(self):
     """
     Returns file description of LDAP connection.
 
@@ -933,7 +933,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self._store_last_bind(SimpleLDAPObject.sasl_interactive_bind_s,*args,**kwargs)
     return res
 
-  def sasl_bind_s(self,dn,mechanism,cred,serverctrls=None,clientctrls=None):
+  def sasl_bind_s(self,*args,**kwargs):
     res = self._apply_method_s(SimpleLDAPObject.sasl_bind_s,*args,**kwargs)
     self._store_last_bind(SimpleLDAPObject.sasl_bind_s,*args,**kwargs)
     return res
