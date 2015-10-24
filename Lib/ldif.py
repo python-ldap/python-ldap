@@ -3,7 +3,7 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See http://www.python-ldap.org/ for details.
 
-$Id: ldif.py,v 1.85 2015/09/30 17:17:28 stroeder Exp $
+$Id: ldif.py,v 1.86 2015/10/24 15:50:00 stroeder Exp $
 
 Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
@@ -467,7 +467,7 @@ class LDIFParser:
 
         if modops:
           # append entry to result list
-          self.handle_modify(dn,modops,controls)
+          self.handle_change_modify(dn,modops,controls)
 
       else:
 
