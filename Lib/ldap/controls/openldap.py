@@ -4,7 +4,7 @@ ldap.controls.openldap - classes for OpenLDAP-specific controls
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: openldap.py,v 1.5 2015/10/24 16:21:14 stroeder Exp $
+$Id: openldap.py,v 1.6 2015/10/24 16:21:56 stroeder Exp $
 """
 
 import ldap.controls
@@ -15,7 +15,8 @@ from pyasn1.codec.ber import decoder
 
 
 __all__ = [
-  'SearchNoOpControl'
+  'SearchNoOpControl',
+  'SearchNoOpMixIn',
 ]
 
 
