@@ -1,4 +1,4 @@
-.. % $Id: ldap-sasl.rst,v 1.2 2015/10/24 13:07:33 stroeder Exp $
+.. % $Id: ldap-sasl.rst,v 1.3 2015/10/24 13:41:02 stroeder Exp $
 
 
 ********************************************
@@ -15,11 +15,8 @@ This module implements various authentication methods for SASL bind.
    :rfc:`4513` - Lightweight Directory Access Protocol (LDAP): Authentication Methods and Security Mechanisms
 
 
-:py:mod:`ldap.sasl` SASL bind requests
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. py:module:: ldap.sasl
-
+Constants
+=========
 
 .. py:data:: CB_USER
 
@@ -35,11 +32,6 @@ This module implements various authentication methods for SASL bind.
 
 .. py:data:: CB_GETREALM
 
-
-Functions
-=========
-
-.. autofunction:: ldap.sasl.subentry.urlfetch
 
 Classes
 =======
@@ -65,8 +57,9 @@ Classes
 Examples for ldap.sasl
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-This example connects to a OpenLDAP server via LDAP over IPC and
-sends a SASL external bind request.
+This example connects to an OpenLDAP server via LDAP over IPC
+(see `draft-chu-ldap-ldapi <https://tools.ietf.org/html/draft-chu-ldap-ldapi>`_)
+and sends a SASL external bind request.
 
 ::
 
