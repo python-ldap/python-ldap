@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.147 2015/08/08 13:37:41 stroeder Exp $
+\$Id: ldapobject.py,v 1.148 2015/10/24 15:42:41 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -243,23 +243,29 @@ class SimpleLDAPObject:
     """
     return self._ldap_call(self._l.sasl_interactive_bind_s,who,auth,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls),sasl_flags)
 
-  def sasl_non_interactive_bind_s(self,sasl_mech,serverctrls=None,clientctrls=None,sasl_flags=ldap.SASL_QUIET):
+  def sasl_non_interactive_bind_s(self,sasl_mech,serverctrls=None,clientctrls=None,sasl_flags=ldap.SASL_QUIET,authz_id=''):
     """
     Send a SASL bind request using a non-interactive SASL method (e.g. GSSAPI, EXTERNAL)
     """
-    self.sasl_interactive_bind_s('',ldap.sasl.sasl({},sasl_mech))
+    self.sasl_interactive_bind_s(
+      '',
+      ldap.sasl.sasl(
+        {ldap.sasl.CB_USER:authz_id},
+        sasl_mech
+      )
+    )
 
-  def sasl_external_bind_s(self,serverctrls=None,clientctrls=None,sasl_flags=ldap.SASL_QUIET):
+  def sasl_external_bind_s(self,serverctrls=None,clientctrls=None,sasl_flags=ldap.SASL_QUIET,authz_id=''):
     """
     Send SASL bind request using SASL mech EXTERNAL
     """
-    self.sasl_non_interactive_bind_s('EXTERNAL',serverctrls,clientctrls,sasl_flags)
+    self.sasl_non_interactive_bind_s('EXTERNAL',serverctrls,clientctrls,sasl_flags,authz_id)
 
-  def sasl_gssapi_bind_s(self,serverctrls=None,clientctrls=None,sasl_flags=ldap.SASL_QUIET):
+  def sasl_gssapi_bind_s(self,serverctrls=None,clientctrls=None,sasl_flags=ldap.SASL_QUIET,authz_id=''):
     """
     Send SASL bind request using SASL mech GSSAPI
     """
-    self.sasl_non_interactive_bind_s('GSSAPI',serverctrls,clientctrls,sasl_flags)
+    self.sasl_non_interactive_bind_s('GSSAPI',serverctrls,clientctrls,sasl_flags,authz_id)
 
   def sasl_bind_s(self,dn,mechanism,cred,serverctrls=None,clientctrls=None):
     """
