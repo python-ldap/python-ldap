@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.28 2015/06/05 20:49:04 stroeder Exp $
+.. % $Id: ldap.rst,v 1.29 2015/11/19 05:16:46 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -107,7 +107,7 @@ Options
 
 .. seealso::
 
-   :manpage:`ldap.conf{5}` and :manpage:`ldap_get_options{3}`
+   :manpage:`ldap.conf(5)` and :manpage:`ldap_get_option(3)`
 
 
 For use with functions :py:func:set_option() and :py:func:get_option()
