@@ -11,7 +11,7 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 #
-# $Id: conf.py,v 1.22 2015/10/24 12:37:39 stroeder Exp $
+# $Id: conf.py,v 1.23 2015/12/09 17:33:14 stroeder Exp $
 
 import sys
 
@@ -44,7 +44,7 @@ copyright = '2008-2015, python-ldap project team'
 # The short X.Y version.
 version = '2.4'
 # The full version, including alpha/beta/rc tags.
-release = '2.4.21.0'
+release = '2.4.22.0'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -76,12 +76,12 @@ pygments_style = 'sphinx'
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path.
-html_style = 'default.css'
+html_style = 'pyramid.css'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['.static']
+html_static_path = ['/usr/lib/python2.7/site-packages/sphinx/themes/pyramid/static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
