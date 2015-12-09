@@ -1,4 +1,4 @@
-.. % $Id: installing.rst,v 1.15 2011/07/24 19:00:53 stroeder Exp $
+.. % $Id: installing.rst,v 1.16 2015/12/09 17:56:38 stroeder Exp $
 
 ***********************
 Building and installing
@@ -95,14 +95,14 @@ Example
 
 The following example is for a full-featured build (including SSL and SASL support)
 of python-ldap with OpenLDAP installed in a different prefix directory
-(here /opt/openldap-2.3) and SASL header files found in /usr/include/sasl.
+(here /opt/openldap-2.4) and SASL header files found in /usr/include/sasl.
 Debugging symbols are preserved with compile option -g.
 
 ::
 
   [_ldap]
-  library_dirs = /opt/openldap-2.3/lib
-  include_dirs = /opt/openldap-2.3/include /usr/include/sasl
+  library_dirs = /opt/openldap-2.4/lib
+  include_dirs = /opt/openldap-2.4/include /usr/include/sasl
 
   extra_compile_args = -g
   extra_objects =
