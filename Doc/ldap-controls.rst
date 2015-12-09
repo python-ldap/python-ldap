@@ -1,4 +1,4 @@
-.. % $Id: ldap-controls.rst,v 1.11 2012/08/09 07:19:30 stroeder Exp $
+.. % $Id: ldap-controls.rst,v 1.12 2015/12/09 17:57:18 stroeder Exp $
 
 
 *********************************************************************
@@ -91,7 +91,7 @@ RFC or Internet-Draft is very helpful to understand the API.
 
    .. seealso::
 
-      http://tools.ietf.org/draft/draft-zeilenga-ldap-relax/
+      `draft-zeilenga-ldap-relax <https://tools.ietf.org/html/draft-zeilenga-ldap-relax>`_
 
 .. autoclass:: ldap.controls.simple.ProxyAuthzControl
    :members:
@@ -165,7 +165,7 @@ search.
 
 .. seealso::
 
-   http://tools.ietf.org/html/draft-ietf-ldapext-psearch
+   `draft-ietf-ldapext-psearch <https://tools.ietf.org/html/draft-ietf-ldapext-psearch>`_
 
 
 .. autoclass:: ldap.controls.psearch.PersistentSearchControl
@@ -183,7 +183,7 @@ search.
 
 .. seealso::
 
-   http://tools.ietf.org/html/draft-wahl-ldap-session
+   `draft-wahl-ldap-session <https://tools.ietf.org/html/draft-wahl-ldap-session>`_
 
 
 .. autoclass:: ldap.controls.sessiontrack.SessionTrackingControl
