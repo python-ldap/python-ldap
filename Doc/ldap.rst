@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.29 2015/11/19 05:16:46 stroeder Exp $
+.. % $Id: ldap.rst,v 1.30 2015/12/09 17:12:02 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -961,7 +961,7 @@ and wait for and return with the server's result, or with
    values are lists of strings.
 
    The DN in *dn* is automatically extracted using the underlying libldap
-   function :cfunc:`ldap_get_dn()`, which may raise an exception if the
+   function :c:func:`ldap_get_dn()`, which may raise an exception if the
    DN is malformed.
 
    If *attrsonly* is non-zero, the values of *attrs* will be meaningless
