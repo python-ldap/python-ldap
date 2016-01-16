@@ -1,5 +1,5 @@
 /* See http://www.python-ldap.org/ for details.
- * $Id: LDAPObject.c,v 1.91 2015/05/02 16:19:23 stroeder Exp $ */
+ * $Id: LDAPObject.c,v 1.92 2016/01/16 19:08:34 stroeder Exp $ */
 
 #include "common.h"
 #include "patchlevel.h"
@@ -18,7 +18,7 @@
 #include <sasl.h>
 #endif
 
-static void free_attrs(char***);
+static void free_attrs(char***, PyObject*);
 
 /* constructor */
 
@@ -252,15 +252,16 @@ error:
 /*
  * convert a python list of strings into an attr list (char*[]).
  * returns 1 if successful, 0 if not (with exception set)
- * XXX the strings should live longer than the resulting attrs pointer.
  */
 
 int
-attrs_from_List( PyObject *attrlist, char***attrsp ) {
+attrs_from_List( PyObject *attrlist, char***attrsp, PyObject** seq) {
 
     char **attrs = NULL;
     Py_ssize_t i, len;
     PyObject *item;
+
+    *seq = NULL;
 
     if (attrlist == Py_None) {
         /* None means a NULL attrlist */
@@ -269,32 +270,32 @@ attrs_from_List( PyObject *attrlist, char***attrsp ) {
         PyErr_SetObject( PyExc_TypeError, Py_BuildValue("sO",
                   "expected *list* of strings, not a string", attrlist ));
         goto error;
-    } else if (PySequence_Check(attrlist)) {
-        len = PySequence_Length(attrlist);
-        attrs = PyMem_NEW(char *, len + 1);
-        if (attrs == NULL)
+    }
+
+    *seq = PySequence_Fast(attrlist, "expected list of strings or None");
+
+    if (*seq == NULL)
+        goto error;
+    len = PySequence_Length(attrlist);
+
+    attrs = PyMem_NEW(char *, len + 1);
+    if (attrs == NULL)
             goto nomem;
 
-        for (i = 0; i < len; i++) {
-            attrs[i] = NULL;
-            item = PySequence_GetItem(attrlist, i);
-            if (item == NULL)
-                goto error;
-            if (!PyString_Check(item)) {
-                PyErr_SetObject(PyExc_TypeError, Py_BuildValue("sO",
-                                "expected string in list", item));
-                Py_DECREF(item);
-                goto error;
-            }
-            attrs[i] = PyString_AsString(item);
-            Py_DECREF(item);
+
+    for (i = 0; i < len; i++) {
+        attrs[i] = NULL;
+        item = PySequence_Fast_GET_ITEM(*seq, i);
+        if (item == NULL)
+            goto error;
+        if (!PyString_Check(item)) {
+            PyErr_SetObject(PyExc_TypeError, Py_BuildValue("sO",
+                            "expected string in list", item));
+            goto error;
         }
-        attrs[len] = NULL;
-    } else {
-        PyErr_SetObject( PyExc_TypeError, Py_BuildValue("sO",
-                         "expected list of strings or None", attrlist ));
-        goto error;
+        attrs[i] = PyString_AsString(item);
     }
+    attrs[len] = NULL;
 
     *attrsp = attrs;
     return 1;
@@ -302,20 +303,22 @@ attrs_from_List( PyObject *attrlist, char***attrsp ) {
 nomem:
     PyErr_NoMemory();
 error:
-    free_attrs(&attrs);
+    free_attrs(&attrs, *seq);
     return 0;
 }
 
 /* free memory allocated from above routine */
 
 static void
-free_attrs( char*** attrsp ) {
+free_attrs( char*** attrsp, PyObject* seq ) {
     char **attrs = *attrsp;
 
     if (attrs != NULL) {
         PyMem_DEL(attrs);
         *attrsp = NULL;
     }
+
+    Py_XDECREF(seq);
 }
 
 /*------------------------------------------------------------
@@ -1107,6 +1110,7 @@ l_ldap_search_ext( LDAPObject* self, PyObject* args )
 
     PyObject *serverctrls = Py_None;
     PyObject *clientctrls = Py_None;
+    PyObject *attrs_seq = NULL;
     LDAPControl** server_ldcs = NULL;
     LDAPControl** client_ldcs = NULL;
 
@@ -1124,7 +1128,7 @@ l_ldap_search_ext( LDAPObject* self, PyObject* args )
                            &serverctrls, &clientctrls, &timeout, &sizelimit )) return NULL;
     if (not_valid(self)) return NULL;
 
-    if (!attrs_from_List( attrlist, &attrs )) 
+    if (!attrs_from_List( attrlist, &attrs, &attrs_seq ))
          return NULL;
 
     if (timeout >= 0) {
@@ -1149,7 +1153,7 @@ l_ldap_search_ext( LDAPObject* self, PyObject* args )
                              server_ldcs, client_ldcs, tvp, sizelimit, &msgid );
     LDAP_END_ALLOW_THREADS( self );
 
-    free_attrs( &attrs );
+    free_attrs( &attrs,  attrs_seq);
     LDAPControl_List_DEL( server_ldcs );
     LDAPControl_List_DEL( client_ldcs );
 
