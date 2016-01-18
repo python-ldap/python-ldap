@@ -4,7 +4,7 @@ Released 2.4.24 2016-01-18
 Changes since 2.4.23:
 
 Lib/
-* Work-around for attrlist=None regression introduced in 2.4.23
+* Fix for attrlist=None regression introduced in 2.4.23
   by ref count patch
 
 ----------------------------------------------------------------
@@ -1234,4 +1234,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.368 2016/01/17 20:31:54 stroeder Exp $
+$Id: CHANGES,v 1.369 2016/01/18 10:38:26 stroeder Exp $

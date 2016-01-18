@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.150 2016/01/17 20:31:54 stroeder Exp $
+\$Id: ldapobject.py,v 1.151 2016/01/18 10:38:26 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -580,7 +580,7 @@ class SimpleLDAPObject:
     return self._ldap_call(
       self._l.search_ext,
       base,scope,filterstr,
-      attrlist or [],attrsonly,
+      attrlist,attrsonly,
       RequestControlTuples(serverctrls),
       RequestControlTuples(clientctrls),
       timeout,sizelimit,
