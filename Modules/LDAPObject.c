@@ -1,5 +1,5 @@
 /* See http://www.python-ldap.org/ for details.
- * $Id: LDAPObject.c,v 1.92 2016/01/16 19:08:34 stroeder Exp $ */
+ * $Id: LDAPObject.c,v 1.93 2016/01/18 12:33:07 stroeder Exp $ */
 
 #include "common.h"
 #include "patchlevel.h"
@@ -270,32 +270,31 @@ attrs_from_List( PyObject *attrlist, char***attrsp, PyObject** seq) {
         PyErr_SetObject( PyExc_TypeError, Py_BuildValue("sO",
                   "expected *list* of strings, not a string", attrlist ));
         goto error;
-    }
-
-    *seq = PySequence_Fast(attrlist, "expected list of strings or None");
-
-    if (*seq == NULL)
-        goto error;
-    len = PySequence_Length(attrlist);
-
-    attrs = PyMem_NEW(char *, len + 1);
-    if (attrs == NULL)
-            goto nomem;
-
-
-    for (i = 0; i < len; i++) {
-        attrs[i] = NULL;
-        item = PySequence_Fast_GET_ITEM(*seq, i);
-        if (item == NULL)
+    } else {
+        *seq = PySequence_Fast(attrlist, "expected list of strings or None");
+        if (*seq == NULL)
             goto error;
-        if (!PyString_Check(item)) {
-            PyErr_SetObject(PyExc_TypeError, Py_BuildValue("sO",
-                            "expected string in list", item));
-            goto error;
+
+        len = PySequence_Length(attrlist);
+
+        attrs = PyMem_NEW(char *, len + 1);
+        if (attrs == NULL)
+                goto nomem;
+
+        for (i = 0; i < len; i++) {
+            attrs[i] = NULL;
+            item = PySequence_Fast_GET_ITEM(*seq, i);
+            if (item == NULL)
+                goto error;
+            if (!PyString_Check(item)) {
+                PyErr_SetObject(PyExc_TypeError, Py_BuildValue("sO",
+                                "expected string in list", item));
+                goto error;
+            }
+            attrs[i] = PyString_AsString(item);
         }
-        attrs[i] = PyString_AsString(item);
+        attrs[len] = NULL;
     }
-    attrs[len] = NULL;
 
     *attrsp = attrs;
     return 1;
