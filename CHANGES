@@ -1,7 +1,8 @@
 ----------------------------------------------------------------
-Released 2.4.24 2016-01-18
+Released 2.4.25 2016-01-18
 
 Changes since 2.4.23:
+(2.4.24 is missing because of foolish pypi version madness)
 
 Lib/
 * Fix for attrlist=None regression introduced in 2.4.23
@@ -1234,4 +1235,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.369 2016/01/18 10:38:26 stroeder Exp $
+$Id: CHANGES,v 1.370 2016/01/18 15:16:29 stroeder Exp $
