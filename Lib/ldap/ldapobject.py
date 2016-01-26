@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.151 2016/01/18 10:38:26 stroeder Exp $
+\$Id: ldapobject.py,v 1.152 2016/01/26 11:12:54 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -623,7 +623,9 @@ class SimpleLDAPObject:
         The unbind and unbind_s methods are identical, and are
         synchronous in nature
     """
-    return self._ldap_call(self._l.unbind_ext,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    res = self._ldap_call(self._l.unbind_ext,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    del self._l
+    return res
 
   def unbind_ext_s(self,serverctrls=None,clientctrls=None):
     msgid = self.unbind_ext(serverctrls,clientctrls)
