@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.152 2016/01/26 11:12:54 stroeder Exp $
+\$Id: ldapobject.py,v 1.153 2016/01/28 09:43:08 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -624,7 +624,10 @@ class SimpleLDAPObject:
         synchronous in nature
     """
     res = self._ldap_call(self._l.unbind_ext,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
-    del self._l
+    try:
+      del self._l
+    except AttributeError:
+      pass
     return res
 
   def unbind_ext_s(self,serverctrls=None,clientctrls=None):
@@ -902,7 +905,6 @@ class ReconnectLDAPObject(SimpleLDAPObject):
       return func(self,*args,**kwargs)
     except ldap.SERVER_DOWN:
       SimpleLDAPObject.unbind_s(self)
-      del self._l
       # Try to reconnect
       self.reconnect(self._uri,retry_max=self._retry_max,retry_delay=self._retry_delay)
       # Re-try last operation
