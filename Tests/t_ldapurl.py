@@ -1,21 +1,18 @@
-import ldap, unittest
+import unittest
 import urllib
 
+import ldapurl
 from ldapurl import LDAPUrl
 
-class MyLDAPUrl(LDAPUrl):
-  attr2extype = {
-    'who':'bindname',
-    'cred':'X-BINDPW',
-    'start_tls':'startTLS',
-    'trace_level':'trace',
-  }
 
-def sort(l):
-    "Returns a sorted copy of a list"
-    l2 = [e for e in l]
-    l2.sort()
-    return l2
+class MyLDAPUrl(LDAPUrl):
+    attr2extype = {
+        'who':'bindname',
+        'cred':'X-BINDPW',
+        'start_tls':'startTLS',
+        'trace_level':'trace',
+    }
+
 
 class TestLDAPUrl(unittest.TestCase):
 
@@ -23,7 +20,8 @@ class TestLDAPUrl(unittest.TestCase):
         self.failIf(expr is not None, msg or ("%r" % expr))
 
     def test_combo(self):
-        u = MyLDAPUrl("ldap://127.0.0.1:1234/dc=example,dc=com"
+        u = MyLDAPUrl(
+            "ldap://127.0.0.1:1234/dc=example,dc=com"
             + "?attr1,attr2,attr3"
             + "?sub"
             + "?" + urllib.quote("(objectClass=*)")
@@ -35,7 +33,7 @@ class TestLDAPUrl(unittest.TestCase):
         self.assertEquals(u.hostport, "127.0.0.1:1234")
         self.assertEquals(u.dn, "dc=example,dc=com")
         self.assertEquals(u.attrs, ["attr1","attr2","attr3"])
-        self.assertEquals(u.scope, ldap.SCOPE_SUBTREE)
+        self.assertEquals(u.scope, ldapurl.LDAP_SCOPE_SUBTREE)
         self.assertEquals(u.filterstr, "(objectClass=*)")
         self.assertEquals(len(u.extensions), 3)
         self.assertEquals(u.who, "cn=d,c=au")
@@ -143,17 +141,21 @@ class TestLDAPUrl(unittest.TestCase):
 
     def test_parse_scope(self):
         u = LDAPUrl("ldap:///??sub")
-        self.assertEquals(u.scope, ldap.SCOPE_SUBTREE)
+        self.assertEquals(u.scope, ldapurl.LDAP_SCOPE_SUBTREE)
         u = LDAPUrl("ldap:///??sub?")
-        self.assertEquals(u.scope, ldap.SCOPE_SUBTREE)
+        self.assertEquals(u.scope, ldapurl.LDAP_SCOPE_SUBTREE)
         u = LDAPUrl("ldap:///??base")
-        self.assertEquals(u.scope, ldap.SCOPE_BASE)
+        self.assertEquals(u.scope, ldapurl.LDAP_SCOPE_BASE)
         u = LDAPUrl("ldap:///??base?")
-        self.assertEquals(u.scope, ldap.SCOPE_BASE)
+        self.assertEquals(u.scope, ldapurl.LDAP_SCOPE_BASE)
         u = LDAPUrl("ldap:///??one")
-        self.assertEquals(u.scope, ldap.SCOPE_ONELEVEL)
+        self.assertEquals(u.scope, ldapurl.LDAP_SCOPE_ONELEVEL)
         u = LDAPUrl("ldap:///??one?")
-        self.assertEquals(u.scope, ldap.SCOPE_ONELEVEL)
+        self.assertEquals(u.scope, ldapurl.LDAP_SCOPE_ONELEVEL)
+        u = LDAPUrl("ldap:///??subordinates")
+        self.assertEquals(u.scope, ldapurl.LDAP_SCOPE_SUBORDINATES)
+        u = LDAPUrl("ldap:///??subordinates?")
+        self.assertEquals(u.scope, ldapurl.LDAP_SCOPE_SUBORDINATES)
 
     def test_parse_filter(self):
         u = LDAPUrl("ldap:///???(cn=Bob)")
@@ -219,24 +221,26 @@ class TestLDAPUrl(unittest.TestCase):
                 #XXX-- the following should raise exceptions!
                 "ldap://:389/",         # [host [COLON port]]
                 "ldap://a:/",           # [host [COLON port]]
-                "ldap://%%%/",          # invalid URL encoding
+                r"ldap://%%%/",          # invalid URL encoding
                 "ldap:///?,",           # attrdesc *(COMMA attrdesc)
                 "ldap:///?a,",          # attrdesc *(COMMA attrdesc)
                 "ldap:///?,a",          # attrdesc *(COMMA attrdesc)
                 "ldap:///?a,,b",        # attrdesc *(COMMA attrdesc)
-                "ldap://%00/",          # RFC4516 2.1
-                "ldap:///%00",          # RFC4516 2.1
-                "ldap:///?%00",         # RFC4516 2.1
-                "ldap:///??%00",        # RFC4516 2.1
+                r"ldap://%00/",         # RFC4516 2.1
+                r"ldap:///%00",         # RFC4516 2.1
+                r"ldap:///?%00",        # RFC4516 2.1
+                r"ldap:///??%00",       # RFC4516 2.1
                 "ldap:///????0=0",      # extype must start with Alpha
                 "ldap:///????a_b=0",    # extype contains only [-a-zA-Z0-9]
                 "ldap:///????!!a=0",    # only one exclamation allowed
         ):
-            try: 
+            assertRaises(ValueError, LDAPUrl, [bad])
+            try:
                 LDAPUrl(bad)
-                self.fail("should have raised ValueError: %r" % bad)
             except ValueError:
                 pass
+            else:
+                self.fail("should have raised ValueError: %r" % bad)
 
 if __name__ == '__main__':
     unittest.main()
