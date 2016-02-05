@@ -234,7 +234,6 @@ class TestLDAPUrl(unittest.TestCase):
                 "ldap:///????a_b=0",    # extype contains only [-a-zA-Z0-9]
                 "ldap:///????!!a=0",    # only one exclamation allowed
         ):
-            assertRaises(ValueError, LDAPUrl, [bad])
             try:
                 LDAPUrl(bad)
             except ValueError:
