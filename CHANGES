@@ -11,6 +11,13 @@ Modules/
 * Fixed #69 Segmentation fault on whoami_s after unbind 
   (thanks to Christian Heimes and Petr Viktorin)
 
+Tests/
+* Fixed result3() being used instead of correct result4()
+  (see #66, thanks to David D. Riddle)
+* Tests/slapd.py honors env var $TMP instead of just using
+  hard-coded /var/tmp
+* Tests/slapd.py now expects schema to be in /etc/openldap/
+
 ----------------------------------------------------------------
 Released 2.4.25 2016-01-18
 
@@ -1248,4 +1255,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.374 2016/01/28 09:43:57 stroeder Exp $
+$Id: CHANGES,v 1.375 2016/02/05 09:17:20 stroeder Exp $
