@@ -128,7 +128,8 @@ class TestParse(unittest.TestCase):
 
     def test_comments(self):
         self.check_roundtrip("""
-                # comment #1
+                # comment #1 
+                 with line-folding
                 dn: cn=x1,cn=y1,cn=z1
                 b1: value_b1
                 c1: value_c1
