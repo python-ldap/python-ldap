@@ -134,7 +134,8 @@ class TestParse(unittest.TestCase):
                 c1: value_c1
                 a1: value_a1
 
-                # comment #2
+                # comment #2.1
+                # comment #2.2
                 dn: cn=x2,cn=y2,cn=z2
                 b2: value_b2
                 c2: value_c2
