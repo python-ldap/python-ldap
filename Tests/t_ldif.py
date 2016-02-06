@@ -126,6 +126,29 @@ class TestParse(unittest.TestCase):
                                     'c': [b'value_c']}),
             ])
 
+    def test_comments(self):
+        self.check_roundtrip("""
+                # comment #1
+                dn: cn=x1,cn=y1,cn=z1
+                b1: value_b1
+                c1: value_c1
+                a1: value_a1
+
+                # comment #2
+                dn: cn=x2,cn=y2,cn=z2
+                b2: value_b2
+                c2: value_c2
+                a2: value_a2
+
+            """, [
+                ('cn=x1,cn=y1,cn=z1', {'a1': [b'value_a1'],
+                                       'b1': [b'value_b1'],
+                                       'c1': [b'value_c1']}),
+                ('cn=x2,cn=y2,cn=z2', {'a2': [b'value_a2'],
+                                       'b2': [b'value_b2'],
+                                       'c2': [b'value_c2']}),
+            ])
+
 
 if __name__ == '__main__':
     unittest.main()
