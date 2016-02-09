@@ -15,8 +15,8 @@ except ImportError:
 class TestParse(unittest.TestCase):
     maxDiff = None
 
-    def _parse_entry_records(self, ldif_string):
-        return ldif.ParseLDIF(StringIO(ldif_string))
+    def _parse_entry_records(self, ldif_string, maxentries):
+        return ldif.ParseLDIF(StringIO(ldif_string), maxentries=maxentries)
 
     def _unparse_entry_records(self, records):
         f = StringIO()
@@ -25,11 +25,11 @@ class TestParse(unittest.TestCase):
             ldif_writer.unparse(dn, attrs)
         return f.getvalue()
 
-    def check_roundtrip(self, ldif_source, entry_records):
+    def check_roundtrip(self, ldif_source, entry_records, maxentries=0):
         ldif_source = textwrap.dedent(ldif_source).lstrip() + '\n'
-        parsed_entry_records = self._parse_entry_records(ldif_source)
+        parsed_entry_records = self._parse_entry_records(ldif_source, maxentries)
         parsed_entry_records2 = self._parse_entry_records(
-            self._unparse_entry_records(entry_records)
+            self._unparse_entry_records(entry_records), maxentries
         )
         self.assertEqual(parsed_entry_records, entry_records)
         self.assertEqual(parsed_entry_records2, entry_records)
@@ -150,6 +150,31 @@ class TestParse(unittest.TestCase):
                                        'b2': [b'value_b2'],
                                        'c2': [b'value_c2']}),
             ])
+
+    def test_maxentries(self):
+        self.check_roundtrip("""
+                dn: cn=x1,cn=y1,cn=z1
+                b1: value_b1
+                a1: value_a1
+
+                dn: cn=x2,cn=y2,cn=z2
+                b2: value_b2
+                a2: value_a2
+
+                dn: cn=x3,cn=y3,cn=z3
+                b3: value_b3
+                a3: value_a3
+
+                dn: cn=x4,cn=y4,cn=z4
+                b2: value_b4
+                a2: value_a4
+
+            """, [
+                ('cn=x1,cn=y1,cn=z1', {'a1': [b'value_a1'],
+                                       'b1': [b'value_b1']}),
+                ('cn=x2,cn=y2,cn=z2', {'a2': [b'value_a2'],
+                                       'b2': [b'value_b2']}),
+            ], maxentries=2)
 
 
 if __name__ == '__main__':
