@@ -179,7 +179,7 @@ class TestEntryRecords(unittest.TestCase):
         """
         see http://sourceforge.net/p/python-ldap/feature-requests/18/
         """
-        return
+        return # disabled
         self.check_roundtrip("""
                 # silly example
                 dn: uid=one,dc=tld
