@@ -12,8 +12,7 @@ except ImportError:
     from io import StringIO
 
 
-class TestParse(unittest.TestCase):
-    maxDiff = None
+class TestEntryRecords(unittest.TestCase):
 
     def _parse_entry_records(self, ldif_string, maxentries):
         return ldif.ParseLDIF(StringIO(ldif_string), maxentries=maxentries)
