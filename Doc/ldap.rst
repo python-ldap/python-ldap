@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.31 2015/12/09 17:57:18 stroeder Exp $
+.. % $Id: ldap.rst,v 1.32 2016/02/09 11:58:30 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -129,7 +129,8 @@ following option identifiers are defined as constants:
 
 .. py:data:: OPT_DEBUG_LEVEL
 
-   Sets the debug level within the underlying LDAP C lib.
+   Sets the debug level within the underlying OpenLDAP C lib (libldap).
+   libldap sends the log messages to stderr.
 
 .. py:data:: OPT_DEFBASE
 
