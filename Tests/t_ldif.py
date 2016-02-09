@@ -175,6 +175,25 @@ class TestEntryRecords(unittest.TestCase):
                                        'b2': [b'value_b2']}),
             ], maxentries=2)
 
+    def test_multiple_empty_lines(self):
+        """
+        see http://sourceforge.net/p/python-ldap/feature-requests/18/
+        """
+        return
+        self.check_roundtrip("""
+                # silly example
+                dn: uid=one,dc=tld
+                uid: one
+
+
+                # another silly example
+                dn: uid=two,dc=tld
+                uid: two
+            """, [
+                ('uid=one,dc=tld', {'uid': [b'one']}),
+                ('uid=two,dc=tld', {'uid': [b'two']}),
+            ])
+
 
 if __name__ == '__main__':
     unittest.main()
