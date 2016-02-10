@@ -14,8 +14,15 @@ except ImportError:
 
 class TestEntryRecords(unittest.TestCase):
 
-    def _parse_entry_records(self, ldif_string, maxentries):
-        return ldif.ParseLDIF(StringIO(ldif_string), maxentries=maxentries)
+    def _parse_entry_records(self, ldif_string, ignored_attr_types=None, max_entries=0):
+        f = StringIO(ldif_string)
+        ldif_parser = ldif.LDIFRecordList(
+            f,
+            ignored_attr_types=ignored_attr_types,
+            max_entries=max_entries,
+        )
+        ldif_parser.parse_entry_records()
+        return ldif_parser.all_records
 
     def _unparse_entry_records(self, records):
         f = StringIO()
@@ -24,17 +31,25 @@ class TestEntryRecords(unittest.TestCase):
             ldif_writer.unparse(dn, attrs)
         return f.getvalue()
 
-    def check_roundtrip(self, ldif_source, entry_records, maxentries=0):
+    def check_roundtrip(self, ldif_source, entry_records, ignored_attr_types=None, max_entries=0):
         ldif_source = textwrap.dedent(ldif_source).lstrip() + '\n'
-        parsed_entry_records = self._parse_entry_records(ldif_source, maxentries)
+        parsed_entry_records = self._parse_entry_records(
+            ldif_source,
+            ignored_attr_types=None,
+            max_entries=max_entries,
+        )
         parsed_entry_records2 = self._parse_entry_records(
-            self._unparse_entry_records(entry_records), maxentries
+            self._unparse_entry_records(entry_records),
+            ignored_attr_types=None,
+            max_entries=max_entries,
         )
         self.assertEqual(parsed_entry_records, entry_records)
         self.assertEqual(parsed_entry_records2, entry_records)
 
     def test_simple(self):
         self.check_roundtrip("""
+                version: 1
+
                 dn: cn=x,cn=y,cn=z
                 attrib: value
                 attrib: value2
@@ -150,7 +165,7 @@ class TestEntryRecords(unittest.TestCase):
                                        'c2': [b'value_c2']}),
             ])
 
-    def test_maxentries(self):
+    def test_max_entries(self):
         self.check_roundtrip("""
                 dn: cn=x1,cn=y1,cn=z1
                 b1: value_b1
@@ -173,7 +188,7 @@ class TestEntryRecords(unittest.TestCase):
                                        'b1': [b'value_b1']}),
                 ('cn=x2,cn=y2,cn=z2', {'a2': [b'value_a2'],
                                        'b2': [b'value_b2']}),
-            ], maxentries=2)
+            ], max_entries=2)
 
     def test_multiple_empty_lines(self):
         """
