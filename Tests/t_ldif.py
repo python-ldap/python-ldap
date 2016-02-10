@@ -1,51 +1,69 @@
 # -*- coding: utf-8 -*-
+"""
+Automatic tests for python-ldap's module ldif
 
+See http://www.python-ldap.org/ for details.
+
+$Id: t_ldif.py,v 1.13 2016/02/10 22:11:04 stroeder Exp $
+"""
+
+# from Python's standard lib
 import unittest
 import textwrap
-
-import ldif
-
 
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
 
+# from python-ldap
+import ldif
+
 
 class TestEntryRecords(unittest.TestCase):
 
     def _parse_entry_records(
-          self,
-          ldif_string,
-          ignored_attr_types=None,
-          max_entries=0,
+            self,
+            ldif_string,
+            ignored_attr_types=None,
+            max_entries=0,
     ):
-        f = StringIO(ldif_string)
+        """
+        Parse LDIF data in `ldif_string' into list of entry records
+        """
+        ldif_file = StringIO(ldif_string)
         ldif_parser = ldif.LDIFRecordList(
-            f,
+            ldif_file,
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
         ldif_parser.parse_entry_records()
         return ldif_parser.all_records
 
-    def _unparse_entry_records(self, records):
-        f = StringIO()
-        ldif_writer = ldif.LDIFWriter(f)
-        for dn, attrs in records:
-            ldif_writer.unparse(dn, attrs)
-        return f.getvalue()
+    def _unparse_entry_records(self, entry_records):
+        """
+        Returns LDIF string with entry records from list `entry_records'
+        """
+        ldif_file = StringIO()
+        ldif_writer = ldif.LDIFWriter(ldif_file)
+        for dn, entry in entry_records:
+            ldif_writer.unparse(dn, entry)
+        return ldif_file.getvalue()
 
-    def check_roundtrip(
+    def check_entry_records(
             self,
-            ldif_source,
+            ldif_string,
             entry_records,
             ignored_attr_types=None,
             max_entries=0
     ):
-        ldif_source = textwrap.dedent(ldif_source).lstrip() + '\n'
+        """
+        Checks whether entry records in `ldif_string' gets correctly parsed
+        and matches list of unparsed `entry_records'.
+        """
+        ldif_string = textwrap.dedent(ldif_string).lstrip() + '\n'
         parsed_entry_records = self._parse_entry_records(
-            ldif_source,
+            ldif_string,
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
@@ -58,7 +76,7 @@ class TestEntryRecords(unittest.TestCase):
         self.assertEqual(parsed_entry_records2, entry_records)
 
     def test_simple(self):
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             version: 1
 
@@ -77,7 +95,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_simple2(self):
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             dn:cn=x,cn=y,cn=z
             attrib:value
@@ -94,7 +112,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_multiple(self):
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             dn: cn=x,cn=y,cn=z
             a: v
@@ -125,7 +143,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_folded(self):
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             dn: cn=x,cn=y,cn=z
             attrib: very
@@ -144,12 +162,12 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_empty(self):
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             dn: cn=x,cn=y,cn=z
             attrib1:
             attrib1: foo
-            attrib2: 
+            attrib2:
             attrib2: foo
             """,
             [
@@ -164,7 +182,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_binary(self):
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             dn: cn=x,cn=y,cn=z
             attrib:: CQAKOiVA
@@ -173,14 +191,14 @@ class TestEntryRecords(unittest.TestCase):
                 (
                     'cn=x,cn=y,cn=z',
                     {
-                      'attrib': [b'\t\0\n:%@'],
+                        'attrib': [b'\t\0\n:%@'],
                     },
                 ),
             ]
         )
 
     def test_binary2(self):
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             dn: cn=x,cn=y,cn=z
             attrib::CQAKOiVA
@@ -194,7 +212,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_unicode(self):
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             dn: cn=Michael Stroeder,dc=stroeder,dc=com
             lastname: Ströder
@@ -208,7 +226,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_sorted(self):
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             dn: cn=x,cn=y,cn=z
             b: value_b
@@ -228,7 +246,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_ignored_attr_types(self):
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             dn: cn=x,cn=y,cn=z
             a: value_a
@@ -248,7 +266,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_comments(self):
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             # comment #1
              with line-folding
@@ -286,7 +304,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_max_entries(self):
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             dn: cn=x1,cn=y1,cn=z1
             b1: value_b1
@@ -328,8 +346,7 @@ class TestEntryRecords(unittest.TestCase):
         """
         see http://sourceforge.net/p/python-ldap/feature-requests/18/
         """
-        return # disabled
-        self.check_roundtrip(
+        self.check_entry_records(
             """
             # normal
             dn: uid=one,dc=tld
