@@ -3,7 +3,7 @@ setup.py - Setup package with the help Python's DistUtils
 
 See http://www.python-ldap.org/ for details.
 
-$Id: setup.py,v 1.73 2015/09/19 13:38:30 stroeder Exp $
+$Id: setup.py,v 1.74 2016/02/16 18:01:35 stroeder Exp $
 """
 
 has_setuptools = False
@@ -91,8 +91,8 @@ setup(
   """,
   author = 'python-ldap project',
   author_email = 'python-ldap@python.org',
-  url = 'http://www.python-ldap.org/',
-  download_url = 'http://pypi.python.org/pypi/python-ldap/',
+  url = 'https://www.python-ldap.org/',
+  download_url = 'https://pypi.python.org/pypi/python-ldap/',
   classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
