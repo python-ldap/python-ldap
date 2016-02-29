@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldif
 
 See http://www.python-ldap.org/ for details.
 
-$Id: t_ldif.py,v 1.13 2016/02/10 22:11:04 stroeder Exp $
+$Id: t_ldif.py,v 1.14 2016/02/29 18:55:59 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -20,35 +20,44 @@ except ImportError:
 import ldif
 
 
+def parse_records(
+        ldif_string,
+        record_type='entry',
+        ignored_attr_types=None,
+        max_entries=0,
+):
+    """
+    Parse LDIF data in `ldif_string' into list of records
+    """
+    ldif_file = StringIO(ldif_string)
+    ldif_parser = ldif.LDIFRecordList(
+        ldif_file,
+        ignored_attr_types=ignored_attr_types,
+        max_entries=max_entries,
+    )
+    parser_method = getattr(
+        ldif_parser,
+        'parse_%s_records' % record_type
+    )
+    parser_method()
+    return ldif_parser.all_records
+
+
+def unparse_records(records):
+    """
+    Returns LDIF string with entry records from list `entry_records'
+    """
+    ldif_file = StringIO()
+    ldif_writer = ldif.LDIFWriter(ldif_file)
+    for dn, entry in records:
+        ldif_writer.unparse(dn, entry)
+    return ldif_file.getvalue()
+
+
 class TestEntryRecords(unittest.TestCase):
-
-    def _parse_entry_records(
-            self,
-            ldif_string,
-            ignored_attr_types=None,
-            max_entries=0,
-    ):
-        """
-        Parse LDIF data in `ldif_string' into list of entry records
-        """
-        ldif_file = StringIO(ldif_string)
-        ldif_parser = ldif.LDIFRecordList(
-            ldif_file,
-            ignored_attr_types=ignored_attr_types,
-            max_entries=max_entries,
-        )
-        ldif_parser.parse_entry_records()
-        return ldif_parser.all_records
-
-    def _unparse_entry_records(self, entry_records):
-        """
-        Returns LDIF string with entry records from list `entry_records'
-        """
-        ldif_file = StringIO()
-        ldif_writer = ldif.LDIFWriter(ldif_file)
-        for dn, entry in entry_records:
-            ldif_writer.unparse(dn, entry)
-        return ldif_file.getvalue()
+    """
+    Various LDIF test cases
+    """
 
     def check_entry_records(
             self,
@@ -62,13 +71,13 @@ class TestEntryRecords(unittest.TestCase):
         and matches list of unparsed `entry_records'.
         """
         ldif_string = textwrap.dedent(ldif_string).lstrip() + '\n'
-        parsed_entry_records = self._parse_entry_records(
+        parsed_entry_records = parse_records(
             ldif_string,
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
-        parsed_entry_records2 = self._parse_entry_records(
-            self._unparse_entry_records(entry_records),
+        parsed_entry_records2 = parse_records(
+            unparse_records(entry_records),
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
@@ -146,16 +155,17 @@ class TestEntryRecords(unittest.TestCase):
         self.check_entry_records(
             """
             dn: cn=x,cn=y,cn=z
-            attrib: very
+            attrib: very\x20
              long
-              value
+              line-folded\x20
+             value
             attrib2: %s
-            """ % ('asdf.' * 20), [
+            """ % (b'asdf.'*20), [
                 (
                     'cn=x,cn=y,cn=z',
                     {
-                        'attrib': [b'verylong value'],
-                        'attrib2': [b'asdf.' * 20],
+                        'attrib': [b'very long line-folded value'],
+                        'attrib2': [b'asdf.'*20],
                     }
                 ),
             ]
