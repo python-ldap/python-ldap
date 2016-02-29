@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldif
 
 See http://www.python-ldap.org/ for details.
 
-$Id: t_ldif.py,v 1.14 2016/02/29 18:55:59 stroeder Exp $
+$Id: t_ldif.py,v 1.15 2016/02/29 18:56:43 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -73,11 +73,13 @@ class TestEntryRecords(unittest.TestCase):
         ldif_string = textwrap.dedent(ldif_string).lstrip() + '\n'
         parsed_entry_records = parse_records(
             ldif_string,
+            record_type='entry',
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
         parsed_entry_records2 = parse_records(
             unparse_records(entry_records),
+            record_type='entry',
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
