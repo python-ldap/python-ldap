@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldif
 
 See http://www.python-ldap.org/ for details.
 
-$Id: t_ldif.py,v 1.15 2016/02/29 18:56:43 stroeder Exp $
+$Id: t_ldif.py,v 1.16 2016/02/29 22:44:42 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -45,7 +45,7 @@ def parse_records(
 
 def unparse_records(records):
     """
-    Returns LDIF string with entry records from list `entry_records'
+    Returns LDIF string with entry records from list `records'
     """
     ldif_file = StringIO()
     ldif_writer = ldif.LDIFWriter(ldif_file)
@@ -59,35 +59,44 @@ class TestEntryRecords(unittest.TestCase):
     Various LDIF test cases
     """
 
-    def check_entry_records(
+    def check_records(
             self,
             ldif_string,
-            entry_records,
+            records,
+            record_type='entry',
             ignored_attr_types=None,
             max_entries=0
     ):
         """
         Checks whether entry records in `ldif_string' gets correctly parsed
-        and matches list of unparsed `entry_records'.
+        and matches list of unparsed `records'.
         """
         ldif_string = textwrap.dedent(ldif_string).lstrip() + '\n'
-        parsed_entry_records = parse_records(
+        parsed_records = parse_records(
             ldif_string,
-            record_type='entry',
+            record_type=record_type,
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
-        parsed_entry_records2 = parse_records(
-            unparse_records(entry_records),
-            record_type='entry',
+        parsed_records2 = parse_records(
+            unparse_records(records),
+            record_type=record_type,
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
-        self.assertEqual(parsed_entry_records, entry_records)
-        self.assertEqual(parsed_entry_records2, entry_records)
+        self.assertEqual(parsed_records, records)
+        self.assertEqual(parsed_records2, records)
+
+    def test_empty(self):
+        self.check_records(
+            """
+            version: 1
+            """,
+            []
+        )
 
     def test_simple(self):
-        self.check_entry_records(
+        self.check_records(
             """
             version: 1
 
@@ -106,7 +115,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_simple2(self):
-        self.check_entry_records(
+        self.check_records(
             """
             dn:cn=x,cn=y,cn=z
             attrib:value
@@ -123,7 +132,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_multiple(self):
-        self.check_entry_records(
+        self.check_records(
             """
             dn: cn=x,cn=y,cn=z
             a: v
@@ -154,7 +163,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_folded(self):
-        self.check_entry_records(
+        self.check_records(
             """
             dn: cn=x,cn=y,cn=z
             attrib: very\x20
@@ -174,7 +183,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_empty(self):
-        self.check_entry_records(
+        self.check_records(
             """
             dn: cn=x,cn=y,cn=z
             attrib1:
@@ -194,7 +203,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_binary(self):
-        self.check_entry_records(
+        self.check_records(
             """
             dn: cn=x,cn=y,cn=z
             attrib:: CQAKOiVA
@@ -210,7 +219,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_binary2(self):
-        self.check_entry_records(
+        self.check_records(
             """
             dn: cn=x,cn=y,cn=z
             attrib::CQAKOiVA
@@ -224,7 +233,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_unicode(self):
-        self.check_entry_records(
+        self.check_records(
             """
             dn: cn=Michael Stroeder,dc=stroeder,dc=com
             lastname: Ströder
@@ -238,7 +247,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_sorted(self):
-        self.check_entry_records(
+        self.check_records(
             """
             dn: cn=x,cn=y,cn=z
             b: value_b
@@ -258,7 +267,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_ignored_attr_types(self):
-        self.check_entry_records(
+        self.check_records(
             """
             dn: cn=x,cn=y,cn=z
             a: value_a
@@ -278,7 +287,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_comments(self):
-        self.check_entry_records(
+        self.check_records(
             """
             # comment #1
              with line-folding
@@ -316,7 +325,7 @@ class TestEntryRecords(unittest.TestCase):
         )
 
     def test_max_entries(self):
-        self.check_entry_records(
+        self.check_records(
             """
             dn: cn=x1,cn=y1,cn=z1
             b1: value_b1
@@ -358,7 +367,7 @@ class TestEntryRecords(unittest.TestCase):
         """
         see http://sourceforge.net/p/python-ldap/feature-requests/18/
         """
-        self.check_entry_records(
+        self.check_records(
             """
             # normal
             dn: uid=one,dc=tld
