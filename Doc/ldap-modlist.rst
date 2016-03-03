@@ -1,4 +1,4 @@
-.. % $Id: ldap-modlist.rst,v 1.4 2011/07/22 17:39:44 stroeder Exp $
+.. % $Id: ldap-modlist.rst,v 1.5 2016/03/03 17:06:10 stroeder Exp $
 
 
 :py:mod:`ldap.modlist` Generate modify lists
@@ -51,3 +51,12 @@ The :mod:`ldap.modlist` module defines the following functions:
    the comparison will be conducted case-insensitive. It is useful in
    situations where a LDAP server normalizes values and one wants to avoid
    unnecessary changes (e.g. case of attribute type names in DNs).
+
+   .. note::
+      Replacing attribute values is always done with a 
+      :py:const:`ldap.MOD_DELETE`/:py:const:`ldap.MOD_ADD` pair instead of 
+      :py:const:`ldap.MOD_REPLACE` to work-around potential issues with 
+      attributes for which no EQUALITY matching rule are defined in the 
+      server's subschema.  This works correctly in most situations but 
+      rarely fails with some LDAP servers implementing (schema) checks on 
+      transient state entry during processing the modify operation.
