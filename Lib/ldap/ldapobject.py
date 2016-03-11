@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.153 2016/01/28 09:43:08 stroeder Exp $
+\$Id: ldapobject.py,v 1.154 2016/03/11 12:46:09 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -886,7 +886,6 @@ class ReconnectLDAPObject(SimpleLDAPObject):
             self._trace_file.write('=> delay %s...\n' % (retry_delay))
           time.sleep(retry_delay)
           SimpleLDAPObject.unbind_s(self)
-          del self._l
         else:
           if __debug__ and self._trace_level>=1:
             self._trace_file.write('*** %s reconnect to %s successful => repeat last operation\n' % (
