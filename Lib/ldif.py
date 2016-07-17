@@ -3,7 +3,7 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See http://www.python-ldap.org/ for details.
 
-$Id: ldif.py,v 1.92 2016/02/29 22:51:36 stroeder Exp $
+$Id: ldif.py,v 1.93 2016/07/17 16:06:19 stroeder Exp $
 
 Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
@@ -510,10 +510,8 @@ class LDIFParser:
         while k!=None:
           k,v = next_key_and_value()
 
-      # Consume empty separation line
-      k,v = next_key_and_value()
-      while k is None and v is None:
-        k,v = next_key_and_value()
+      # Consume empty separator line(s)
+      k,v = self._consume_empty_lines()
 
       # Increment record counters
       try:
