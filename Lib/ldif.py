@@ -3,7 +3,7 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See http://www.python-ldap.org/ for details.
 
-$Id: ldif.py,v 1.93 2016/07/17 16:06:19 stroeder Exp $
+$Id: ldif.py,v 1.94 2016/07/17 16:11:25 stroeder Exp $
 
 Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
@@ -438,7 +438,7 @@ class LDIFParser:
     self.changetype_counter = {}
     k,v = next_key_and_value()
     if k=='version':
-      self.version = v
+      self.version = int(v)
       k,v = next_key_and_value()
       if k==v==None:
         k,v = next_key_and_value()
