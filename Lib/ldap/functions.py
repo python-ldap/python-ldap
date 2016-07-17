@@ -3,7 +3,7 @@ functions.py - wraps functions of module _ldap
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: functions.py,v 1.31 2015/06/06 09:21:37 stroeder Exp $
+\$Id: functions.py,v 1.32 2016/07/17 15:12:58 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -27,7 +27,8 @@ __all__ = [
   'escape_str',
 ]
 
-import sys,pprint,_ldap,ldap
+import sys,pprint,time,_ldap,ldap
+from calendar import timegm
 
 from ldap import LDAPError
 
@@ -140,3 +141,17 @@ def escape_str(escape_func,s,*args):
   """
   escape_args = map(escape_func,args)
   return s % tuple(escape_args)
+
+
+def strf_secs(secs):
+    """
+    Convert seconds since epoch to a string compliant to LDAP syntax GeneralizedTime
+    """
+    return time.strftime('%Y%m%d%H%M%SZ', time.gmtime(secs))
+
+
+def strp_secs(dt_str):
+    """
+    Convert LDAP syntax GeneralizedTime to seconds since epoch
+    """
+    return timegm(time.strptime(dt_str, '%Y%m%d%H%M%SZ'))
