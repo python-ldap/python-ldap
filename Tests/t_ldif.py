@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldif
 
 See http://www.python-ldap.org/ for details.
 
-$Id: t_ldif.py,v 1.16 2016/02/29 22:44:42 stroeder Exp $
+$Id: t_ldif.py,v 1.17 2016/07/17 16:25:46 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -54,7 +54,7 @@ def unparse_records(records):
     return ldif_file.getvalue()
 
 
-class TestEntryRecords(unittest.TestCase):
+class TestLDIFParser(unittest.TestCase):
     """
     Various LDIF test cases
     """
@@ -86,6 +86,12 @@ class TestEntryRecords(unittest.TestCase):
         )
         self.assertEqual(parsed_records, records)
         self.assertEqual(parsed_records2, records)
+
+
+class TestEntryRecords(TestLDIFParser):
+    """
+    Various LDIF test cases
+    """
 
     def test_empty(self):
         self.check_records(
@@ -390,6 +396,50 @@ class TestEntryRecords(unittest.TestCase):
             ],
         )
 
+
+class TestChangeRecords(TestLDIFParser):
+    """
+    Various LDIF test cases
+    """
+
+    def test_empty(self):
+        self.check_records(
+            """
+            version: 1
+            """,
+            [],
+            record_type='change',
+        )
+
+    def test_simple(self):
+        self.check_records(
+            """
+            version: 1
+
+            dn: cn=x,cn=y,cn=z
+            changetype: modify
+            replace: attrib
+            attrib: value
+            attrib: value2
+            -
+            add: attrib2
+            attrib2: value
+            attrib2: value2
+            -
+            delete: attrib3
+            attrib3: value
+            -
+            delete: attrib4
+            -
+            """,
+            [
+                (ldif.MOD_OP_INTEGER['replace'], 'attrib', [b'value', b'value2']),
+                (ldif.MOD_OP_INTEGER['add'], 'attrib2', [b'value', b'value2']),
+                (ldif.MOD_OP_INTEGER['delete'], 'attrib3', [b'value']),
+                (ldif.MOD_OP_INTEGER['delete'], 'attrib4', None),
+            ],
+            record_type='change',
+        )
 
 if __name__ == '__main__':
     unittest.main()
