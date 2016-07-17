@@ -26,7 +26,8 @@ Tests/
   hard-coded /var/tmp
 * Tests/slapd.py now expects schema to be in /etc/openldap/
 * Tests/t_ldapurl.py now independent of module ldap
-* Tests/t_ldif.py with more test-cases
+* Tests/t_ldif.py now has more test-cases also
+  for change records
 
 ----------------------------------------------------------------
 Released 2.4.25 2016-01-18
@@ -1265,4 +1266,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.381 2016/07/17 19:42:32 stroeder Exp $
+$Id: CHANGES,v 1.382 2016/07/17 19:46:49 stroeder Exp $
