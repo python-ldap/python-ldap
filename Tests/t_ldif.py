@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldif
 
 See http://www.python-ldap.org/ for details.
 
-$Id: t_ldif.py,v 1.17 2016/07/17 16:25:46 stroeder Exp $
+$Id: t_ldif.py,v 1.18 2016/07/17 17:43:39 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -20,50 +20,54 @@ except ImportError:
 import ldif
 
 
-def parse_records(
-        ldif_string,
-        record_type='entry',
-        ignored_attr_types=None,
-        max_entries=0,
-):
-    """
-    Parse LDIF data in `ldif_string' into list of records
-    """
-    ldif_file = StringIO(ldif_string)
-    ldif_parser = ldif.LDIFRecordList(
-        ldif_file,
-        ignored_attr_types=ignored_attr_types,
-        max_entries=max_entries,
-    )
-    parser_method = getattr(
-        ldif_parser,
-        'parse_%s_records' % record_type
-    )
-    parser_method()
-    return ldif_parser.all_records
-
-
-def unparse_records(records):
-    """
-    Returns LDIF string with entry records from list `records'
-    """
-    ldif_file = StringIO()
-    ldif_writer = ldif.LDIFWriter(ldif_file)
-    for dn, entry in records:
-        ldif_writer.unparse(dn, entry)
-    return ldif_file.getvalue()
-
-
 class TestLDIFParser(unittest.TestCase):
     """
     Various LDIF test cases
     """
 
+    def _parse_records(
+            self,
+            ldif_string,
+            ignored_attr_types=None,
+            max_entries=0,
+        ):
+        """
+        Parse LDIF data in `ldif_string' into list of records
+        """
+        ldif_file = StringIO(ldif_string)
+        ldif_parser = ldif.LDIFRecordList(
+            ldif_file,
+            ignored_attr_types=ignored_attr_types,
+            max_entries=max_entries,
+        )
+        parser_method = getattr(
+            ldif_parser,
+            'parse_%s_records' % self.record_type
+        )
+        parser_method()
+        if self.record_type == 'entry':
+            return ldif_parser.all_records
+        elif self.record_type == 'change':
+            return ldif_parser.all_modify_changes
+
+    def _unparse_records(self, records):
+        """
+        Returns LDIF string with entry records from list `records'
+        """
+        ldif_file = StringIO()
+        ldif_writer = ldif.LDIFWriter(ldif_file)
+        if self.record_type == 'entry':
+            for dn, entry in records:
+                ldif_writer.unparse(dn, entry)
+        elif self.record_type == 'change':
+            for dn, modops, controls in records:
+                ldif_writer.unparse(dn, modops)
+        return ldif_file.getvalue()
+
     def check_records(
             self,
             ldif_string,
             records,
-            record_type='entry',
             ignored_attr_types=None,
             max_entries=0
     ):
@@ -72,15 +76,13 @@ class TestLDIFParser(unittest.TestCase):
         and matches list of unparsed `records'.
         """
         ldif_string = textwrap.dedent(ldif_string).lstrip() + '\n'
-        parsed_records = parse_records(
+        parsed_records = self._parse_records(
             ldif_string,
-            record_type=record_type,
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
-        parsed_records2 = parse_records(
-            unparse_records(records),
-            record_type=record_type,
+        parsed_records2 = self._parse_records(
+            self._unparse_records(records),
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
@@ -92,11 +94,13 @@ class TestEntryRecords(TestLDIFParser):
     """
     Various LDIF test cases
     """
+    record_type='entry'
 
     def test_empty(self):
         self.check_records(
             """
             version: 1
+
             """,
             []
         )
@@ -188,7 +192,7 @@ class TestEntryRecords(TestLDIFParser):
             ]
         )
 
-    def test_empty(self):
+    def test_empty_attr_values(self):
         self.check_records(
             """
             dn: cn=x,cn=y,cn=z
@@ -401,6 +405,7 @@ class TestChangeRecords(TestLDIFParser):
     """
     Various LDIF test cases
     """
+    record_type='change'
 
     def test_empty(self):
         self.check_records(
@@ -408,7 +413,6 @@ class TestChangeRecords(TestLDIFParser):
             version: 1
             """,
             [],
-            record_type='change',
         )
 
     def test_simple(self):
@@ -433,12 +437,17 @@ class TestChangeRecords(TestLDIFParser):
             -
             """,
             [
-                (ldif.MOD_OP_INTEGER['replace'], 'attrib', [b'value', b'value2']),
-                (ldif.MOD_OP_INTEGER['add'], 'attrib2', [b'value', b'value2']),
-                (ldif.MOD_OP_INTEGER['delete'], 'attrib3', [b'value']),
-                (ldif.MOD_OP_INTEGER['delete'], 'attrib4', None),
+                (
+                    'cn=x,cn=y,cn=z',
+                    [
+                        (ldif.MOD_OP_INTEGER['replace'], 'attrib', [b'value', b'value2']),
+                        (ldif.MOD_OP_INTEGER['add'], 'attrib2', [b'value', b'value2']),
+                        (ldif.MOD_OP_INTEGER['delete'], 'attrib3', [b'value']),
+                        (ldif.MOD_OP_INTEGER['delete'], 'attrib4', None),
+                    ],
+                    [],
+                ),
             ],
-            record_type='change',
         )
 
 if __name__ == '__main__':
