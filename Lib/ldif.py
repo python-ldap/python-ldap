@@ -3,7 +3,7 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See http://www.python-ldap.org/ for details.
 
-$Id: ldif.py,v 1.94 2016/07/17 16:11:25 stroeder Exp $
+$Id: ldif.py,v 1.95 2016/07/17 17:43:04 stroeder Exp $
 
 Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
@@ -276,10 +276,14 @@ class LDIFParser:
     self.line_counter = 0
     self.byte_counter = 0
     self.records_read = 0
+    self.changetype_counter = {}.fromkeys(CHANGE_TYPES,0)
     # Store some symbols for better performance
     self._base64_decodestring = base64.decodestring
     # Read very first line
-    self._last_line = self._readline()
+    try:
+      self._last_line = self._readline()
+    except EOFError:
+      self._last_line = ''
 
   def handle(self,dn,entry):
     """
@@ -378,12 +382,16 @@ class LDIFParser:
     """
     # Local symbol for better performance
     next_key_and_value = self._next_key_and_value
-    # Consume empty lines
-    k,v = self._consume_empty_lines()
-    # Consume 'version' line
-    if k=='version':
-      self.version = int(v)
+
+    try:
+      # Consume empty lines
       k,v = self._consume_empty_lines()
+      # Consume 'version' line
+      if k=='version':
+        self.version = int(v)
+        k,v = self._consume_empty_lines()
+    except EOFError:
+      return
 
     # Loop for processing whole records
     while k!=None and \
@@ -398,19 +406,19 @@ class LDIFParser:
       # Consume second line of record
       k,v = next_key_and_value()
 
-      try:
-        # Loop for reading the attributes
-        while k!=None:
-          # Add the attribute to the entry if not ignored attribute
-          if not k.lower() in self._ignored_attr_types:
-            try:
-              entry[k].append(v)
-            except KeyError:
-              entry[k]=[v]
-          # Read the next line within the record
+      # Loop for reading the attributes
+      while k!=None:
+        # Add the attribute to the entry if not ignored attribute
+        if not k.lower() in self._ignored_attr_types:
+          try:
+            entry[k].append(v)
+          except KeyError:
+            entry[k]=[v]
+        # Read the next line within the record
+        try:
           k,v = next_key_and_value()
-      except EOFError:
-        pass
+        except EOFError:
+          k,v = None,None
 
       # handle record
       self.handle(dn,entry)
@@ -434,31 +442,29 @@ class LDIFParser:
     pass
 
   def parse_change_records(self):
+    # Local symbol for better performance
     next_key_and_value = self._next_key_and_value
-    self.changetype_counter = {}
-    k,v = next_key_and_value()
+    # Consume empty lines
+    k,v = self._consume_empty_lines()
+    # Consume 'version' line
     if k=='version':
       self.version = int(v)
-      k,v = next_key_and_value()
-      if k==v==None:
-        k,v = next_key_and_value()
-    else:
-      self.version = None
+      k,v = self._consume_empty_lines()
 
     # Loop for processing whole records
     while k!=None and \
           (not self._max_entries or self.records_read<self._max_entries):
-
       # Consume first line which must start with "dn: "
       if k!='dn':
         raise ValueError('Line %d: First line of record does not start with "dn:": %s' % (self.line_counter,repr(k)))
       if not is_dn(v):
-        raise ValueError('Line %d: Not a valid string-representation for dn: %s' % (self.line_counter,repr(v)))
+        raise ValueError('Line %d: Not a valid string-representation for dn: %s.' % (self.line_counter,repr(v)))
       dn = v
+      # Consume second line of record
+      k,v = next_key_and_value()
       # Read "control:" lines
       controls = []
-      k,v = next_key_and_value()
-      while k=='control':
+      while k!=None and k=='control':
         try:
           control_type,criticality,control_value = v.split(' ',2)
         except ValueError:
@@ -466,9 +472,10 @@ class LDIFParser:
           control_type,criticality = v.split(' ',1)
         controls.append((control_type,criticality,control_value))
         k,v = next_key_and_value()
-      # Determine changetype first, assuming changetype: as default
-      changetype = 'modify'
-      # Consume second line of record
+
+      # Determine changetype first
+      changetype = None
+      # Consume changetype line of record
       if k=='changetype':
         if not v in valid_changetype_dict:
           raise ValueError('Invalid changetype: %s' % repr(v))
@@ -495,7 +502,10 @@ class LDIFParser:
             modvalues.append(v)
             k,v = next_key_and_value()
           modops.append((modop,modattr,modvalues or None))
-          k,v = next_key_and_value()
+          try:
+            k,v = next_key_and_value()
+          except EOFError:
+            k,v = None,None
           if k=='-':
             # Consume next line
             k,v = next_key_and_value()
