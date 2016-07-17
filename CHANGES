@@ -9,7 +9,11 @@ Installation:
 Lib/
 * LDAPObject.unbind_ext() now removes class attribute
   LDAPObject._l to completely invalidate C wrapper object
+* LDAPObject.unbind_ext() now flushes trace file
 * added functions ldap.strf_secs() and ldap.strp_secs()
+* Refactored ldif.LDIFParser
+  * ldif.LDIFParser.version ís now Integer
+  * ignore multiple empty lines between records
 
 Modules/
 * Fixed #69 Segmentation fault on whoami_s after unbind 
@@ -1261,4 +1265,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.380 2016/07/17 15:12:58 stroeder Exp $
+$Id: CHANGES,v 1.381 2016/07/17 19:42:32 stroeder Exp $
