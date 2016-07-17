@@ -3,7 +3,7 @@ ldapurl - handling of LDAP URLs as described in RFC 4516
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapurl.py,v 1.78 2016/01/26 10:43:24 stroeder Exp $
+\$Id: ldapurl.py,v 1.79 2016/07/17 19:44:19 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.0+ since
@@ -32,7 +32,13 @@ LDAP_SCOPE_ONELEVEL = 1
 LDAP_SCOPE_SUBTREE = 2
 LDAP_SCOPE_SUBORDINATES = 3
 
-SEARCH_SCOPE_STR = {None:'',0:'base',1:'one',2:'sub',3:'subordinates'}
+SEARCH_SCOPE_STR = {
+  None:'',
+  LDAP_SCOPE_BASE:'base',
+  LDAP_SCOPE_ONELEVEL:'one',
+  LDAP_SCOPE_SUBTREE:'sub',
+  LDAP_SCOPE_SUBORDINATES:'subordinates',
+}
 
 SEARCH_SCOPE = {
   '':None,
