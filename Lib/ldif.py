@@ -3,7 +3,7 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See http://www.python-ldap.org/ for details.
 
-$Id: ldif.py,v 1.96 2016/07/17 19:30:44 stroeder Exp $
+$Id: ldif.py,v 1.97 2016/07/17 19:38:32 stroeder Exp $
 
 Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
@@ -487,31 +487,31 @@ class LDIFParser:
         # From here we assume a change record is read with changetype: modify
         modops = []
 
-        # Loop for reading the list of modifications
-        while k!=None:
-          # Extract attribute mod-operation (add, delete, replace)
-          try:
-            modop = MOD_OP_INTEGER[k]
-          except KeyError:
-            raise ValueError('Line %d: Invalid mod-op string: %s' % (self.line_counter,repr(k)))
-          # we now have the attribute name to be modified
-          modattr = v
-          modvalues = []
-          try:
+        try:
+          # Loop for reading the list of modifications
+          while k!=None:
+            # Extract attribute mod-operation (add, delete, replace)
+            try:
+              modop = MOD_OP_INTEGER[k]
+            except KeyError:
+              raise ValueError('Line %d: Invalid mod-op string: %s' % (self.line_counter,repr(k)))
+            # we now have the attribute name to be modified
+            modattr = v
+            modvalues = []
             k,v = next_key_and_value()
-          except EOFError:
-            k,v = None,None
-          while k==modattr:
-            modvalues.append(v)
+            while k==modattr:
+              modvalues.append(v)
+              try:
+                k,v = next_key_and_value()
+              except EOFError:
+                k,v = None,None
+            modops.append((modop,modattr,modvalues or None))
             k,v = next_key_and_value()
-          modops.append((modop,modattr,modvalues or None))
-          try:
-            k,v = next_key_and_value()
-          except EOFError:
-            k,v = None,None
-          if k=='-':
-            # Consume next line
-            k,v = next_key_and_value()
+            if k=='-':
+              # Consume next line
+              k,v = next_key_and_value()
+        except EOFError:
+          k,v = None,None
 
         if modops:
           # append entry to result list
