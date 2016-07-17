@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldif
 
 See http://www.python-ldap.org/ for details.
 
-$Id: t_ldif.py,v 1.18 2016/07/17 17:43:39 stroeder Exp $
+$Id: t_ldif.py,v 1.19 2016/07/17 19:37:37 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -81,8 +81,9 @@ class TestLDIFParser(unittest.TestCase):
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
+        generated_ldif = self._unparse_records(records)
         parsed_records2 = self._parse_records(
-            self._unparse_records(records),
+            generated_ldif,
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
@@ -435,6 +436,7 @@ class TestChangeRecords(TestLDIFParser):
             -
             delete: attrib4
             -
+
             """,
             [
                 (
@@ -445,10 +447,38 @@ class TestChangeRecords(TestLDIFParser):
                         (ldif.MOD_OP_INTEGER['delete'], 'attrib3', [b'value']),
                         (ldif.MOD_OP_INTEGER['delete'], 'attrib4', None),
                     ],
-                    [],
+                    None,
                 ),
             ],
         )
+
+    def test_missing_trailing_separator(self):
+        self.check_records(
+            """
+            version: 1
+
+            dn: cn=x,cn=y,cn=z
+            changetype: modify
+            replace: attrib
+            attrib: value
+            attrib: value2
+            -
+            add: attrib2
+            attrib2: value
+            attrib2: value2
+            """,
+            [
+                (
+                    'cn=x,cn=y,cn=z',
+                    [
+                        (ldif.MOD_OP_INTEGER['replace'], 'attrib', [b'value', b'value2']),
+                        (ldif.MOD_OP_INTEGER['add'], 'attrib2', [b'value', b'value2']),
+                    ],
+                    None,
+                ),
+            ],
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
