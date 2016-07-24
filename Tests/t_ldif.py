@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldif
 
 See http://www.python-ldap.org/ for details.
 
-$Id: t_ldif.py,v 1.19 2016/07/17 19:37:37 stroeder Exp $
+$Id: t_ldif.py,v 1.20 2016/07/24 14:57:46 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -478,6 +478,23 @@ class TestChangeRecords(TestLDIFParser):
                 ),
             ],
         )
+
+    def test_bad_change_records(self):
+        for bad_ldif_string in (
+            """
+            changetype: modify
+            replace: attrib
+            attrib: value
+            attrib: value2
+            """,
+        ):
+            ldif_string = textwrap.dedent(bad_ldif_string).lstrip() + '\n'
+            try:
+                res = self._parse_records(ldif_string)
+            except ValueError, value_error:
+                pass
+            else:
+                self.fail("should have raised ValueError: %r" % ldif_str)
 
 
 if __name__ == '__main__':
