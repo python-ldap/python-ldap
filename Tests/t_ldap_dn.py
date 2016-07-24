@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Automatic tests for module ldap.functions
+Automatic tests for module ldap.dn
 """
 
 # from Python's standard lib
