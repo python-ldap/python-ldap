@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.33 2016/07/24 15:47:46 stroeder Exp $
+.. % $Id: ldap.rst,v 1.34 2016/07/24 16:12:55 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -23,7 +23,7 @@ and errors appear as exceptions.
 
 This documentation is current for the Python LDAP module, version  
 |release|.  Source and binaries are available from 
-http://www.python-ldap.org/.
+https://www.python-ldap.org/.
 
 
 Functions
