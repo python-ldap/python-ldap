@@ -1,4 +1,4 @@
-.. % $Id: ldap-dn.rst,v 1.6 2011/07/22 07:43:45 stroeder Exp $
+.. % $Id: ldap-dn.rst,v 1.7 2016/07/24 15:47:46 stroeder Exp $
 
 
 :py:mod:`ldap.dn` LDAP Distinguished Name handling
@@ -6,7 +6,7 @@
 
 .. py:module:: ldap.dn
    :synopsis: LDAP Distinguished Name handling.
-.. moduleauthor:: python-ldap project (see http://www.python-ldap.org/)
+.. moduleauthor:: python-ldap project (see https://www.python-ldap.org/)
 
 
 .. % Author of the module code;

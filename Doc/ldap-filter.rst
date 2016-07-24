@@ -1,4 +1,4 @@
-.. % $Id: ldap-filter.rst,v 1.4 2011/07/21 20:33:26 stroeder Exp $
+.. % $Id: ldap-filter.rst,v 1.5 2016/07/24 15:47:46 stroeder Exp $
 
 
 :py:mod:`ldap.filter` LDAP filter handling
@@ -6,7 +6,7 @@
 
 .. py:module:: ldap.filter
    :synopsis: LDAP filter handling.
-.. moduleauthor:: python-ldap project (see http://www.python-ldap.org/)
+.. moduleauthor:: python-ldap project (see https://www.python-ldap.org/)
 
 
 .. % Author of the module code;

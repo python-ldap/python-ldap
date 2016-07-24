@@ -1,4 +1,4 @@
-.. % $Id: dsml.rst,v 1.5 2011/07/28 09:05:10 stroeder Exp $
+.. % $Id: dsml.rst,v 1.6 2016/07/24 15:47:46 stroeder Exp $
 
 ***************************************
 :mod:`dsml` DSMLv1 parser and generator
@@ -6,7 +6,7 @@
 
 .. :py:module:: dsml
    :synopsis: Parses and generates DSMLv1 files
-.. moduleauthor:: python-ldap project (see http://www.python-ldap.org/)
+.. moduleauthor:: python-ldap project (see https://www.python-ldap.org/)
 
 
 This module parses and generates LDAP data in the format DSMLv1. It is

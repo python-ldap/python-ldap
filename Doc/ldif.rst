@@ -1,4 +1,4 @@
-.. % $Id: ldif.rst,v 1.8 2011/09/14 18:29:18 stroeder Exp $
+.. % $Id: ldif.rst,v 1.9 2016/07/24 15:47:46 stroeder Exp $
 
 #####################################
 :mod:`ldif` LDIF parser and generator
@@ -6,7 +6,7 @@
 
 .. py:module:: ldif
    :synopsis: Parses and generates LDIF files
-.. moduleauthor:: python-ldap project (see http://www.python-ldap.org/)
+.. moduleauthor:: python-ldap project (see https://www.python-ldap.org/)
 
 
 This module parses and generates LDAP data in the format LDIF.    It is

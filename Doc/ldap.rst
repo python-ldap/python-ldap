@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.32 2016/02/09 11:58:30 stroeder Exp $
+.. % $Id: ldap.rst,v 1.33 2016/07/24 15:47:46 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -7,7 +7,7 @@
 .. py:module:: ldap
     :platform: Posix, Windows
     :synopsis: Access to an underlying LDAP C library.
-.. moduleauthor:: python-ldap project (see http://www.python-ldap.org/)
+.. moduleauthor:: python-ldap project (see https://www.python-ldap.org/)
 
 
 This module provides access to the LDAP (Lightweight Directory Access Protocol)

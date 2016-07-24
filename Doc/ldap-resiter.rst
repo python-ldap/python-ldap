@@ -1,4 +1,4 @@
-.. % $Id: ldap-resiter.rst,v 1.5 2011/08/27 15:43:06 stroeder Exp $
+.. % $Id: ldap-resiter.rst,v 1.6 2016/07/24 15:47:46 stroeder Exp $
 
 
 :py:mod:`ldap.resiter` Generator for stream-processing of large search results
@@ -6,7 +6,7 @@
 
 .. py:module:: ldap.resiter
    :synopsis: Generator for stream-processing of large search results.
-.. moduleauthor:: python-ldap project (see http://www.python-ldap.org/)
+.. moduleauthor:: python-ldap project (see https://www.python-ldap.org/)
 
 
 .. _ldap.resiter-classes:

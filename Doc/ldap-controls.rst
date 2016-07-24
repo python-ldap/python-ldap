@@ -1,4 +1,4 @@
-.. % $Id: ldap-controls.rst,v 1.12 2015/12/09 17:57:18 stroeder Exp $
+.. % $Id: ldap-controls.rst,v 1.13 2016/07/24 15:47:46 stroeder Exp $
 
 
 *********************************************************************
@@ -7,7 +7,7 @@
 
 .. py:module:: ldap.controls
    :synopsis: High-level access to LDAPv3 extended controls.
-.. moduleauthor:: python-ldap project (see http://www.python-ldap.org/)
+.. moduleauthor:: python-ldap project (see https://www.python-ldap.org/)
 
 
 Variables
