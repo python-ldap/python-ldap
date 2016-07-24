@@ -15,6 +15,7 @@ Lib/
 * Refactored ldif.LDIFParser
   * ldif.LDIFParser.version ís now Integer
   * ignore multiple empty lines between records
+* Fixed ldap.dn.is_dn()
 
 Modules/
 * Fixed #69 Segmentation fault on whoami_s after unbind 
@@ -1267,4 +1268,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.383 2016/07/24 15:14:56 stroeder Exp $
+$Id: CHANGES,v 1.384 2016/07/24 15:53:56 stroeder Exp $
