@@ -3,7 +3,7 @@ dn.py - misc stuff for handling distinguished names (see RFC 4514)
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: dn.py,v 1.13 2015/06/06 09:21:37 stroeder Exp $
+\$Id: dn.py,v 1.14 2016/07/24 15:42:17 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+
@@ -116,8 +116,8 @@ def is_dn(s):
   distinguished host_name (DN), otherwise False is returned.
   """
   try:
-    dn2str(s)
-  except Exception:
+    str2dn(s)
+  except Exception, err:
     return False
   else:
     return True
