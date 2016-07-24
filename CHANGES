@@ -10,6 +10,8 @@ Lib/
 * LDAPObject.unbind_ext() now removes class attribute
   LDAPObject._l to completely invalidate C wrapper object
 * LDAPObject.unbind_ext() now flushes trace file
+* ldap.ldapobject.SimpleLDAPObject:
+  added convenience methods read_rootdse_s() and get_naming_contexts() 
 * added functions ldap.strf_secs() and ldap.strp_secs()
 * added function ldap.filter.time_span_filter()
 * Refactored ldif.LDIFParser
@@ -1270,4 +1272,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.385 2016/07/24 16:05:28 stroeder Exp $
+$Id: CHANGES,v 1.386 2016/07/24 16:24:44 stroeder Exp $

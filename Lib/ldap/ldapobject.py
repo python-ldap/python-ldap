@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.155 2016/07/17 14:49:22 stroeder Exp $
+\$Id: ldapobject.py,v 1.156 2016/07/24 16:22:32 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -744,6 +744,26 @@ class SimpleLDAPObject:
     if len(r)!=1:
       raise NO_UNIQUE_ENTRY('No or non-unique search result for %s' % (repr(filterstr)))
     return r[0]
+
+  def read_rootdse_s(self, filterstr='(objectClass=*)', attrlist=None):
+    """
+    convenience wrapper around read_s() for reading rootDSE
+    """
+    ldap_rootdse = self.read_s(
+      '',
+      filterstr=filterstr,
+      attrlist=attrlist or ['*', '+'],
+    )
+    return ldap_rootdse  # read_rootdse_s()
+
+  def get_naming_contexts(self):
+    """
+    returns all attribute values of namingContexts in rootDSE
+    if namingContexts is not present (not readable) then empty list is returned
+    """
+    return self.read_rootdse_s(
+      attrlist=['namingContexts']
+    ).get('namingContexts', [])
 
 
 class NonblockingLDAPObject(SimpleLDAPObject):
