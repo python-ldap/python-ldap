@@ -3,13 +3,17 @@ filters.py - misc stuff for handling LDAP filter strings (see RFC2254)
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: filter.py,v 1.10 2015/06/06 09:21:37 stroeder Exp $
+\$Id: filter.py,v 1.11 2016/07/24 15:14:56 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+
 """
 
 from ldap import __version__
+
+from ldap.functions import strf_secs
+
+import time
 
 
 def escape_filter_chars(assertion_value,escape_mode=0):
@@ -53,3 +57,35 @@ def filter_format(filter_template,assertion_values):
         count of %s in filter_template.
   """
   return filter_template % (tuple(map(escape_filter_chars,assertion_values)))
+
+
+def time_span_filter(
+        filterstr='',
+        from_timestamp=0,
+        until_timestamp=None,
+        delta_attr='modifyTimestamp',
+    ):
+    """
+    If last_run_timestr is non-zero filterstr will be extended
+    """
+    if until_timestamp is None:
+        until_timestamp = time.time()
+        if from_timestamp < 0:
+            from_timestamp = until_timestamp + from_timestamp
+    if from_timestamp > until_timestamp:
+        raise ValueError('from_timestamp %r must not be greater than until_timestamp %r' % (
+            from_timestamp, until_timestamp
+        ))
+    return (
+        '(&'
+        '{filterstr}'
+        '({delta_attr}>={from_timestr})'
+        '(!({delta_attr}>={until_timestr}))'
+        ')'
+    ).format(
+        filterstr=filterstr,
+        delta_attr=delta_attr,
+        from_timestr=strf_secs(from_timestamp),
+        until_timestr=strf_secs(until_timestamp),
+    )
+    # end of time_span_filter()
