@@ -3,7 +3,7 @@ functions.py - wraps functions of module _ldap
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: functions.py,v 1.32 2016/07/17 15:12:58 stroeder Exp $
+\$Id: functions.py,v 1.33 2016/07/25 08:15:14 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -25,6 +25,7 @@ __all__ = [
   'explode_dn','explode_rdn',
   'get_option','set_option',
   'escape_str',
+  'strf_secs','strp_secs',
 ]
 
 import sys,pprint,time,_ldap,ldap
