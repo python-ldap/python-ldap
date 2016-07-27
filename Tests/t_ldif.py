@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldif
 
 See http://www.python-ldap.org/ for details.
 
-$Id: t_ldif.py,v 1.20 2016/07/24 14:57:46 stroeder Exp $
+$Id: t_ldif.py,v 1.21 2016/07/27 09:31:30 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -75,7 +75,7 @@ class TestLDIFParser(unittest.TestCase):
         Checks whether entry records in `ldif_string' gets correctly parsed
         and matches list of unparsed `records'.
         """
-        ldif_string = textwrap.dedent(ldif_string).lstrip() + '\n'
+        ldif_string = textwrap.dedent(ldif_string).lstrip()
         parsed_records = self._parse_records(
             ldif_string,
             ignored_attr_types=ignored_attr_types,
@@ -87,8 +87,8 @@ class TestLDIFParser(unittest.TestCase):
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
-        self.assertEqual(parsed_records, records)
-        self.assertEqual(parsed_records2, records)
+        self.assertEqual(records, parsed_records)
+        self.assertEqual(records, parsed_records2)
 
 
 class TestEntryRecords(TestLDIFParser):
@@ -114,6 +114,7 @@ class TestEntryRecords(TestLDIFParser):
             dn: cn=x,cn=y,cn=z
             attrib: value
             attrib: value2
+
             """,
             [
                 (
@@ -131,6 +132,7 @@ class TestEntryRecords(TestLDIFParser):
             dn:cn=x,cn=y,cn=z
             attrib:value
             attrib:value2
+
             """,
             [
                 (
@@ -154,6 +156,7 @@ class TestEntryRecords(TestLDIFParser):
             attrib: value2
             attrib: value3
             b: v
+
             """,
             [
                 (
@@ -182,6 +185,7 @@ class TestEntryRecords(TestLDIFParser):
               line-folded\x20
              value
             attrib2: %s
+
             """ % (b'asdf.'*20), [
                 (
                     'cn=x,cn=y,cn=z',
@@ -201,6 +205,7 @@ class TestEntryRecords(TestLDIFParser):
             attrib1: foo
             attrib2:
             attrib2: foo
+
             """,
             [
                 (
@@ -218,6 +223,7 @@ class TestEntryRecords(TestLDIFParser):
             """
             dn: cn=x,cn=y,cn=z
             attrib:: CQAKOiVA
+
             """,
             [
                 (
@@ -234,6 +240,7 @@ class TestEntryRecords(TestLDIFParser):
             """
             dn: cn=x,cn=y,cn=z
             attrib::CQAKOiVA
+
             """,
             [
                 (
@@ -248,6 +255,7 @@ class TestEntryRecords(TestLDIFParser):
             """
             dn: cn=Michael Stroeder,dc=stroeder,dc=com
             lastname: Ströder
+
             """,
             [
                 (
@@ -264,6 +272,7 @@ class TestEntryRecords(TestLDIFParser):
             b: value_b
             c: value_c
             a: value_a
+
             """,
             [
                 (
@@ -284,6 +293,7 @@ class TestEntryRecords(TestLDIFParser):
             a: value_a
             b: value_b
             c: value_c
+
             """,
             [
                 (
@@ -374,6 +384,39 @@ class TestEntryRecords(TestLDIFParser):
             max_entries=2
         )
 
+    def test_missing_trailing_line_separator(self):
+        self.check_records(
+            """
+            dn: cn=x1,cn=y1,cn=z1
+            first: value_a1
+            middle: value_b1
+            last: value_c1
+
+            dn: cn=x2,cn=y2,cn=z2
+            first: value_a2
+            middle: value_b2
+            last: value_c2
+            """,
+            [
+                (
+                    'cn=x1,cn=y1,cn=z1',
+                    {
+                        'first': [b'value_a1'],
+                        'middle': [b'value_b1'],
+                        'last': [b'value_c1'],
+                    }
+                ),
+                (
+                    'cn=x2,cn=y2,cn=z2',
+                    {
+                        'first': [b'value_a2'],
+                        'middle': [b'value_b2'],
+                        'last': [b'value_c2'],
+                    }
+                ),
+            ],
+        )
+
     def test_multiple_empty_lines(self):
         """
         see http://sourceforge.net/p/python-ldap/feature-requests/18/
@@ -385,9 +428,11 @@ class TestEntryRecords(TestLDIFParser):
             uid: one
 
 
+
             # after extra empty line
             dn: uid=two,dc=tld
             uid: two
+
             """,
             [
                 (
@@ -452,7 +497,7 @@ class TestChangeRecords(TestLDIFParser):
             ],
         )
 
-    def test_missing_trailing_separator(self):
+    def test_missing_trailing_dash_separator(self):
         self.check_records(
             """
             version: 1
@@ -466,6 +511,7 @@ class TestChangeRecords(TestLDIFParser):
             add: attrib2
             attrib2: value
             attrib2: value2
+
             """,
             [
                 (
@@ -486,6 +532,7 @@ class TestChangeRecords(TestLDIFParser):
             replace: attrib
             attrib: value
             attrib: value2
+
             """,
         ):
             ldif_string = textwrap.dedent(bad_ldif_string).lstrip() + '\n'
