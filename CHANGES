@@ -5,6 +5,9 @@ Changes since 2.4.26:
 
 Lib/
 * added 'strf_secs' and 'strp_secs' to ldap.functions.__all__
+* fixed regression introduced with 2.4.26:
+  ldif.LDIFParser did not accept LDIF entry records
+  without trailing empty separator line
 
 ----------------------------------------------------------------
 Released 2.4.26 2016-07-24
@@ -1279,4 +1282,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.390 2016/07/25 08:15:14 stroeder Exp $
+$Id: CHANGES,v 1.391 2016/07/30 19:01:59 stroeder Exp $

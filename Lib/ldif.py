@@ -3,7 +3,7 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See http://www.python-ldap.org/ for details.
 
-$Id: ldif.py,v 1.98 2016/07/30 16:18:47 stroeder Exp $
+$Id: ldif.py,v 1.99 2016/07/30 19:01:59 stroeder Exp $
 
 Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
@@ -297,10 +297,7 @@ class LDIFParser:
     self.line_counter = self.line_counter + 1
     self.byte_counter = self.byte_counter + len(s)
     if not s:
-      raise EOFError('EOF reached after %d lines (%d bytes)' % (
-        self.line_counter,
-        self.byte_counter,
-      ))
+      return None
     elif s[-2:]=='\r\n':
       return s[:-2]
     elif s[-1:]=='\n':
@@ -312,6 +309,11 @@ class LDIFParser:
     """
     Unfold several folded lines with trailing space into one line
     """
+    if self._last_line is None:
+      raise EOFError('EOF reached after %d lines (%d bytes)' % (
+        self.line_counter,
+        self.byte_counter,
+      ))
     unfolded_lines = [ self._last_line ]
     next_line = self._readline()
     while next_line and next_line[0]==' ':
