@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldif
 
 See http://www.python-ldap.org/ for details.
 
-$Id: t_ldif.py,v 1.21 2016/07/27 09:31:30 stroeder Exp $
+$Id: t_ldif.py,v 1.22 2016/07/30 17:15:22 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -395,8 +395,46 @@ class TestEntryRecords(TestLDIFParser):
             dn: cn=x2,cn=y2,cn=z2
             first: value_a2
             middle: value_b2
-            last: value_c2
-            """,
+            last: value_c2""",
+            [
+                (
+                    'cn=x1,cn=y1,cn=z1',
+                    {
+                        'first': [b'value_a1'],
+                        'middle': [b'value_b1'],
+                        'last': [b'value_c1'],
+                    }
+                ),
+                (
+                    'cn=x2,cn=y2,cn=z2',
+                    {
+                        'first': [b'value_a2'],
+                        'middle': [b'value_b2'],
+                        'last': [b'value_c2'],
+                    }
+                ),
+            ],
+        )
+
+    def test_weird_empty_lines(self):
+        self.check_records(
+            """
+
+            # comment before version
+               
+            version: 1
+
+
+            dn: cn=x1,cn=y1,cn=z1
+            first: value_a1
+            middle: value_b1
+            last: value_c1
+
+
+            dn: cn=x2,cn=y2,cn=z2
+            first: value_a2
+            middle: value_b2
+            last: value_c2""",
             [
                 (
                     'cn=x1,cn=y1,cn=z1',
@@ -486,6 +524,70 @@ class TestChangeRecords(TestLDIFParser):
             [
                 (
                     'cn=x,cn=y,cn=z',
+                    [
+                        (ldif.MOD_OP_INTEGER['replace'], 'attrib', [b'value', b'value2']),
+                        (ldif.MOD_OP_INTEGER['add'], 'attrib2', [b'value', b'value2']),
+                        (ldif.MOD_OP_INTEGER['delete'], 'attrib3', [b'value']),
+                        (ldif.MOD_OP_INTEGER['delete'], 'attrib4', None),
+                    ],
+                    None,
+                ),
+            ],
+        )
+
+    def test_weird_empty_lines(self):
+        self.check_records(
+            """
+
+            # comment before version
+               
+            version: 1
+
+
+            dn: cn=x,cn=y,cn=z
+            changetype: modify
+            replace: attrib
+            attrib: value
+            attrib: value2
+            -
+            add: attrib2
+            attrib2: value
+            attrib2: value2
+            -
+            delete: attrib3
+            attrib3: value
+            -
+            delete: attrib4
+            -
+
+
+            dn: cn=foo,cn=bar
+            changetype: modify
+            replace: attrib
+            attrib: value
+            attrib: value2
+            -
+            add: attrib2
+            attrib2: value
+            attrib2: value2
+            -
+            delete: attrib3
+            attrib3: value
+            -
+            delete: attrib4""",
+            [
+                (
+                    'cn=x,cn=y,cn=z',
+                    [
+                        (ldif.MOD_OP_INTEGER['replace'], 'attrib', [b'value', b'value2']),
+                        (ldif.MOD_OP_INTEGER['add'], 'attrib2', [b'value', b'value2']),
+                        (ldif.MOD_OP_INTEGER['delete'], 'attrib3', [b'value']),
+                        (ldif.MOD_OP_INTEGER['delete'], 'attrib4', None),
+                    ],
+                    None,
+                ),
+                (
+                    'cn=foo,cn=bar',
                     [
                         (ldif.MOD_OP_INTEGER['replace'], 'attrib', [b'value', b'value2']),
                         (ldif.MOD_OP_INTEGER['add'], 'attrib2', [b'value', b'value2']),
