@@ -3,7 +3,7 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See http://www.python-ldap.org/ for details.
 
-$Id: ldif.py,v 1.99 2016/07/30 19:01:59 stroeder Exp $
+$Id: ldif.py,v 1.100 2016/07/30 19:38:05 stroeder Exp $
 
 Python compability note:
 Tested with Python 2.0+, but should work with Python 1.5.2+.
@@ -500,7 +500,10 @@ class LDIFParser:
             # we now have the attribute name to be modified
             modattr = v
             modvalues = []
-            k,v = next_key_and_value()
+            try:
+              k,v = next_key_and_value()
+            except EOFError:
+              k,v = None,None
             while k==modattr:
               modvalues.append(v)
               try:
