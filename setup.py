@@ -3,7 +3,7 @@ setup.py - Setup package with the help Python's DistUtils
 
 See http://www.python-ldap.org/ for details.
 
-$Id: setup.py,v 1.75 2016/04/07 20:17:16 stroeder Exp $
+$Id: setup.py,v 1.76 2016/08/13 09:44:08 stroeder Exp $
 """
 
 has_setuptools = False
@@ -103,6 +103,7 @@ setup(
     'Operating System :: POSIX',
     'Programming Language :: C',
     'Programming Language :: Python',
+    'Programming Language :: Python :: 2',
     'Topic :: Database',
     'Topic :: Internet',
     'Topic :: Software Development :: Libraries :: Python Modules',
