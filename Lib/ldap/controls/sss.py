@@ -5,7 +5,7 @@ ldap.controls.sss - classes for Server Side Sorting
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: sss.py,v 1.2 2015/10/24 15:52:23 stroeder Exp $
+$Id: sss.py,v 1.3 2016/09/26 22:06:54 stroeder Exp $
 """
 
 __all__ = [
@@ -48,7 +48,7 @@ class SortKeyListType(univ.SequenceOf):
 class SSSRequestControl(RequestControl):
     '''Order result server side
 
-        >>> s = SSSRequestControl('-cn')
+        >>> s = SSSRequestControl(ordering_rules=['-cn'])
     '''
     controlType = '1.2.840.113556.1.4.473'
 
