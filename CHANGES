@@ -4,7 +4,8 @@ Released 2.4.28 2016-11-xx
 Changes since 2.4.27:
 
 Lib/
-* 
+* added dummy method logging_file_class.flush() because
+  LDAPObject.unbind_ext_s() invokes it
 
 ----------------------------------------------------------------
 Released 2.4.27 2016-08-01
@@ -1290,4 +1291,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.394 2016/11/11 14:41:07 stroeder Exp $
+$Id: CHANGES,v 1.395 2016/11/11 14:42:18 stroeder Exp $
