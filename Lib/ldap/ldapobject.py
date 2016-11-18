@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.157 2016/11/17 12:08:30 stroeder Exp $
+\$Id: ldapobject.py,v 1.158 2016/11/18 07:01:45 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -636,10 +636,11 @@ class SimpleLDAPObject:
       result = self.result3(msgid,all=1,timeout=self.timeout)
     else:
       result = None
-    try:
-      self._trace_file.flush()
-    except AttributeError:
-      pass
+    if __debug__ and self._trace_level>=1:
+      try:
+        self._trace_file.flush()
+      except AttributeError:
+        pass
     return result
 
   def unbind(self):

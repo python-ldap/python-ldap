@@ -4,9 +4,12 @@ Released 2.4.28 2016-11-17
 Changes since 2.4.27:
 
 Lib/
+* LDAPObject.unbind_ext_s() invokes LDAPObject._trace_file.flush()
+  only if LDAPObject._trace_level is non-zero and Python is running
+  in debug mode
 * LDAPObject.unbind_ext_s() now ignores AttributeError
-  in case _trace_file has no flush() method
-* added dummy method logging_file_class.flush() because
+  in case LDAPObject._trace_file has no flush() method
+* added dummy method ldap.logger.logging_file_class.flush() because
   LDAPObject.unbind_ext_s() invokes it
 
 ----------------------------------------------------------------
@@ -1293,4 +1296,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.397 2016/11/17 12:08:59 stroeder Exp $
+$Id: CHANGES,v 1.398 2016/11/18 07:01:45 stroeder Exp $
