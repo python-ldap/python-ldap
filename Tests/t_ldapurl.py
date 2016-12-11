@@ -214,6 +214,7 @@ class TestLDAPUrl(unittest.TestCase):
         self.assertEquals(len(u.extensions), 1)
         self.assertNone(u.who)
 
+    @unittest.expectedFailure
     def test_bad_urls(self):
         failed_urls = []
         for bad in (
