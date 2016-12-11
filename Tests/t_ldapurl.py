@@ -215,9 +215,20 @@ class TestLDAPUrl(unittest.TestCase):
         self.assertNone(u.who)
 
     def test_bad_urls(self):
-        for bad in ("", "ldap:", "ldap:/", ":///", "://", "///", "//", "/",
+        failed_urls = []
+        for bad in (
+                "",
+                "ldap:",
+                "ldap:/",
+                ":///",
+                "://",
+                "///",
+                "//",
+                "/",
                 "ldap:///?????",       # extension can't start with '?'
-                "LDAP://", "invalid://", "ldap:///??invalid",
+                "LDAP://",
+                "invalid://",
+                "ldap:///??invalid",
                 #XXX-- the following should raise exceptions!
                 "ldap://:389/",         # [host [COLON port]]
                 "ldap://a:/",           # [host [COLON port]]
@@ -239,7 +250,9 @@ class TestLDAPUrl(unittest.TestCase):
             except ValueError:
                 pass
             else:
-                self.fail("should have raised ValueError: %r" % bad)
+                failed_urls.append(bad)
+        if failed_urls:
+          self.fail("These LDAP URLs should have raised ValueError: %r" % failed_urls)
 
 if __name__ == '__main__':
     unittest.main()
