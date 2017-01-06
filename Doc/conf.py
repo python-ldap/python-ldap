@@ -11,7 +11,7 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 #
-# $Id: conf.py,v 1.25 2016/08/01 10:13:01 stroeder Exp $
+# $Id: conf.py,v 1.26 2017/01/06 15:06:24 stroeder Exp $
 
 import sys
 
@@ -36,7 +36,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'python-ldap'
-copyright = '2008-2015, python-ldap project team'
+copyright = '2008-2017, python-ldap project team'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
