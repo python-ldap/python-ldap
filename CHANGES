@@ -1,10 +1,7 @@
 ----------------------------------------------------------------
-Released 2.4.29 2017-xx-xx
+Released 2.4.29 2017-01-25
 
 Changes since 2.4.28:
-
-Lib/
-* 
 
 Modules/
 * Fixed checking for empty server error message
@@ -1310,4 +1307,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.401 2017/01/25 19:41:31 stroeder Exp $
+$Id: CHANGES,v 1.402 2017/01/25 19:43:39 stroeder Exp $
