@@ -9,6 +9,8 @@ Lib/
 Modules/
 * Fixed checking for empty server error message
   (thanks to Bradley Baetz)
+* Fixed releasing GIL when calling ldap_start_tls_s()
+  (thanks to Lars Munch)
 
 ----------------------------------------------------------------
 Released 2.4.28 2016-11-17
@@ -1308,4 +1310,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.400 2017/01/06 15:11:14 stroeder Exp $
+$Id: CHANGES,v 1.401 2017/01/25 19:41:31 stroeder Exp $

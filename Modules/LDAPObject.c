@@ -1,5 +1,5 @@
 /* See http://www.python-ldap.org/ for details.
- * $Id: LDAPObject.c,v 1.94 2016/01/26 11:01:08 stroeder Exp $ */
+ * $Id: LDAPObject.c,v 1.95 2017/01/25 19:41:31 stroeder Exp $ */
 
 #include "common.h"
 #include "patchlevel.h"
@@ -1213,14 +1213,16 @@ l_ldap_whoami_s( LDAPObject* self, PyObject* args )
 static PyObject*
 l_ldap_start_tls_s( LDAPObject* self, PyObject* args )
 {
-    int result;
+    int ldaperror;
 
     if (!PyArg_ParseTuple( args, "" )) return NULL;
     if (not_valid(self)) return NULL;
 
-    result = ldap_start_tls_s( self->ldap, NULL, NULL );
-    if ( result != LDAP_SUCCESS ){
-        ldap_set_option(self->ldap, LDAP_OPT_ERROR_NUMBER, &result);
+    LDAP_BEGIN_ALLOW_THREADS( self );
+    ldaperror = ldap_start_tls_s( self->ldap, NULL, NULL );
+    LDAP_END_ALLOW_THREADS( self );
+    if ( ldaperror != LDAP_SUCCESS ){
+        ldap_set_option(self->ldap, LDAP_OPT_ERROR_NUMBER, &ldaperror);
         return LDAPerror( self->ldap, "ldap_start_tls_s" );
     }
 
