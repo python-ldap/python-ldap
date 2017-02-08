@@ -1,4 +1,13 @@
 ----------------------------------------------------------------
+Released 2.4.30 2017-02-08
+
+Changes since 2.4.29:
+
+Lib/
+* compability fix in ldap.controls.deref to be compatible to
+  recent pyasn1 0.2.x (thanks to Ilya Etingof)
+
+----------------------------------------------------------------
 Released 2.4.29 2017-01-25
 
 Changes since 2.4.28:
@@ -1307,4 +1316,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.402 2017/01/25 19:43:39 stroeder Exp $
+$Id: CHANGES,v 1.403 2017/02/08 09:44:18 stroeder Exp $

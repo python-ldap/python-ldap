@@ -5,7 +5,7 @@ ldap.controls.deref - classes for
 
 See http://www.python-ldap.org/ for project details.
 
-$Id: deref.py,v 1.2 2015/09/19 13:41:01 stroeder Exp $
+$Id: deref.py,v 1.3 2017/02/08 09:44:18 stroeder Exp $
 """
 
 __all__ = [
@@ -108,15 +108,14 @@ class DereferenceControl(LDAPControl):
     decodedValue,_ = decoder.decode(encodedControlValue,asn1Spec=DerefResultControlValue())
     self.derefRes = {}
     for deref_res in decodedValue:
-      deref_attr,deref_val,deref_vals = deref_res
+      deref_attr,deref_val,deref_vals = deref_res[0],deref_res[1],deref_res[2]
       partial_attrs_dict = dict([
-        (str(t),map(str,v))
-        for t,v in deref_vals or []
+        (str(tv[0]),map(str,tv[1]))
+        for tv in deref_vals or []
       ])
       try:
         self.derefRes[str(deref_attr)].append((str(deref_val),partial_attrs_dict))
       except KeyError:
         self.derefRes[str(deref_attr)] = [(str(deref_val),partial_attrs_dict)]
-
 
 KNOWN_RESPONSE_CONTROLS[DereferenceControl.controlType] = DereferenceControl
