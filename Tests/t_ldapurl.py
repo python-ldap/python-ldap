@@ -49,6 +49,125 @@ class TestIsLDAPUrl(unittest.TestCase):
             )
 
 
+class TestParseLDAPUrl(unittest.TestCase):
+
+    parse_ldap_url_tests = [
+    (
+        'ldap://root.openldap.org/dc=openldap,dc=org',
+        LDAPUrl(
+            hostport='root.openldap.org',
+            dn='dc=openldap,dc=org'
+        )
+    ),
+    (
+        'ldap://root.openldap.org/dc%3dboolean%2cdc%3dnet???%28objectClass%3d%2a%29',
+        LDAPUrl(
+            hostport='root.openldap.org',
+            dn='dc=boolean,dc=net',
+            filterstr='(objectClass=*)'
+        )
+    ),
+    (
+        'ldap://root.openldap.org/dc=openldap,dc=org??sub?',
+        LDAPUrl(
+            hostport='root.openldap.org',
+            dn='dc=openldap,dc=org',
+            scope=ldapurl.LDAP_SCOPE_SUBTREE
+        )
+    ),
+    (
+        'ldap://root.openldap.org/dc=openldap,dc=org??one?',
+        LDAPUrl(
+            hostport='root.openldap.org',
+            dn='dc=openldap,dc=org',
+            scope=ldapurl.LDAP_SCOPE_ONELEVEL
+        )
+    ),
+    (
+        'ldap://root.openldap.org/dc=openldap,dc=org??base?',
+        LDAPUrl(
+            hostport='root.openldap.org',
+            dn='dc=openldap,dc=org',
+            scope=ldapurl.LDAP_SCOPE_BASE
+        )
+    ),
+    (
+        'ldap://x500.mh.se/o=Mitthogskolan,c=se????1.2.752.58.10.2=T.61',
+        LDAPUrl(
+            hostport='x500.mh.se',
+            dn='o=Mitthogskolan,c=se',
+            extensions=ldapurl.LDAPUrlExtensions({
+                '1.2.752.58.10.2':ldapurl.LDAPUrlExtension(
+                critical=0,extype='1.2.752.58.10.2',exvalue='T.61'
+                )
+            })
+        )
+    ),
+    (
+        'ldap://localhost:12345/dc=stroeder,dc=com????!bindname=cn=Michael%2Cdc=stroeder%2Cdc=com,!X-BINDPW=secretpassword',
+        LDAPUrl(
+            hostport='localhost:12345',
+            dn='dc=stroeder,dc=com',
+            extensions=ldapurl.LDAPUrlExtensions({
+                'bindname':ldapurl.LDAPUrlExtension(
+                critical=1,extype='bindname',exvalue='cn=Michael,dc=stroeder,dc=com'
+                ),
+                'X-BINDPW':ldapurl.LDAPUrlExtension(
+                critical=1,extype='X-BINDPW',exvalue='secretpassword'
+                ),
+            }),
+        )
+    ),
+    (
+        'ldap://localhost:54321/dc=stroeder,dc=com????bindname=cn=Michael%2Cdc=stroeder%2Cdc=com,X-BINDPW=secretpassword',
+        LDAPUrl(
+            hostport='localhost:54321',
+            dn='dc=stroeder,dc=com',
+            who='cn=Michael,dc=stroeder,dc=com',
+            cred='secretpassword'
+        )
+    ),
+    (
+        'ldaps://localhost:12345/dc=stroeder,dc=com',
+        LDAPUrl(
+            urlscheme='ldaps',
+            hostport='localhost:12345',
+            dn='dc=stroeder,dc=com',
+        ),
+    ),
+    (
+        'ldapi://%2ftmp%2fopenldap2-1389/dc=stroeder,dc=com',
+        LDAPUrl(
+            urlscheme='ldapi',
+            hostport='/tmp/openldap2-1389',
+            dn='dc=stroeder,dc=com',
+        ),
+    ),
+    ]
+
+    def test_ldapurl(self):
+        for ldap_url_str,test_ldap_url_obj in self.parse_ldap_url_tests:
+            ldap_url_obj = LDAPUrl(ldapUrl=ldap_url_str)
+            self.assertEqual(
+                ldap_url_obj, test_ldap_url_obj,
+                'Attributes of LDAPUrl(%s) are:\n%s\ninstead of:\n%s' % (
+                    repr(ldap_url_str),
+                    repr(ldap_url_obj),
+                    repr(test_ldap_url_obj),
+                )
+            )
+            unparsed_ldap_url_str = test_ldap_url_obj.unparse()
+            unparsed_ldap_url_obj = LDAPUrl(ldapUrl=unparsed_ldap_url_str)
+            self.assertEqual(
+                unparsed_ldap_url_obj, test_ldap_url_obj,
+                'Attributes of LDAPUrl(%s) are:\n%s\ninstead of:\n%s' % (
+                    repr(unparsed_ldap_url_str),
+                    repr(unparsed_ldap_url_obj),
+                    repr(test_ldap_url_obj),
+                )
+            )
+
+
 class TestLDAPUrl(unittest.TestCase):
 
     def assertNone(self, expr, msg=None):
