@@ -11,7 +11,8 @@ set -e
 plat_specifier=`$PYTHON -c 'import sys,distutils.util; \
         print(distutils.util.get_platform()+"-"+sys.version[0:3])'`
 failed=
-for test in t_*.py;  do
+for test in t_*.py
+do
     echo "$test:"
     PYTHONPATH="../build/lib.$plat_specifier" $PYTHON "$test" "$@" || 
         failed="$failed $test"
