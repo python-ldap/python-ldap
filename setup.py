@@ -3,15 +3,15 @@ setup.py - Setup package with the help Python's DistUtils
 
 See http://www.python-ldap.org/ for details.
 
-$Id: setup.py,v 1.76 2016/08/13 09:44:08 stroeder Exp $
+$Id: setup.py,v 1.77 2017/02/14 19:07:15 stroeder Exp $
 """
 
 has_setuptools = False
 try:
-        from setuptools import setup, Extension
-        has_setuptools = True
+  from setuptools import setup, Extension
+  has_setuptools = True
 except ImportError:
-        from distutils.core import setup, Extension
+  from distutils.core import setup, Extension
 
 from ConfigParser import ConfigParser
 import sys,os,string,time
