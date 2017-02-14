@@ -1,14 +1,15 @@
 ----------------------------------------------------------------
-Released 2.4.31 2017-02-xx
+Released 2.4.31 2017-02-14
 
 Changes since 2.4.30:
 
 Tests/
-(thanks to Petr Viktorin)
 * new test scripts t_ldap_schema_tokenizer.py and t_ldap_modlist.py
-  on former raw scripts
+  on former raw scripts (thanks to Petr Viktorin)
 * new test-cases in t_ldapurl.py based on former raw scripts
+  (thanks to Petr Viktorin)
 * new test-cases in t_ldap_dn.py
+* moved a script to Demo/
 
 ----------------------------------------------------------------
 Released 2.4.30 2017-02-08
@@ -1328,4 +1329,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.406 2017/02/14 18:02:20 stroeder Exp $
+$Id: CHANGES,v 1.407 2017/02/14 19:30:03 stroeder Exp $
