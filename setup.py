@@ -3,7 +3,7 @@ setup.py - Setup package with the help Python's DistUtils
 
 See http://www.python-ldap.org/ for details.
 
-$Id: setup.py,v 1.77 2017/02/14 19:07:15 stroeder Exp $
+$Id: setup.py,v 1.78 2017/02/14 21:38:13 stroeder Exp $
 """
 
 has_setuptools = False
@@ -180,5 +180,6 @@ setup(
   ],
   package_dir = {'': 'Lib',},
   data_files = LDAP_CLASS.extra_files,
+  test_suite = 'Tests',
   **kwargs
 )
