@@ -8,6 +8,7 @@ Tests/
 * new test scripts t_ldap_schema_tokenizer.py and t_ldap_modlist.py
   on former raw scripts
 * new test-cases in t_ldapurl.py based on former raw scripts
+* new test-cases in t_ldap_dn.py
 
 ----------------------------------------------------------------
 Released 2.4.30 2017-02-08
@@ -1327,4 +1328,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.405 2017/02/14 13:37:51 stroeder Exp $
+$Id: CHANGES,v 1.406 2017/02/14 18:02:20 stroeder Exp $
