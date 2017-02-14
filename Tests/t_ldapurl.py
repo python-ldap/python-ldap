@@ -14,6 +14,41 @@ class MyLDAPUrl(LDAPUrl):
     }
 
 
+class TestIsLDAPUrl(unittest.TestCase):
+
+    is_ldap_url_tests = {
+        # Examples from RFC2255
+        'ldap:///o=University%20of%20Michigan,c=US':1,
+        'ldap://ldap.itd.umich.edu/o=University%20of%20Michigan,c=US':1,
+        'ldap://ldap.itd.umich.edu/o=University%20of%20Michigan,':1,
+        'ldap://host.com:6666/o=University%20of%20Michigan,':1,
+        'ldap://ldap.itd.umich.edu/c=GB?objectClass?one':1,
+        'ldap://ldap.question.com/o=Question%3f,c=US?mail':1,
+        'ldap://ldap.netscape.com/o=Babsco,c=US??(int=%5c00%5c00%5c00%5c04)':1,
+        'ldap:///??sub??bindname=cn=Manager%2co=Foo':1,
+        'ldap:///??sub??!bindname=cn=Manager%2co=Foo':1,
+        # More examples from various sources
+        'ldap://ldap.nameflow.net:1389/c%3dDE':1,
+        'ldap://root.openldap.org/dc=openldap,dc=org':1,
+        'ldap://root.openldap.org/dc=openldap,dc=org':1,
+        'ldap://x500.mh.se/o=Mitthogskolan,c=se????1.2.752.58.10.2=T.61':1,
+        'ldp://root.openldap.org/dc=openldap,dc=org':0,
+        'ldap://localhost:1389/ou%3DUnstructured%20testing%20tree%2Cdc%3Dstroeder%2Cdc%3Dcom??one':1,
+        'ldaps://ldap.example.com/c%3dDE':1,
+        'ldapi:///dc=stroeder,dc=de????x-saslmech=EXTERNAL':1,
+    }
+
+    def test_isLDAPUrl(self):
+        for ldap_url, expected in self.is_ldap_url_tests.items():
+            result = ldapurl.isLDAPUrl(ldap_url)
+            self.assertEqual(
+                result, expected,
+                'isLDAPUrl("%s") returns %d instead of %d.' % (
+                    ldap_url, result, expected,
+                )
+            )
+
+
 class TestLDAPUrl(unittest.TestCase):
 
     def assertNone(self, expr, msg=None):
