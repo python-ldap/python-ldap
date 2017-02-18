@@ -39,7 +39,7 @@ class TestSplitTokens(unittest.TestCase):
 
     def _run_split_tokens_tests(self, test_cases):
         for test_value, test_result in test_cases:
-            token_list = ldap.schema.tokenizer.split_tokens(test_value, None)
+            token_list = ldap.schema.split_tokens(test_value, None)
             self.assertEqual(token_list, test_result)
 
     def test_basic(self):
