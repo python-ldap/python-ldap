@@ -4,4 +4,4 @@ recursive-include Build *.cfg*
 recursive-include Lib *.py
 recursive-include Demo *.py
 include tox.ini
-recursive-include Tests *.py
+recursive-include Tests *.py *.ldif
