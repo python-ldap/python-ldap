@@ -1,7 +1,6 @@
 import unittest
 
 import ldap.schema
-from ldap.schema.tokenizer import split_tokens,extract_tokens
 
 class TestTokenize(unittest.TestCase):
     testcases_split_tokens = (
