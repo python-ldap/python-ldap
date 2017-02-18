@@ -3,11 +3,11 @@ ldap.schema.tokenizer - Low-level parsing functions for schema element strings
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: tokenizer.py,v 1.13 2009/04/29 18:13:55 stroeder Exp $
+\$Id: tokenizer.py,v 1.14 2017/02/18 15:32:01 stroeder Exp $
 """
 
 
-def split_tokens(s,keywordDict):
+def split_tokens(s):
   """
   Returns list of syntax elements with quotes and spaces
   stripped.

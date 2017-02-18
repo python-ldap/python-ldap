@@ -3,7 +3,7 @@ schema.py - support for subSchemaSubEntry information
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: models.py,v 1.48 2015/06/06 09:21:38 stroeder Exp $
+\$Id: models.py,v 1.49 2017/02/18 15:32:01 stroeder Exp $
 """
 
 import UserDict,ldap.cidict
@@ -54,7 +54,7 @@ class SchemaElement:
 
   def __init__(self,schema_element_str=None):
     if schema_element_str:
-      l = split_tokens(schema_element_str,self.token_defaults)
+      l = split_tokens(schema_element_str)
       self.set_id(l[1])
       d = extract_tokens(l,self.token_defaults)
       self._set_attrs(l,d)
