@@ -6,7 +6,7 @@ import unittest
 
 import ldap.schema
 
-# all basic test cases
+# basic test cases
 TESTCASES_BASIC = (
     (" BLUBBER DI BLUBB ", ["BLUBBER", "DI", "BLUBB"]),
     ("BLUBBER DI BLUBB", ["BLUBBER", "DI", "BLUBB"]),
@@ -25,10 +25,16 @@ TESTCASES_BASIC = (
     ("BLUBB DI 'BLU B B ER' DA 'BLAH' ", ['BLUBB', 'DI', 'BLU B B ER', 'DA', 'BLAH']),
     ("BLUBB DI 'BLU B B ER' DA 'BLAH' LABER", ['BLUBB', 'DI', 'BLU B B ER', 'DA', 'BLAH', 'LABER']),
 )
-# for broken schema of Oracle Internet Directory
-TESTCASES_OID = (
+
+# broken schema of Oracle Internet Directory
+TESTCASES_BROKEN_OID = (
     ("BLUBBER DI 'BLU'BB ER' DA 'BLAH' ", ["BLUBBER", "DI", "BLU'BB ER", "DA", "BLAH"]),
     ("BLUBB DI 'BLU B B ER'MUST 'BLAH' ", ['BLUBB', 'DI', 'BLU B B ER', 'MUST', 'BLAH'])
+)
+
+# for quoted single quotes inside string values
+TESTCASES_ESCAPED_QUOTES = (
+    ("BLUBBER DI 'BLU\'BB ER' DA 'BLAH' ", ["BLUBBER", "DI", "BLU'BB ER", "DA", "BLAH"]),
 )
 
 
@@ -39,7 +45,7 @@ class TestSplitTokens(unittest.TestCase):
 
     def _run_split_tokens_tests(self, test_cases):
         for test_value, test_result in test_cases:
-            token_list = ldap.schema.split_tokens(test_value, None)
+            token_list = ldap.schema.split_tokens(test_value)
             self.assertEqual(token_list, test_result)
 
     def test_basic(self):
@@ -49,11 +55,18 @@ class TestSplitTokens(unittest.TestCase):
         self._run_split_tokens_tests(TESTCASES_BASIC)
 
     @unittest.expectedFailure
-    def test_oid(self):
+    def test_broken_oid(self):
         """
-        run test cases specified in constant TESTCASES_OID
+        run test cases specified in constant TESTCASES_BROKEN_OID
         """
-        self._run_split_tokens_tests(TESTCASES_OID)
+        self._run_split_tokens_tests(TESTCASES_BROKEN_OID)
+
+    @unittest.expectedFailure
+    def test_escaped_quotes(self):
+        """
+        run test cases specified in constant TESTCASES_ESCAPED_QUOTES
+        """
+        self._run_split_tokens_tests(TESTCASES_ESCAPED_QUOTES)
 
 
 if __name__ == '__main__':
