@@ -1,6 +1,12 @@
 ----------------------------------------------------------------
 Released 2.4.33 2017-02-xx
 
+Lib/
+* removed unused 2nd argument of ldap.schema.tokenizer.split_tokens()
+
+Tests/
+* re-factored t_ldap_schema_tokenizer.py
+
 ----------------------------------------------------------------
 Released 2.4.32 2017-02-14
 
@@ -1339,4 +1345,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.410 2017/02/18 14:50:24 stroeder Exp $
+$Id: CHANGES,v 1.411 2017/02/19 12:36:21 stroeder Exp $
