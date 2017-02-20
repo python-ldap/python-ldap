@@ -2,6 +2,8 @@
 Released 2.4.33 2017-02-xx
 
 Lib/
+* faster implementation of ldap.schema.tokenizer.split_tokens()
+  (thanks to Christian Heimes)
 * removed unused 2nd argument of ldap.schema.tokenizer.split_tokens()
 
 Tests/
@@ -1345,4 +1347,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.411 2017/02/19 12:36:21 stroeder Exp $
+$Id: CHANGES,v 1.412 2017/02/20 10:25:47 stroeder Exp $
