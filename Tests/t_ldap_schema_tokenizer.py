@@ -52,10 +52,10 @@ TESTCASES_ESCAPED_QUOTES = (
 TESTCASES_BROKEN = (
     "( BLUB",
     "BLUB )",
-    "( BLUB )) DA (",
     "BLUB 'DA",
-    r"BLUB 'DA\'",
     "BLUB $ DA",
+    "BLUB 'DA\\'",
+    "( BLUB )) DA (",
 )
 
 class TestSplitTokens(unittest.TestCase):
@@ -70,12 +70,20 @@ class TestSplitTokens(unittest.TestCase):
 
     def _run_failure_tests(self, test_cases):
         for test_value in test_cases:
+            should_have_failed = []
             try:
                 _ = ldap.schema.split_tokens(test_value)
             except ValueError:
                 pass
             else:
-                self.fail('%r should have raised ValueError' % (test_value))
+                should_have_failed.append(test_value)
+        if should_have_failed:
+            self.fail(
+                '%d value(s) should have raised ValueError: %r' % (
+                    len(should_have_failed),
+                    should_have_failed,
+                )
+            )
 
     def test_basic(self):
         """
