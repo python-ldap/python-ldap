@@ -3,7 +3,7 @@ ldap.schema.tokenizer - Low-level parsing functions for schema element strings
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: tokenizer.py,v 1.15 2017/02/20 10:25:47 stroeder Exp $
+\$Id: tokenizer.py,v 1.16 2017/02/22 20:25:21 stroeder Exp $
 """
 
 import re
@@ -24,8 +24,7 @@ TOKENS_FINDALL = re.compile(
 
 def split_tokens(s):
     """
-    Returns list of syntax elements with quotes and spaces
-    stripped.
+    Returns list of syntax elements with quotes and spaces stripped.
     """
     parts = []
     parens = 0
@@ -42,13 +41,12 @@ def split_tokens(s):
             parts.append(cpar)
         elif residue == '$':
             if not parens:
-                raise ValueError("'$' outside parenthesis")
+                raise ValueError("'$' outside parenthesis in %r" % (s))
         else:
             raise ValueError(residue, s)
     if parens:
-        raise ValueError('Unbalanced parenthesis in %r' % s)
+        raise ValueError("Unbalanced parenthesis in %r" % (s))
     return parts
-
 
 def extract_tokens(l,known_tokens):
   """
