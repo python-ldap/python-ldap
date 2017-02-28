@@ -69,8 +69,8 @@ class TestSplitTokens(unittest.TestCase):
             self.assertEqual(token_list, test_result)
 
     def _run_failure_tests(self, test_cases):
+        should_have_failed = []
         for test_value in test_cases:
-            should_have_failed = []
             try:
                 _ = ldap.schema.split_tokens(test_value)
             except ValueError:
