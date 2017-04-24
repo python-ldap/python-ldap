@@ -11,6 +11,8 @@ Modules/
 * an empty info message is replaced with str(errno) if errno is non-zero
   which gives more information e.g. in case of ldap.SERVER_DOWN
   (thanks to Markus Klein)
+* removed superfluous ldap_memfree(error) from LDAPerror()
+  (thanks to Markus Klein)
 
 Tests/
 * re-factored t_ldap_schema_tokenizer.py
@@ -1353,4 +1355,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.414 2017/04/24 18:32:50 stroeder Exp $
+$Id: CHANGES,v 1.415 2017/04/24 18:39:44 stroeder Exp $
