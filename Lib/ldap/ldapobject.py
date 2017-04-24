@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.158 2016/11/18 07:01:45 stroeder Exp $
+\$Id: ldapobject.py,v 1.159 2017/04/24 08:25:16 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -206,8 +206,7 @@ class SimpleLDAPObject:
     return self.add_ext(dn,modlist,None,None)
 
   def add_s(self,dn,modlist):
-    msgid = self.add(dn,modlist)
-    return self.result(msgid,all=1,timeout=self.timeout)
+    return self.add_ext_s(dn,modlist,None,None)
 
   def simple_bind(self,who='',cred='',serverctrls=None,clientctrls=None):
     """
@@ -398,8 +397,7 @@ class SimpleLDAPObject:
     return self.modify_ext(dn,modlist,None,None)
 
   def modify_s(self,dn,modlist):
-    msgid = self.modify(dn,modlist)
-    return self.result(msgid,all=1,timeout=self.timeout)
+    return self.modify_ext_s(dn,modlist,None,None)
 
   def modrdn(self,dn,newrdn,delold=1):
     """
@@ -880,6 +878,9 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     for k,v in self._options:
       SimpleLDAPObject.set_option(self,k,v)
 
+  def passwd_s(self,*args,**kwargs):
+    return self._apply_method_s(SimpleLDAPObject.passwd_s,*args,**kwargs)
+
   def reconnect(self,uri,retry_max=1,retry_delay=60.0):
     # Drop and clean up old connection completely
     # Reconnect
@@ -974,8 +975,8 @@ class ReconnectLDAPObject(SimpleLDAPObject):
   def cancel_s(self,*args,**kwargs):
     return self._apply_method_s(SimpleLDAPObject.cancel_s,*args,**kwargs)
 
-  def compare_s(self,*args,**kwargs):
-    return self._apply_method_s(SimpleLDAPObject.compare_s,*args,**kwargs)
+  def compare_ext_s(self,*args,**kwargs):
+    return self._apply_method_s(SimpleLDAPObject.compare_ext_s,*args,**kwargs)
 
   def delete_ext_s(self,*args,**kwargs):
     return self._apply_method_s(SimpleLDAPObject.delete_ext_s,*args,**kwargs)
