@@ -2,7 +2,7 @@
  * errors that arise from ldap use
  * Most errors become their own exception
  * See http://www.python-ldap.org/ for details.
- * $Id: errors.c,v 1.26 2017/01/06 15:11:14 stroeder Exp $ */
+ * $Id: errors.c,v 1.27 2017/04/24 13:48:15 stroeder Exp $ */
 
 #include "common.h"
 #include "errors.h"
@@ -99,10 +99,10 @@ LDAPerror( LDAP *l, char *msg )
     } else if (ldap_get_option(l, LDAP_OPT_ERROR_STRING, &error) >= 0
       && error != NULL) {
         if (*error != '\0') {
-      str = PyString_FromString(error);
-      if (str)
-          PyDict_SetItemString( info, "info", str );
-      Py_XDECREF(str);
+            str = PyString_FromString(error);
+            if (str)
+                PyDict_SetItemString( info, "info", str );
+            Py_XDECREF(str);
         }
         ldap_memfree(error);
     }
