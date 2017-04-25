@@ -1,5 +1,8 @@
 ----------------------------------------------------------------
-Released 2.4.34 2017-04-25
+Released 2.4.35 2017-04-25
+
+Changes since 2.4.33:
+(2.4.34 is missing because of foolish pypi version madness)
 
 Modules/
 * use errno in a safer way
@@ -1367,4 +1370,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.421 2017/04/25 13:41:54 stroeder Exp $
+$Id: CHANGES,v 1.422 2017/04/25 13:52:48 stroeder Exp $
