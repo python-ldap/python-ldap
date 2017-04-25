@@ -16,6 +16,8 @@ Lib/
 ----------------------------------------------------------------
 Released 2.4.33 2017-04-25
 
+Changes since 2.4.32:
+
 Lib/
 * faster implementation of ldap.schema.tokenizer.split_tokens()
   (thanks to Christian Heimes)
@@ -34,6 +36,8 @@ Tests/
 
 ----------------------------------------------------------------
 Released 2.4.32 2017-02-14
+
+Changes since 2.4.31:
 
 Running tests made easier:
 - python setup.py test
@@ -1370,4 +1374,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.422 2017/04/25 13:52:48 stroeder Exp $
+$Id: CHANGES,v 1.423 2017/04/25 17:42:00 stroeder Exp $
