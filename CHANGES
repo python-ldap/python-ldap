@@ -3,6 +3,12 @@ Released 2.4.34 2017-04-xx
 
 Modules/
 * use errno in a safer way
+* set errno as LDAPError class item
+* do not use strerror() which is not thread-safe and platform-specific
+
+Lib/
+* LDAPObject._ldap_call() sets LDAPError info to value returned
+  by platform-neutral os.stderror()
 
 ----------------------------------------------------------------
 Released 2.4.33 2017-04-25
@@ -1361,4 +1367,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.419 2017/04/25 12:45:27 stroeder Exp $
+$Id: CHANGES,v 1.420 2017/04/25 13:40:52 stroeder Exp $
