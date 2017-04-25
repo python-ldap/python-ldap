@@ -11,7 +11,7 @@ Lib/
 * fixed method calls in ReconnectLDAPObject (thanks to Philipp Hahn)
 
 Modules/
-* an empty info message is replaced with str(errno) if errno is non-zero
+* an empty info message is replaced with strerror(errno) if errno is non-zero
   which gives more information e.g. in case of ldap.SERVER_DOWN
   (thanks to Markus Klein)
 * removed superfluous ldap_memfree(error) from LDAPerror()
@@ -1358,4 +1358,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.417 2017/04/25 11:20:11 stroeder Exp $
+$Id: CHANGES,v 1.418 2017/04/25 11:20:40 stroeder Exp $
