@@ -1,6 +1,6 @@
 import os
 import unittest
-from Tests.slapd import SlapdTestCase
+from slapdtest import SlapdTestCase
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'

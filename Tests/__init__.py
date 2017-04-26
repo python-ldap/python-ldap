@@ -12,5 +12,3 @@ import t_ldapurl
 import t_ldif 
 import t_search 
 import t_ldap_schema_subentry
-
-import slapd

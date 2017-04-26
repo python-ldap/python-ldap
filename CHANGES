@@ -6,13 +6,16 @@ Changes since 2.4.35:
 Lib/
 * gracefully handle KeyError in LDAPObject._ldap_call() when
   using errno
+* added new stand-alone module slapdtest (formerly Tests/slapd.py)
+  for general use (still experimental)
 
 Tests/
-* re-factored slapd.py, t_cext.py and t_search.py
+* re-factored t_cext.py and t_search.py
 * set env var LDAPNOINIT=1 in t_cext.py and t_search.py to avoid
   interference with locally installed .ldaprc or ldap.conf
 * by default back-mdb is now used for slapd-based tests
-  which requires fairly recent OpenLDAP builds
+  which requires fairly recent OpenLDAP builds but implements
+  full feature set
 * env vars can be set for slapd.py to tweak path names
   of executables, temporary and schema data to be used
 * new class SlapdTestCase
@@ -1393,4 +1396,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.429 2017/04/26 14:54:14 stroeder Exp $
+$Id: CHANGES,v 1.430 2017/04/26 16:52:50 stroeder Exp $
