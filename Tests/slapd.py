@@ -382,6 +382,7 @@ class SlapdTestCase(unittest.TestCase):
     test class which also clones or initializes a running slapd
     """
 
+    server_class = SlapdObject
     server = None
 
     def _open_ldap_conn(self, who=None, cred=None):
@@ -398,7 +399,7 @@ class SlapdTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         if cls.server is None:
-            cls.server = SlapdObject()
+            cls.server = cls.server_class()
             cls.server.start()       
         cls.server = cls.server
 
