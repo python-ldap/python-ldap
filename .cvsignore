@@ -1,6 +1,8 @@
 build
 dist
+python-ldap-test
 MANIFEST
+.tox
 *.pyc
 *.pyo
 *.bck
