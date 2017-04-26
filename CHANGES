@@ -8,9 +8,9 @@ Lib/
   using errno
 
 Tests/
-* code-cleaning in slapd.py and t_cext.py
-* set env var LDAPNOINIT=1 in t_cext.py to avoid interference
-  with locally installed .ldaprc or ldap.conf
+* re-factored slapd.py, t_cext.py and t_search.py
+* set env var LDAPNOINIT=1 in t_cext.py and t_search.py to avoid
+  interference with locally installed .ldaprc or ldap.conf
 
 ----------------------------------------------------------------
 Released 2.4.35 2017-04-25
@@ -1388,4 +1388,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.425 2017/04/26 08:58:06 stroeder Exp $
+$Id: CHANGES,v 1.426 2017/04/26 10:46:31 stroeder Exp $

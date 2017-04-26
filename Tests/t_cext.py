@@ -5,6 +5,7 @@ Tests the LDAP C Extension module called _ldap
 import os
 import unittest
 from Tests import slapd
+from Tests.slapd import SlapdObject
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
@@ -15,7 +16,7 @@ reusable_server = None
 def get_reusable_server():
     global reusable_server
     if reusable_server is None:
-        reusable_server = slapd.Slapd()
+        reusable_server = SlapdObject()
     return reusable_server
 
 class TestLdapCExtension(unittest.TestCase):
@@ -34,7 +35,7 @@ class TestLdapCExtension(unittest.TestCase):
         if reuse_existing:
             server = get_reusable_server()
         else:
-            server = slapd.Slapd() # private server
+            server = SlapdObject() # private server
         server.start()   # no effect if already started
         self.server = server
         return server
@@ -48,7 +49,7 @@ class TestLdapCExtension(unittest.TestCase):
         if bind:
             # Perform a simple bind
             l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
-            m = l.simple_bind(server.root_dn, server.root_password)
+            m = l.simple_bind(server.root_dn, server.root_pw)
             result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ONE, self.timeout)
             self.assertTrue(result, _ldap.RES_BIND)
         return l

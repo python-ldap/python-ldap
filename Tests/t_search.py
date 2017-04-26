@@ -1,6 +1,11 @@
-import ldap, unittest
-import slapd
+import os
+import unittest
+from Tests.slapd import SlapdObject
 
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
+
+import ldap
 from ldap.ldapobject import LDAPObject
 
 server = None
@@ -10,9 +15,9 @@ class TestSearch(unittest.TestCase):
     def setUp(self):
         global server
         if server is None:
-            server = slapd.Slapd()
+            server = SlapdObject()
             server.start()
-            base = server.get_dn_suffix()
+            base = server.suffix
 
             # insert some Foo* objects via ldapadd
             server.ldapadd("\n".join([
@@ -41,13 +46,13 @@ class TestSearch(unittest.TestCase):
         l = LDAPObject(server.get_url())
         l.protocol_version = 3
         l.set_option(ldap.OPT_REFERRALS,0)
-        l.simple_bind_s(server.get_root_dn(), 
-                server.get_root_password())
+        l.simple_bind_s(server.root_dn, 
+                server.root_pw)
         self.ldap = l
         self.server = server
 
     def test_search_subtree(self):
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
         l = self.ldap
 
         result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
@@ -65,7 +70,7 @@ class TestSearch(unittest.TestCase):
         )
 
     def test_search_onelevel(self):
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
         l = self.ldap
 
         result = l.search_s(base, ldap.SCOPE_ONELEVEL, '(cn=Foo*)', ['*'])
@@ -81,7 +86,7 @@ class TestSearch(unittest.TestCase):
         )
 
     def test_search_oneattr(self):
-        base = self.server.get_dn_suffix()
+        base = self.server.suffix
         l = self.ldap
 
         result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo4)', ['cn'])
