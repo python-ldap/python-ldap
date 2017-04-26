@@ -28,7 +28,7 @@ _LOGGER.setLevel(_LOG_LEVEL)
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_TEMPLATE = """
 moduleload back_%(database)s
-include %(path_schema_core)s
+include %(schema_include)s
 loglevel %(loglevel)s
 allow bind_v2
 database %(database)s
@@ -86,23 +86,24 @@ class SlapdObject:
     root_pw = 'password'
     slapd_loglevel = 'stats stats2'
 
-    # Use /var/tmp to placate apparmour on Ubuntu:
-    PATH_TMPDIR = '/var/tmp'
-    PATH_SBINDIR = '/usr/sbin'
-    PATH_BINDIR = '/usr/bin'
-    PATH_SCHEMA_CORE = '/etc/openldap/schema/core.schema'
-    PATH_LDAPADD = os.path.join(PATH_BINDIR, 'ldapadd')
-    PATH_LDAPSEARCH = os.path.join(PATH_BINDIR, 'ldapsearch')
-    PATH_LDAPWHOAMI = os.path.join(PATH_BINDIR, 'ldapwhoami')
-    PATH_SLAPD = os.path.join(PATH_SBINDIR, 'slapd')
-    PATH_SLAPTEST = os.path.join(PATH_SBINDIR, 'slaptest')
+    TMPDIR = os.environ.get('TMP', os.getcwd())
+    SBINDIR = os.environ.get('SBIN', '/usr/sbin')
+    BINDIR = os.environ.get('BIN', '/usr/bin')
+    SCHEMADIR = os.environ.get('SCHEMA', '/etc/openldap/schema')
+    INIT_SCHEMA_FILE = os.environ.get('SCHEMA_FILE', 'core.schema')
+    INIT_SCHEMA_PATH = os.environ.get('SCHEMA_PATH', os.path.join(SCHEMADIR, INIT_SCHEMA_FILE))
+    PATH_LDAPADD = os.path.join(BINDIR, 'ldapadd')
+    PATH_LDAPSEARCH = os.path.join(BINDIR, 'ldapsearch')
+    PATH_LDAPWHOAMI = os.path.join(BINDIR, 'ldapwhoami')
+    PATH_SLAPD = os.path.join(SBINDIR, 'slapd')
+    PATH_SLAPTEST = os.path.join(SBINDIR, 'slaptest')
 
     def __init__(self):
         self._proc = None
         self._port = find_available_tcp_port(LOCALHOST)
         self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
         self._log = _LOGGER
-        self._tmpdir = os.path.join(os.environ.get('TMP', self.PATH_TMPDIR), 'python-ldap-test')
+        self._tmpdir = os.path.join(self.TMPDIR, 'python-ldap-test')
         self._slapd_conf = os.path.join(self._tmpdir, "slapd.conf")
         self._db_directory = os.path.join(self._tmpdir, "openldap-data")
         # init directory structure
@@ -112,13 +113,14 @@ class SlapdObject:
 
     def __del__(self):
         self.stop()
+        delete_directory_content(self._tmpdir)
 
     def _gen_config(self):
         """
         generates a slapd.conf and returns it as one string
         """
         config_dict = {
-            'path_schema_core': quote(self.PATH_SCHEMA_CORE),
+            'schema_include': quote(self.INIT_SCHEMA_PATH),
             'loglevel': self.slapd_loglevel,
             'database': self.database,
             'directory': quote(self._db_directory),
