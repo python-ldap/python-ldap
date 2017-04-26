@@ -78,7 +78,7 @@ class SlapdObject:
     When a reference to an instance of this class is lost, the slapd
     server is shut down.
     """
-
+    slapd_conf_template = SLAPD_CONF_TEMPLATE
     database = 'mdb'
     suffix = 'dc=slapd-test,dc=python-ldap,dc=org'
     root_cn = 'Manager'
@@ -113,8 +113,10 @@ class SlapdObject:
     def __del__(self):
         self.stop()
 
-    def _write_config(self):
-        """Writes the slapd.conf file out, and returns the path to it."""
+    def _gen_config(self):
+        """
+        generates a slapd.conf and returns it as one string
+        """
         config_dict = {
             'path_schema_core': quote(self.PATH_SCHEMA_CORE),
             'loglevel': self.slapd_loglevel,
@@ -124,9 +126,13 @@ class SlapdObject:
             'rootdn': quote(self.root_dn),
             'rootpw': quote(self.root_pw),
         }
+        return self.slapd_conf_template % config_dict
+
+    def _write_config(self):
+        """Writes the slapd.conf file out, and returns the path to it."""
         self._log.debug("writing config to %s", self._slapd_conf)
         config_file = file(self._slapd_conf, "wb")
-        config_file.write(SLAPD_CONF_TEMPLATE % config_dict)
+        config_file.write(self._gen_config())
         config_file.close()
 
     def start(self):
