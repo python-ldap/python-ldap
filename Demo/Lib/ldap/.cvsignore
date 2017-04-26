@@ -2,3 +2,4 @@
 *.pyo
 *.bck
 *~
+*.egg-info
