@@ -160,13 +160,16 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEquals(pmsg, [])
         self.assertEquals(ctrls, [])
 
-        # see if we can get the rootdse while we're here
+    def test_anon_rootdse_search(self):
+        l = self._open_conn(bind=False)
+        # see if we can get the rootdse with anon search (without prior bind)
         m = l.search_ext(
             "",
             _ldap.SCOPE_BASE,
             '(objectClass=*)',
             ['objectClass', 'namingContexts'],
         )
+        self.assertEqual(type(m), type(0))
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEquals(result, _ldap.RES_SEARCH_RESULT)
         self.assertEquals(pmsg[0][0], "") # rootDSE has no dn
