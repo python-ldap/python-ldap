@@ -174,6 +174,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEquals(result, _ldap.RES_SEARCH_RESULT)
         self.assertEquals(pmsg[0][0], "") # rootDSE has no dn
         self.assertEquals(msgid, m)
+        self.assertEquals(ctrls, [])
         root_dse = pmsg[0][1]
         self.assertTrue('objectClass' in root_dse)
         self.assertTrue('OpenLDAProotDSE' in root_dse['objectClass'])
