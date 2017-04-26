@@ -10,6 +10,7 @@ import time
 import subprocess
 import logging
 import base64
+import unittest
 
 # determine log level
 try:
@@ -106,14 +107,6 @@ class SlapdObject:
         self._tmpdir = os.path.join(self.TMPDIR, 'python-ldap-test')
         self._slapd_conf = os.path.join(self._tmpdir, "slapd.conf")
         self._db_directory = os.path.join(self._tmpdir, "openldap-data")
-        # init directory structure
-        delete_directory_content(self._tmpdir)
-        mkdirs(self._tmpdir)
-        mkdirs(self._db_directory)
-
-    def __del__(self):
-        self.stop()
-        delete_directory_content(self._tmpdir)
 
     def _gen_config(self):
         """
@@ -144,6 +137,10 @@ class SlapdObject:
         if self._proc is None:
             ok = False
             config_path = None
+            # init directory structure
+            delete_directory_content(self._tmpdir)
+            mkdirs(self._tmpdir)
+            mkdirs(self._db_directory)
             try:
                 self._write_config()
                 self._test_configuration()
@@ -378,3 +375,40 @@ class SlapdObject:
                 ''
             ])
         )
+
+
+class SlapdTestCase(unittest.TestCase):
+    """
+    test class which also clones or initializes a running slapd
+    """
+
+    server = None
+
+    def _open_ldap_conn(self, who=None, cred=None):
+        """
+        return a LDAPObject instance after simple bind
+        """
+        import ldap
+        ldap_conn = self.ldap_object_class(self.server.ldap_uri)
+        ldap_conn.protocol_version = 3
+        ldap_conn.set_option(ldap.OPT_REFERRALS,0)
+        ldap_conn.simple_bind_s(who or self.server.root_dn, cred or self.server.root_pw)
+        return ldap_conn
+
+    @classmethod
+    def setUpClass(cls):
+        if cls.server is None:
+            cls.server = SlapdObject()
+            cls.server.start()       
+        cls.server = cls.server
+
+    @classmethod
+    def tearDownClass(cls):
+        try:
+            cls.server.stop()
+        except Exception, err:
+            pass
+        try:
+            delete_directory_content(cls.server._tmpdir)
+        except Exception, err:
+            pass

@@ -15,6 +15,7 @@ Tests/
   which requires fairly recent OpenLDAP builds
 * env vars can be set for slapd.py to tweak path names
   of executables, temporary and schema data to be used
+* new class SlapdTestCase
 
 ----------------------------------------------------------------
 Released 2.4.35 2017-04-25
@@ -1392,4 +1393,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.428 2017/04/26 13:12:52 stroeder Exp $
+$Id: CHANGES,v 1.429 2017/04/26 14:54:14 stroeder Exp $
