@@ -166,7 +166,11 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEquals(result, _ldap.RES_SEARCH_RESULT)
         self.assertEquals(pmsg[0][0], "") # rootDSE has no dn
         self.assertEquals(msgid, m)
-        self.assertTrue(pmsg[0][1].has_key('objectClass'))
+        root_dse = pmsg[0][1]
+        self.assertTrue('objectClass' in root_dse)
+        self.assertTrue('OpenLDAProotDSE' in root_dse['objectClass'])
+        self.assertTrue('namingContexts' in root_dse)
+        self.assertEquals(root_dse['namingContexts'], [self.server.suffix])
 
     def test_unbind(self):
         l = self._open_conn()
