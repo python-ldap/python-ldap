@@ -676,6 +676,22 @@ class TestLdapCExtension(SlapdTestCase):
         else:
             self.fail("expected SERVER_DOWN, got %r" % r)
 
+    def test_invalid_filter(self):
+        l = self._open_conn(bind=False)
+        # search with invalid filter
+        try:
+            m = l.search_ext(
+                "",
+                _ldap.SCOPE_BASE,
+                '(|(objectClass=*)',
+            )
+            self.assertEqual(type(m), type(0))
+            r = l.result4(m, _ldap.MSG_ALL, self.timeout)
+        except _ldap.FILTER_ERROR:
+            pass
+        else:
+            self.fail("expected FILTER_ERROR, got %r" % r)
+
 
 if __name__ == '__main__':
     unittest.main()
