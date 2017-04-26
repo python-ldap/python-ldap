@@ -11,6 +11,8 @@ Tests/
 * re-factored slapd.py, t_cext.py and t_search.py
 * set env var LDAPNOINIT=1 in t_cext.py and t_search.py to avoid
   interference with locally installed .ldaprc or ldap.conf
+* by default back-mdb is now used for slapd-based tests
+  which requires fairly recent OpenLDAP builds
 
 ----------------------------------------------------------------
 Released 2.4.35 2017-04-25
@@ -1388,4 +1390,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.426 2017/04/26 10:46:31 stroeder Exp $
+$Id: CHANGES,v 1.427 2017/04/26 11:14:25 stroeder Exp $

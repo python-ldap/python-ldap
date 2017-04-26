@@ -28,6 +28,7 @@ _LOGGER.setLevel(_LOG_LEVEL)
 
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_TEMPLATE = """
+moduleload back_%(database)s
 include %(path_schema_core)s
 loglevel %(loglevel)s
 allow bind_v2
@@ -79,7 +80,7 @@ class SlapdObject:
     server is shut down.
     """
 
-    database = 'ldif'
+    database = 'mdb'
     suffix = 'dc=slapd-test,dc=python-ldap,dc=org'
     root_cn = 'Manager'
     root_dn = 'cn=%s,%s' % (root_cn, suffix)
@@ -129,7 +130,7 @@ class SlapdObject:
         config_dict = {
             'path_schema_core': quote(self.PATH_SCHEMA_CORE),
             'loglevel': self.slapd_loglevel,
-            'database': quote(self.database),
+            'database': self.database,
             'directory': quote(self._db_directory),
             'suffix': quote(self.suffix),
             'rootdn': quote(self.root_dn),
@@ -236,6 +237,7 @@ class SlapdObject:
         popen_list = [
             self.PATH_SLAPTEST,
             "-f", self._slapd_conf,
+            '-u',
         ]
         if self._log.isEnabledFor(logging.DEBUG):
             popen_list.append('-v')
