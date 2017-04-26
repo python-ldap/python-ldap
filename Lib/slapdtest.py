@@ -3,11 +3,13 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: slapdtest.py,v 1.1 2017/04/26 16:52:50 stroeder Exp $
+\$Id: slapdtest.py,v 1.2 2017/04/26 20:46:37 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
 """
+
+__version__ = '2.4.37'
 
 import os
 import socket
@@ -106,6 +108,9 @@ class SlapdObject(object):
     PATH_SLAPD = os.path.join(SBINDIR, 'slapd')
     PATH_SLAPTEST = os.path.join(SBINDIR, 'slaptest')
 
+    # time in secs to wait before trying to access slapd via LDAP (again)
+    _start_sleep = 1.5
+
     def __init__(self):
         self._proc = None
         self._port = find_available_tcp_port(LOCALHOST)
@@ -183,11 +188,12 @@ class SlapdObject(object):
             if self._proc.poll() is not None:
                 self._stopped()
                 raise RuntimeError("slapd exited before opening port")
+            time.sleep(self._start_sleep)
             try:
                 self._log.debug("Connecting to %s", self.ldap_uri)
                 self.ldapwhoami()
             except RuntimeError:
-                time.sleep(1)
+                pass
             else:
                 return
 
