@@ -85,7 +85,7 @@ class SlapdObject:
     root_dn = 'cn=%s,%s' % (root_cn, suffix)
     root_pw = 'password'
     slapd_loglevel = 'stats stats2'
-    
+
     _log = _LOGGER
 
     # Use /var/tmp to placate apparmour on Ubuntu:
@@ -236,7 +236,6 @@ class SlapdObject:
         popen_list = [
             self.PATH_SLAPTEST,
             "-f", self._slapd_conf,
-#            "-u", os.environ['USER'],
         ]
         if self._log.isEnabledFor(logging.DEBUG):
             popen_list.append('-v')
