@@ -161,7 +161,12 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEquals(ctrls, [])
 
         # see if we can get the rootdse while we're here
-        m = l.search_ext("", _ldap.SCOPE_BASE, '(objectClass=*)')
+        m = l.search_ext(
+            "",
+            _ldap.SCOPE_BASE,
+            '(objectClass=*)',
+            ['objectClass', 'namingContexts'],
+        )
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEquals(result, _ldap.RES_SEARCH_RESULT)
         self.assertEquals(pmsg[0][0], "") # rootDSE has no dn
