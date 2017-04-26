@@ -45,7 +45,7 @@ class TestLdapCExtension(unittest.TestCase):
         Starts a server, and returns a LDAPObject bound to it
         """
         server = self._init_server(reuse_existing)
-        l = _ldap.initialize(server.get_url())
+        l = _ldap.initialize(server.ldap_uri)
         if bind:
             # Perform a simple bind
             l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)

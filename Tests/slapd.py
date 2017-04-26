@@ -4,7 +4,6 @@ Utilities for starting up a test slapd server
 and talking to it with ldapsearch/ldapadd.
 """
 
-import sys
 import os
 import socket
 import time
@@ -87,8 +86,6 @@ class SlapdObject:
     root_pw = 'password'
     slapd_loglevel = 'stats stats2'
 
-    _log = _LOGGER
-
     # Use /var/tmp to placate apparmour on Ubuntu:
     PATH_TMPDIR = '/var/tmp'
     PATH_SBINDIR = '/usr/sbin'
@@ -96,37 +93,28 @@ class SlapdObject:
     PATH_SCHEMA_CORE = '/etc/openldap/schema/core.schema'
     PATH_LDAPADD = os.path.join(PATH_BINDIR, 'ldapadd')
     PATH_LDAPSEARCH = os.path.join(PATH_BINDIR, 'ldapsearch')
+    PATH_LDAPWHOAMI = os.path.join(PATH_BINDIR, 'ldapwhoami')
     PATH_SLAPD = os.path.join(PATH_SBINDIR, 'slapd')
     PATH_SLAPTEST = os.path.join(PATH_SBINDIR, 'slaptest')
 
     def __init__(self):
         self._proc = None
-        self._port = 0
+        self._port = find_available_tcp_port(LOCALHOST)
+        self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
+        self._log = _LOGGER
         self._tmpdir = os.path.join(os.environ.get('TMP', self.PATH_TMPDIR), 'python-ldap-test')
         self._slapd_conf = os.path.join(self._tmpdir, "slapd.conf")
         self._db_directory = os.path.join(self._tmpdir, "openldap-data")
-        self._config = self._generate_slapd_conf()
-        self._log.setLevel(_LOG_LEVEL)
-
-    # getters
-    def get_url(self):
-        return "ldap://%s:%d/" % self.get_address()
-
-    def get_address(self):
-        if self._port == 0:
-            self._port = find_available_tcp_port(LOCALHOST)
-        return (LOCALHOST, self._port)
+        # init directory structure
+        delete_directory_content(self._tmpdir)
+        mkdirs(self._tmpdir)
+        mkdirs(self._db_directory)
 
     def __del__(self):
         self.stop()
 
-    def _generate_slapd_conf(self):
-        """
-        returns a string with a complete slapd.conf
-        """
-        # reinitialize database
-        delete_directory_content(self._db_directory)
-        # generate slapd.conf lines
+    def _write_config(self):
+        """Writes the slapd.conf file out, and returns the path to it."""
         config_dict = {
             'path_schema_core': quote(self.PATH_SCHEMA_CORE),
             'loglevel': self.slapd_loglevel,
@@ -136,15 +124,9 @@ class SlapdObject:
             'rootdn': quote(self.root_dn),
             'rootpw': quote(self.root_pw),
         }
-        return SLAPD_CONF_TEMPLATE % config_dict
-
-    def _write_config(self):
-        """Writes the slapd.conf file out, and returns the path to it."""
-        mkdirs(self._tmpdir)
-        mkdirs(self._db_directory)
-        self._log.debug("writing config to %s", self._config)
+        self._log.debug("writing config to %s", self._slapd_conf)
         config_file = file(self._slapd_conf, "wb")
-        config_file.write(self._config)
+        config_file.write(SLAPD_CONF_TEMPLATE % config_dict)
         config_file.close()
 
     def start(self):
@@ -155,11 +137,12 @@ class SlapdObject:
             ok = False
             config_path = None
             try:
+                self._write_config()
                 self._test_configuration()
                 self._start_slapd()
                 self._wait_for_slapd()
                 ok = True
-                self._log.debug("slapd ready at %s", self.get_url())
+                self._log.debug("slapd ready at %s", self.ldap_uri)
                 self.started()
             finally:
                 if not ok:
@@ -176,7 +159,7 @@ class SlapdObject:
         self._proc = subprocess.Popen([
             self.PATH_SLAPD,
             "-f", self._slapd_conf,
-            "-h", self.get_url(),
+            "-h", self.ldap_uri,
             "-d", "0",
         ])
 
@@ -188,12 +171,12 @@ class SlapdObject:
                 self._stopped()
                 raise RuntimeError("slapd exited before opening port")
             try:
-                self._log.debug("Connecting to %s", repr(self.get_address()))
-                s.connect(self.get_address())
-                s.close()
-                return
-            except socket.error:
+                self._log.debug("Connecting to %s", self.ldap_uri)
+                self.ldapwhoami()
+            except RuntimeError:
                 time.sleep(1)
+            else:
+                return
 
     def stop(self):
         """Stops the slapd server, and waits for it to terminate"""
@@ -232,7 +215,6 @@ class SlapdObject:
                 self._log.debug("could not remove %s", self._slapd_conf)
 
     def _test_configuration(self):
-        self._write_config()
         self._log.debug("testing configuration")
         popen_list = [
             self.PATH_SLAPTEST,
@@ -250,8 +232,24 @@ class SlapdObject:
                 raise RuntimeError("configuration test failed")
             self._log.debug("configuration seems ok")
         finally:
-            pass
-            #os.remove(self._slapd_conf)
+            os.remove(self._slapd_conf)
+
+    def ldapwhoami(self, extra_args=None):
+        """Runs ldapwhoami on this slapd instance"""
+        extra_args = extra_args or []
+        self._log.debug("whoami")
+        p = subprocess.Popen(
+            [
+                self.PATH_LDAPWHOAMI,
+                "-x",
+                "-D", self.root_dn,
+                "-w", self.root_pw,
+                "-H", self.ldap_uri
+            ] + extra_args,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        )
+        if p.wait() != 0:
+            raise RuntimeError("ldapwhoami process failed")
 
     def ldapadd(self, ldif, extra_args=None):
         """Runs ldapadd on this slapd instance, passing it the ldif content"""
@@ -263,7 +261,7 @@ class SlapdObject:
                 "-x",
                 "-D", self.root_dn,
                 "-w", self.root_pw,
-                "-H", self.get_url()
+                "-H", self.ldap_uri
             ] + extra_args,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
         )
@@ -286,7 +284,7 @@ class SlapdObject:
                 "-x",
                 "-D", self.root_dn,
                 "-w", self.root_pw,
-                "-H", self.get_url(),
+                "-H", self.ldap_uri,
                 "-b", base,
                 "-s", scope,
                 "-LL",

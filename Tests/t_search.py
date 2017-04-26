@@ -43,7 +43,7 @@ class TestSearch(unittest.TestCase):
                 "",
             ])+"\n")
 
-        l = LDAPObject(server.get_url())
+        l = LDAPObject(server.ldap_uri)
         l.protocol_version = 3
         l.set_option(ldap.OPT_REFERRALS,0)
         l.simple_bind_s(server.root_dn, 
