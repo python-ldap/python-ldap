@@ -651,6 +651,18 @@ class TestLdapCExtension(SlapdTestCase):
         if not self._require_attr(l, 'cancel'):         # FEATURE_CANCEL
             return
 
+    def test_errno107(self):
+        l = _ldap.initialize('ldap://127.0.0.1:42')
+        try:
+            m = l.simple_bind("", "")
+            result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
+        except _ldap.SERVER_DOWN, ldap_err:
+            errno = ldap_err.args[0]['errno']
+            if errno!=107:
+                self.fail("expected errno=107, got %d" % errno)
+        else:
+            self.fail("expected SERVER_DOWN, got %r" % r)
+            
 
 if __name__ == '__main__':
     unittest.main()
