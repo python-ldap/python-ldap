@@ -3,13 +3,19 @@ Released 2.4.38 2017-05-xx
 
 Changes since 2.4.37:
 
-Lib/
-* slapdtest now evaluates env var SLAPD for optionally pointing
-  to OpenLDAP's slapd executable
+Lib/slapdtest.py
+* SlapdObject now evaluates env var SLAPD for optionally pointing
+  to OpenLDAP's slapd executable (e.g. with OpenLDAP LTB builds)
 * added LDAPI support in slaptest.SlapdObject which is internally used
   in methods ldapadd() and ldapwhoami()
+* fixed enabling logger in slaptest
+* directory name now contains port to be able to run several SlapdObject 
+  instances side-by-side (e.g. with replication)
+* added authz-regexp mapping to rootdn for user running the test
+* internally use SASL/EXTERNAL via LDAPI to bind
 
 Tests/
+* ReconnectLDAPObject is also tested by sub-classing test class
 
 ----------------------------------------------------------------
 Released 2.4.37 2017-04-27
@@ -1422,4 +1428,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.438 2017/04/27 12:24:50 stroeder Exp $
+$Id: CHANGES,v 1.439 2017/04/27 16:06:52 stroeder Exp $

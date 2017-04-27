@@ -3,7 +3,7 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: slapdtest.py,v 1.5 2017/04/27 12:24:50 stroeder Exp $
+\$Id: slapdtest.py,v 1.6 2017/04/27 16:06:52 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
@@ -16,6 +16,7 @@ import socket
 import time
 import subprocess
 import logging
+from logging.handlers import SysLogHandler
 import unittest
 import urllib
 
@@ -29,16 +30,17 @@ try:
 except KeyError:
     _LOG_LEVEL = logging.WARN
 
-# initialize the module logger
-_LOGGER = logging.getLogger("python-ldap-slapd")
-_LOGGER.setLevel(_LOG_LEVEL)
-
 # a template string for generating simple slapd.conf file
-SLAPD_CONF_TEMPLATE = """
+SLAPD_CONF_TEMPLATE = r"""
 moduleload back_%(database)s
 include "%(schema_include)s"
 loglevel %(loglevel)s
 allow bind_v2
+
+authz-regexp
+  "gidnumber=%(root_gid)s\\+uidnumber=%(root_uid)s,cn=peercred,cn=external,cn=auth"
+  "%(rootdn)s"
+
 database %(database)s
 directory "%(directory)s"
 suffix "%(suffix)s"
@@ -48,36 +50,34 @@ rootpw "%(rootpw)s"
 
 LOCALHOST = '127.0.0.1'
 
-def mkdirs(path):
+def combined_logger(
+        log_name,
+        log_level=_LOG_LEVEL,
+        sys_log_format='%(levelname)s %(message)s',
+        console_log_format='%(asctime)s %(levelname)s %(message)s',
+    ):
     """
-    Creates the directory path unless it already exists
+    Returns a combined SysLogHandler/StreamHandler logging instance
+    with formatters
     """
-    if not os.access(os.path.join(path, os.path.curdir), os.F_OK):
-        _LOGGER.debug("creating temp directory %s", path)
-        os.mkdir(path)
-
-def delete_directory_content(path):
-    """
-    Recursively delete content of directory
-    """
-    for dirpath, dirnames, filenames in os.walk(path, topdown=False):
-        for filename in filenames:
-            _LOGGER.info("remove %s", os.path.join(dirpath, filename))
-            os.remove(os.path.join(dirpath, filename))
-        for dirname in dirnames:
-            _LOGGER.info("rmdir %s", os.path.join(dirpath, dirname))
-            os.rmdir(os.path.join(dirpath, dirname))
-
-def find_available_tcp_port(host=LOCALHOST):
-    """
-    find an available port for TCP connection
-    """
-    sock = socket.socket()
-    sock.bind((host, 0))
-    port = sock.getsockname()[1]
-    sock.close()
-    _LOGGER.info("Found available port %d", port)
-    return port
+    # for writing to syslog
+    new_logger = logging.getLogger(log_name)
+    if sys_log_format:
+        my_syslog_formatter = logging.Formatter(
+            fmt=' '.join((log_name, sys_log_format)))
+        my_syslog_handler = logging.handlers.SysLogHandler(
+            address='/dev/log',
+            facility=SysLogHandler.LOG_DAEMON,
+        )
+        my_syslog_handler.setFormatter(my_syslog_formatter)
+        new_logger.addHandler(my_syslog_handler)
+    if console_log_format:
+        my_stream_formatter = logging.Formatter(fmt=console_log_format)
+        my_stream_handler = logging.StreamHandler()
+        my_stream_handler.setFormatter(my_stream_formatter)
+        new_logger.addHandler(my_stream_handler)
+    new_logger.setLevel(log_level)
+    return new_logger  # end of combined_logger()
 
 class SlapdObject(object):
     """
@@ -97,6 +97,9 @@ class SlapdObject(object):
     root_dn = 'cn=%s,%s' % (root_cn, suffix)
     root_pw = 'password'
     slapd_loglevel = 'stats stats2'
+    # use SASL/EXTERNAL via LDAPI when invoking OpenLDAP CLI tools
+    cli_sasl_external = True
+    local_host = '127.0.0.1'
 
     TMPDIR = os.environ.get('TMP', os.getcwd())
     SBINDIR = os.environ.get('SBIN', '/usr/sbin')
@@ -105,6 +108,7 @@ class SlapdObject(object):
     INIT_SCHEMA_FILE = os.environ.get('SCHEMA_FILE', 'core.schema')
     INIT_SCHEMA_PATH = os.environ.get('SCHEMA_PATH', os.path.join(SCHEMADIR, INIT_SCHEMA_FILE))
     PATH_LDAPADD = os.path.join(BINDIR, 'ldapadd')
+    PATH_LDAPMODIFY = os.path.join(BINDIR, 'ldapmodify')
     PATH_LDAPWHOAMI = os.path.join(BINDIR, 'ldapwhoami')
     PATH_SLAPD = os.environ.get('SLAPD', os.path.join(SBINDIR, 'slapd'))
     PATH_SLAPTEST = os.path.join(SBINDIR, 'slaptest')
@@ -113,15 +117,53 @@ class SlapdObject(object):
     _start_sleep = 1.5
 
     def __init__(self):
+        self._log = combined_logger('python-ldap-test')
         self._proc = None
-        self._port = find_available_tcp_port(LOCALHOST)
-        self._log = _LOGGER
-        self.testrundir = os.path.join(self.TMPDIR, 'python-ldap-test')
-        self._slapd_conf = os.path.join(self.testrundir, "slapd.conf")
+        self._port = self._avail_tcp_port()
+        self.testrundir = os.path.join(self.TMPDIR, 'python-ldap-test-%d' % self._port)
+        self._slapd_conf = os.path.join(self.testrundir, 'slapd.conf')
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
         self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
-        ldapi_path = os.path.join(self.testrundir, 'ldapi-%d' % self._port)
+        ldapi_path = os.path.join(self.testrundir, 'ldapi')
         self.ldapi_uri = "ldapi://%s" % urllib.quote_plus(ldapi_path)
+
+    def _setup_rundir(self):
+        """
+        creates rundir structure
+        """
+        os.mkdir(self.testrundir)
+        os.mkdir(self._db_directory)
+
+    def _cleanup_rundir(self):
+        """
+        Recursively delete whole directory specified by `path'
+        """
+        if not os.path.exists(self.testrundir):
+            return
+        self._log.debug('clean-up %s', self.testrundir)
+        for dirpath, dirnames, filenames in os.walk(
+                self.testrundir,
+                topdown=False
+            ):
+            for filename in filenames:
+                self._log.debug('remove %s', os.path.join(dirpath, filename))
+                os.remove(os.path.join(dirpath, filename))
+            for dirname in dirnames:
+                self._log.debug('rmdir %s', os.path.join(dirpath, dirname))
+                os.rmdir(os.path.join(dirpath, dirname))
+        os.rmdir(self.testrundir)
+        self._log.info('cleaned-up %s', self.testrundir)
+
+    def _avail_tcp_port(self):
+        """
+        find an available port for TCP connection
+        """
+        sock = socket.socket()
+        sock.bind((self.local_host, 0))
+        port = sock.getsockname()[1]
+        sock.close()
+        self._log.info('Found available port %d', port)
+        return port
 
     def _gen_config(self):
         """
@@ -135,57 +177,51 @@ class SlapdObject(object):
             'suffix': self.suffix,
             'rootdn': self.root_dn,
             'rootpw': self.root_pw,
+            'root_uid': os.getuid(),
+            'root_gid': os.getgid(),
         }
         return self.slapd_conf_template % config_dict
 
     def _write_config(self):
         """Writes the slapd.conf file out, and returns the path to it."""
-        self._log.debug("writing config to %s", self._slapd_conf)
-        config_file = file(self._slapd_conf, "wb")
+        self._log.debug('Writing config to %s', self._slapd_conf)
+        config_file = file(self._slapd_conf, 'wb')
         config_file.write(self._gen_config())
         config_file.close()
+        self._log.info('Wrote config to %s', self._slapd_conf)
 
-    def start(self):
-        """
-        Starts the slapd server process running, and waits for it to come up.
-        """
-        if self._proc is None:
-            start_ok = False
-            config_path = None
-            # init directory structure
-            delete_directory_content(self.testrundir)
-            mkdirs(self.testrundir)
-            mkdirs(self._db_directory)
-            try:
-                self._write_config()
-                self._test_configuration()
-                self._start_slapd()
-                self._wait_for_slapd()
-                start_ok = True
-                self._log.debug("slapd ready at %s", self.ldap_uri)
-                self.started()
-            finally:
-                if not start_ok:
-                    if config_path:
-                        try:
-                            os.remove(config_path)
-                        except os.error:
-                            pass
-                    if self._proc:
-                        self.stop()
+    def _test_config(self):
+        self._log.debug('testing config %s', self._slapd_conf)
+        popen_list = [
+            self.PATH_SLAPTEST,
+            "-f", self._slapd_conf,
+            '-u',
+        ]
+        if self._log.isEnabledFor(logging.DEBUG):
+            popen_list.append('-v')
+            popen_list.extend(['-d', 'config'])
+        else:
+            popen_list.append('-Q')
+        proc = subprocess.Popen(popen_list)
+        if proc.wait() != 0:
+            raise RuntimeError("configuration test failed")
+        self._log.info("config ok: %s", self._slapd_conf)
 
     def _start_slapd(self):
-        # Spawns/forks the slapd process
-        self._write_config()
-        self._log.info("starting slapd")
-        self._proc = subprocess.Popen([
+        """
+        Spawns/forks the slapd process
+        """
+        slapd_args = [
             self.PATH_SLAPD,
             '-f', self._slapd_conf,
             '-h', '%s' % ' '.join((self.ldap_uri, self.ldapi_uri)),
-            '-d', '0',
-        ])
-
-    def _wait_for_slapd(self):
+        ]
+        if self._log.isEnabledFor(logging.DEBUG):
+            slapd_args.extend(['-d', '-1'])
+        else:
+            slapd_args.extend(['-d', '0'])
+        self._log.info('starting slapd: %r', ' '.join(slapd_args))
+        self._proc = subprocess.Popen(slapd_args)
         # Waits until the LDAP server socket is open, or slapd crashed
         while 1:
             if self._proc.poll() is not None:
@@ -200,17 +236,35 @@ class SlapdObject(object):
             else:
                 return
 
+    def start(self):
+        """
+        Starts the slapd server process running, and waits for it to come up.
+        """
+        if self._proc is None:
+            config_path = None
+            # prepare directory structure
+            self._cleanup_rundir()
+            self._setup_rundir()
+            try:
+                self._write_config()
+                self._test_config()
+                self._start_slapd()
+                self._log.debug(
+                    'slapd with pid=%d listing on %s and %s',
+                    self._proc.pid, self.ldap_uri, self.ldapi_uri
+                )
+                self.started()
+            finally:
+                pass
+                #self._cleanup_rundir()
+
     def stop(self):
         """Stops the slapd server, and waits for it to terminate"""
         if self._proc is not None:
-            self._log.debug("stopping slapd")
-            if hasattr(self._proc, 'terminate'):
-                self._proc.terminate()
-            else:
-                import posix
-                import signal
-                posix.kill(self._proc.pid, signal.SIGTERM)
+            self._log.debug('stopping slapd with pid %d', self._proc.pid)
+            self._proc.terminate()
             self.wait()
+        self._cleanup_rundir()
 
     def restart(self):
         """
@@ -229,67 +283,62 @@ class SlapdObject(object):
     def _stopped(self):
         """Called when the slapd server is known to have terminated"""
         if self._proc is not None:
-            self._log.info("slapd terminated")
+            self._log.info('slapd terminated')
             self._proc = None
             try:
                 os.remove(self._slapd_conf)
             except os.error:
-                self._log.debug("could not remove %s", self._slapd_conf)
+                self._log.debug('could not remove %s', self._slapd_conf)
 
-    def _test_configuration(self):
-        self._log.debug("testing configuration")
-        popen_list = [
-            self.PATH_SLAPTEST,
-            "-f", self._slapd_conf,
-            '-u',
-        ]
-        if self._log.isEnabledFor(logging.DEBUG):
-            popen_list.append('-v')
-            popen_list.extend(['-d', 'config'])
+    def _cli_auth_args(self):
+        if self.cli_sasl_external:
+            authc_args = [
+                '-Y', 'EXTERNAL',
+            ]
+            if not self._log.isEnabledFor(logging.DEBUG):
+                authc_args.append('-Q')
         else:
-            popen_list.append('-Q')
-        try:
-            proc = subprocess.Popen(popen_list)
-            if proc.wait() != 0:
-                raise RuntimeError("configuration test failed")
-            self._log.debug("configuration seems ok")
-        finally:
-            os.remove(self._slapd_conf)
+            authc_args = [
+                '-x',
+                '-D', self.root_dn,
+                '-w', self.root_pw,
+            ]
+        return authc_args
+
+    def _cli_popen(self, ldapcommand, extra_args=None, ldap_uri=None, stdin_data=None):
+        args = [
+            ldapcommand,
+            '-H', ldap_uri or self.ldapi_uri,
+        ] + self._cli_auth_args() + (extra_args or [])
+        self._log.debug('Run command: %r', ' '.join(args))
+        proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        self._log.debug('stdin_data=%r', stdin_data)
+        stdout_data, stderr_data = proc.communicate(stdin_data)
+        if stdout_data is not None:
+            self._log.debug('stdout_data=%r', stdout_data)
+        if stderr_data is not None:
+            self._log.debug('stderr_data=%r', stderr_data)
+        if proc.wait() != 0:
+            raise RuntimeError('ldapadd process failed')
+        return stdout_data, stderr_data
 
     def ldapwhoami(self, extra_args=None):
-        """Runs ldapwhoami on this slapd instance"""
-        extra_args = extra_args or []
-        self._log.debug("whoami")
-        proc = subprocess.Popen(
-            [
-                self.PATH_LDAPWHOAMI,
-                "-x",
-                "-D", self.root_dn,
-                "-w", self.root_pw,
-                "-H", self.ldapi_uri
-            ] + extra_args,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-        )
-        if proc.wait() != 0:
-            raise RuntimeError("ldapwhoami process failed")
+        """
+        Runs ldapwhoami on this slapd instance
+        """
+        self._cli_popen(self.PATH_LDAPWHOAMI, extra_args=extra_args)
 
     def ldapadd(self, ldif, extra_args=None):
-        """Runs ldapadd on this slapd instance, passing it the ldif content"""
-        extra_args = extra_args or []
-        self._log.debug("adding %s", repr(ldif))
-        proc = subprocess.Popen(
-            [
-                self.PATH_LDAPADD,
-                "-x",
-                "-D", self.root_dn,
-                "-w", self.root_pw,
-                "-H", self.ldapi_uri
-            ] + extra_args,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-        )
-        proc.communicate(ldif)
-        if proc.wait() != 0:
-            raise RuntimeError("ldapadd process failed")
+        """
+        Runs ldapadd on this slapd instance, passing it the ldif content
+        """
+        self._cli_popen(self.PATH_LDAPADD, extra_args=extra_args, stdin_data=ldif)
+
+    def ldapmodify(self, ldif, extra_args=None):
+        """
+        Runs ldapadd on this slapd instance, passing it the ldif content
+        """
+        self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args, stdin_data=ldif)
 
     def started(self):
         """
@@ -334,27 +383,18 @@ class SlapdTestCase(unittest.TestCase):
         """
         return a LDAPObject instance after simple bind
         """
-        import ldap
         ldap_conn = self.ldap_object_class(self.server.ldap_uri)
         ldap_conn.protocol_version = 3
-        ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
+        #ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
         ldap_conn.simple_bind_s(who or self.server.root_dn, cred or self.server.root_pw)
         return ldap_conn
 
     @classmethod
     def setUpClass(cls):
-        if cls.server is None:
-            cls.server = cls.server_class()
-            cls.server.start()
+        cls.server = cls.server_class()
+        cls.server.start()
         cls.server = cls.server
 
     @classmethod
     def tearDownClass(cls):
-        try:
-            cls.server.stop()
-        except AttributeError:
-            pass
-        try:
-            delete_directory_content(cls.server.testrundir)
-        except AttributeError:
-            pass
+        cls.server.stop()

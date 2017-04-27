@@ -10,7 +10,7 @@ from slapdtest import SlapdTestCase
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
-from ldap.ldapobject import LDAPObject
+from ldap.ldapobject import SimpleLDAPObject, ReconnectLDAPObject
 
 LDIF_TEMPLATE = """dn: cn=Foo1,%(suffix)s
 objectClass: organizationalRole
@@ -35,12 +35,12 @@ cn: Foo4
 """
 
 
-class TestLDAPObject(SlapdTestCase):
+class Test01_SimpleLDAPObject(SlapdTestCase):
     """
     test LDAP search operations
     """
 
-    ldap_object_class = LDAPObject
+    ldap_object_class = SimpleLDAPObject
 
     @classmethod
     def setUpClass(cls):
@@ -149,6 +149,18 @@ class TestLDAPObject(SlapdTestCase):
             pass
         else:
             self.fail("expected INVALID_CREDENTIALS, got %r" % r)
+
+
+class Test02_ReconnectLDAPObject(Test01_SimpleLDAPObject):
+    """
+    test LDAP search operations
+    """
+
+    ldap_object_class = ReconnectLDAPObject
+
+    @classmethod
+    def setUpClass(cls):
+        Test01_SimpleLDAPObject.setUpClass()
 
 
 if __name__ == '__main__':
