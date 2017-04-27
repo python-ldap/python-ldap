@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.161 2017/04/25 17:50:33 stroeder Exp $
+\$Id: ldapobject.py,v 1.162 2017/04/27 08:40:10 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -111,13 +111,8 @@ class SimpleLDAPObject:
             diagnostic_message_success = self._l.get_option(ldap.OPT_DIAGNOSTIC_MESSAGE)
       finally:
         self._ldap_object_lock.release()
-    except LDAPError,e:
-      if 'info' not in e.args[0]:
-        try:
-          errno = e.args[0]['errno']
-        except KeyError:
-          pass
-        else:
+    except LDAPError, e:
+      if not e.args[0].has_key('info') and e.args[0].has_key('errno'):
           e.args[0]['info'] = strerror(e.args[0]['errno'])
       if __debug__ and self._trace_level>=2:
         self._trace_file.write('=> LDAPError - %s: %s\n' % (e.__class__.__name__,str(e)))

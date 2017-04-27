@@ -4,10 +4,12 @@ Released 2.4.37 2017-05-xx
 Changes since 2.4.36:
 
 Lib/
+* fixed errno-related regression introduced in 2.4.35
 
 Tests/
 * added more checks to t_cext.py
 * renamed t_search.py to t_ldapobject.py and code-cleaning
+* added test for errno-related regression to t_ldapobject.py
 
 ----------------------------------------------------------------
 Released 2.4.36 2017-04-26
@@ -1407,4 +1409,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.433 2017/04/27 08:27:33 stroeder Exp $
+$Id: CHANGES,v 1.434 2017/04/27 08:40:10 stroeder Exp $
