@@ -4,6 +4,8 @@ Released 2.4.38 2017-05-xx
 Changes since 2.4.37:
 
 Lib/
+* slapdtest now evaluates env var SLAPD for optionally pointing
+  to OpenLDAP's slapd executable
 
 Tests/
 
@@ -1418,4 +1420,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.436 2017/04/27 11:11:01 stroeder Exp $
+$Id: CHANGES,v 1.437 2017/04/27 11:13:39 stroeder Exp $

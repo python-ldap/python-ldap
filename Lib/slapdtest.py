@@ -3,7 +3,7 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: slapdtest.py,v 1.3 2017/04/27 11:11:01 stroeder Exp $
+\$Id: slapdtest.py,v 1.4 2017/04/27 11:13:39 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
@@ -105,7 +105,7 @@ class SlapdObject(object):
     INIT_SCHEMA_PATH = os.environ.get('SCHEMA_PATH', os.path.join(SCHEMADIR, INIT_SCHEMA_FILE))
     PATH_LDAPADD = os.path.join(BINDIR, 'ldapadd')
     PATH_LDAPWHOAMI = os.path.join(BINDIR, 'ldapwhoami')
-    PATH_SLAPD = os.path.join(SBINDIR, 'slapd')
+    PATH_SLAPD = os.environ.get('SLAPD', os.path.join(SBINDIR, 'slapd'))
     PATH_SLAPTEST = os.path.join(SBINDIR, 'slaptest')
 
     # time in secs to wait before trying to access slapd via LDAP (again)
