@@ -158,10 +158,6 @@ class Test02_ReconnectLDAPObject(Test01_SimpleLDAPObject):
 
     ldap_object_class = ReconnectLDAPObject
 
-    @classmethod
-    def setUpClass(cls):
-        Test01_SimpleLDAPObject.setUpClass()
-
 
 if __name__ == '__main__':
     unittest.main()
