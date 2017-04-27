@@ -3,7 +3,7 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: slapdtest.py,v 1.6 2017/04/27 16:06:52 stroeder Exp $
+\$Id: slapdtest.py,v 1.7 2017/04/27 16:45:19 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
@@ -32,6 +32,7 @@ except KeyError:
 
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_TEMPLATE = r"""
+serverID %(serverid)s
 moduleload back_%(database)s
 include "%(schema_include)s"
 loglevel %(loglevel)s
@@ -120,12 +121,16 @@ class SlapdObject(object):
         self._log = combined_logger('python-ldap-test')
         self._proc = None
         self._port = self._avail_tcp_port()
+        self.server_id = self._port % 4096
         self.testrundir = os.path.join(self.TMPDIR, 'python-ldap-test-%d' % self._port)
         self._slapd_conf = os.path.join(self.testrundir, 'slapd.conf')
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
         self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
         ldapi_path = os.path.join(self.testrundir, 'ldapi')
         self.ldapi_uri = "ldapi://%s" % urllib.quote_plus(ldapi_path)
+        assert self.suffix.startswith("dc=")
+        assert self.root_dn.startswith("cn=")
+        assert self.root_dn.endswith("," + self.suffix)
 
     def _setup_rundir(self):
         """
@@ -170,6 +175,7 @@ class SlapdObject(object):
         generates a slapd.conf and returns it as one string
         """
         config_dict = {
+            'serverid': hex(self.server_id),
             'schema_include': self.INIT_SCHEMA_PATH,
             'loglevel': self.slapd_loglevel,
             'database': self.database,
@@ -229,7 +235,7 @@ class SlapdObject(object):
                 raise RuntimeError("slapd exited before opening port")
             time.sleep(self._start_sleep)
             try:
-                self._log.debug("Connecting to %s", self.ldap_uri)
+                self._log.debug("slapd connection check to %s", self.ldapi_uri)
                 self.ldapwhoami()
             except RuntimeError:
                 pass
@@ -245,18 +251,14 @@ class SlapdObject(object):
             # prepare directory structure
             self._cleanup_rundir()
             self._setup_rundir()
-            try:
-                self._write_config()
-                self._test_config()
-                self._start_slapd()
-                self._log.debug(
-                    'slapd with pid=%d listing on %s and %s',
-                    self._proc.pid, self.ldap_uri, self.ldapi_uri
-                )
-                self.started()
-            finally:
-                pass
-                #self._cleanup_rundir()
+            self._write_config()
+            self._test_config()
+            self._start_slapd()
+            self._log.debug(
+                'slapd with pid=%d listening on %s and %s',
+                self._proc.pid, self.ldap_uri, self.ldapi_uri
+            )
+            self.started()
 
     def stop(self):
         """Stops the slapd server, and waits for it to terminate"""
@@ -285,10 +287,6 @@ class SlapdObject(object):
         if self._proc is not None:
             self._log.info('slapd terminated')
             self._proc = None
-            try:
-                os.remove(self._slapd_conf)
-            except os.error:
-                self._log.debug('could not remove %s', self._slapd_conf)
 
     def _cli_auth_args(self):
         if self.cli_sasl_external:
@@ -346,10 +344,7 @@ class SlapdObject(object):
         By default, this method adds the two initial objects,
         the domain object and the root user object.
         """
-        assert self.suffix.startswith("dc=")
         suffix_dc = self.suffix.split(',')[0][3:]
-        assert self.root_dn.startswith("cn=")
-        assert self.root_dn.endswith("," + self.suffix)
         self._log.debug(
             "adding %s and %s",
             self.suffix,
@@ -364,7 +359,7 @@ class SlapdObject(object):
                 'o: '+suffix_dc,
                 '',
                 'dn: '+self.root_dn,
-                'objectClass: organizationalRole',
+                'objectClass: applicationProcess',
                 'cn: '+self.root_cn,
                 ''
             ])

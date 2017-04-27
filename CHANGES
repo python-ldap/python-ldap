@@ -14,6 +14,7 @@ Lib/slapdtest.py
   instances side-by-side (e.g. with replication)
 * added authz-regexp mapping to rootdn for user running the test
 * internally use SASL/EXTERNAL via LDAPI to bind
+* SlapdObject.server_id used as serverID in slapd.conf for MMR
 
 Tests/
 * ReconnectLDAPObject is also tested by sub-classing test class
@@ -1429,4 +1430,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.440 2017/04/27 16:10:27 stroeder Exp $
+$Id: CHANGES,v 1.441 2017/04/27 16:45:19 stroeder Exp $
