@@ -692,6 +692,17 @@ class TestLdapCExtension(SlapdTestCase):
         else:
             self.fail("expected FILTER_ERROR, got %r" % r)
 
+    def test_invalid_credentials(self):
+        l = self._open_conn(bind=False)
+        # search with invalid filter
+        try:
+            m = l.simple_bind(self.server.root_dn, self.server.root_pw+'wrong')
+            r = l.result4(m, _ldap.MSG_ALL, self.timeout)
+        except _ldap.INVALID_CREDENTIALS:
+            pass
+        else:
+            self.fail("expected INVALID_CREDENTIALS, got %r" % r)
+
 
 if __name__ == '__main__':
     unittest.main()
