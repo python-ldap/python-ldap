@@ -139,5 +139,17 @@ class TestLDAPObject(SlapdTestCase):
         else:
             self.fail("expected SERVER_DOWN, got %r" % r)
 
+    def test_invalid_credentials(self):
+        l = self.ldap_object_class(self.server.ldap_uri)
+        # search with invalid filter
+        try:
+            m = l.simple_bind(self.server.root_dn, self.server.root_pw+'wrong')
+            r = l.result4(m, ldap.MSG_ALL)
+        except ldap.INVALID_CREDENTIALS:
+            pass
+        else:
+            self.fail("expected INVALID_CREDENTIALS, got %r" % r)
+
+
 if __name__ == '__main__':
     unittest.main()
