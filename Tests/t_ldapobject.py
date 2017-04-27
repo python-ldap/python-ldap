@@ -1,5 +1,5 @@
 """
-test LDAP operations with Python wrapper module
+test LDAP operations with ldap.ldapobject
 """
 
 import os
@@ -35,7 +35,7 @@ cn: Foo4
 """
 
 
-class TestSearch(SlapdTestCase):
+class TestLDAPObject(SlapdTestCase):
     """
     test LDAP search operations
     """
@@ -123,6 +123,21 @@ class TestSearch(SlapdTestCase):
             result,
             [('cn=Foo4,ou=Container,'+self.server.suffix, {'cn': ['Foo4']})]
         )
+
+    def test_errno107(self):
+        l = self.ldap_object_class('ldap://127.0.0.1:42')
+        try:
+            m = l.simple_bind_s("", "")
+            r = l.result4(m, ldap.MSG_ALL, self.timeout)
+        except ldap.SERVER_DOWN, ldap_err:
+            errno = ldap_err.args[0]['errno']
+            if errno != 107:
+                self.fail("expected errno=107, got %d" % errno)
+            info = ldap_err.args[0]['info']
+            if info != os.strerror(107):
+                self.fail("expected info=%r, got %d" % (os.strerror(107), info))
+        else:
+            self.fail("expected SERVER_DOWN, got %r" % r)
 
 if __name__ == '__main__':
     unittest.main()
