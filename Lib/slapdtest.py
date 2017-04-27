@@ -3,7 +3,7 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: slapdtest.py,v 1.4 2017/04/27 11:13:39 stroeder Exp $
+\$Id: slapdtest.py,v 1.5 2017/04/27 12:24:50 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
@@ -17,6 +17,7 @@ import time
 import subprocess
 import logging
 import unittest
+import urllib
 
 # determine log level
 try:
@@ -114,11 +115,13 @@ class SlapdObject(object):
     def __init__(self):
         self._proc = None
         self._port = find_available_tcp_port(LOCALHOST)
-        self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
         self._log = _LOGGER
         self.testrundir = os.path.join(self.TMPDIR, 'python-ldap-test')
         self._slapd_conf = os.path.join(self.testrundir, "slapd.conf")
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
+        self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
+        ldapi_path = os.path.join(self.testrundir, 'ldapi-%d' % self._port)
+        self.ldapi_uri = "ldapi://%s" % urllib.quote_plus(ldapi_path)
 
     def _gen_config(self):
         """
@@ -177,9 +180,9 @@ class SlapdObject(object):
         self._log.info("starting slapd")
         self._proc = subprocess.Popen([
             self.PATH_SLAPD,
-            "-f", self._slapd_conf,
-            "-h", self.ldap_uri,
-            "-d", "0",
+            '-f', self._slapd_conf,
+            '-h', '%s' % ' '.join((self.ldap_uri, self.ldapi_uri)),
+            '-d', '0',
         ])
 
     def _wait_for_slapd(self):
@@ -263,7 +266,7 @@ class SlapdObject(object):
                 "-x",
                 "-D", self.root_dn,
                 "-w", self.root_pw,
-                "-H", self.ldap_uri
+                "-H", self.ldapi_uri
             ] + extra_args,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
         )
@@ -280,7 +283,7 @@ class SlapdObject(object):
                 "-x",
                 "-D", self.root_dn,
                 "-w", self.root_pw,
-                "-H", self.ldap_uri
+                "-H", self.ldapi_uri
             ] + extra_args,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
         )
