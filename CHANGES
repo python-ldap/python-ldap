@@ -4,11 +4,10 @@ Released 2.4.37 2017-05-xx
 Changes since 2.4.36:
 
 Lib/
-* 
 
 Tests/
 * added more checks to t_cext.py
-* code-cleaning in t_search.py
+* renamed t_search.py to t_ldapobject.py and code-cleaning
 
 ----------------------------------------------------------------
 Released 2.4.36 2017-04-26
@@ -1408,4 +1407,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.432 2017/04/26 21:04:31 stroeder Exp $
+$Id: CHANGES,v 1.433 2017/04/27 08:27:33 stroeder Exp $
