@@ -3,7 +3,7 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: slapdtest.py,v 1.7 2017/04/27 16:45:19 stroeder Exp $
+\$Id: slapdtest.py,v 1.8 2017/04/28 06:34:20 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
@@ -258,7 +258,6 @@ class SlapdObject(object):
                 'slapd with pid=%d listening on %s and %s',
                 self._proc.pid, self.ldap_uri, self.ldapi_uri
             )
-            self.started()
 
     def stop(self):
         """Stops the slapd server, and waits for it to terminate"""
@@ -337,33 +336,6 @@ class SlapdObject(object):
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
         self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args, stdin_data=ldif)
-
-    def started(self):
-        """
-        This method is called when the LDAP server has started up and is empty.
-        By default, this method adds the two initial objects,
-        the domain object and the root user object.
-        """
-        suffix_dc = self.suffix.split(',')[0][3:]
-        self._log.debug(
-            "adding %s and %s",
-            self.suffix,
-            self.root_dn,
-        )
-        self.ldapadd(
-            "\n".join([
-                'dn: '+self.suffix,
-                'objectClass: dcObject',
-                'objectClass: organization',
-                'dc: '+suffix_dc,
-                'o: '+suffix_dc,
-                '',
-                'dn: '+self.root_dn,
-                'objectClass: applicationProcess',
-                'cn: '+self.root_cn,
-                ''
-            ])
-        )
 
 
 class SlapdTestCase(unittest.TestCase):
