@@ -1,5 +1,10 @@
+# -*- coding: utf-8 -*-
 """
-Tests the LDAP C Extension module called _ldap
+Automatic tests for python-ldap's C wrapper module _ldap
+
+See http://www.python-ldap.org/ for details.
+
+$Id: t_cext.py,v 1.22 2017/04/28 07:30:59 stroeder Exp $
 """
 
 import os

@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Automatic tests for module ldap.functions
+Automatic tests for python-ldap's module ldap.functions
+
+See http://www.python-ldap.org/ for details.
+
+$Id: t_ldap_functions.py,v 1.2 2017/04/28 07:30:59 stroeder Exp $
 """
 
 # from Python's standard lib

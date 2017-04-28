@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+Automatic tests for python-ldap's module ldapurl
+
+See http://www.python-ldap.org/ for details.
+
+$Id: t_ldapurl.py,v 1.12 2017/04/28 07:30:59 stroeder Exp $
+"""
+
 import unittest
 import urllib
 

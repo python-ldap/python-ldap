@@ -1,5 +1,10 @@
+# -*- coding: utf-8 -*-
 """
-python-ldap tests module package
+Automatic tests for python-ldap
+
+See http://www.python-ldap.org/ for details.
+
+$Id: __init__.py,v 1.5 2017/04/28 07:30:59 stroeder Exp $
 """
 
 import t_cext

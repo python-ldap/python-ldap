@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Automatic tests for module ldap.filter
+Automatic tests for python-ldap's module ldap.filter
+
+See http://www.python-ldap.org/ for details.
+
+$Id: t_ldap_filter.py,v 1.3 2017/04/28 07:30:59 stroeder Exp $
 """
 
 # from Python's standard lib

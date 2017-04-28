@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 """
 slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: slapdtest.py,v 1.8 2017/04/28 06:34:20 stroeder Exp $
+\$Id: slapdtest.py,v 1.9 2017/04/28 07:30:58 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since

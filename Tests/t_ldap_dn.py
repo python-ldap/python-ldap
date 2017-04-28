@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Automatic tests for module ldap.dn
+Automatic tests for python-ldap's module ldap.dn
+
+See http://www.python-ldap.org/ for details.
+
+$Id: t_ldap_dn.py,v 1.4 2017/04/28 07:30:59 stroeder Exp $
 """
 
 # from Python's standard lib

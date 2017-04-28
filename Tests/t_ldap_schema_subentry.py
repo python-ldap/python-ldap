@@ -1,5 +1,10 @@
+# -*- coding: utf-8 -*-
 """
-test class ldap.schema.SubSchema
+Automatic tests for python-ldap's class ldap.schema.SubSchema
+
+See http://www.python-ldap.org/ for details.
+
+$Id: t_ldap_schema_subentry.py,v 1.2 2017/04/28 07:30:59 stroeder Exp $
 """
 
 import unittest
