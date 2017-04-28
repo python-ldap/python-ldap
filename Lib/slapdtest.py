@@ -4,7 +4,7 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: slapdtest.py,v 1.9 2017/04/28 07:30:58 stroeder Exp $
+$Id: slapdtest.py,v 1.10 2017/04/28 08:59:09 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
@@ -20,16 +20,6 @@ import logging
 from logging.handlers import SysLogHandler
 import unittest
 import urllib
-
-# determine log level
-try:
-    _LOG_LEVEL = os.environ['LOGLEVEL']
-    try:
-        _LOG_LEVEL = int(_LOG_LEVEL)
-    except ValueError:
-        pass
-except KeyError:
-    _LOG_LEVEL = logging.WARN
 
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_TEMPLATE = r"""
@@ -54,7 +44,7 @@ LOCALHOST = '127.0.0.1'
 
 def combined_logger(
         log_name,
-        log_level=_LOG_LEVEL,
+        log_level=logging.WARN,
         sys_log_format='%(levelname)s %(message)s',
         console_log_format='%(asctime)s %(levelname)s %(message)s',
     ):
@@ -62,6 +52,12 @@ def combined_logger(
     Returns a combined SysLogHandler/StreamHandler logging instance
     with formatters
     """
+    if 'LOGLEVEL' in os.environ:
+        log_level = os.environ['LOGLEVEL']
+        try:
+            log_level = int(log_level)
+        except ValueError:
+            pass
     # for writing to syslog
     new_logger = logging.getLogger(log_name)
     if sys_log_format:
@@ -80,6 +76,7 @@ def combined_logger(
         new_logger.addHandler(my_stream_handler)
     new_logger.setLevel(log_level)
     return new_logger  # end of combined_logger()
+
 
 class SlapdObject(object):
     """
@@ -247,8 +244,8 @@ class SlapdObject(object):
         """
         Starts the slapd server process running, and waits for it to come up.
         """
+
         if self._proc is None:
-            config_path = None
             # prepare directory structure
             self._cleanup_rundir()
             self._setup_rundir()
@@ -346,6 +343,7 @@ class SlapdTestCase(unittest.TestCase):
 
     server_class = SlapdObject
     server = None
+    ldap_object_class = None
 
     def _open_ldap_conn(self, who=None, cred=None):
         """
