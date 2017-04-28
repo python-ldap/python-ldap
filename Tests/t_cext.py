@@ -21,6 +21,31 @@ class TestLdapCExtension(SlapdTestCase):
 
     timeout = 5
 
+    @classmethod
+    def setUpClass(cls):
+        SlapdTestCase.setUpClass()
+        # add two initial objects after server was started and is still empty
+        suffix_dc = cls.server.suffix.split(',')[0][3:]
+        cls.server._log.debug(
+            "adding %s and %s",
+            cls.server.suffix,
+            cls.server.root_dn,
+        )
+        cls.server.ldapadd(
+            "\n".join([
+                'dn: '+cls.server.suffix,
+                'objectClass: dcObject',
+                'objectClass: organization',
+                'dc: '+suffix_dc,
+                'o: '+suffix_dc,
+                '',
+                'dn: '+cls.server.root_dn,
+                'objectClass: applicationProcess',
+                'cn: '+cls.server.root_cn,
+                ''
+            ])
+        )
+
     def _open_conn(self, bind=True):
         """
         Starts a server, and returns a LDAPObject bound to it

@@ -10,11 +10,13 @@ Lib/slapdtest.py
   in methods ldapadd() and ldapwhoami()
 * added method slaptest.SlapdObject.ldapmodify()
 * fixed enabling logger in slaptest
-* directory name now contains port to be able to run several SlapdObject 
+* directory name now contains port to be able to run several SlapdObject
   instances side-by-side (e.g. with replication)
 * added authz-regexp mapping to rootdn for user running the test
 * internally use SASL/EXTERNAL via LDAPI to bind
 * SlapdObject.server_id used as serverID in slapd.conf for MMR
+* Removed method SlapdObject.started() because SlapdTestCase.setUpClass()
+  will be used to add initial entries
 
 Tests/
 * ReconnectLDAPObject is also tested by sub-classing test class
@@ -1430,4 +1432,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.441 2017/04/27 16:45:19 stroeder Exp $
+$Id: CHANGES,v 1.442 2017/04/28 06:21:04 stroeder Exp $

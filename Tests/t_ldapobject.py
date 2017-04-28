@@ -12,7 +12,19 @@ os.environ['LDAPNOINIT'] = '1'
 import ldap
 from ldap.ldapobject import SimpleLDAPObject, ReconnectLDAPObject
 
-LDIF_TEMPLATE = """dn: cn=Foo1,%(suffix)s
+LDIF_TEMPLATE = """dn: %(suffix)s
+objectClass: dcObject
+objectClass: organization
+dc: %(dc)s
+o: %(dc)s
+
+dn: %(rootdn)s
+objectClass: applicationProcess
+objectClass: simpleSecurityObject
+cn: %(rootcn)s
+userPassword: %(rootpw)s
+
+dn: cn=Foo1,%(suffix)s
 objectClass: organizationalRole
 cn: Foo1
 
@@ -46,7 +58,15 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
     def setUpClass(cls):
         SlapdTestCase.setUpClass()
         # insert some Foo* objects via ldapadd
-        cls.server.ldapadd(LDIF_TEMPLATE % {'suffix':cls.server.suffix})
+        cls.server.ldapadd(
+            LDIF_TEMPLATE % {
+                'suffix':cls.server.suffix,
+                'rootdn':cls.server.root_dn,
+                'rootcn':cls.server.root_cn,
+                'rootpw':cls.server.root_pw,
+                'dc': cls.server.suffix.split(',')[0][3:],
+            }
+        )
 
     def setUp(self):
         try:
