@@ -4,7 +4,7 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See http://www.python-ldap.org/ for details.
 
-$Id: slapdtest.py,v 1.10 2017/04/28 08:59:09 stroeder Exp $
+$Id: slapdtest.py,v 1.11 2017/04/28 20:01:50 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
@@ -126,9 +126,6 @@ class SlapdObject(object):
         self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
         ldapi_path = os.path.join(self.testrundir, 'ldapi')
         self.ldapi_uri = "ldapi://%s" % urllib.quote_plus(ldapi_path)
-        assert self.suffix.startswith("dc=")
-        assert self.root_dn.startswith("cn=")
-        assert self.root_dn.endswith("," + self.suffix)
 
     def _setup_rundir(self):
         """
