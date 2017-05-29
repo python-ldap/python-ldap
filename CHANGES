@@ -3,6 +3,12 @@ Released 2.4.39 2017-05-xx
 
 Changes since 2.4.38:
 
+Lib/
+* fixed errno-related ldap.TIMEOUT regression
+
+Lib/slapdtest.py
+* Removed obsolete assert statements
+
 ----------------------------------------------------------------
 Released 2.4.38 2017-04-28
 
@@ -1437,4 +1443,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.444 2017/04/28 20:03:52 stroeder Exp $
+$Id: CHANGES,v 1.446 2017/05/29 09:00:15 stroeder Exp $
