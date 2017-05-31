@@ -4,13 +4,13 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See http://www.python-ldap.org/ for details.
 
-$Id: slapdtest.py,v 1.11 2017/04/28 20:01:50 stroeder Exp $
+$Id: slapdtest.py,v 1.12 2017/05/31 12:35:00 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
 """
 
-__version__ = '2.4.38'
+__version__ = '2.4.39'
 
 import os
 import socket
