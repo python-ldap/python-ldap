@@ -1,4 +1,12 @@
 ----------------------------------------------------------------
+Released 2.4.40 2017-07-xx
+
+Changes since 2.4.40:
+
+Lib/
+* Added support for increment: lines in LDIF changes records
+
+----------------------------------------------------------------
 Released 2.4.40 2017-06-27
 
 Changes since 2.4.39:
@@ -1452,4 +1460,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.450 2017/06/27 18:38:08 stroeder Exp $
+$Id: CHANGES,v 1.451 2017/07/12 17:30:12 stroeder Exp $
