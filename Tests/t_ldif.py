@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldif
 
 See http://www.python-ldap.org/ for details.
 
-$Id: t_ldif.py,v 1.22 2016/07/30 17:15:22 stroeder Exp $
+$Id: t_ldif.py,v 1.23 2017/07/12 18:05:27 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -644,6 +644,29 @@ class TestChangeRecords(TestLDIFParser):
                 pass
             else:
                 self.fail("should have raised ValueError: %r" % ldif_str)
+
+    def test_mod_increment(self):
+        self.check_records(
+            """
+            version: 1
+
+            dn: cn=x,cn=y,cn=z
+            changetype: modify
+            increment: gidNumber
+            gidNumber: 1
+            -
+
+            """,
+            [
+                (
+                    'cn=x,cn=y,cn=z',
+                    [
+                        (ldif.MOD_OP_INTEGER['increment'], 'gidNumber', [b'1']),
+                    ],
+                    None,
+                ),
+            ],
+        )
 
 
 if __name__ == '__main__':
