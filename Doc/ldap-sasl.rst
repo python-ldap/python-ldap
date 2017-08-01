@@ -1,9 +1,9 @@
-.. % $Id: ldap-sasl.rst,v 1.3 2015/10/24 13:41:02 stroeder Exp $
+.. % $Id: ldap-sasl.rst,v 1.4 2017/08/01 17:48:00 stroeder Exp $
 
 
-********************************************
-:py:mod:`ldap.sasl` Handling LDAPv3 schema
-********************************************
+***********************************************
+:py:mod:`ldap.sasl` SASL Authentication Methods
+***********************************************
 
 .. py:module:: ldap.sasl
 
