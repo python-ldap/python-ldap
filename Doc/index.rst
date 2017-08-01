@@ -2,7 +2,7 @@
 python-ldap Documentation
 ##########################
 
-.. % $Id: index.rst,v 1.9 2015/10/24 12:49:41 stroeder Exp $
+.. % $Id: index.rst,v 1.10 2017/08/01 17:50:24 stroeder Exp $
 
 .. topic:: Abstract
 
@@ -34,6 +34,7 @@ Contents
    ldif.rst
    ldapurl.rst
    dsml.rst
+   slapdtest.rst
 
 
 ******************
