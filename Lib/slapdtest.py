@@ -4,13 +4,13 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See http://www.python-ldap.org/ for details.
 
-$Id: slapdtest.py,v 1.14 2017/07/12 17:30:12 stroeder Exp $
+$Id: slapdtest.py,v 1.15 2017/08/03 17:26:59 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
 """
 
-__version__ = '2.4.41'
+__version__ = '2.4.42'
 
 import os
 import socket
@@ -99,6 +99,10 @@ class SlapdObject(object):
     # use SASL/EXTERNAL via LDAPI when invoking OpenLDAP CLI tools
     cli_sasl_external = True
     local_host = '127.0.0.1'
+    testrunsubdirs = (())
+    openldap_schema_files = (
+        'core.schema',
+    )
 
     TMPDIR = os.environ.get('TMP', os.getcwd())
     SBINDIR = os.environ.get('SBIN', '/usr/sbin')
@@ -133,6 +137,8 @@ class SlapdObject(object):
         """
         os.mkdir(self.testrundir)
         os.mkdir(self._db_directory)
+        self._create_sub_dirs(self.testrunsubdirs)
+        self._ln_schema_files(self.openldap_schema_files, self.SCHEMADIR)
 
     def _cleanup_rundir(self):
         """
@@ -182,6 +188,25 @@ class SlapdObject(object):
             'root_gid': os.getgid(),
         }
         return self.slapd_conf_template % config_dict
+
+    def _create_sub_dirs(self, dir_names):
+        """
+        create sub-directories beneath self.testrundir
+        """
+        for dname in dir_names:
+            dir_name = os.path.join(self.testrundir, dname)
+            self._log.debug('Create directory %s', dir_name)
+            os.mkdir(dir_name)
+
+    def _ln_schema_files(self, file_names, source_dir):
+        """
+        write symbolic links to original schema files
+        """
+        for fname in file_names:
+            ln_source = os.path.join(source_dir, fname)
+            ln_target = os.path.join(self._schema_prefix, fname)
+            self._log.debug('Create symlink %s -> %s', ln_source, ln_target)
+            os.symlink(ln_source, ln_target)
 
     def _write_config(self):
         """Writes the slapd.conf file out, and returns the path to it."""
