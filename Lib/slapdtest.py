@@ -4,7 +4,7 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See https://www.python-ldap.org/ for details.
 
-$Id: slapdtest.py,v 1.16 2017/08/15 16:21:58 stroeder Exp $
+$Id: slapdtest.py,v 1.17 2017/08/15 16:39:26 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
@@ -99,7 +99,9 @@ class SlapdObject(object):
     # use SASL/EXTERNAL via LDAPI when invoking OpenLDAP CLI tools
     cli_sasl_external = True
     local_host = '127.0.0.1'
-    testrunsubdirs = (())
+    testrunsubdirs = (
+        'schema',
+    )
     openldap_schema_files = (
         'core.schema',
     )
@@ -125,6 +127,7 @@ class SlapdObject(object):
         self._port = self._avail_tcp_port()
         self.server_id = self._port % 4096
         self.testrundir = os.path.join(self.TMPDIR, 'python-ldap-test-%d' % self._port)
+        self._schema_prefix = os.path.join(self.testrundir, 'schema')
         self._slapd_conf = os.path.join(self.testrundir, 'slapd.conf')
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
         self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
