@@ -3,12 +3,12 @@ This is a convenience wrapper for dictionaries
 returned from LDAP servers containing attribute
 names of variable case.
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 
-$Id: cidict.py,v 1.13 2009/04/17 14:34:34 stroeder Exp $
+$Id: cidict.py,v 1.14 2017/08/15 16:14:04 stroeder Exp $
 """
 
-__version__ = """$Revision: 1.13 $"""
+__version__ = """$Revision: 1.14 $"""
 
 from UserDict import UserDict
 from string import lower
@@ -103,23 +103,3 @@ def strlist_union(a,b):
   for elt in b:
     temp[elt] = elt
   return temp.values()
-
-
-if __debug__ and __name__ == '__main__':
-  x = { 'AbCDeF' : 123 }
-  cix = cidict(x)
-  assert cix["ABCDEF"] == 123
-  assert cix.get("ABCDEF",None) == 123
-  assert cix.get("not existent",None) is None
-  cix["xYZ"] = 987
-  assert cix["XyZ"] == 987
-  assert cix.get("XyZ",None) == 987
-  cix_keys = cix.keys()
-  cix_keys.sort()
-  assert cix_keys==['AbCDeF','xYZ'],ValueError(repr(cix_keys))
-  cix_items = cix.items()
-  cix_items.sort()
-  assert cix_items==[('AbCDeF',123),('xYZ',987)],ValueError(repr(cix_items))
-  del cix["abcdEF"]
-  assert not cix._keys.has_key("abcdef")
-  assert not cix.has_key("AbCDef")
