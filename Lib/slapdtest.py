@@ -4,7 +4,7 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See https://www.python-ldap.org/ for details.
 
-$Id: slapdtest.py,v 1.17 2017/08/15 16:39:26 stroeder Exp $
+$Id: slapdtest.py,v 1.18 2017/08/15 17:18:54 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
@@ -25,7 +25,7 @@ import urllib
 SLAPD_CONF_TEMPLATE = r"""
 serverID %(serverid)s
 moduleload back_%(database)s
-include "%(schema_include)s"
+include "%(schema_prefix)s/core.schema"
 loglevel %(loglevel)s
 allow bind_v2
 
@@ -110,8 +110,6 @@ class SlapdObject(object):
     SBINDIR = os.environ.get('SBIN', '/usr/sbin')
     BINDIR = os.environ.get('BIN', '/usr/bin')
     SCHEMADIR = os.environ.get('SCHEMA', '/etc/openldap/schema')
-    INIT_SCHEMA_FILE = os.environ.get('SCHEMA_FILE', 'core.schema')
-    INIT_SCHEMA_PATH = os.environ.get('SCHEMA_PATH', os.path.join(SCHEMADIR, INIT_SCHEMA_FILE))
     PATH_LDAPADD = os.path.join(BINDIR, 'ldapadd')
     PATH_LDAPMODIFY = os.path.join(BINDIR, 'ldapmodify')
     PATH_LDAPWHOAMI = os.path.join(BINDIR, 'ldapwhoami')
@@ -180,7 +178,7 @@ class SlapdObject(object):
         """
         config_dict = {
             'serverid': hex(self.server_id),
-            'schema_include': self.INIT_SCHEMA_PATH,
+            'schema_prefix':self._schema_prefix,
             'loglevel': self.slapd_loglevel,
             'database': self.database,
             'directory': self._db_directory,
