@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Demo script for Password Policy Controls
-(see http://tools.ietf.org/html/draft-behera-ldap-password-policy)
+(see https://tools.ietf.org/html/draft-behera-ldap-password-policy)
 
 This needs the following software:
 Python

@@ -2,9 +2,9 @@
 """
 Automatic tests for python-ldap's module ldapurl
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 
-$Id: t_ldapurl.py,v 1.12 2017/04/28 07:30:59 stroeder Exp $
+$Id: t_ldapurl.py,v 1.13 2017/08/15 16:21:59 stroeder Exp $
 """
 
 import unittest

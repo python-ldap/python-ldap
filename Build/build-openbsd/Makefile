@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.5 2014/11/18 08:28:48 stroeder Exp $
+# $Id: Makefile,v 1.6 2017/08/15 16:21:58 stroeder Exp $
 
 WRKDIST=		${.CURDIR}/../..
 VERSION!=		sh ${WRKDIST}/Build/version.sh
@@ -7,7 +7,7 @@ PKGNAME=		python-ldap-${VERSION}
 RUN_DEPENDS=		python:lang/python
 CATEGORIES=		misc
 MAINTAINER=		leonard@users.sourceforge.net
-HOMEPAGE=		http://www.python-ldap.org/
+HOMEPAGE=		https://www.python-ldap.org/
 
 FAKE=			Yes
 CONFIGURE_STYLE=	gnu

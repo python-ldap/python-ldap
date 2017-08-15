@@ -1,5 +1,5 @@
-/* See http://www.python-ldap.org/ for details.
- * $Id: ldapmodule.c,v 1.9 2009/04/17 12:19:09 stroeder Exp $ */
+/* See https://www.python-ldap.org/ for details.
+ * $Id: ldapmodule.c,v 1.10 2017/08/15 16:21:59 stroeder Exp $ */
 
 #include "common.h"
 #include "version.h"

@@ -1,5 +1,5 @@
-/* See http://www.python-ldap.org/ for details.
- * $Id: errors.h,v 1.6 2009/04/17 12:19:09 stroeder Exp $ */
+/* See https://www.python-ldap.org/ for details.
+ * $Id: errors.h,v 1.7 2017/08/15 16:21:59 stroeder Exp $ */
 
 #ifndef __h_errors_
 #define __h_errors_

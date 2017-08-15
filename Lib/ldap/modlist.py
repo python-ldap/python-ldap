@@ -1,9 +1,9 @@
 """
 ldap.modlist - create add/modify modlist's
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 
-$Id: modlist.py,v 1.18 2011/06/06 13:07:38 stroeder Exp $
+$Id: modlist.py,v 1.19 2017/08/15 16:21:58 stroeder Exp $
 
 Python compability note:
 This module is known to work with Python 2.0+ but should work

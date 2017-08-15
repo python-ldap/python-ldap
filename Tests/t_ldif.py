@@ -2,9 +2,9 @@
 """
 Automatic tests for python-ldap's module ldif
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 
-$Id: t_ldif.py,v 1.23 2017/07/12 18:05:27 stroeder Exp $
+$Id: t_ldif.py,v 1.24 2017/08/15 16:21:59 stroeder Exp $
 """
 
 # from Python's standard lib

@@ -1,6 +1,6 @@
 /* constants defined for LDAP
- * See http://www.python-ldap.org/ for details.
- * $Id: constants.c,v 1.59 2014/09/12 12:02:21 stroeder Exp $ */
+ * See https://www.python-ldap.org/ for details.
+ * $Id: constants.c,v 1.60 2017/08/15 16:21:59 stroeder Exp $ */
 
 #include "common.h"
 #include "constants.h"

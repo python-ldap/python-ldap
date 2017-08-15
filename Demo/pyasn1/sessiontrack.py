@@ -3,9 +3,9 @@
 """
 demo_track_ldap_session.py
 
-Client-seitige Demo-Implementierung von Session Tracking Control
+Client-side demo implementation of Session Tracking Control
 
-http://tools.ietf.org/html/draft-wahl-ldap-session-03
+https://tools.ietf.org/html/draft-wahl-ldap-session-03
 """
 
 __version__ = '0.1'

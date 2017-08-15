@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 ldap.controls.psearch - classes for Persistent Search Control
-(see http://tools.ietf.org/html/draft-ietf-ldapext-psearch)
+(see https://tools.ietf.org/html/draft-ietf-ldapext-psearch)
 
-See http://www.python-ldap.org/ for project details.
+See https://www.python-ldap.org/ for project details.
 
-$Id: psearch.py,v 1.4 2011/07/22 13:47:47 stroeder Exp $
+$Id: psearch.py,v 1.5 2017/08/15 16:21:58 stroeder Exp $
 """
 
 __all__ = [

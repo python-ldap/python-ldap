@@ -1,5 +1,5 @@
-/* See http://www.python-ldap.org/ for details.
- * $Id: ldapcontrol.c,v 1.21 2017/06/23 18:09:59 stroeder Exp $ */
+/* See https://www.python-ldap.org/ for details.
+ * $Id: ldapcontrol.c,v 1.22 2017/08/15 16:21:59 stroeder Exp $ */
 
 #include "common.h"
 #include "LDAPObject.h"

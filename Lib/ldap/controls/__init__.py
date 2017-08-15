@@ -2,9 +2,9 @@
 """
 controls.py - support classes for LDAP controls
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 
-$Id: __init__.py,v 1.10 2015/06/06 09:21:38 stroeder Exp $
+$Id: __init__.py,v 1.11 2017/08/15 16:21:58 stroeder Exp $
 
 Description:
 The ldap.controls module provides LDAPControl classes.

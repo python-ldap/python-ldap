@@ -1,9 +1,9 @@
 """
 dn.py - misc stuff for handling distinguished names (see RFC 4514)
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 
-\$Id: dn.py,v 1.16 2016/07/24 15:58:26 stroeder Exp $
+\$Id: dn.py,v 1.17 2017/08/15 16:21:58 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+

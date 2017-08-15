@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 Demo script for Persistent Search Control
-(see http://tools.ietf.org/html/draft-ietf-ldapext-psearch)
+(see https://tools.ietf.org/html/draft-ietf-ldapext-psearch)
 
-See http://www.python-ldap.org/ for project details.
+See https://www.python-ldap.org/ for project details.
 This needs the following software:
 Python
 pyasn1

@@ -1,5 +1,5 @@
-/* See http://www.python-ldap.org/ for details.
- * $Id: LDAPObject.h,v 1.10 2009/04/17 12:19:09 stroeder Exp $ */
+/* See https://www.python-ldap.org/ for details.
+ * $Id: LDAPObject.h,v 1.11 2017/08/15 16:21:59 stroeder Exp $ */
 
 #ifndef __h_LDAPObject 
 #define __h_LDAPObject 

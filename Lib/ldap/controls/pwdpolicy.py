@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 ldap.controls.pwdpolicy - classes for Password Policy controls
-(see http://tools.ietf.org/html/draft-vchu-ldap-pwd-policy)
+(see https://tools.ietf.org/html/draft-vchu-ldap-pwd-policy)
 
-See http://www.python-ldap.org/ for project details.
+See https://www.python-ldap.org/ for project details.
 
-$Id: pwdpolicy.py,v 1.5 2015/10/24 15:55:07 stroeder Exp $
+$Id: pwdpolicy.py,v 1.6 2017/08/15 16:21:58 stroeder Exp $
 """
 
 __all__ = [

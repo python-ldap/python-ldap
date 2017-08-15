@@ -2,9 +2,9 @@
 """
 ldap.controls.openldap - classes for OpenLDAP-specific controls
 
-See http://www.python-ldap.org/ for project details.
+See https://www.python-ldap.org/ for project details.
 
-$Id: openldap.py,v 1.6 2015/10/24 16:21:56 stroeder Exp $
+$Id: openldap.py,v 1.7 2017/08/15 16:21:58 stroeder Exp $
 """
 
 import ldap.controls

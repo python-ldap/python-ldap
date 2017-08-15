@@ -2,7 +2,7 @@
 """
 Demo script for counting searching with OpenLDAP's no-op control
 
-See http://www.python-ldap.org/ for project details.
+See https://www.python-ldap.org/ for project details.
 This needs the following software:
 Python
 pyasn1

@@ -1,5 +1,5 @@
-/* See http://www.python-ldap.org/ for details.
- * $Id: ldapcontrol.h,v 1.6 2009/08/04 05:39:10 leonard Exp $ */
+/* See https://www.python-ldap.org/ for details.
+ * $Id: ldapcontrol.h,v 1.7 2017/08/15 16:21:59 stroeder Exp $ */
 
 #ifndef __h_ldapcontrol
 #define __h_ldapcontrol

@@ -1,9 +1,9 @@
 """
 setup.py - Setup package with the help Python's DistUtils
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 
-$Id: setup.py,v 1.79 2017/04/26 16:52:50 stroeder Exp $
+$Id: setup.py,v 1.80 2017/08/15 16:21:58 stroeder Exp $
 """
 
 has_setuptools = False

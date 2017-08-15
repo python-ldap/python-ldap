@@ -1,6 +1,6 @@
 /* Miscellaneous common routines
- * See http://www.python-ldap.org/ for details.
- * $Id: common.c,v 1.3 2009/04/17 12:19:09 stroeder Exp $ */
+ * See https://www.python-ldap.org/ for details.
+ * $Id: common.c,v 1.4 2017/08/15 16:21:59 stroeder Exp $ */
 
 #include "common.h"
 

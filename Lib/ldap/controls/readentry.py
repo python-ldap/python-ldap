@@ -3,9 +3,9 @@
 ldap.controls.readentry - classes for the Read Entry controls
 (see RFC 4527)
 
-See http://www.python-ldap.org/ for project details.
+See https://www.python-ldap.org/ for project details.
 
-$Id: readentry.py,v 1.5 2015/09/18 17:24:55 stroeder Exp $
+$Id: readentry.py,v 1.6 2017/08/15 16:21:58 stroeder Exp $
 """
 
 import ldap

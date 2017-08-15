@@ -1,5 +1,5 @@
-/* See http://www.python-ldap.org/ for details.
- * $Id: message.c,v 1.19 2011/10/26 18:38:06 stroeder Exp $ */
+/* See https://www.python-ldap.org/ for details.
+ * $Id: message.c,v 1.20 2017/08/15 16:21:59 stroeder Exp $ */
 
 #include "common.h"
 #include "message.h"

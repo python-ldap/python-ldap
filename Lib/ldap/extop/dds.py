@@ -3,11 +3,9 @@
 ldap.extop.dds - Classes for Dynamic Entries extended operations
 (see RFC 2589)
 
-This needs the following software:
-Python
-pyasn1
-pyasn1-modules
-python-ldap 2.4+
+See https://www.python-ldap.org/ for details.
+
+$Id: dds.py,v 1.3 2017/08/15 16:21:58 stroeder Exp $
 """
 
 from ldap.extop import ExtendedRequest,ExtendedResponse

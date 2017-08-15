@@ -3,9 +3,9 @@
 ldap.controls.sss - classes for Server Side Sorting
 (see RFC 2891)
 
-See http://www.python-ldap.org/ for project details.
+See https://www.python-ldap.org/ for project details.
 
-$Id: sss.py,v 1.3 2016/09/26 22:06:54 stroeder Exp $
+$Id: sss.py,v 1.4 2017/08/15 16:21:58 stroeder Exp $
 """
 
 __all__ = [
