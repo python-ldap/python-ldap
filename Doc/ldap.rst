@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.34 2016/07/24 16:12:55 stroeder Exp $
+.. % $Id: ldap.rst,v 1.35 2017/08/16 11:34:47 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -37,11 +37,13 @@ This module defines the following functions:
    and return an LDAP object (see :ref:`ldap-objects`) used to perform operations
    on that server.  Parameter *uri* has to be a valid LDAP URL.
 
-   Note that the C wrapper function :py:func:_ldap.initialize() is called which calls
-   the OpenLDAP funtion ldap_initialize(). Calling this function just initializes
-   the LDAP connection struct in the C API - nothing else. The first call to
-   an operation method (bind, search etc.) then really opens the connection.
-   Before that nothing is sent on the wire.
+   Note that internally the OpenLDAP funtion
+   `ldap_initialize(3) <https://www.openldap.org/software/man.cgi?query=ldap_init&sektion=3>`_   
+   is called which just initializes the LDAP connection struct in the C API 
+   - nothing else. Therefore the first call to an operation method (bind, 
+   search etc.) then really opens the connection (lazy connect). Before 
+   that nothing is sent on the wire. The error handling in the calling 
+   application has to correctly handle this behaviour.
 
    The optional arguments are for generating debug log information:
    *trace_level* specifies the amount of information being logged,
