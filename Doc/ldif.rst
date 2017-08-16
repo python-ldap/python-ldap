@@ -1,4 +1,4 @@
-.. % $Id: ldif.rst,v 1.9 2016/07/24 15:47:46 stroeder Exp $
+.. % $Id: ldif.rst,v 1.10 2017/08/16 11:24:37 stroeder Exp $
 
 #####################################
 :mod:`ldif` LDIF parser and generator
@@ -31,12 +31,16 @@ Classes
 ^^^^^^^
 
 .. autoclass:: ldif.LDIFWriter
+   :members:
 
 .. autoclass:: ldif.LDIFParser
+   :members:
 
 .. autoclass:: LDIFRecordList
+   :members:
 
 .. autoclass:: LDIFCopy
+   :members:
 
 
 .. _ldif-example:
