@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.36 2017/08/16 11:42:55 stroeder Exp $
+.. % $Id: ldap.rst,v 1.37 2017/08/16 11:47:11 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -568,17 +568,16 @@ LDAPObject classes
 
    Instances of :py:class:`LDAPObject` are returned by :py:func:`initialize()`
    and :py:func:`open()` (deprecated). The connection is automatically unbound
-   and closed when the LDAP object is deleted. Internally :py:class:`LDAPObject`
-   is set to :py:class:`SimpleLDAPObject` by default.
+   and closed when the LDAP object is deleted.
+   
+   Internally :py:class:`LDAPObject` is set to :py:class:`SimpleLDAPObject` 
+   by default.
 
 .. py:class:: SimpleLDAPObject(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=5]]])
 
+   This basic class wraps all methods of the underlying C API object.
+
    The arguments are same like for function :py:func:`initialize()`.
-
-   Instances of :py:class:`LDAPObject` are returned by :py:func:`initialize()`
-   and :py:func:`open()` (deprecated). The connection is automatically unbound
-   and closed  when the LDAP object is deleted.
-
 
 .. py:class:: ReconnectLDAPObject(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=5] [, retry_max=1 [, retry_delay=60.0]]]])
 
