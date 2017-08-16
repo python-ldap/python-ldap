@@ -1,4 +1,4 @@
-.. % $Id: ldap-dn.rst,v 1.8 2016/07/24 15:52:26 stroeder Exp $
+.. % $Id: ldap-dn.rst,v 1.9 2017/08/16 12:00:39 stroeder Exp $
 
 
 :py:mod:`ldap.dn` LDAP Distinguished Name handling
@@ -27,48 +27,43 @@
 The :mod:`ldap.dn` module defines the following functions:
 
 
-.. function:: escape_dn_chars(s)
+.. function:: escape_dn_chars(s) -> string
 
    This function escapes characters in string *s* which  are special in LDAP
    distinguished names. You should use  this function when building LDAP DN strings
    from arbitrary input.
 
-   .. % -> string
 
-
-.. function:: str2dn(s [, flags=0])
+.. function:: str2dn(s [, flags=0]) -> list
 
    This function takes *s* and breaks it up into its component parts  down to AVA
    level. The optional parameter *flags* describes the DN format of s  (see
    :ref:`ldap-dn-flags`). Note that hex-encoded non-ASCII chars are decoded
    to the raw bytes.
 
-   .. % -> list
+   Internally this function is implemented by calling OpenLDAP C function
+   `ldap_str2dn(3) <https://www.openldap.org/software/man.cgi?query=ldap_str2dn&sektion=3>`_.
 
 
-.. function:: dn2str(dn)
+.. function:: dn2str(dn) -> string
 
    This function takes a decomposed DN in *dn* and returns  a single string. It's
    the inverse to :func:`str2dn`.  Special characters are escaped with the help of
    function :func:`escape_dn_chars`.
 
-   .. % -> string
 
-
-.. function:: explode_dn(dn [, notypes=0[, flags=0]])
+.. function:: explode_dn(dn [, notypes=0[, flags=0]]) -> list
 
    This function takes *dn* and breaks it up into its component parts.   Each part
    is known as an RDN (Relative Distinguished Name). The optional  *notypes*
    parameter is used to specify that only the RDN values be   returned and not
    their types. The optional parameter *flags*  describes the DN format of s (see
-   :ref:`ldap-dn-flags`).    This function is emulated by function
+   :ref:`ldap-dn-flags`). This function is emulated by function
    :func:`str2dn`  since the function ldap_explode_dn() in the C library is
    deprecated.
 
-   .. % -> list
 
-
-.. function:: explode_rdn(rdn [, notypes=0[, flags=0]])
+.. function:: explode_rdn(rdn [, notypes=0[, flags=0]]) -> list
 
    This function takes a (multi-valued) *rdn* and breaks it up  into a list of
    characteristic attributes. The optional  *notypes* parameter is used to specify
@@ -77,14 +72,12 @@ The :mod:`ldap.dn` module defines the following functions:
    function is emulated by function :func:`str2dn`  since the function
    ldap_explode_rdn() in the C library is deprecated.
 
-   .. % -> list
 
-.. function:: is_dn(dn[, flags=0])
+.. function:: is_dn(dn[, flags=0]) -> boolean
 
    This function checks whether *dn* is a valid LDAP distinguished name by 
    passing it to function :func:`str2dn`.
 
-   .. % -> boolean
 
 .. _ldap-dn-example:
 
