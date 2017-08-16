@@ -1,4 +1,4 @@
-.. % $Id: ldap-dn.rst,v 1.9 2017/08/16 12:00:39 stroeder Exp $
+.. % $Id: ldap-dn.rst,v 1.10 2017/08/16 12:03:33 stroeder Exp $
 
 
 :py:mod:`ldap.dn` LDAP Distinguished Name handling
@@ -75,7 +75,7 @@ The :mod:`ldap.dn` module defines the following functions:
 
 .. function:: is_dn(dn[, flags=0]) -> boolean
 
-   This function checks whether *dn* is a valid LDAP distinguished name by 
+   This function checks whether *dn* is a valid LDAP distinguished name by
    passing it to function :func:`str2dn`.
 
 

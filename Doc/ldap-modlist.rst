@@ -1,4 +1,4 @@
-.. % $Id: ldap-modlist.rst,v 1.5 2016/03/03 17:06:10 stroeder Exp $
+.. % $Id: ldap-modlist.rst,v 1.6 2017/08/16 12:03:33 stroeder Exp $
 
 
 :py:mod:`ldap.modlist` Generate modify lists
@@ -27,17 +27,17 @@ The :mod:`ldap.modlist` module defines the following functions:
 
    This function builds a list suitable for passing it directly as argument
    *modlist* to method :py:meth:`ldap.ldapobject.LDAPObject.modify` or
-   its synchronous counterpart :py:meth:`ldap.ldapobject.LDAPObject.modify_s`. 
-   
+   its synchronous counterpart :py:meth:`ldap.ldapobject.LDAPObject.modify_s`.
+
    Roughly when applying the resulting modify list to an entry
    holding  the data *old_entry* it will be modified in such a way that the entry
    holds *new_entry* after the modify operation. It is handy in situations when it
    is impossible to track user changes to an entry's data or for synchronizing
    operations.
-   
+
    *old_entry* and *new_entry* are dictionaries like returned when
    receiving search results.
-   
+
    *ignore_attr_types* is a list of attribute type
    names which shall be ignored completely. These attribute types will not appear
    in the result at all.
@@ -53,10 +53,10 @@ The :mod:`ldap.modlist` module defines the following functions:
    unnecessary changes (e.g. case of attribute type names in DNs).
 
    .. note::
-      Replacing attribute values is always done with a 
-      :py:const:`ldap.MOD_DELETE`/:py:const:`ldap.MOD_ADD` pair instead of 
-      :py:const:`ldap.MOD_REPLACE` to work-around potential issues with 
-      attributes for which no EQUALITY matching rule are defined in the 
-      server's subschema.  This works correctly in most situations but 
-      rarely fails with some LDAP servers implementing (schema) checks on 
+      Replacing attribute values is always done with a
+      :py:const:`ldap.MOD_DELETE`/:py:const:`ldap.MOD_ADD` pair instead of
+      :py:const:`ldap.MOD_REPLACE` to work-around potential issues with
+      attributes for which no EQUALITY matching rule are defined in the
+      server's subschema.  This works correctly in most situations but
+      rarely fails with some LDAP servers implementing (schema) checks on
       transient state entry during processing the modify operation.

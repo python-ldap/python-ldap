@@ -1,4 +1,4 @@
-.. % $Id: slapdtest.rst,v 1.2 2017/08/16 11:25:07 stroeder Exp $
+.. % $Id: slapdtest.rst,v 1.3 2017/08/16 12:03:33 stroeder Exp $
 
 #####################################
 :mod:`slapdtest` Spawning test instances of OpenLDAP's slapd server
@@ -9,7 +9,7 @@
 .. moduleauthor:: python-ldap project (see https://www.python-ldap.org/)
 
 
-The module is used for testing python-ldap itself but can be used for 
+The module is used for testing python-ldap itself but can be used for
 automatically testing any OpenLDAP-based configuration setup.
 
 This module is pure Python and does not rely on any non-standard modules.

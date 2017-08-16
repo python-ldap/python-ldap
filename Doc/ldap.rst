@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.37 2017/08/16 11:47:11 stroeder Exp $
+.. % $Id: ldap.rst,v 1.38 2017/08/16 12:03:33 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -261,9 +261,7 @@ This constants are used for DN-parsing functions found in
 sub-module :py:mod:`ldap.dn`.
 
 .. seealso::
-
-   :manpage:`ldap_str2dn{3}`
-
+   `ldap_str2dn(3) <https://www.openldap.org/software/man.cgi?query=ldap_str2dn&sektion=3>`_
 
 .. py:data:: DN_FORMAT_LDAP
 
@@ -569,8 +567,8 @@ LDAPObject classes
    Instances of :py:class:`LDAPObject` are returned by :py:func:`initialize()`
    and :py:func:`open()` (deprecated). The connection is automatically unbound
    and closed when the LDAP object is deleted.
-   
-   Internally :py:class:`LDAPObject` is set to :py:class:`SimpleLDAPObject` 
+
+   Internally :py:class:`LDAPObject` is set to :py:class:`SimpleLDAPObject`
    by default.
 
 .. py:class:: SimpleLDAPObject(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=5]]])
@@ -1010,7 +1008,6 @@ and wait for and return with the server's result, or with
   .. seealso::
 
     :rfc:`2830` - Lightweight Directory Access Protocol (v3): Extension for Transport Layer Security
-
 
 
 .. py:method:: LDAPObject.unbind() -> int
