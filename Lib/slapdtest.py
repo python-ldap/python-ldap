@@ -4,7 +4,7 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See https://www.python-ldap.org/ for details.
 
-$Id: slapdtest.py,v 1.18 2017/08/15 17:18:54 stroeder Exp $
+$Id: slapdtest.py,v 1.19 2017/08/16 13:29:06 stroeder Exp $
 
 Python compability note:
 This module only works with Python 2.7.x since
@@ -83,7 +83,7 @@ class SlapdObject(object):
     Controller class for a slapd instance, OpenLDAP's server.
 
     This class creates a temporary data store for slapd, runs it
-    on a private port, and initialises it with a top-level dc and
+    listening on a private Unix domain socket and TCP port, and initialises it with a top-level entry and
     the root user.
 
     When a reference to an instance of this class is lost, the slapd
@@ -132,9 +132,12 @@ class SlapdObject(object):
         ldapi_path = os.path.join(self.testrundir, 'ldapi')
         self.ldapi_uri = "ldapi://%s" % urllib.quote_plus(ldapi_path)
 
-    def _setup_rundir(self):
+    def setup_rundir(self):
         """
         creates rundir structure
+
+        for setting up a custom directory structure you have to override
+        this method
         """
         os.mkdir(self.testrundir)
         os.mkdir(self._db_directory)
@@ -172,9 +175,12 @@ class SlapdObject(object):
         self._log.info('Found available port %d', port)
         return port
 
-    def _gen_config(self):
+    def gen_config(self):
         """
         generates a slapd.conf and returns it as one string
+
+        for generating specific static configuration files you have to
+        override this method
         """
         config_dict = {
             'serverid': hex(self.server_id),
@@ -213,7 +219,7 @@ class SlapdObject(object):
         """Writes the slapd.conf file out, and returns the path to it."""
         self._log.debug('Writing config to %s', self._slapd_conf)
         config_file = file(self._slapd_conf, 'wb')
-        config_file.write(self._gen_config())
+        config_file.write(self.gen_config())
         config_file.close()
         self._log.info('Wrote config to %s', self._slapd_conf)
 
@@ -271,7 +277,7 @@ class SlapdObject(object):
         if self._proc is None:
             # prepare directory structure
             self._cleanup_rundir()
-            self._setup_rundir()
+            self.setup_rundir()
             self._write_config()
             self._test_config()
             self._start_slapd()
