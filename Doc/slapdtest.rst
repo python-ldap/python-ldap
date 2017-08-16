@@ -1,8 +1,8 @@
-.. % $Id: slapdtest.rst,v 1.3 2017/08/16 12:03:33 stroeder Exp $
+.. % $Id: slapdtest.rst,v 1.4 2017/08/16 12:17:56 stroeder Exp $
 
-#####################################
+###################################################################
 :mod:`slapdtest` Spawning test instances of OpenLDAP's slapd server
-#####################################
+###################################################################
 
 .. py:module:: slapdtest
    :synopsis: Spawning test instances of OpenLDAP's slapd server
