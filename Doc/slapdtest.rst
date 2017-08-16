@@ -1,4 +1,4 @@
-.. % $Id: slapdtest.rst,v 1.1 2017/08/01 17:50:24 stroeder Exp $
+.. % $Id: slapdtest.rst,v 1.2 2017/08/16 11:25:07 stroeder Exp $
 
 #####################################
 :mod:`slapdtest` Spawning test instances of OpenLDAP's slapd server
@@ -23,3 +23,8 @@ Functions
 Classes
 ^^^^^^^
 
+.. autoclass:: slapdtest.SlapdObject
+   :members:
+
+.. autoclass:: slapdtest.SlapdTestCase
+   :members:
