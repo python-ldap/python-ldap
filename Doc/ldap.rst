@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.38 2017/08/16 12:03:33 stroeder Exp $
+.. % $Id: ldap.rst,v 1.39 2017/08/16 12:17:18 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -740,9 +740,9 @@ and wait for and return with the server's result, or with
    *serverctrls* and *clientctrls* like described above.
 
 
-.. py:method:: extop(extreq[,serverctrls=None[,clientctrls=None]]]) -> int
+.. py:method:: LDAPObject.extop(extreq[,serverctrls=None[,clientctrls=None]]]) -> int
 
-.. py:method:: extop_s(extreq[,serverctrls=None[,clientctrls=None[,extop_resp_class=None]]]]) -> (respoid,respvalue)
+.. py:method:: LDAPObject.extop_s(extreq[,serverctrls=None[,clientctrls=None[,extop_resp_class=None]]]]) -> (respoid,respvalue)
 
    Performs an LDAP extended operation. The asynchronous
    form returns the message id of the initiated request, and the
@@ -755,7 +755,7 @@ and wait for and return with the server's result, or with
    :py:class:`ldap.extop.ExtendedResponse` this class is used to return an
    object of this class instead of a raw BER value in respvalue.
 
-.. py:method:: extop_result(self,msgid=ldap.RES_ANY,all=1,timeout=None) -> (respoid,respvalue)
+.. py:method:: LDAPObject.extop_result(self,msgid=ldap.RES_ANY,all=1,timeout=None) -> (respoid,respvalue)
 
    Wrapper method around :py:meth:`result4()` just for retrieving
    the result of an extended operation sent before.
