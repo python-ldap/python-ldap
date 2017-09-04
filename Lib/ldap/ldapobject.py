@@ -3,7 +3,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 
 See https://www.python-ldap.org/ for details.
 
-\$Id: ldapobject.py,v 1.164 2017/08/15 16:21:58 stroeder Exp $
+\$Id: ldapobject.py,v 1.165 2017/09/04 14:59:12 stroeder Exp $
 
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
@@ -253,13 +253,11 @@ class SimpleLDAPObject:
     """
     Send a SASL bind request using a non-interactive SASL method (e.g. GSSAPI, EXTERNAL)
     """
-    self.sasl_interactive_bind_s(
-      '',
-      ldap.sasl.sasl(
-        {ldap.sasl.CB_USER:authz_id},
-        sasl_mech
-      )
+    auth = ldap.sasl.sasl(
+      {ldap.sasl.CB_USER:authz_id},
+      sasl_mech
     )
+    self.sasl_interactive_bind_s('',auth,serverctrls,clientctrls,sasl_flags)
 
   def sasl_external_bind_s(self,serverctrls=None,clientctrls=None,sasl_flags=ldap.SASL_QUIET,authz_id=''):
     """

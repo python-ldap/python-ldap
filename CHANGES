@@ -4,7 +4,8 @@ Released 2.4.43 2017-09-xx
 Changes since 2.4.42:
 
 Lib/
-* 
+* fixed passing all arguments from LDAPObject.sasl_non_interactive_bind_s()
+  to LDAPObject.sasl_interactive_bind_s()
 
 Tests/
 * 
@@ -1487,4 +1488,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.459 2017/09/04 14:56:11 stroeder Exp $
+$Id: CHANGES,v 1.460 2017/09/04 14:59:12 stroeder Exp $
