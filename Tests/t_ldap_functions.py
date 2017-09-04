@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldap.functions
 
 See https://www.python-ldap.org/ for details.
 
-$Id: t_ldap_functions.py,v 1.3 2017/08/15 16:21:59 stroeder Exp $
+$Id: t_ldap_functions.py,v 1.4 2017/09/04 07:47:29 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -25,21 +25,21 @@ class TestFunction(unittest.TestCase):
         """
         test function ldap_strf_secs()
         """
-        self.assertEquals(ldap.strf_secs(0), '19700101000000Z')
-        self.assertEquals(ldap.strf_secs(1466947067), '20160626131747Z')
+        self.assertEqual(ldap.strf_secs(0), '19700101000000Z')
+        self.assertEqual(ldap.strf_secs(1466947067), '20160626131747Z')
 
     def test_ldap_strp_secs(self):
         """
         test function ldap_strp_secs()
         """
-        self.assertEquals(ldap.strp_secs('19700101000000Z'), 0)
-        self.assertEquals(ldap.strp_secs('20160626131747Z'), 1466947067)
+        self.assertEqual(ldap.strp_secs('19700101000000Z'), 0)
+        self.assertEqual(ldap.strp_secs('20160626131747Z'), 1466947067)
 
     def test_escape_str(self):
         """
         test function escape_string_tmpl()
         """
-        self.assertEquals(
+        self.assertEqual(
             ldap.escape_str(
                 escape_filter_chars,
                 '(&(objectClass=aeUser)(uid=%s))',
@@ -47,7 +47,7 @@ class TestFunction(unittest.TestCase):
             ),
             '(&(objectClass=aeUser)(uid=foo))'
         )
-        self.assertEquals(
+        self.assertEqual(
             ldap.escape_str(
                 escape_filter_chars,
                 '(&(objectClass=aeUser)(uid=%s))',
@@ -55,7 +55,7 @@ class TestFunction(unittest.TestCase):
             ),
             '(&(objectClass=aeUser)(uid=foo\\29bar))'
         )
-        self.assertEquals(
+        self.assertEqual(
             ldap.escape_str(
                 escape_dn_chars,
                 'uid=%s',
@@ -63,7 +63,7 @@ class TestFunction(unittest.TestCase):
             ),
             'uid=foo\\=bar'
         )
-        self.assertEquals(
+        self.assertEqual(
             ldap.escape_str(
                 escape_dn_chars,
                 'uid=%s,cn=%s,cn=%s,dc=example,dc=com',

@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldap.ldapobject
 
 See https://www.python-ldap.org/ for details.
 
-$Id: t_ldapobject.py,v 1.8 2017/08/15 16:21:59 stroeder Exp $
+$Id: t_ldapobject.py,v 1.9 2017/09/04 07:47:29 stroeder Exp $
 """
 
 import os
@@ -88,7 +88,7 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
             attrlist=['*'],
         )
         result.sort()
-        self.assertEquals(
+        self.assertEqual(
             result,
             [
                 (
@@ -118,7 +118,7 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
             ['*'],
         )
         result.sort()
-        self.assertEquals(
+        self.assertEqual(
             result,
             [
                 (
@@ -144,7 +144,7 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
             ['cn'],
         )
         result.sort()
-        self.assertEquals(
+        self.assertEqual(
             result,
             [('cn=Foo4,ou=Container,'+self.server.suffix, {'cn': ['Foo4']})]
         )

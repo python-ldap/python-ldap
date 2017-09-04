@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldap.filter
 
 See https://www.python-ldap.org/ for details.
 
-$Id: t_ldap_filter.py,v 1.4 2017/08/15 16:21:59 stroeder Exp $
+$Id: t_ldap_filter.py,v 1.5 2017/09/04 07:47:29 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -23,15 +23,15 @@ class TestDN(unittest.TestCase):
         """
         test function escape_filter_chars() with escape_mode=0
         """
-        self.assertEquals(
+        self.assertEqual(
             escape_filter_chars(r'foobar'),
             'foobar'
         )
-        self.assertEquals(
+        self.assertEqual(
             escape_filter_chars(r'foo\bar'),
             r'foo\5cbar'
         )
-        self.assertEquals(
+        self.assertEqual(
             escape_filter_chars(
                 r'foo\bar',
                 escape_mode=0
@@ -43,7 +43,7 @@ class TestDN(unittest.TestCase):
         """
         test function escape_filter_chars() with escape_mode=1
         """
-        self.assertEquals(
+        self.assertEqual(
             escape_filter_chars(
                 '\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f',
                 escape_mode=1
@@ -55,7 +55,7 @@ class TestDN(unittest.TestCase):
         """
         test function escape_filter_chars() with escape_mode=2
         """
-        self.assertEquals(
+        self.assertEqual(
             escape_filter_chars(
                 'foobar',
                 escape_mode=2
