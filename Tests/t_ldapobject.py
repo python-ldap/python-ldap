@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldap.ldapobject
 
 See https://www.python-ldap.org/ for details.
 
-$Id: t_ldapobject.py,v 1.9 2017/09/04 07:47:29 stroeder Exp $
+$Id: t_ldapobject.py,v 1.10 2017/09/04 14:59:57 stroeder Exp $
 """
 
 import os
@@ -175,6 +175,15 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
         else:
             self.fail("expected INVALID_CREDENTIALS, got %r" % r)
 
+    def test_sasl_extenal_bind_s(self):
+        l = self.ldap_object_class(self.server.ldapi_uri)
+        l.sasl_external_bind_s()
+        self.assertEqual(l.whoami_s(), 'dn:'+self.server.root_dn.lower())
+        authz_id = 'dn:cn=Foo2,%s' % (self.server.suffix)
+        l = self.ldap_object_class(self.server.ldapi_uri)
+        l.sasl_external_bind_s(authz_id=authz_id)
+        self.assertEqual(l.whoami_s(), authz_id.lower())
+        
 
 class Test02_ReconnectLDAPObject(Test01_SimpleLDAPObject):
     """
