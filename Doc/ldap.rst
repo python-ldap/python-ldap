@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.39 2017/08/16 12:17:18 stroeder Exp $
+.. % $Id: ldap.rst,v 1.40 2017/09/04 15:02:29 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -678,9 +678,24 @@ and wait for and return with the server's result, or with
    be :py:const:`AUTH_SIMPLE`.
 
 
-.. py:method:: LDAPObject.sasl_interactive_bind_s(who, auth) -> None
+.. py:method:: LDAPObject.sasl_interactive_bind_s(who, auth[, serverctrls=None [, clientctrls=None [, sasl_flags=ldap.SASL_QUIET]]]) -> None
 
    This call is used to bind to the directory with a SASL bind request.
+
+
+.. py:method:: LDAPObject.sasl_non_interactive_bind_s(who, auth[, serverctrls=None [, clientctrls=None [, sasl_flags=ldap.SASL_QUIET [, authz_id='']]]]) -> None
+
+   This call is used to bind to the directory with a SASL bind request.
+
+
+.. py:method:: LDAPObject.sasl_external_bind_s([serverctrls=None [, clientctrls=None [, sasl_flags=ldap.SASL_QUIET [, authz_id='']]]]) -> None
+
+   This call is used to bind to the directory with a SASL bind request with mechanism EXTERNAL.
+
+
+.. py:method:: LDAPObject.sasl_gssapi_bind_s([serverctrls=None [, clientctrls=None [, sasl_flags=ldap.SASL_QUIET [, authz_id='']]]]) -> None
+
+   This call is used to bind to the directory with a SASL bind request with mechanism GSSAPI.
 
 
 .. py:method:: LDAPObject.cancel( cancelid, [, serverctrls=None [, clientctrls=None]]) -> None
