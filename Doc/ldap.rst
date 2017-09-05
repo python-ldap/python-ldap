@@ -1,4 +1,4 @@
-.. % $Id: ldap.rst,v 1.41 2017/09/05 07:23:36 stroeder Exp $
+.. % $Id: ldap.rst,v 1.42 2017/09/05 07:38:46 stroeder Exp $
 
 ********************************************
 :py:mod:`ldap` LDAP library interface module
@@ -935,6 +935,8 @@ and wait for and return with the server's result, or with
 .. py:method:: LDAPObject.sasl_interactive_bind_s(who, auth[, serverctrls=None [, clientctrls=None [, sasl_flags=ldap.SASL_QUIET]]]) -> None
 
    This call is used to bind to the directory with a SASL bind request.
+   
+   *auth* is an :py:class:`ldap.sasl.sasl()` instance.
 
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
 

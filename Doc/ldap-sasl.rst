@@ -1,4 +1,4 @@
-.. % $Id: ldap-sasl.rst,v 1.4 2017/08/01 17:48:00 stroeder Exp $
+.. % $Id: ldap-sasl.rst,v 1.5 2017/09/05 07:38:45 stroeder Exp $
 
 
 ***********************************************
@@ -38,18 +38,28 @@ Classes
 
 .. autoclass:: ldap.sasl.sasl
    :members:
+   
+   This class is used with :py:meth:`ldap.LDAPObject.sasl_interactive_bind_s()`.
+
 
 .. autoclass:: ldap.sasl.cram_md5
    :members:
 
+
 .. autoclass:: ldap.sasl.digest_md5
    :members:
+
 
 .. autoclass:: ldap.sasl.gssapi
    :members:
 
+   You might consider using convenience method :py:meth:`ldap.LDAPObject.sasl_gssapi_bind_s()`.
+
+
 .. autoclass:: ldap.sasl.external
    :members:
+
+   You might consider using convenience method :py:meth:`ldap.LDAPObject.sasl_external_bind_s()`.
 
 
 .. _ldap.sasl-example:
