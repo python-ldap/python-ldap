@@ -10,6 +10,11 @@ Lib/
 Tests/
 * added test for LDAPObject.sasl_external_bind_s()
 
+Doc/
+* added docs for SASL bind methods
+* more references
+* better sorting of LDAPObject methods
+
 ----------------------------------------------------------------
 Released 2.4.42 2017-09-04
 
@@ -1488,4 +1493,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.461 2017/09/04 14:59:57 stroeder Exp $
+$Id: CHANGES,v 1.462 2017/09/05 08:59:54 stroeder Exp $
