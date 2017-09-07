@@ -1,5 +1,5 @@
 /* See https://www.python-ldap.org/ for details.
- * $Id: LDAPObject.c,v 1.96 2017/08/15 16:21:59 stroeder Exp $ */
+ * $Id: LDAPObject.c,v 1.97 2017/09/07 09:03:00 stroeder Exp $ */
 
 #include "common.h"
 #include "patchlevel.h"
@@ -1024,7 +1024,6 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
     int result = LDAP_SUCCESS;
     char **refs = NULL;
     LDAPControl **serverctrls = 0;
-    LDAP_BEGIN_ALLOW_THREADS( self );
     if (res_type == LDAP_RES_SEARCH_ENTRY) {
         /* LDAPmessage_to_python will parse entries and read the controls for each entry */
     } else if (res_type == LDAP_RES_SEARCH_REFERENCE) {
@@ -1035,7 +1034,9 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
         int rc;
         if (res_type == LDAP_RES_EXTENDED) {
             struct berval *retdata = 0;
+            LDAP_BEGIN_ALLOW_THREADS( self );
             rc = ldap_parse_extended_result( self->ldap, msg, &retoid, &retdata, 0 );
+            LDAP_END_ALLOW_THREADS( self );
             /* handle error rc!=0 here? */
             if (rc == LDAP_SUCCESS) {
                 valuestr = LDAPberval_to_object(retdata);
@@ -1043,10 +1044,11 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
             ber_bvfree( retdata );
         }
             
+        LDAP_BEGIN_ALLOW_THREADS( self );
         rc = ldap_parse_result( self->ldap, msg, &result, NULL, NULL, &refs,
                                 &serverctrls, 0 );
+        LDAP_END_ALLOW_THREADS( self );
     }
-    LDAP_END_ALLOW_THREADS( self );
 
     if (result != LDAP_SUCCESS) {               /* result error */
         char *e, err[1024];
@@ -1061,7 +1063,9 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
 
     if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
         int err = LDAP_NO_MEMORY;
+        LDAP_BEGIN_ALLOW_THREADS( self );
         ldap_set_option(self->ldap, LDAP_OPT_ERROR_NUMBER, &err);
+        LDAP_END_ALLOW_THREADS( self );
         ldap_msgfree(msg);
         return LDAPerror(self->ldap, "LDAPControls_to_List");
     }
