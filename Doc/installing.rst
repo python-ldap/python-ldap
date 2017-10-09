@@ -1,4 +1,4 @@
-.. % $Id: installing.rst,v 1.17 2017/10/09 13:30:43 stroeder Exp $
+.. % $Id: installing.rst,v 1.18 2017/10/09 13:44:09 stroeder Exp $
 
 ***********************
 Building and installing
@@ -15,7 +15,7 @@ along with your Python installation:
 If you have more than one Python interpreter installed locally you should
 use the same one you plan to use python-ldap with.
 
-See further instructions for using DistUtils here: http://docs.python.org/install/index.html
+See further instructions for using DistUtils here: https://docs.python.org/2.7/install/index.html
 
 Prerequisites
 =============
