@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldif
 
 See https://www.python-ldap.org/ for details.
 
-$Id: t_ldif.py,v 1.24 2017/08/15 16:21:59 stroeder Exp $
+$Id: t_ldif.py,v 1.25 2017/10/09 13:27:42 stroeder Exp $
 """
 
 # from Python's standard lib
@@ -457,7 +457,7 @@ class TestEntryRecords(TestLDIFParser):
 
     def test_multiple_empty_lines(self):
         """
-        see http://sourceforge.net/p/python-ldap/feature-requests/18/
+        test malformed LDIF with multiple empty lines
         """
         self.check_records(
             """
