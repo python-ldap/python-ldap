@@ -4,7 +4,7 @@ Automatic tests for python-ldap's C wrapper module _ldap
 
 See https://www.python-ldap.org/ for details.
 
-$Id: t_cext.py,v 1.24 2017/09/04 07:47:29 stroeder Exp $
+$Id: t_cext.py,v 1.25 2017/10/09 14:40:48 stroeder Exp $
 """
 
 import os
@@ -518,20 +518,6 @@ class TestLdapCExtension(SlapdTestCase):
             [
                 ('objectClass', 'organizationalUnit'),
                 ('ou', 'RenameContainer'),
-            ]
-        )
-        result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
-        self.assertEqual(result, _ldap.RES_ADD)
-
-        # WORKAROUND bug in slapd. (Without an existing child,
-        # renames into a container object do not work for the ldif backend,
-        # the renamed object appears to be deleted, not moved.)
-        # see http://www.openldap.org/its/index.cgi/Software%20Bugs?id=5408
-        m = l.add_ext(
-            "cn=Bogus," + containerDn,
-            [
-                ('objectClass', 'organizationalRole'),
-                ('cn', 'Bogus'),
             ]
         )
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
