@@ -1,5 +1,5 @@
 /* See https://www.python-ldap.org/ for details.
- * $Id: LDAPObject.c,v 1.97 2017/09/07 09:03:00 stroeder Exp $ */
+ * $Id: LDAPObject.c,v 1.98 2017/10/09 13:51:45 stroeder Exp $ */
 
 #include "common.h"
 #include "patchlevel.h"
@@ -529,27 +529,6 @@ l_ldap_simple_bind( LDAPObject* self, PyObject* args )
      defresult) has to return a string (or maybe None). The id
      argument specifies, which information should be passed back to
      the SASL lib (see SASL_CB_xxx in sasl.h)
-
-
-   A nice "Howto get LDAPv3 up and running with Kerberos and SSL" can
-   be found at http://www.bayour.com/LDAPv3-HOWTO.html.  Instead of
-   MIT Kerberos, I used Heimdal for my tests (since it is included
-   with SuSE Linux).
-
-   Todo:
-   
-   * Find a better interface than the python callback. This is 
-     really ugly. Perhaps one could make use of a sasl class, like
-     in the perl ldap module.
-
-   * Thread safety?
-
-   * Memory Management?
-   
-   * Write more docs
-
-   * ...
-
 */
 static int interaction ( unsigned flags, 
                          sasl_interact_t *interact,
