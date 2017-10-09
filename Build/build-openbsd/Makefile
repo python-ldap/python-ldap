@@ -1,5 +1,3 @@
-# $Id: Makefile,v 1.6 2017/08/15 16:21:58 stroeder Exp $
-
 WRKDIST=		${.CURDIR}/../..
 VERSION!=		sh ${WRKDIST}/Build/version.sh
 

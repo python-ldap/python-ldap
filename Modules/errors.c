@@ -1,8 +1,7 @@
 /*
  * errors that arise from ldap use
  * Most errors become their own exception
- * See https://www.python-ldap.org/ for details.
- * $Id: errors.c,v 1.31 2017/08/15 16:21:59 stroeder Exp $ */
+ * See https://www.python-ldap.org/ for details. */
 
 #include "common.h"
 #include "errors.h"

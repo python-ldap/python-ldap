@@ -26,6 +26,3 @@ Tests/
 - Clean up and finish the mess of small test scripts started.
 - Create a test script that exercises everything with a server
   holding the BLITS test data set
-
-------------------------------------------------------------------
-$Id: TODO,v 1.39 2015/01/10 16:58:52 stroeder Exp $

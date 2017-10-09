@@ -1,5 +1,3 @@
-.. % $Id: slapdtest.rst,v 1.4 2017/08/16 12:17:56 stroeder Exp $
-
 ###################################################################
 :mod:`slapdtest` Spawning test instances of OpenLDAP's slapd server
 ###################################################################

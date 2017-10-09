@@ -1,6 +1,3 @@
-.. % $Id: ldap-modlist.rst,v 1.6 2017/08/16 12:03:33 stroeder Exp $
-
-
 :py:mod:`ldap.modlist` Generate modify lists
 ==============================================
 

@@ -4,8 +4,6 @@ ldap.controls.deref - classes for
 (see https://tools.ietf.org/html/draft-masarati-ldap-deref)
 
 See https://www.python-ldap.org/ for project details.
-
-$Id: deref.py,v 1.4 2017/08/15 16:21:58 stroeder Exp $
 """
 
 __all__ = [

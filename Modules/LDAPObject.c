@@ -1,5 +1,4 @@
-/* See https://www.python-ldap.org/ for details.
- * $Id: LDAPObject.c,v 1.98 2017/10/09 13:51:45 stroeder Exp $ */
+/* See https://www.python-ldap.org/ for details. */
 
 #include "common.h"
 #include "patchlevel.h"

@@ -3,8 +3,6 @@
 Automatic tests for python-ldap's module ldap.ldapobject
 
 See https://www.python-ldap.org/ for details.
-
-$Id: t_ldapobject.py,v 1.10 2017/09/04 14:59:57 stroeder Exp $
 """
 
 import os

@@ -1,5 +1,4 @@
-/* See https://www.python-ldap.org/ for details.
- * $Id: berval.h,v 1.2 2017/08/15 16:21:59 stroeder Exp $ */
+/* See https://www.python-ldap.org/ for details. */
 
 #ifndef __h_berval 
 #define __h_berval 

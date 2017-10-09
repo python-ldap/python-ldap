@@ -24,5 +24,3 @@ Quick build instructions:
     edit setup.cfg (see Build/ for platform-specific examples)
     python setup.py build
     python setup.py install
-
-$Id: INSTALL,v 1.10 2011/04/02 22:30:55 stroeder Exp $

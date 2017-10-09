@@ -4,8 +4,6 @@ ldap.controls.pwdpolicy - classes for Password Policy controls
 (see https://tools.ietf.org/html/draft-vchu-ldap-pwd-policy)
 
 See https://www.python-ldap.org/ for project details.
-
-$Id: pwdpolicy.py,v 1.6 2017/08/15 16:21:58 stroeder Exp $
 """
 
 __all__ = [

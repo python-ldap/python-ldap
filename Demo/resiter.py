@@ -4,8 +4,6 @@ written by Michael Stroeder <michael@stroeder.com>
 
 See http://www.python-ldap.org for details.
 
-\$Id: resiter.py,v 1.2 2014/11/18 08:27:22 stroeder Exp $
-
 Python compability note:
 Requires Python 2.3+
 """

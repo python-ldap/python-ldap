@@ -1,6 +1,3 @@
-.. % $Id: ldap-sasl.rst,v 1.5 2017/09/05 07:38:45 stroeder Exp $
-
-
 ***********************************************
 :py:mod:`ldap.sasl` SASL Authentication Methods
 ***********************************************

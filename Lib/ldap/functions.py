@@ -3,8 +3,6 @@ functions.py - wraps functions of module _ldap
 
 See https://www.python-ldap.org/ for details.
 
-\$Id: functions.py,v 1.34 2017/08/15 16:21:58 stroeder Exp $
-
 Compability:
 - Tested with Python 2.0+ but should work with Python 1.5.x
 - functions should behave exactly the same like in _ldap

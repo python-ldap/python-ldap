@@ -4,8 +4,6 @@ ldap.controls.ppolicy - classes for Password Policy controls
 (see https://tools.ietf.org/html/draft-behera-ldap-password-policy)
 
 See https://www.python-ldap.org/ for project details.
-
-$Id: ppolicy.py,v 1.5 2017/08/15 16:21:58 stroeder Exp $
 """
 
 __all__ = [

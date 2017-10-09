@@ -1,5 +1,3 @@
-.. % $Id: installing.rst,v 1.19 2017/10/09 13:48:41 stroeder Exp $
-
 ***********************
 Building and installing
 ***********************

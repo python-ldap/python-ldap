@@ -3,8 +3,6 @@
 Automatic tests for python-ldap's C wrapper module _ldap
 
 See https://www.python-ldap.org/ for details.
-
-$Id: t_cext.py,v 1.25 2017/10/09 14:40:48 stroeder Exp $
 """
 
 import os

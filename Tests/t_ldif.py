@@ -3,8 +3,6 @@
 Automatic tests for python-ldap's module ldif
 
 See https://www.python-ldap.org/ for details.
-
-$Id: t_ldif.py,v 1.25 2017/10/09 13:27:42 stroeder Exp $
 """
 
 # from Python's standard lib

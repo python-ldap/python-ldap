@@ -1,6 +1,3 @@
-.. % $Id: ldap-filter.rst,v 1.5 2016/07/24 15:47:46 stroeder Exp $
-
-
 :py:mod:`ldap.filter` LDAP filter handling
 ============================================
 

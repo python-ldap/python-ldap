@@ -1,6 +1,3 @@
-.. % $Id: ldap-dn.rst,v 1.10 2017/08/16 12:03:33 stroeder Exp $
-
-
 :py:mod:`ldap.dn` LDAP Distinguished Name handling
 ====================================================
 

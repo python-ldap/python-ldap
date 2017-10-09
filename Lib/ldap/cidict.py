@@ -4,11 +4,9 @@ returned from LDAP servers containing attribute
 names of variable case.
 
 See https://www.python-ldap.org/ for details.
-
-$Id: cidict.py,v 1.14 2017/08/15 16:14:04 stroeder Exp $
 """
 
-__version__ = """$Revision: 1.14 $"""
+__version__ = """$Revision: 1.15 $"""
 
 from UserDict import UserDict
 from string import lower

@@ -1,5 +1,4 @@
-/* See https://www.python-ldap.org/ for details.
- * $Id: message.h,v 1.7 2017/08/15 16:21:59 stroeder Exp $ */
+/* See https://www.python-ldap.org/ for details. */
 
 #ifndef __h_message 
 #define __h_message 

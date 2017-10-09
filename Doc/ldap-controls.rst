@@ -1,6 +1,3 @@
-.. % $Id: ldap-controls.rst,v 1.13 2016/07/24 15:47:46 stroeder Exp $
-
-
 *********************************************************************
 :py:mod:`ldap.controls` High-level access to LDAPv3 extended controls
 *********************************************************************

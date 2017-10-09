@@ -1,7 +1,5 @@
 # Win32 setup.cfg
 # You have to edit this file to reflect your system configuration
-#
-# $Id: setup.cfg.mingw,v 1.1 2005/01/25 18:54:46 stroeder Exp $
 
 # Section for compiling the C extension module
 # for wrapping OpenLDAP 2 libs

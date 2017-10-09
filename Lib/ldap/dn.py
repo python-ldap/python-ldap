@@ -3,8 +3,6 @@ dn.py - misc stuff for handling distinguished names (see RFC 4514)
 
 See https://www.python-ldap.org/ for details.
 
-\$Id: dn.py,v 1.17 2017/08/15 16:21:58 stroeder Exp $
-
 Compability:
 - Tested with Python 2.0+
 """

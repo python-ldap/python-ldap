@@ -3,8 +3,6 @@ ldap.resiter - processing LDAP results with iterators
 
 See https://www.python-ldap.org/ for details.
 
-\$Id: resiter.py,v 1.8 2017/08/15 16:21:58 stroeder Exp $
-
 Python compability note:
 Requires Python 2.3+
 """

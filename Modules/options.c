@@ -1,5 +1,4 @@
-/* See https://www.python-ldap.org/ for details.
- * $Id: options.c,v 1.43 2017/08/15 16:21:59 stroeder Exp $ */
+/* See https://www.python-ldap.org/ for details. */
 
 #include "common.h"
 #include "errors.h"

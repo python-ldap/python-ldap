@@ -3,8 +3,6 @@
 Automatic tests for python-ldap's module ldap.cidict
 
 See https://www.python-ldap.org/ for details.
-
-$Id: t_cidict.py,v 1.3 2017/09/04 07:47:29 stroeder Exp $
 """
 
 # from Python's standard lib

@@ -4,8 +4,6 @@ ldifwriter - using ldap.async module for output of LDIF stream
 
 Written by Michael Stroeder <michael@stroeder.com>
 
-$Id: ldifwriter.py,v 1.4 2006/03/26 12:23:07 stroeder Exp $
-
 This example translates the naming context of data read from
 input, sanitizes some attributes, maps/removes object classes,
 maps/removes attributes., etc. It's far from being complete though.

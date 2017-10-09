@@ -4,8 +4,6 @@ ldap.controls.paged - classes for Simple Paged control
 (see RFC 2696)
 
 See https://www.python-ldap.org/ for project details.
-
-$Id: pagedresults.py,v 1.3 2017/08/15 16:21:58 stroeder Exp $
 """
 
 __all__ = [

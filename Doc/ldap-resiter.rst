@@ -1,6 +1,3 @@
-.. % $Id: ldap-resiter.rst,v 1.6 2016/07/24 15:47:46 stroeder Exp $
-
-
 :py:mod:`ldap.resiter` Generator for stream-processing of large search results
 ==============================================================================
 

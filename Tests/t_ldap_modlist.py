@@ -3,8 +3,6 @@
 Automatic tests for python-ldap's module ldap.modlist
 
 See https://www.python-ldap.org/ for details.
-
-$Id: t_ldap_modlist.py,v 1.3 2017/08/15 16:21:59 stroeder Exp $
 """
 
 import unittest

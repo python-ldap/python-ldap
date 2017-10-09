@@ -2,8 +2,6 @@
 ldap.schema.tokenizer - Low-level parsing functions for schema element strings
 
 See https://www.python-ldap.org/ for details.
-
-\$Id: tokenizer.py,v 1.17 2017/08/15 16:21:59 stroeder Exp $
 """
 
 import re

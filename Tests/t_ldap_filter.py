@@ -3,8 +3,6 @@
 Automatic tests for python-ldap's module ldap.filter
 
 See https://www.python-ldap.org/ for details.
-
-$Id: t_ldap_filter.py,v 1.5 2017/09/04 07:47:29 stroeder Exp $
 """
 
 # from Python's standard lib

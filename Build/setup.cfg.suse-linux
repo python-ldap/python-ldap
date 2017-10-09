@@ -1,6 +1,5 @@
 # Example for setup.cfg
 # You have to edit this file to reflect your system configuation
-# $Id: setup.cfg.suse-linux,v 1.1 2003/08/20 10:04:34 stroeder Exp $
 
 [_ldap]
 # Section for compiling the C extension module

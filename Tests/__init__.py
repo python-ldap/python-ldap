@@ -3,8 +3,6 @@
 Automatic tests for python-ldap
 
 See https://www.python-ldap.org/ for details.
-
-$Id: __init__.py,v 1.6 2017/08/15 16:17:29 stroeder Exp $
 """
 
 import t_cext

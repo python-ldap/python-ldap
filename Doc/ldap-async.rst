@@ -1,6 +1,3 @@
-.. % $Id: ldap-async.rst,v 1.4 2011/07/28 08:52:01 stroeder Exp $
-
-
 **************************************************************
 :py:mod:`ldap.async` Stream-processing of large search results
 **************************************************************

@@ -1,6 +1,5 @@
 /* Set release version
- * See https://www.python-ldap.org/ for details.
- * $Id: version.h,v 1.5 2017/08/15 16:21:59 stroeder Exp $ */
+ * See https://www.python-ldap.org/ for details. */
 
 #ifndef __h_version_
 #define __h_version_

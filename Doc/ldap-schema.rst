@@ -1,6 +1,3 @@
-.. % $Id: ldap-schema.rst,v 1.4 2011/07/22 17:46:07 stroeder Exp $
-
-
 ********************************************
 :py:mod:`ldap.schema` Handling LDAPv3 schema
 ********************************************
