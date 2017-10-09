@@ -2,8 +2,6 @@
 """
 This sample script demonstrates the use of the server-side-sorting control
 (see RFC 2891)
-
-Requires module pyasn1 (see http://pyasn1.sourceforge.net/)
 """
 
 import pprint,ldap

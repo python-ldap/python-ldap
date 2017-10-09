@@ -2,8 +2,6 @@
 """
 This sample script demonstrates the use of the dereference control
 (see https://tools.ietf.org/html/draft-masarati-ldap-deref)
-
-Requires module pyasn1 (see http://pyasn1.sourceforge.net/)
 """
 
 import pprint,ldap,ldap.modlist,ldap.resiter

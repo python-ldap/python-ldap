@@ -1,4 +1,4 @@
-.. % $Id: installing.rst,v 1.16 2015/12/09 17:56:38 stroeder Exp $
+.. % $Id: installing.rst,v 1.17 2017/10/09 13:30:43 stroeder Exp $
 
 ***********************
 Building and installing
@@ -33,7 +33,7 @@ on the local system when building python-ldap:
 Furthermore some sub-modules of :py:mod:`ldap.controls` and :py:mod:`ldap.extop`
 require :py:mod:`pyasn1` and :py:mod:`pyasn1_modules` to be installed.
 
-  http://pyasn1.sf.net
+  https://github.com/etingof/pyasn1
 
 
 setup.cfg
