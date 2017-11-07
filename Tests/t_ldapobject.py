@@ -27,6 +27,12 @@ objectClass: simpleSecurityObject
 cn: %(rootcn)s
 userPassword: %(rootpw)s
 
+dn: cn=user1,%(suffix)s
+objectClass: applicationProcess
+objectClass: simpleSecurityObject
+cn: user1
+userPassword: user1_pw
+
 dn: cn=Foo1,%(suffix)s
 objectClass: organizationalRole
 cn: Foo1
@@ -189,6 +195,22 @@ class Test02_ReconnectLDAPObject(Test01_SimpleLDAPObject):
     """
 
     ldap_object_class = ReconnectLDAPObject
+
+    def test_reconnect_sasl_external(self):
+        l = self.ldap_object_class(self.server.ldapi_uri)
+        l.sasl_external_bind_s()
+        authz_id = l.whoami_s()
+        self.assertEqual(authz_id, 'dn:'+self.server.root_dn.lower())
+        self.server.restart()
+        self.assertEqual(l.whoami_s(), authz_id)
+
+    def test_reconnect_simple_bind(self):
+        l = self.ldap_object_class(self.server.ldapi_uri)
+        bind_dn = 'cn=user1,'+self.server.suffix
+        l.simple_bind_s(bind_dn, 'user1_pw')
+        self.assertEqual(l.whoami_s(), 'dn:'+bind_dn)
+        self.server.restart()
+        self.assertEqual(l.whoami_s(), 'dn:'+bind_dn)
 
 
 if __name__ == '__main__':

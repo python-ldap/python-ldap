@@ -8,7 +8,7 @@ Lib/
   without cleaning any data
 
 Tests/
-* 
+* added explicit reconnect tests for ReconnectLDAPObject
 
 ----------------------------------------------------------------
 Released 2.4.45 2017-10-09
