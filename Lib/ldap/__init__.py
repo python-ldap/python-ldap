@@ -6,7 +6,7 @@ See https://www.python-ldap.org/ for details.
 
 # This is also the overall release version number
 
-__version__ = '2.4.45'
+__version__ = '2.4.46'
 
 import sys
 

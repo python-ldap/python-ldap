@@ -8,7 +8,7 @@ Python compability note:
 This module only works with Python 2.7.x since
 """
 
-__version__ = '2.4.45'
+__version__ = '2.4.46'
 
 import os
 import socket
