@@ -285,7 +285,9 @@ class SlapdObject(object):
             )
 
     def stop(self):
-        """Stops the slapd server, and waits for it to terminate"""
+        """
+        Stops the slapd server, and waits for it to terminate and cleans up
+        """
         if self._proc is not None:
             self._log.debug('stopping slapd with pid %d', self._proc.pid)
             self._proc.terminate()
@@ -294,11 +296,11 @@ class SlapdObject(object):
 
     def restart(self):
         """
-        Restarts the slapd server; ERASING previous content.
-        Starts the server even it if isn't already running.
+        Restarts the slapd server with same data
         """
-        self.stop()
-        self.start()
+        self._proc.terminate()
+        self.wait()
+        self._start_slapd()
 
     def wait(self):
         """Waits for the slapd process to terminate by itself."""
@@ -309,7 +311,7 @@ class SlapdObject(object):
     def _stopped(self):
         """Called when the slapd server is known to have terminated"""
         if self._proc is not None:
-            self._log.info('slapd terminated')
+            self._log.info('slapd[%d] terminated', self._proc.pid)
             self._proc = None
 
     def _cli_auth_args(self):

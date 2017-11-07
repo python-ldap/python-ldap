@@ -4,7 +4,8 @@ Released 2.4.46 2017-11-xx
 Changes since 2.4.45:
 
 Lib/
-* 
+* slapdtest.SlapdObject.restart() just restarts slapd
+  without cleaning any data
 
 Tests/
 * 
