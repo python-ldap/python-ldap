@@ -8,7 +8,7 @@ Python compability note:
 Tested with Python 2.0+.
 """
 
-__version__ = '2.4.46'
+__version__ = '2.5.0'
 
 import string,base64
 
