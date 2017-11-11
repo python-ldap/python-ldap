@@ -3,9 +3,13 @@ Released 2.5.0 2017-11-xx
 
 Changes since 2.4.45:
 
+This release requires pyasn1 0.3.x or newer!
+
 Lib/
 * slapdtest.SlapdObject.restart() just restarts slapd
   without cleaning any data
+* Compability changes for pyasn1 0.3.x or newer
+  (thanks to Ilya Etingof and Christian Heimes)
 
 Tests/
 * added explicit reconnect tests for ReconnectLDAPObject

@@ -121,7 +121,11 @@ class SSSResponseControl(ResponseControl):
         assert not rest, 'all data could not be decoded'
         self.result = int(p.getComponentByName('sortResult'))
         self.result_code = p.getComponentByName('sortResult').prettyOut(self.result)
-        self.attribute_type_error = p.getComponentByName('attributeType')
+        attribute_type_error = p.getComponentByName('attributeType')
+        if attribute_type_error.hasValue():
+            self.attribute_type_error = attribute_type_error
+        else:
+            self.attribute_type_error = None
 
 
 KNOWN_RESPONSE_CONTROLS[SSSRequestControl.controlType] = SSSRequestControl

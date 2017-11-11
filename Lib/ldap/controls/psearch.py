@@ -115,18 +115,16 @@ class EntryChangeNotificationControl(ResponseControl):
   def decodeControlValue(self,encodedControlValue):
     ecncValue,_ = decoder.decode(encodedControlValue,asn1Spec=EntryChangeNotificationValue())
     self.changeType = int(ecncValue.getComponentByName('changeType'))
-    if len(ecncValue)==3:
-      self.previousDN = str(ecncValue.getComponentByName('previousDN'))
-      self.changeNumber = int(ecncValue.getComponentByName('changeNumber'))
-    elif len(ecncValue)==2:
-      if self.changeType==8:
-        self.previousDN = str(ecncValue.getComponentByName('previousDN'))
-        self.changeNumber = None
-      else:
-        self.previousDN = None
-        self.changeNumber = int(ecncValue.getComponentByName('changeNumber'))
+    previousDN = ecncValue.getComponentByName('previousDN')
+    if previousDN.hasValue():
+      self.previousDN = str(previousDN)
     else:
-      self.previousDN,self.changeNumber = None,None
+      self.previousDN = None
+    changeNumber = ecncValue.getComponentByName('changeNumber')
+    if changeNumber.hasValue():
+      self.changeNumber = int(changeNumber)
+    else:
+      self.changeNumber = None
     return (self.changeType,self.previousDN,self.changeNumber)
 
 KNOWN_RESPONSE_CONTROLS[EntryChangeNotificationControl.controlType] = EntryChangeNotificationControl
