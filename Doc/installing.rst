@@ -15,8 +15,8 @@ use the same one you plan to use python-ldap with.
 
 See further instructions for using DistUtils here: https://docs.python.org/2.7/install/index.html
 
-Prerequisites
-=============
+Build prerequisites
+===================
 
 The following software packages are required to be installed
 on the local system when building python-ldap:
@@ -28,11 +28,18 @@ on the local system when building python-ldap:
 - cyrus-sasl (optional): https://www.cyrusimap.org/sasl/
 - Kerberos libs, MIT or heimdal (optional)
 
-Furthermore some sub-modules of :py:mod:`ldap.controls` and :py:mod:`ldap.extop`
-require :py:mod:`pyasn1` and :py:mod:`pyasn1_modules` to be installed.
+Installation prerequisites
+==========================
+
+Furthermore it is required that modules
+:py:mod:`pyasn1` and :py:mod:`pyasn1_modules`
+are installed.
 
   https://github.com/etingof/pyasn1
 
+  https://pypi.python.org/pypi/pyasn1
+
+  https://pypi.python.org/pypi/pyasn1-modules
 
 setup.cfg
 =========
@@ -66,25 +73,25 @@ documentation of Python's DistUtils.
 Libs used
 ---------
 
-.. data:: ldap
-.. data:: ldap_r
+.. data:noindex: ldap
+.. data:noindex: ldap_r
 
    The LDAP protocol library of OpenLDAP. ldap_r is the reentrant version
    and should be preferred.
 
-.. data:: lber
+.. data:noindex: lber
 
    The BER encoder/decoder library of OpenLDAP.
 
-.. data:: sasl2
+.. data:noindex: sasl2
 
    The Cyrus-SASL library if needed and present during build
 
-.. data:: ssl
+.. data:noindex: ssl
 
    The SSL/TLS library of OpenSSL if needed and present during build
 
-.. data:: crypto
+.. data:noindex: crypto
 
    The basic cryptographic library of OpenSSL if needed and present during build
 
