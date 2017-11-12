@@ -155,6 +155,7 @@ setup(
     'ldap.ldapobject',
     'ldap.logger',
     'ldap.modlist',
+    'ldap.pkginfo',
     'ldap.resiter',
     'ldap.sasl',
     'ldap.schema',
