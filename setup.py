@@ -120,7 +120,6 @@ setup(
         'Modules/constants.c',
         'Modules/errors.c',
         'Modules/functions.c',
-        'Modules/schema.c',
         'Modules/ldapmodule.c',
         'Modules/message.c',
         'Modules/version.c',
