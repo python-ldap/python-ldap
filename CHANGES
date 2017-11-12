@@ -8,6 +8,7 @@ pyasn1 0.3.7+ and pyasn1_modules 0.1.5+
 as installation prerequisites.
 
 Lib/
+* removed stand-alone module dsml
 * slapdtest.SlapdObject.restart() just restarts slapd
   without cleaning any data
 * Compability changes for pyasn1 0.3.x or newer
