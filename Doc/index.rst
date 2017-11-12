@@ -31,7 +31,6 @@ Contents
    ldap-sasl.rst
    ldif.rst
    ldapurl.rst
-   dsml.rst
    slapdtest.rst
 
 

@@ -285,31 +285,3 @@ class LDIFWriter(FileWriter):
       # Search continuations are ignored
       dn,entry = resultItem
       self._ldif_writer.unparse(dn,entry)
-
-
-class DSMLWriter(FileWriter):
-  """
-  Class for writing a stream LDAP search results to a DSML file
-
-  Arguments:
-
-  l
-    LDAPObject instance
-  writer_obj
-    Either a file-like object or a dsml.DSMLWriter instance used for output
-  """
-
-  def __init__(self,l,writer_obj,headerStr='',footerStr=''):
-    import dsml
-    if isinstance(writer_obj,dsml.DSMLWriter):
-      self._dsml_writer = writer_obj
-    else:
-      self._dsml_writer = dsml.DSMLWriter(writer_obj)
-    FileWriter.__init__(self,l,self._dsml_writer._output_file,headerStr,footerStr)
-
-  def _processSingleResult(self,resultType,resultItem):
-    if _entryResultTypes.has_key(resultType):
-      # Search continuations are ignored
-      dn,entry = resultItem
-      self._dsml_writer.unparse(dn,entry)
-

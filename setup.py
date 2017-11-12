@@ -145,7 +145,6 @@ setup(
   py_modules = [
     'ldapurl',
     'ldif',
-    'dsml',
     'ldap',
     'slapdtest',
     'ldap.async',
