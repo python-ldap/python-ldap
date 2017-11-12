@@ -27,9 +27,6 @@ Classes
 .. autoclass:: ldap.async.LDIFWriter
    :members:
 
-.. autoclass:: ldap.async.DSMLWriter
-   :members:
-
 .. _ldap.async-example:
 
 Examples
