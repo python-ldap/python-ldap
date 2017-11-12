@@ -20,7 +20,6 @@ Lib/
 (Everybody asking for the latter should check the mailing list archive first.)
 - Caching of search requests for each LDAPObject instance
 - LDIF parser for replication logs and change records
-- DSMLv2 support
 
 Tests/
 - Clean up and finish the mess of small test scripts started.
