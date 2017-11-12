@@ -191,7 +191,7 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
 
 class Test02_ReconnectLDAPObject(Test01_SimpleLDAPObject):
     """
-    test LDAP search operations
+    test ReconnectLDAPObject by restarting slapd
     """
 
     ldap_object_class = ReconnectLDAPObject
