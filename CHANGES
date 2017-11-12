@@ -3,7 +3,9 @@ Released 2.5.0 2017-11-xx
 
 Changes since 2.4.45:
 
-This release requires pyasn1 0.3.x or newer!
+This release now strictly requires
+pyasn1 0.3.7+ and pyasn1_modules 0.1.5+
+as installation prerequisites.
 
 Lib/
 * slapdtest.SlapdObject.restart() just restarts slapd
