@@ -5,7 +5,6 @@
 #include "constants.h"
 #include "errors.h"
 #include "functions.h"
-#include "schema.h"
 #include "ldapcontrol.h"
 
 #include "LDAPObject.h"
