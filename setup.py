@@ -14,20 +14,8 @@ except ImportError:
 from ConfigParser import ConfigParser
 import sys,os,string,time
 
-##################################################################
-# Weird Hack to grab release version of python-ldap from local dir
-##################################################################
-exec_startdir = os.path.dirname(os.path.abspath(sys.argv[0]))
-package_init_file_name = reduce(os.path.join,[exec_startdir,'Lib','ldap','__init__.py'])
-f = open(package_init_file_name,'r')
-s = f.readline()
-while s:
-  s = string.strip(s)
-  if s[0:11]=='__version__':
-    version = eval(string.split(s,'=')[1])
-    break
-  s = f.readline()
-f.close()
+sys.path.insert(0, os.path.join(os.getcwd(), 'Lib/ldap'))
+import pkginfo
 
 #-- A class describing the features and requirements of OpenLDAP 2.0
 class OpenLDAP2:
@@ -78,7 +66,8 @@ if has_setuptools:
 setup(
   #-- Package description
   name = name,
-  version = version,
+  license=pkginfo.__license__,
+  version=pkginfo.__version__,
   description = 'Python modules for implementing LDAP clients',
   long_description = """python-ldap:
   python-ldap provides an object-oriented API to access LDAP directory servers
@@ -87,7 +76,7 @@ setup(
   (e.g. processing LDIF, LDAPURLs, LDAPv3 schema, LDAPv3 extended operations
   and controls, etc.). 
   """,
-  author = 'python-ldap project',
+  author = pkginfo.__author__,
   author_email = 'python-ldap@python.org',
   url = 'https://www.python-ldap.org/',
   download_url = 'https://pypi.python.org/pypi/python-ldap/',
@@ -108,7 +97,6 @@ setup(
     'Topic :: System :: Systems Administration :: Authentication/Directory :: LDAP',
     'License :: OSI Approved :: Python Software Foundation License',
   ],
-  license = 'Python style',
   #-- C extension modules
   ext_modules = [
     Extension(
@@ -137,7 +125,7 @@ setup(
         ('ldap_r' in LDAP_CLASS.libs or 'oldap_r' in LDAP_CLASS.libs)*[('HAVE_LIBLDAP_R',None)] + \
         ('sasl' in LDAP_CLASS.libs or 'sasl2' in LDAP_CLASS.libs or 'libsasl' in LDAP_CLASS.libs)*[('HAVE_SASL',None)] + \
         ('ssl' in LDAP_CLASS.libs and 'crypto' in LDAP_CLASS.libs)*[('HAVE_TLS',None)] + \
-        [('LDAPMODULE_VERSION', version)]
+        [('LDAPMODULE_VERSION', pkginfo.__version__)]
     ),
   ],
   #-- Python "stand alone" modules

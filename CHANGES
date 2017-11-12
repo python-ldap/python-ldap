@@ -11,6 +11,8 @@ Modules/
 * removed unused code schema.c
 
 Lib/
+* ldap.__version__, ldap.__author__ and ldap.__license__ now
+  imported from new sub-module ldap.pkginfo also to setup.py
 * removed stand-alone module dsml
 * slapdtest.SlapdObject.restart() just restarts slapd
   without cleaning any data

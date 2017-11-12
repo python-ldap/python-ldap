@@ -6,7 +6,7 @@ See https://www.python-ldap.org/ for details.
 
 # This is also the overall release version number
 
-__version__ = '2.5.0'
+from pkginfo import __version__, __author__, __license__
 
 import sys
 
