@@ -7,10 +7,11 @@ Compability:
 - Tested with Python 2.0+
 """
 
-from ldap import __version__
-
+from ldap.pkginfo import __version__
 
 import _ldap
+assert _ldap.__version__==__version__, \
+       ImportError('ldap %s and _ldap %s version mismatch!' % (__version__,_ldap.__version__))
 
 import ldap.functions
 

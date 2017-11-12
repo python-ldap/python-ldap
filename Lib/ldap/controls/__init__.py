@@ -9,7 +9,19 @@ The ldap.controls module provides LDAPControl classes.
 Each class provides support for a certain control.
 """
 
-from ldap import __version__
+from ldap.pkginfo import __version__
+
+import _ldap
+assert _ldap.__version__==__version__, \
+       ImportError('ldap %s and _ldap %s version mismatch!' % (__version__,_ldap.__version__))
+
+import ldap
+
+try:
+  from pyasn1.error import PyAsn1Error
+except ImportError:
+  PyAsn1Error = None
+
 
 __all__ = [
   'KNOWN_RESPONSE_CONTROLS',
@@ -31,13 +43,6 @@ __all__ = [
 
 # response control OID to class registry
 KNOWN_RESPONSE_CONTROLS = {}
-
-import _ldap,ldap
-
-try:
-  from pyasn1.error import PyAsn1Error
-except ImportError:
-  PyAsn1Error = None
 
 
 class RequestControl:

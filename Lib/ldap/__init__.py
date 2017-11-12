@@ -17,7 +17,11 @@ if __debug__:
   _trace_file = sys.stderr
   _trace_stack_limit = None
 
+from ldap.pkginfo import __version__
+
 import _ldap
+assert _ldap.__version__==__version__, \
+       ImportError('ldap %s and _ldap %s version mismatch!' % (__version__,_ldap.__version__))
 from _ldap import *
 
 OPT_NAMES_DICT = {}
