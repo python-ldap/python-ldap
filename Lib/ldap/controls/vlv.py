@@ -125,15 +125,21 @@ class VLVResponseControl(ResponseControl):
     def decodeControlValue(self,encoded):
         p, rest = decoder.decode(encoded, asn1Spec=VirtualListViewResponseType())
         assert not rest, 'all data could not be decoded'
-        self.target_position = int(p.getComponentByName('targetPosition'))
-        self.content_count = int(p.getComponentByName('contentCount'))
-        self.result = int(p.getComponentByName('virtualListViewResult'))
-        self.result_code = p.getComponentByName('virtualListViewResult').prettyOut(self.result)
+        self.targetPosition = int(p.getComponentByName('targetPosition'))
+        self.contentCount = int(p.getComponentByName('contentCount'))
+        virtual_list_view_result = p.getComponentByName('virtualListViewResult')
+        self.virtualListViewResult = int(virtual_list_view_result)
         context_id = p.getComponentByName('contextID')
         if context_id.hasValue():
-            self.context_id = str(context_id)
+            self.contextID = str(context_id)
         else:
-            self.context_id = None
-
+            self.contextID = None
+        # backward compability class attributes
+        self.target_position = self.targetPosition
+        self.content_count = self.contentCount
+        self.result = self.virtualListViewResult
+        self.context_id = self.contextID
+        # not sure whether to keep this
+        self.result_code = virtual_list_view_result.prettyPrint()
 
 KNOWN_RESPONSE_CONTROLS[VLVResponseControl.controlType] = VLVResponseControl

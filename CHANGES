@@ -20,6 +20,13 @@ Lib/
   without cleaning any data
 * Compability changes for pyasn1 0.3.x or newer
   (thanks to Ilya Etingof and Christian Heimes)
+* The methods SSSResponseControl.decodeControlValue() and
+  VLVResponseControl.decodeControlValue() now follow the coding
+  convention to use camel-cased ASN.1 name as class attribute name.
+  The old class names are still set for back-ward compability
+  but should not be used in new code because they might be removed
+  in a later release.
+* removed SSSRequestControl from ldap.controls.KNOWN_RESPONSE_CONTROLS
 
 Tests/
 * added explicit reconnect tests for ReconnectLDAPObject
