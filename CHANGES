@@ -3,9 +3,9 @@ Released 2.5.0 2017-11-xx
 
 Changes since 2.4.45:
 
-This release now strictly requires
-pyasn1 0.3.7+ and pyasn1_modules 0.1.5+
-as installation prerequisites.
+Mandatory prerequisites:
+- Python 2.7.x
+- pyasn1 0.3.7+ and pyasn1_modules 0.1.5+
 
 Modules/
 * removed unused code schema.c
