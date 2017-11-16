@@ -6,7 +6,7 @@ Changes since 2.5.1:
 Lib/
 
 Tests/
-* 
+* scripts do not directly call SlapdTestCase.setUpClass() anymore
 
 ----------------------------------------------------------------
 Released 2.5.1 2017-11-12

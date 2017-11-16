@@ -65,7 +65,7 @@ class Test01_SimpleLDAPObject(SlapdTestCase):
 
     @classmethod
     def setUpClass(cls):
-        SlapdTestCase.setUpClass()
+        super(Test01_SimpleLDAPObject, cls).setUpClass()
         # insert some Foo* objects via ldapadd
         cls.server.ldapadd(
             LDIF_TEMPLATE % {
