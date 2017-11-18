@@ -2,9 +2,6 @@
 ldap.async - handle async LDAP operations
 
 See https://www.python-ldap.org/ for details.
-
-Python compability note:
-Tested on Python 2.0+ but should run on Python 1.5.x.
 """
 
 import ldap
