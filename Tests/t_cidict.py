@@ -41,6 +41,7 @@ class TestCidict(unittest.TestCase):
         del cix["abcdEF"]
         self.assertEqual("abcdef" in cix, False)
         self.assertEqual("AbCDef" in cix._keys, False)
+        self.assertEqual(cix.has_key("abcdef"), False)
 
 
 if __name__ == '__main__':
