@@ -139,7 +139,5 @@ class VLVResponseControl(ResponseControl):
         self.content_count = self.contentCount
         self.result = self.virtualListViewResult
         self.context_id = self.contextID
-        # not sure whether to keep this
-        self.result_code = virtual_list_view_result.prettyPrint()
 
 KNOWN_RESPONSE_CONTROLS[VLVResponseControl.controlType] = VLVResponseControl
