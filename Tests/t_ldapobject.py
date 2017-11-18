@@ -223,7 +223,7 @@ class Test02_ReconnectLDAPObject(Test01_SimpleLDAPObject):
             {
                 '_last_bind': (
                     SimpleLDAPObject.simple_bind_s,
-                    ('cn=user1,dc=slapd-test,dc=python-ldap,dc=org', 'user1_pw'),
+                    (bind_dn, 'user1_pw'),
                     {}
                 ),
                 '_options': [(17, 3)],
