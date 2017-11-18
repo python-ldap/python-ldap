@@ -18,10 +18,9 @@ Lib/
 * method .decodeControlValue() of SSSResponseControl and VLVResponseControl
   does not set class attribute result_code anymore
 * always use bytes() for UUID() constructor in ldap.syncrepl
-* module ldapurl now almost PEP-8 compliant
-* module ldif now almost PEP-8 compliant
 * module ldif now uses functions b64encode() and b64decode()
 * fixed pickling and restoring of ReconnectLDAPObject
+* more modules with PEP-8 compliance
 
 Tests/
 * scripts do not directly call SlapdTestCase.setUpClass() anymore
