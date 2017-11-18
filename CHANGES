@@ -3,7 +3,16 @@ Released 2.5.2 2017-11-xx
 
 Changes since 2.5.1:
 
+Modules/
+* moved code from version.c to ldapmodule.c
+* removed obsolete back-ward compability constants from common.h
+* build checks whether LDAP_API_VERSION is OpenLDAP 2.4.x
+
 Lib/
+* new global constant ldap.LIBLDAP_API_INFO
+* right after importing _ldap there is a call into libldap to initialize it
+* method .decodeControlValue() of SSSResponseControl and VLVResponseControl
+  does not set class attribute result_code anymore
 
 Tests/
 * scripts do not directly call SlapdTestCase.setUpClass() anymore
