@@ -110,7 +110,6 @@ setup(
         'Modules/functions.c',
         'Modules/ldapmodule.c',
         'Modules/message.c',
-        'Modules/version.c',
         'Modules/options.c',
         'Modules/berval.c',
       ],
