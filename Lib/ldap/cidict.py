@@ -6,7 +6,7 @@ names of variable case.
 See https://www.python-ldap.org/ for details.
 """
 
-__version__ = """$Revision: 1.17 $"""
+from ldap import __version__
 
 from UserDict import IterableUserDict
 
