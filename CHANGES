@@ -18,6 +18,7 @@ Lib/
 * always use bytes() for UUID() constructor in ldap.syncrepl
 * module ldapurl now almost PEP-8 compliant
 * module ldif now almost PEP-8 compliant
+* module ldif now uses functions b64encode() and b64decode()
 
 Tests/
 * scripts do not directly call SlapdTestCase.setUpClass() anymore

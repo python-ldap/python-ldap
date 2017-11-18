@@ -9,8 +9,8 @@ Tested with Python 2.0+, but should work with Python 1.5.2+.
 
 import urlparse
 import urllib
-import base64
 import re
+from base64 import b64encode, b64decode
 
 try:
     from cStringIO import StringIO
@@ -138,7 +138,7 @@ class LDIFWriter(object):
         """
         if self._needs_base64_encoding(attr_type, attr_value):
             # Encode with base64
-            aval = base64.encodestring(attr_value).replace('\n', '')
+            aval = b64encode(attr_value)
             sep = ':: '
         else:
             aval = attr_value
@@ -279,7 +279,7 @@ class LDIFParser(object):
         self.records_read = 0
         self.changetype_counter = {}.fromkeys(CHANGE_TYPES, 0)
         # Store some symbols for better performance
-        self._base64_decodestring = base64.decodestring
+        self._b64decode = b64decode
         # Read very first line
         try:
             self._last_line = self._readline()
@@ -347,7 +347,7 @@ class LDIFParser(object):
             attr_value = unfolded_line[colon_pos+2:].lstrip()
         elif value_spec == '::':
             # attribute value needs base64-decoding
-            attr_value = self._base64_decodestring(unfolded_line[colon_pos+2:])
+            attr_value = self._b64decode(unfolded_line[colon_pos+2:])
         elif value_spec == ':<':
             # fetch attribute value from URL
             url = unfolded_line[colon_pos+2:].strip()
