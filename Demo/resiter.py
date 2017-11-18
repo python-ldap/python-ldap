@@ -3,9 +3,6 @@ Demo for using ldap.resiter.ResultProcessor
 written by Michael Stroeder <michael@stroeder.com>
 
 See http://www.python-ldap.org for details.
-
-Python compability note:
-Requires Python 2.3+
 """
 
 import ldap,ldap.resiter

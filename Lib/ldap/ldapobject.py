@@ -2,18 +2,6 @@
 ldapobject.py - wraps class _ldap.LDAPObject
 
 See https://www.python-ldap.org/ for details.
-
-Compability:
-- Tested with Python 2.0+ but should work with Python 1.5.x
-- LDAPObject class should be exactly the same like _ldap.LDAPObject
-
-Usage:
-Directly imported by ldap/__init__.py. The symbols of _ldap are
-overridden.
-
-Thread-lock:
-Basically calls into the LDAP lib are serialized by the module-wide
-lock self._ldap_object_lock.
 """
 
 from os import strerror

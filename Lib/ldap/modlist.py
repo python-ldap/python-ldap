@@ -2,10 +2,6 @@
 ldap.modlist - create add/modify modlist's
 
 See https://www.python-ldap.org/ for details.
-
-Python compability note:
-This module is known to work with Python 2.0+ but should work
-with Python 1.5.2 as well.
 """
 
 from ldap import __version__
