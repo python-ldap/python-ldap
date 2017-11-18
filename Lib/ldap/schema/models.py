@@ -8,17 +8,17 @@ import UserDict,ldap.cidict
 
 from ldap.schema.tokenizer import split_tokens,extract_tokens
 
-NOT_HUMAN_READABLE_LDAP_SYNTAXES = {
-  '1.3.6.1.4.1.1466.115.121.1.4':None,  # Audio
-  '1.3.6.1.4.1.1466.115.121.1.5':None,  # Binary
-  '1.3.6.1.4.1.1466.115.121.1.8':None,  # Certificate
-  '1.3.6.1.4.1.1466.115.121.1.9':None,  # Certificate List
-  '1.3.6.1.4.1.1466.115.121.1.10':None, # Certificate Pair
-  '1.3.6.1.4.1.1466.115.121.1.23':None, # G3 FAX
-  '1.3.6.1.4.1.1466.115.121.1.28':None, # JPEG
-  '1.3.6.1.4.1.1466.115.121.1.40':None, # Octet String
-  '1.3.6.1.4.1.1466.115.121.1.49':None, # Supported Algorithm
-}
+NOT_HUMAN_READABLE_LDAP_SYNTAXES = set([
+  '1.3.6.1.4.1.1466.115.121.1.4',  # Audio
+  '1.3.6.1.4.1.1466.115.121.1.5',  # Binary
+  '1.3.6.1.4.1.1466.115.121.1.8',  # Certificate
+  '1.3.6.1.4.1.1466.115.121.1.9',  # Certificate List
+  '1.3.6.1.4.1.1466.115.121.1.10', # Certificate Pair
+  '1.3.6.1.4.1.1466.115.121.1.23', # G3 FAX
+  '1.3.6.1.4.1.1466.115.121.1.28', # JPEG
+  '1.3.6.1.4.1.1466.115.121.1.40', # Octet String
+  '1.3.6.1.4.1.1466.115.121.1.49', # Supported Algorithm
+])
 
 
 class SchemaElement:
@@ -325,7 +325,7 @@ class LDAPSyntax(SchemaElement):
     self.desc = d['DESC'][0]
     self.x_subst = d['X-SUBST'][0]
     self.not_human_readable = \
-      NOT_HUMAN_READABLE_LDAP_SYNTAXES.has_key(self.oid) or \
+      self.oid in NOT_HUMAN_READABLE_LDAP_SYNTAXES or \
       d['X-NOT-HUMAN-READABLE'][0]=='TRUE'
     self.x_binary_transfer_required = d['X-BINARY-TRANSFER-REQUIRED'][0]=='TRUE'
     return
@@ -615,7 +615,7 @@ class NameForm(SchemaElement):
     return '( %s )' % ''.join(result)
 
 
-class Entry(UserDict.UserDict):
+class Entry(UserDict.IterableUserDict):
   """
   Schema-aware implementation of an LDAP entry class.
 
@@ -653,7 +653,7 @@ class Entry(UserDict.UserDict):
       self[key] = dict[key]
 
   def __contains__(self,key):
-    return self.has_key(key)
+    return key in self
 
   def __getitem__(self,nameoroid):
     return self.data[self._at2key(nameoroid)]
@@ -671,7 +671,7 @@ class Entry(UserDict.UserDict):
 
   def has_key(self,nameoroid):
     k = self._at2key(nameoroid)
-    return self.data.has_key(k)
+    return k in self.data
 
   def get(self,nameoroid,failobj):
     try:

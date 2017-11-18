@@ -298,7 +298,7 @@ class SubSchema:
     while struct_oc_list:
       oid = struct_oc_list.pop()
       for child_oid in oc_tree[oid]:
-        if struct_ocs.has_key(self.getoid(ObjectClass,child_oid)):
+        if self.getoid(ObjectClass,child_oid) in struct_ocs:
           break
       else:
         result = oid
@@ -365,7 +365,7 @@ class SubSchema:
       object_class_oid = object_class_oids.pop(0)
       # Check whether the objectClass with this OID
       # has already been processed
-      if oid_cache.has_key(object_class_oid):
+      if object_class_oid in oid_cache:
         continue
       # Cache this OID as already being processed
       oid_cache[object_class_oid] = None
@@ -418,7 +418,7 @@ class SubSchema:
     # Remove all mandantory attribute types from
     # optional attribute type list
     for a in r_may.keys():
-      if r_must.has_key(a):
+      if a in r_must:
         del r_may[a]
 
     # Apply attr_type_filter to results
