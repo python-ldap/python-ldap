@@ -22,10 +22,10 @@ static void free_attrs(char***, PyObject*);
 /* constructor */
 
 LDAPObject*
-newLDAPObject( LDAP* l ) 
+newLDAPObject( LDAP* l )
 {
     LDAPObject* self = (LDAPObject*) PyObject_NEW(LDAPObject, &LDAP_Type);
-    if (self == NULL) 
+    if (self == NULL)
         return NULL;
     self->ldap = l;
     self->_save = NULL;
@@ -54,8 +54,8 @@ dealloc( LDAPObject* self )
  * utility functions
  */
 
-/* 
- * check to see if the LDAPObject is valid, 
+/*
+ * check to see if the LDAPObject is valid,
  * ie has been opened, and not closed. An exception is set if not valid.
  */
 
@@ -87,8 +87,8 @@ LDAPMod_DEL( LDAPMod* lm )
     PyMem_DEL(lm);
 }
 
-/* 
- * convert a tuple of the form (int,str,[str,...]) 
+/*
+ * convert a tuple of the form (int,str,[str,...])
  * or (str, [str,...]) if no_op is true, into an LDAPMod structure.
  * See ldap_modify(3) for details.
  *
@@ -100,7 +100,7 @@ LDAPMod_DEL( LDAPMod* lm )
 /* XXX - there is no way to pass complex-structured BER objects in here! */
 
 static LDAPMod*
-Tuple_to_LDAPMod( PyObject* tup, int no_op ) 
+Tuple_to_LDAPMod( PyObject* tup, int no_op )
 {
     int op;
     char *type;
@@ -181,7 +181,7 @@ Tuple_to_LDAPMod( PyObject* tup, int no_op )
 nomem:
     PyErr_NoMemory();
 error:
-    if (lm) 
+    if (lm)
         LDAPMod_DEL(lm);
 
     return NULL;
@@ -197,8 +197,8 @@ LDAPMods_DEL( LDAPMod** lms ) {
     PyMem_DEL(lms);
 }
 
-/* 
- * convert a list of tuples into a LDAPMod*[] array structure 
+/*
+ * convert a list of tuples into a LDAPMod*[] array structure
  * NOTE: list of tuples must live longer than the LDAPMods
  */
 
@@ -224,13 +224,13 @@ List_to_LDAPMods( PyObject *list, int no_op ) {
     }
 
     lms = PyMem_NEW(LDAPMod *, len + 1);
-    if (lms == NULL) 
+    if (lms == NULL)
         goto nomem;
 
     for (i = 0; i < len; i++) {
         lms[i] = NULL;
         item = PySequence_GetItem(list, i);
-        if (item == NULL) 
+        if (item == NULL)
             goto error;
         lms[i] = Tuple_to_LDAPMod(item, no_op);
         Py_DECREF(item);
@@ -509,7 +509,7 @@ l_ldap_simple_bind( LDAPObject* self, PyObject* args )
      auth modules ("mechanisms"), or try
 
        ldapsearch   -b "" -s base -LLL -x  supportedSASLMechanisms
-     
+
      (perhaps with an additional -h and -p argument for ldap host and
      port). The latter will show you which SASL mechanisms are known
      to the LDAP server. If you do not want to set up Kerberos, you
@@ -529,7 +529,7 @@ l_ldap_simple_bind( LDAPObject* self, PyObject* args )
      argument specifies, which information should be passed back to
      the SASL lib (see SASL_CB_xxx in sasl.h)
 */
-static int interaction ( unsigned flags, 
+static int interaction ( unsigned flags,
                          sasl_interact_t *interact,
                          PyObject* SASLObject )
 {
@@ -541,14 +541,14 @@ static int interaction ( unsigned flags,
                                "isss",
                                interact->id,  /* see sasl.h */
                                interact->challenge,
-                               interact->prompt,   
+                               interact->prompt,
                                interact->defresult);
 
-  if (result == NULL) 
+  if (result == NULL)
     /*searching for a better error code */
-    return LDAP_OPERATIONS_ERROR; 
+    return LDAP_OPERATIONS_ERROR;
   c_result = PyString_AsString(result); /*xxx Error checking?? */
-  
+
   /* according to the sasl docs, we should malloc() the returned
      string only for calls where interact->id == SASL_CB_PASS, so we
      probably leak a few bytes per ldap bind. However, if I restrict
@@ -562,15 +562,15 @@ static int interaction ( unsigned flags,
   /* We _should_ overwrite the python string buffer for security
      reasons, however we may not (api/stringObjects.html). Any ideas?
   */
-  
+
   Py_DECREF(result); /*not needed any longer */
   result = NULL;
-  
+
   return LDAP_SUCCESS;
 }
 
 
-/* 
+/*
   This function will be called by ldap_sasl_interactive_bind(). The
   "*in" is an array of sasl_interact_t's (see sasl.h for a
   reference). The last interact in the array has an interact->id of
@@ -578,8 +578,8 @@ static int interaction ( unsigned flags,
 
 */
 
-int py_ldap_sasl_interaction(   LDAP *ld, 
-                                unsigned flags, 
+int py_ldap_sasl_interaction(   LDAP *ld,
+                                unsigned flags,
                                 void *defaults,
                                 void *in )
 {
@@ -633,7 +633,7 @@ l_ldap_sasl_bind_s( LDAPObject* self, PyObject* args )
                                  dn,
                                  mechanism,
                                  cred.bv_val ? &cred : NULL,
-                                 (LDAPControl**) server_ldcs, 
+                                 (LDAPControl**) server_ldcs,
                                  (LDAPControl**) client_ldcs,
                                  &servercred);
     LDAP_END_ALLOW_THREADS( self );
@@ -649,7 +649,7 @@ l_ldap_sasl_bind_s( LDAPObject* self, PyObject* args )
     return PyInt_FromLong( ldaperror );
 }
 
-static PyObject* 
+static PyObject*
 l_ldap_sasl_interactive_bind_s( LDAPObject* self, PyObject* args )
 {
     char *c_mechanism;
@@ -666,12 +666,12 @@ l_ldap_sasl_interactive_bind_s( LDAPObject* self, PyObject* args )
 
     static unsigned sasl_flags = LDAP_SASL_QUIET;
 
-    /* 
+    /*
      * In Python 2.3+, a "I" format argument indicates that we're either converting
      * the Python object into a long or an unsigned int. In versions prior to that,
      * it will always convert to a long. Since the sasl_flags variable is an
      * unsigned int, we need to use the "I" flag if we're running Python 2.3+ and a
-     * "i" otherwise. 
+     * "i" otherwise.
      */
 #if (PY_MAJOR_VERSION == 2) && (PY_MINOR_VERSION < 3)
     if (!PyArg_ParseTuple(args, "sOOOi", &who, &SASLObject, &serverctrls, &clientctrls, &sasl_flags ))
@@ -704,13 +704,13 @@ l_ldap_sasl_interactive_bind_s( LDAPObject* self, PyObject* args )
        Python object SASLObject, but passing it through some
        static variable would destroy thread safety, IMHO.
      */
-    msgid = ldap_sasl_interactive_bind_s(self->ldap, 
-                                         who, 
-                                         c_mechanism, 
-                                         (LDAPControl**) server_ldcs, 
+    msgid = ldap_sasl_interactive_bind_s(self->ldap,
+                                         who,
+                                         c_mechanism,
+                                         (LDAPControl**) server_ldcs,
                                          (LDAPControl**) client_ldcs,
-                                         sasl_flags, 
-                                         py_ldap_sasl_interaction, 
+                                         sasl_flags,
+                                         py_ldap_sasl_interaction,
                                          SASLObject);
 
     LDAPControl_List_DEL( server_ldcs );
@@ -968,7 +968,7 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
     if (!PyArg_ParseTuple( args, "|iidiii", &msgid, &all, &timeout, &add_ctrls, &add_intermediates, &add_extop ))
         return NULL;
     if (not_valid(self)) return NULL;
-    
+
     if (timeout >= 0) {
         tvp = &tv;
         set_timeval_from_double( tvp, timeout );
@@ -1021,7 +1021,7 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
             }
             ber_bvfree( retdata );
         }
-            
+
         LDAP_BEGIN_ALLOW_THREADS( self );
         rc = ldap_parse_result( self->ldap, msg, &result, NULL, NULL, &refs,
                                 &serverctrls, 0 );
@@ -1142,7 +1142,7 @@ l_ldap_search_ext( LDAPObject* self, PyObject* args )
         return LDAPerror( self->ldap, "ldap_search_ext" );
 
     return PyInt_FromLong( msgid );
-}       
+}
 
 
 /* ldap_whoami_s (available since OpenLDAP 2.1.13) */
@@ -1269,7 +1269,7 @@ l_ldap_passwd( LDAPObject* self, PyObject *args )
     user.bv_len = (ber_len_t) user_len;
     oldpw.bv_len = (ber_len_t) oldpw_len;
     newpw.bv_len = (ber_len_t) newpw_len;
-    
+
     if (not_valid(self)) return NULL;
 
     if (!PyNone_Check(serverctrls)) {
@@ -1291,7 +1291,7 @@ l_ldap_passwd( LDAPObject* self, PyObject *args )
             client_ldcs,
             &msgid );
     LDAP_END_ALLOW_THREADS( self );
-    
+
     LDAPControl_List_DEL( server_ldcs );
     LDAPControl_List_DEL( client_ldcs );
 
@@ -1339,7 +1339,7 @@ l_ldap_extended_operation( LDAPObject* self, PyObject *args )
             client_ldcs,
             &msgid );
     LDAP_END_ALLOW_THREADS( self );
-    
+
     LDAPControl_List_DEL( server_ldcs );
     LDAPControl_List_DEL( client_ldcs );
 
@@ -1383,7 +1383,7 @@ static PyMethodDef methods[] = {
 /* get attribute */
 
 static PyObject*
-getattr(LDAPObject* self, char* name) 
+getattr(LDAPObject* self, char* name)
 {
         return Py_FindMethod(methods, (PyObject*)self, name);
 }
@@ -1391,7 +1391,7 @@ getattr(LDAPObject* self, char* name)
 /* set attribute */
 
 static int
-setattr(LDAPObject* self, char* name, PyObject* value) 
+setattr(LDAPObject* self, char* name, PyObject* value)
 {
         PyErr_SetString(PyExc_AttributeError, name);
         return -1;

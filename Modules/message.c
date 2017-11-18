@@ -47,8 +47,8 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 	 char *dn;
 	 char *attr;
 	 BerElement *ber = NULL;
-	 PyObject* entrytuple; 
-	 PyObject* attrdict; 
+	 PyObject* entrytuple;
+	 PyObject* attrdict;
 
 	 dn = ldap_get_dn( ld, entry );
 	 if (dn == NULL)  {
@@ -99,7 +99,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 		 valuelist = PyMapping_GetItemString( attrdict, attr );
 	     } else {
 		 valuelist = PyList_New(0);
-		 if (valuelist != NULL && PyMapping_SetItemString(attrdict, 
+		 if (valuelist != NULL && PyMapping_SetItemString(attrdict,
 		     attr, valuelist) == -1) {
 			Py_DECREF(valuelist);
 			valuelist = NULL;	/* catch error later */

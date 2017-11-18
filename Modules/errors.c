@@ -39,14 +39,14 @@ LDAPerr(int errnum)
   if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX)
     PyErr_SetNone(errobjects[errnum+LDAP_ERROR_OFFSET]);
   else
-    PyErr_SetObject(LDAPexception_class, 
+    PyErr_SetObject(LDAPexception_class,
     Py_BuildValue("{s:i}", "errnum", errnum));
   return NULL;
 }
 
 /* Convert an LDAP error into an informative python exception */
 PyObject*
-LDAPerror( LDAP *l, char *msg ) 
+LDAPerror( LDAP *l, char *msg )
 {
   if (l == NULL) {
     PyErr_SetFromErrno( LDAPexception_class );
@@ -75,7 +75,7 @@ LDAPerror( LDAP *l, char *msg )
       errobj = errobjects[errnum+LDAP_ERROR_OFFSET];
     else
       errobj = LDAPexception_class;
-    
+
     info = PyDict_New();
     if (info == NULL)
       return NULL;
@@ -102,7 +102,7 @@ LDAPerror( LDAP *l, char *msg )
         }
         ldap_memfree(matched);
     }
-    
+
     if (errnum == LDAP_REFERRAL) {
         str = PyString_FromString(msg);
         if (str)

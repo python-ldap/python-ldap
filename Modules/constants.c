@@ -32,7 +32,7 @@ LDAPinit_constants( PyObject* d )
 
   reverse = PyDict_New();
   forward = PyDict_New();
-  
+
   PyDict_SetItemString( d, "_reverse", reverse );
   PyDict_SetItemString( d, "_forward", forward );
 
@@ -263,16 +263,16 @@ LDAPinit_constants( PyObject* d )
   add_int(d,AVA_STRING);
   add_int(d,AVA_BINARY);
   add_int(d,AVA_NONPRINTABLE);
-  
+
   /*add_int(d,OPT_ON);*/
   obj = PyInt_FromLong(1);
   PyDict_SetItemString( d, "OPT_ON", obj );
   Py_DECREF(obj);
   /*add_int(d,OPT_OFF);*/
   obj = PyInt_FromLong(0);
-  PyDict_SetItemString( d, "OPT_OFF", obj );      
+  PyDict_SetItemString( d, "OPT_OFF", obj );
   Py_DECREF(obj);
-  
+
   add_int(d,OPT_SUCCESS);
 
   /* XXX - these belong in errors.c */
