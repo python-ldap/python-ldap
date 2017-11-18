@@ -145,6 +145,7 @@ setup(
     'ldap.controls.sessiontrack',
     'ldap.controls.simple',
     'ldap.controls.sss',
+    'ldap.controls.vlv',
     'ldap.cidict',
     'ldap.dn',
     'ldap.extop',
