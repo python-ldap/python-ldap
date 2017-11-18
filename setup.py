@@ -124,7 +124,11 @@ setup(
         ('ldap_r' in LDAP_CLASS.libs or 'oldap_r' in LDAP_CLASS.libs)*[('HAVE_LIBLDAP_R',None)] + \
         ('sasl' in LDAP_CLASS.libs or 'sasl2' in LDAP_CLASS.libs or 'libsasl' in LDAP_CLASS.libs)*[('HAVE_SASL',None)] + \
         ('ssl' in LDAP_CLASS.libs and 'crypto' in LDAP_CLASS.libs)*[('HAVE_TLS',None)] + \
-        [('LDAPMODULE_VERSION', pkginfo.__version__)]
+        [
+          ('LDAPMODULE_VERSION', pkginfo.__version__),
+          ('LDAPMODULE_AUTHOR', pkginfo.__author__),
+          ('LDAPMODULE_LICENSE', pkginfo.__license__),
+        ]
     ),
   ],
   #-- Python "stand alone" modules

@@ -12,15 +12,28 @@
 #define STR(x)	_STR(x)
 
 static char version_str[] = STR(LDAPMODULE_VERSION);
+static char author_str[] = STR(LDAPMODULE_AUTHOR);
+static char license_str[] = STR(LDAPMODULE_LICENSE);
 
 void
-LDAPinit_version( PyObject* d )
+init_pkginfo( PyObject* d )
 {
 	PyObject *version;
+	PyObject *author;
+	PyObject *license;
 
 	version = PyString_FromString(version_str);
 	PyDict_SetItemString( d, "__version__", version );
 	Py_DECREF(version);
+
+  author = PyString_FromString(author_str);
+  PyDict_SetItemString(d, "__author__", author);
+  Py_DECREF(author);
+
+  license = PyString_FromString(license_str);
+  PyDict_SetItemString(d, "__license__", license);
+  Py_DECREF(license);
+
 }
 
 DL_EXPORT(void) init_ldap(void);
@@ -48,7 +61,7 @@ init_ldap()
 	/* Add some symbolic constants to the module */
 	d = PyModule_GetDict(m);
 
-	LDAPinit_version(d);
+	init_pkginfo(d);
 	LDAPinit_constants(d);
 	LDAPinit_errors(d);
 	LDAPinit_functions(d);

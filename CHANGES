@@ -7,6 +7,7 @@ Modules/
 * moved code from version.c to ldapmodule.c
 * removed obsolete back-ward compability constants from common.h
 * build checks whether LDAP_API_VERSION is OpenLDAP 2.4.x
+* _ldap.__author__ and _ldap.__license__ also set from ldap.pkginfo
 
 Lib/
 * new global constant ldap.LIBLDAP_API_INFO
