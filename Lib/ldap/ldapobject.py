@@ -100,7 +100,7 @@ class SimpleLDAPObject:
     except LDAPError, e:
       exc_type,exc_value,exc_traceback = sys.exc_info()
       try:
-        if not e.args[0].has_key('info') and e.args[0].has_key('errno'):
+        if 'info' not in e.args[0] and 'errno' in e.args[0]:
           e.args[0]['info'] = strerror(e.args[0]['errno'])
       except IndexError:
         pass
@@ -123,7 +123,7 @@ class SimpleLDAPObject:
   def __getattr__(self,name):
     if name in self.CLASSATTR_OPTION_MAPPING:
       return self.get_option(self.CLASSATTR_OPTION_MAPPING[name])
-    elif self.__dict__.has_key(name):
+    elif name in self.__dict__:
       return self.__dict__[name]
     else:
       raise AttributeError,'%s has no attribute %s' % (
@@ -807,12 +807,13 @@ class ReconnectLDAPObject(SimpleLDAPObject):
   application.
   """
 
-  __transient_attrs__ = {
-    '_l':None,
-    '_ldap_object_lock':None,
-    '_trace_file':None,
-    '_reconnect_lock':None,
-  }
+  __transient_attrs__ = set([
+    '_l',
+    '_ldap_object_lock',
+    '_trace_file',
+    '_reconnect_lock',
+    '_last_bind',
+  ])
 
   def __init__(
     self,uri,
@@ -840,15 +841,18 @@ class ReconnectLDAPObject(SimpleLDAPObject):
 
   def __getstate__(self):
     """return data representation for pickled object"""
-    d = {}
-    for k,v in self.__dict__.items():
-      if not self.__transient_attrs__.has_key(k):
-        d[k] = v
-    return d
+    state = dict([
+        (k,v)
+        for k,v in self.__dict__.items()
+        if k not in self.__transient_attrs__
+    ])
+    state['_last_bind'] = self._last_bind[0].__name__, self._last_bind[1], self._last_bind[2]
+    return state
 
   def __setstate__(self,d):
     """set up the object from pickled data"""
     self.__dict__.update(d)
+    self._last_bind = getattr(SimpleLDAPObject, self._last_bind[0]), self._last_bind[1], self._last_bind[2]
     self._ldap_object_lock = self._ldap_lock()
     self._reconnect_lock = ldap.LDAPLock(desc='reconnect lock within %s' % (repr(self)))
     self._trace_file = sys.stdout
@@ -918,7 +922,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     return # reconnect()
 
   def _apply_method_s(self,func,*args,**kwargs):
-    if not self.__dict__.has_key('_l'):
+    if not hasattr(self,'_l'):
       self.reconnect(self._uri,retry_max=self._retry_max,retry_delay=self._retry_delay)
     try:
       return func(self,*args,**kwargs)
