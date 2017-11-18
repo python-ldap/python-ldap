@@ -20,13 +20,6 @@
 #include <sys/types.h>
 #endif
 
-/* Backwards compability with Python prior 2.5 */
-#if PY_VERSION_HEX < 0x02050000
-typedef int Py_ssize_t;
-#define PY_SSIZE_T_MAX INT_MAX
-#define PY_SSIZE_T_MIN INT_MIN
-#endif
-
 #include <string.h>
 #define streq( a, b ) \
 	( (*(a)==*(b)) && 0==strcmp(a,b) )
