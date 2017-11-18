@@ -10,7 +10,7 @@ with Python 1.5.2 as well.
 
 from ldap import __version__
 
-import ldap,ldap.cidict
+import ldap
 
 
 def addModlist(entry,ignore_attr_types=None):
