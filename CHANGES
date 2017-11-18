@@ -15,6 +15,7 @@ Lib/
 * method .decodeControlValue() of SSSResponseControl and VLVResponseControl
   does not set class attribute result_code anymore
 * always use bytes() for UUID() constructor in ldap.syncrepl
+* module ldapurl now almost PEP-8 compliant
 
 Tests/
 * scripts do not directly call SlapdTestCase.setUpClass() anymore
