@@ -74,10 +74,11 @@ def modifyModlist(
       if not replace_attr_value:
         if attrtype_lower in case_ignore_attr_types:
           norm_func = str.lower
+          old_value_set = set(map(str.lower,old_value))
+          new_value_set = set(map(str.lower,new_value))
         else:
-          norm_func = None
-        old_value_set=set(map(norm_func,old_value))
-        new_value_set=set(map(norm_func,new_value))
+          old_value_set = set(old_value)
+          new_value_set = set(new_value)
         replace_attr_value = new_value_set != old_value_set
       if replace_attr_value:
         modlist.append((ldap.MOD_DELETE,attrtype,None))
