@@ -7,6 +7,7 @@ See https://www.python-ldap.org/ for details.
 
 import os
 import unittest
+import pickle
 from slapdtest import SlapdTestCase
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -211,6 +212,31 @@ class Test02_ReconnectLDAPObject(Test01_SimpleLDAPObject):
         self.assertEqual(l.whoami_s(), 'dn:'+bind_dn)
         self.server.restart()
         self.assertEqual(l.whoami_s(), 'dn:'+bind_dn)
+
+    def test_reconnect_get_state(self):
+        l1 = self.ldap_object_class(self.server.ldapi_uri)
+        bind_dn = 'cn=user1,'+self.server.suffix
+        l1.simple_bind_s(bind_dn, 'user1_pw')
+        self.assertEqual(l1.whoami_s(), 'dn:'+bind_dn)
+        self.assertEqual(
+            l1.__getstate__(),
+            {
+                '_last_bind': (
+                    SimpleLDAPObject.simple_bind_s,
+                    ('cn=user1,dc=slapd-test,dc=python-ldap,dc=org', 'user1_pw'),
+                    {}
+                ),
+                '_options': [(17, 3)],
+                '_reconnects_done': 0L,
+                '_retry_delay': 60.0,
+                '_retry_max': 1,
+                '_start_tls': 0,
+                '_trace_level': 0,
+                '_trace_stack_limit': 5,
+                '_uri': self.server.ldapi_uri,
+                'timeout': -1,
+            },
+        )
 
 
 if __name__ == '__main__':
