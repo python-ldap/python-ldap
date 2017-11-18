@@ -130,7 +130,7 @@ class SyncStateControl(ResponseControl):
     def decodeControlValue(self, encodedControlValue):
         d = decoder.decode(encodedControlValue, asn1Spec = syncStateValue())
         state = d[0].getComponentByName('state')
-        uuid = UUID(bytes=d[0].getComponentByName('entryUUID'))
+        uuid = UUID(bytes=bytes(d[0].getComponentByName('entryUUID')))
         cookie = d[0].getComponentByName('cookie')
         if cookie.hasValue():
             self.cookie = str(self.cookie)
@@ -287,7 +287,7 @@ class SyncInfoMessage:
                     uuids = []
                     ids = comp.getComponentByName('syncUUIDs')
                     for i in range(len(ids)):
-                        uuid = UUID(bytes=str(ids.getComponentByPosition(i)))
+                        uuid = UUID(bytes=bytes(ids.getComponentByPosition(i)))
                         uuids.append(str(uuid))
                     val['syncUUIDs'] = uuids
                     val['refreshDeletes'] = bool(comp.getComponentByName('refreshDeletes'))

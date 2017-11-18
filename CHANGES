@@ -13,6 +13,7 @@ Lib/
 * right after importing _ldap there is a call into libldap to initialize it
 * method .decodeControlValue() of SSSResponseControl and VLVResponseControl
   does not set class attribute result_code anymore
+* always use bytes() for UUID() constructor in ldap.syncrepl
 
 Tests/
 * scripts do not directly call SlapdTestCase.setUpClass() anymore
