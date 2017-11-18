@@ -21,7 +21,10 @@ __all__ = [
   'LDIFCopy',
 ]
 
-import urlparse,urllib,base64,re
+import urlparse
+import urllib
+import re
+from base64 import b64encode, b64decode
 
 try:
   from cStringIO import StringIO
@@ -139,7 +142,7 @@ class LDIFWriter:
     """
     if self._needs_base64_encoding(attr_type,attr_value):
       # Encode with base64
-      self._unfold_lines(':: '.join([attr_type,base64.encodestring(attr_value).replace('\n','')]))
+      self._unfold_lines(':: '.join([attr_type, b64encode(attr_value).replace('\n','')]))
     else:
       self._unfold_lines(': '.join([attr_type,attr_value]))
     return # _unparseAttrTypeandValue()
@@ -277,7 +280,7 @@ class LDIFParser:
     self.records_read = 0
     self.changetype_counter = {}.fromkeys(CHANGE_TYPES,0)
     # Store some symbols for better performance
-    self._base64_decodestring = base64.decodestring
+    self._b64decode = b64decode
     # Read very first line
     try:
       self._last_line = self._readline()
@@ -346,7 +349,7 @@ class LDIFParser:
       attr_value = unfolded_line[colon_pos+2:].lstrip()
     elif value_spec=='::':
       # attribute value needs base64-decoding
-      attr_value = self._base64_decodestring(unfolded_line[colon_pos+2:])
+      attr_value = self._b64decode(unfolded_line[colon_pos+2:])
     elif value_spec==':<':
       # fetch attribute value from URL
       url = unfolded_line[colon_pos+2:].strip()

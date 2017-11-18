@@ -16,6 +16,7 @@ Lib/
 * method .decodeControlValue() of SSSResponseControl and VLVResponseControl
   does not set class attribute result_code anymore
 * always use bytes() for UUID() constructor in ldap.syncrepl
+* module ldif now uses functions b64encode() and b64decode()
 
 Tests/
 * scripts do not directly call SlapdTestCase.setUpClass() anymore
