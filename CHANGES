@@ -10,6 +10,7 @@ Modules/
 * _ldap.__author__ and _ldap.__license__ also set from ldap.pkginfo
 
 Lib/
+* removed all dependencies on modules string and types
 * new global constant ldap.LIBLDAP_API_INFO
 * right after importing _ldap there is a call into libldap to initialize it
 * method .decodeControlValue() of SSSResponseControl and VLVResponseControl

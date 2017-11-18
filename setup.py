@@ -12,7 +12,7 @@ except ImportError:
   from distutils.core import setup, Extension
 
 from ConfigParser import ConfigParser
-import sys,os,string,time
+import sys,os,time
 
 sys.path.insert(0, os.path.join(os.getcwd(), 'Lib/ldap'))
 import pkginfo
@@ -36,15 +36,14 @@ cfg.read('setup.cfg')
 if cfg.has_section('_ldap'):
   for name in dir(LDAP_CLASS):
     if cfg.has_option('_ldap', name):
-      print name + ': ' + cfg.get('_ldap', name)
-      setattr(LDAP_CLASS, name, string.split(cfg.get('_ldap', name)))
+      setattr(LDAP_CLASS, name, cfg.get('_ldap', name).split())
 
 for i in range(len(LDAP_CLASS.defines)):
   LDAP_CLASS.defines[i]=((LDAP_CLASS.defines[i],None))
 
 for i in range(len(LDAP_CLASS.extra_files)):
-  destdir, origfiles = string.split(LDAP_CLASS.extra_files[i], ':')
-  origfileslist = string.split(origfiles, ',')
+  destdir, origfiles = LDAP_CLASS.extra_files[i].split(':')
+  origfileslist = origfiles.split(',')
   LDAP_CLASS.extra_files[i]=(destdir, origfileslist)
 
 #-- Let distutils/setuptools do the rest

@@ -21,7 +21,7 @@ __all__ = [
   'LDIFCopy',
 ]
 
-import urlparse,urllib,base64,re,types
+import urlparse,urllib,base64,re
 
 try:
   from cStringIO import StringIO
@@ -193,9 +193,9 @@ class LDIFWriter:
     # Start with line containing the distinguished name
     self._unparseAttrTypeandValue('dn',dn)
     # Dispatch to record type specific writers
-    if isinstance(record,types.DictType):
+    if isinstance(record,dict):
       self._unparseEntryRecord(record)
-    elif isinstance(record,types.ListType):
+    elif isinstance(record,list):
       self._unparseChangeRecord(record)
     else:
       raise ValueError('Argument record must be dictionary or list instead of %s' % (repr(record)))
