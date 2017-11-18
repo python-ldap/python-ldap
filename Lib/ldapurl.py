@@ -441,10 +441,10 @@ class LDAPUrl(object):
         )
 
     def __getattr__(self, name):
-        if self.attr2extype.has_key(name):
+        if name in self.attr2extype:
             extype = self.attr2extype[name]
             if self.extensions and \
-               self.extensions.has_key(extype) and \
+               extype in self.extensions and \
                not self.extensions[extype].exvalue is None:
                 result = unquote(self.extensions[extype].exvalue)
             else:
@@ -457,7 +457,7 @@ class LDAPUrl(object):
         return result # __getattr__()
 
     def __setattr__(self, name, value):
-        if self.attr2extype.has_key(name):
+        if name in self.attr2extype:
             extype = self.attr2extype[name]
             if value is None:
                 # A value of None means that extension is deleted
@@ -472,7 +472,7 @@ class LDAPUrl(object):
             self.__dict__[name] = value
 
     def __delattr__(self, name):
-        if self.attr2extype.has_key(name):
+        if name in self.attr2extype:
             extype = self.attr2extype[name]
             if self.extensions:
                 try:
