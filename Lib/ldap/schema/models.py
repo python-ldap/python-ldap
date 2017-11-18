@@ -652,8 +652,8 @@ class Entry(UserDict.IterableUserDict):
     for key in dict.keys():
       self[key] = dict[key]
 
-  def __contains__(self,key):
-    return key in self
+  def __contains__(self,nameoroid):
+    return self._at2key(nameoroid) in self.data
 
   def __getitem__(self,nameoroid):
     return self.data[self._at2key(nameoroid)]
