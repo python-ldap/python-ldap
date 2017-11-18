@@ -127,13 +127,13 @@ class SimpleLDAPObject:
     return result
 
   def __setattr__(self,name,value):
-    if self.CLASSATTR_OPTION_MAPPING.has_key(name):
+    if name in self.CLASSATTR_OPTION_MAPPING:
       self.set_option(self.CLASSATTR_OPTION_MAPPING[name],value)
     else:
       self.__dict__[name] = value
 
   def __getattr__(self,name):
-    if self.CLASSATTR_OPTION_MAPPING.has_key(name):
+    if name in self.CLASSATTR_OPTION_MAPPING:
       return self.get_option(self.CLASSATTR_OPTION_MAPPING[name])
     elif self.__dict__.has_key(name):
       return self.__dict__[name]
