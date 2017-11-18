@@ -8,8 +8,6 @@ import ldap.cidict,ldap.schema
 
 from ldap.schema.models import *
 
-from UserDict import UserDict
-
 SCHEMA_CLASS_MAPPING = ldap.cidict.cidict()
 SCHEMA_ATTR_MAPPING = {}
 
