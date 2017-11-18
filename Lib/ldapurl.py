@@ -68,8 +68,7 @@ def ldapUrlEscape(s):
   """Returns URL encoding of string s"""
   return quote(s).replace(',','%2C').replace('/','%2F')
 
-
-class LDAPUrlExtension:
+class LDAPUrlExtension(object):
   """
   Class for parsing and unparsing LDAP URL extensions
   as described in RFC 4516.
@@ -192,7 +191,7 @@ class LDAPUrlExtensions(UserDict.UserDict):
     return ','.join([ v.unparse() for v in self.values() ])
 
 
-class LDAPUrl:
+class LDAPUrl(object):
   """
   Class for parsing and unparsing LDAP URLs
   as described in RFC 4516.
