@@ -27,5 +27,8 @@
 void LDAPadd_methods( PyObject*d, PyMethodDef*methods );
 #define PyNone_Check(o) ((o) == Py_None)
 
-#endif /* __h_common_ */
+#if PY_MAJOR_VERSION >= 3
+#define PyInt_FromLong PyLong_FromLong
+#endif
 
+#endif /* __h_common_ */

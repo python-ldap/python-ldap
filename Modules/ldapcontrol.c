@@ -102,13 +102,13 @@ Tuple_to_LDAPControl( PyObject* tup )
         berbytes.bv_len = 0;
         berbytes.bv_val = NULL;
     }
-    else if (PyString_Check(bytes)) {
-        berbytes.bv_len = PyString_Size(bytes);
-        berbytes.bv_val = PyString_AsString(bytes);
+    else if (PyBytes_Check(bytes)) {
+        berbytes.bv_len = PyBytes_Size(bytes);
+        berbytes.bv_val = PyBytes_AsString(bytes);
     }
     else {
 	PyErr_SetObject(PyExc_TypeError, Py_BuildValue("sO",
-            "expected a string", bytes));
+            "expected a byte-string", bytes));
         LDAPControl_DEL(lc);
         return NULL;
     }

@@ -22,9 +22,9 @@ LDAPinit_pkginfo( PyObject* d )
 	PyObject *author;
 	PyObject *license;
 
-	version = PyString_FromString(version_str);
-	author = PyString_FromString(author_str);
-	license = PyString_FromString(license_str);
+	version = PyBytes_FromString(version_str);
+	author = PyBytes_FromString(author_str);
+	license = PyBytes_FromString(license_str);
 
 	PyDict_SetItemString( d, "__version__", version );
 	PyDict_SetItemString(d, "__author__", author);

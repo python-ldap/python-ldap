@@ -307,71 +307,71 @@ LDAPinit_constants( PyObject* d )
   PyDict_SetItemString( d, "TLS_AVAIL", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_MANAGEDSAIT);
+  obj = PyBytes_FromString(LDAP_CONTROL_MANAGEDSAIT);
   PyDict_SetItemString( d, "CONTROL_MANAGEDSAIT", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_PROXY_AUTHZ);
+  obj = PyBytes_FromString(LDAP_CONTROL_PROXY_AUTHZ);
   PyDict_SetItemString( d, "CONTROL_PROXY_AUTHZ", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_SUBENTRIES);
+  obj = PyBytes_FromString(LDAP_CONTROL_SUBENTRIES);
   PyDict_SetItemString( d, "CONTROL_SUBENTRIES", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_VALUESRETURNFILTER);
+  obj = PyBytes_FromString(LDAP_CONTROL_VALUESRETURNFILTER);
   PyDict_SetItemString( d, "CONTROL_VALUESRETURNFILTER", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_ASSERT);
+  obj = PyBytes_FromString(LDAP_CONTROL_ASSERT);
   PyDict_SetItemString( d, "CONTROL_ASSERT", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_PRE_READ);
+  obj = PyBytes_FromString(LDAP_CONTROL_PRE_READ);
   PyDict_SetItemString( d, "CONTROL_PRE_READ", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_POST_READ);
+  obj = PyBytes_FromString(LDAP_CONTROL_POST_READ);
   PyDict_SetItemString( d, "CONTROL_POST_READ", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_SORTREQUEST);
+  obj = PyBytes_FromString(LDAP_CONTROL_SORTREQUEST);
   PyDict_SetItemString( d, "CONTROL_SORTREQUEST", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_SORTRESPONSE);
+  obj = PyBytes_FromString(LDAP_CONTROL_SORTRESPONSE);
   PyDict_SetItemString( d, "CONTROL_SORTRESPONSE", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_PAGEDRESULTS);
+  obj = PyBytes_FromString(LDAP_CONTROL_PAGEDRESULTS);
   PyDict_SetItemString( d, "CONTROL_PAGEDRESULTS", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_SYNC);
+  obj = PyBytes_FromString(LDAP_CONTROL_SYNC);
   PyDict_SetItemString( d, "CONTROL_SYNC", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_SYNC_STATE);
+  obj = PyBytes_FromString(LDAP_CONTROL_SYNC_STATE);
   PyDict_SetItemString( d, "CONTROL_SYNC_STATE", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_SYNC_DONE);
+  obj = PyBytes_FromString(LDAP_CONTROL_SYNC_DONE);
   PyDict_SetItemString( d, "CONTROL_SYNC_DONE", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_SYNC_INFO);
+  obj = PyBytes_FromString(LDAP_SYNC_INFO);
   PyDict_SetItemString( d, "SYNC_INFO", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_PASSWORDPOLICYREQUEST);
+  obj = PyBytes_FromString(LDAP_CONTROL_PASSWORDPOLICYREQUEST);
   PyDict_SetItemString( d, "CONTROL_PASSWORDPOLICYREQUEST", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_PASSWORDPOLICYRESPONSE);
+  obj = PyBytes_FromString(LDAP_CONTROL_PASSWORDPOLICYRESPONSE);
   PyDict_SetItemString( d, "CONTROL_PASSWORDPOLICYRESPONSE", obj );
   Py_DECREF(obj);
 
-  obj = PyString_FromString(LDAP_CONTROL_RELAX);
+  obj = PyBytes_FromString(LDAP_CONTROL_RELAX);
   PyDict_SetItemString( d, "CONTROL_RELAX", obj );
   Py_DECREF(obj);
 

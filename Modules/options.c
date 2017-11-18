@@ -204,7 +204,7 @@ LDAP_get_option(LDAPObject *self, int option)
 	    extensions = PyTuple_New(num_extensions);
 	    for (i = 0; i < num_extensions; i++)
 		PyTuple_SET_ITEM(extensions, i,
-		    PyString_FromString(apiinfo.ldapai_extensions[i]));
+		    PyBytes_FromString(apiinfo.ldapai_extensions[i]));
 
 	    /* return api info as a dictionary */
 	    v = Py_BuildValue("{s:i, s:i, s:i, s:s, s:i, s:O}",
@@ -321,7 +321,7 @@ LDAP_get_option(LDAPObject *self, int option)
 		Py_INCREF(Py_None);
 		return Py_None;
 	    }
-	    v = PyString_FromString(strval);
+	    v = PyBytes_FromString(strval);
 	    ldap_memfree(strval);
 	    return v;
 
