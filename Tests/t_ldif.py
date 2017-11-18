@@ -641,7 +641,7 @@ class TestChangeRecords(TestLDIFParser):
             except ValueError, value_error:
                 pass
             else:
-                self.fail("should have raised ValueError: %r" % ldif_str)
+                self.fail("should have raised ValueError: %r" % bad_ldif_string)
 
     def test_mod_increment(self):
         self.check_records(
