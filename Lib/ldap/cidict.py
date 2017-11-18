@@ -71,7 +71,7 @@ def strlist_minus(a,b):
   result = [
     elt
     for elt in a
-    if not temp.has_key(elt)
+    if elt not in temp
   ]
   return result
 
@@ -86,7 +86,7 @@ def strlist_intersection(a,b):
   result = [
     temp[elt]
     for elt in b
-    if temp.has_key(elt)
+    if elt in temp
   ]
   return result
 
