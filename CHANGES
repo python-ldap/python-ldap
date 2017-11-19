@@ -24,6 +24,7 @@ Lib/
 Tests/
 * scripts do not directly call SlapdTestCase.setUpClass() anymore
 * added LDIF test with folded, base64-encoded attribute
+* added more tests for sub-module ldap.dn
 
 ----------------------------------------------------------------
 Released 2.5.1 2017-11-12
