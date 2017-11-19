@@ -7,16 +7,14 @@ server to a local (shelve) database.
 Notes:
 
 The bound user needs read access to the attributes entryDN and entryCSN.
-
-This needs the following software:
-Python
-pyasn1 0.1.4+
-pyasn1-modules
-python-ldap 2.4.10+
 """
 
 # Import modules from Python standard lib
-import shelve,signal,time,sys,logging
+import logging
+import shelve
+import signal
+import sys
+import time
 
 # Import the python-ldap modules
 import ldap
@@ -25,28 +23,34 @@ import ldapurl
 from ldap.ldapobject import ReconnectLDAPObject
 from ldap.syncrepl import SyncreplConsumer
 
+logger = logging.getLogger('syncrepl')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler())
 
 # Global state
 watcher_running = True
 ldap_connection = False
 
 
-class SyncReplConsumer(ReconnectLDAPObject, SyncreplConsumer):
+class SyncReplClient(ReconnectLDAPObject, SyncreplConsumer):
     """
-    Syncrepl Consumer interface
+    Syncrepl Consumer Client
     """
 
     def __init__(self, db_path, *args, **kwargs):
         # Initialise the LDAP Connection first
         ldap.ldapobject.ReconnectLDAPObject.__init__(self, *args, **kwargs)
         # Now prepare the data store
-        self.__data = shelve.open(db_path, 'c')
+        if db_path:
+            self.__data = shelve.open(db_path, 'c')
+        else:
+            self.__data = dict()
         # We need this for later internal use
         self.__presentUUIDs = dict()
 
     def close_db(self):
-            # Close the data store properly to avoid corruption
-            self.__data.close()
+        # Close the data store properly to avoid corruption
+        self.__data.close()
 
     def syncrepl_get_cookie(self):
         if 'cookie' in self.__data:
@@ -55,7 +59,8 @@ class SyncReplConsumer(ReconnectLDAPObject, SyncreplConsumer):
     def syncrepl_set_cookie(self,cookie):
         self.__data['cookie'] = cookie
 
-    def syncrepl_entry(self,dn,attributes,uuid):
+    def syncrepl_entry(self, dn, attributes, uuid):
+        logger.debug('dn=%r attributes=%r uuid=%r', dn, attributes, uuid)
         # First we determine the type of change we have here
         # (and store away the previous data for later if needed)
         previous_attributes = dict()
@@ -69,18 +74,18 @@ class SyncReplConsumer(ReconnectLDAPObject, SyncreplConsumer):
         attributes['dn'] = dn
         self.__data[uuid] = attributes
         # Debugging
-        print 'Detected', change_type, 'of entry:', dn
+        logger.debug('Detected %s of entry %r', change_type, dn)
         # If we have a cookie then this is not our first time being run,
         # so it must be a change
         if 'ldap_cookie' in self.__data:
-                self.perform_application_sync(dn, attributes, previous_attributes)
+            self.perform_application_sync(dn, attributes, previous_attributes)
 
     def syncrepl_delete(self,uuids):
         # Make sure we know about the UUID being deleted, just in case...
         uuids = [uuid for uuid in uuids if uuid in self.__data]
         # Delete all the UUID values we know of
         for uuid in uuids:
-            print 'Detected deletion of entry:', self.__data[uuid]['dn']
+            logger.debug('Detected deletion of entry %r', self.__data[uuid]['dn'])
             del self.__data[uuid]
 
     def syncrepl_present(self,uuids,refreshDeletes=False):
@@ -105,10 +110,10 @@ class SyncReplConsumer(ReconnectLDAPObject, SyncreplConsumer):
                     self.__presentUUIDs[uuid] = True
 
     def syncrepl_refreshdone(self):
-        print 'Initial synchronization is now done, persist phase begins'
+        logger.info('Initial synchronization is now done, persist phase begins')
 
     def perform_application_sync(self,dn,attributes,previous_attributes):
-        print 'Performing application sync for:', dn
+        logger.info('Performing application sync for %r', dn)
         return True
 
 
@@ -116,67 +121,69 @@ class SyncReplConsumer(ReconnectLDAPObject, SyncreplConsumer):
 def commenceShutdown(signum, stack):
     # Declare the needed global variables
     global watcher_running, ldap_connection
-    print 'Shutting down!'
+    logger.warn('Shutting down!')
 
     # We are no longer running
     watcher_running = False
 
     # Tear down the server connection
-    if( ldap_connection ):
-            ldap_connection.close_db()
-            ldap_connection.unbind_s()
-            del ldap_connection
+    if ldap_connection:
+        ldap_connection.close_db()
+        ldap_connection.unbind_s()
+        del ldap_connection
 
     # Shutdown
     sys.exit(0)
 
 # Time to actually begin execution
 # Install our signal handlers
-signal.signal(signal.SIGTERM,commenceShutdown)
-signal.signal(signal.SIGINT,commenceShutdown)
+signal.signal(signal.SIGTERM, commenceShutdown)
+signal.signal(signal.SIGINT, commenceShutdown)
 
 
 try:
-  ldap_url = ldapurl.LDAPUrl(sys.argv[1])
-  database_path = sys.argv[2]
+    ldap_url = ldapurl.LDAPUrl(sys.argv[1])
+    database_path = sys.argv[2]
 except IndexError,e:
-    print 'Usage:'
-    print sys.argv[0], '<LDAP URL> <pathname of database>'
-    print sys.argv[0], '\'ldap://127.0.0.1/cn=users,dc=test'\
-                       '?*'\
-                       '?sub'\
-                       '?(objectClass=*)'\
-                       '?bindname=uid=admin%2ccn=users%2cdc=test,'\
-                       'X-BINDPW=password\' db.shelve'
+    print (
+        'Usage:\n'
+        '{script_name} <LDAP URL> <pathname of database>\n'
+        '{script_name} "ldap://127.0.0.1/cn=users,dc=test'
+         '?*'
+         '?sub'
+         '?(objectClass=*)'
+         '?bindname=uid=admin%2ccn=users%2cdc=test,'
+         'X-BINDPW=password" db.shelve'
+    ).format(script_name=sys.argv[0])
     sys.exit(1)
 except ValueError,e:
-  print 'Error parsing command-line arguments:',str(e)
-  sys.exit(1)
+    print 'Error parsing command-line arguments:', str(e)
+    sys.exit(1)
 
 while watcher_running:
-    print 'Connecting to LDAP server now...'
+    logger.info('Connecting to %s now...', ldap_url.initializeUrl())
     # Prepare the LDAP server connection (triggers the connection as well)
-    ldap_connection = SyncReplConsumer(database_path, ldap_url.initializeUrl())
+    ldap_connection = SyncReplClient(database_path, ldap_url.initializeUrl())
 
     # Now we login to the LDAP server
     try:
         ldap_connection.simple_bind_s(ldap_url.who, ldap_url.cred)
-    except ldap.INVALID_CREDENTIALS, e:
-        print 'Login to LDAP server failed: ', str(e)
+    except ldap.INVALID_CREDENTIALS, err:
+        logger.error('Login to LDAP server failed: %s', err)
         sys.exit(1)
     except ldap.SERVER_DOWN:
-        print 'LDAP server is down, going to retry.'
+        logger.warn('LDAP server is down, going to retry.')
         time.sleep(5)
         continue
 
     # Commence the syncing
-    print 'Commencing sync process'
+    logger.debug('Commencing sync process')
     ldap_search = ldap_connection.syncrepl_search(
-      ldap_url.dn or '',
-      ldap_url.scope or ldap.SCOPE_SUBTREE,
-      mode = 'refreshAndPersist',
-      attrlist=ldap_url.attrs,
-      filterstr = ldap_url.filterstr or '(objectClass=*)'
+        ldap_url.dn or '',
+        ldap_url.scope or ldap.SCOPE_SUBTREE,
+        mode = 'refreshAndPersist',
+        attrlist=ldap_url.attrs,
+        filterstr = ldap_url.filterstr or '(objectClass=*)'
     )
 
     try:
@@ -185,10 +192,9 @@ while watcher_running:
     except KeyboardInterrupt:
         # User asked to exit
         commenceShutdown(None, None)
-        pass
-    except Exception, e:
+    except Exception, err:
         # Handle any exception
         if watcher_running:
-            print 'Encountered a problem, going to retry. Error:', str(e)
+            logger.exception('Unhandled exception, going to retry: %s', err)
+            logger.info('Going to retry after 5 secs')
             time.sleep(5)
-        pass
