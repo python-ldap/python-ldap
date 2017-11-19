@@ -49,7 +49,7 @@ The :mod:`ldap.dn` module defines the following functions:
    function :func:`escape_dn_chars`.
 
 
-.. function:: explode_dn(dn [, notypes=0[, flags=0]]) -> list
+.. function:: explode_dn(dn [, notypes=False[, flags=0]]) -> list
 
    This function takes *dn* and breaks it up into its component parts.   Each part
    is known as an RDN (Relative Distinguished Name). The optional  *notypes*
@@ -60,7 +60,7 @@ The :mod:`ldap.dn` module defines the following functions:
    deprecated.
 
 
-.. function:: explode_rdn(rdn [, notypes=0[, flags=0]]) -> list
+.. function:: explode_rdn(rdn [, notypes=False[, flags=0]]) -> list
 
    This function takes a (multi-valued) *rdn* and breaks it up  into a list of
    characteristic attributes. The optional  *notypes* parameter is used to specify

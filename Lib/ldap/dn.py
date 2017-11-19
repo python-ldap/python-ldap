@@ -63,9 +63,9 @@ def dn2str(dn):
         for rdn in dn
     ])
 
-def explode_dn(dn, notypes=0, flags=0):
+def explode_dn(dn, notypes=False, flags=0):
     """
-    explode_dn(dn [, notypes=0]) -> list
+    explode_dn(dn [, notypes=False [, flags=0]]) -> list
 
     This function takes a DN and breaks it up into its component parts.
     The notypes parameter is used to specify that only the component's
@@ -89,9 +89,9 @@ def explode_dn(dn, notypes=0, flags=0):
     return rdn_list
 
 
-def explode_rdn(rdn, notypes=0, flags=0):
+def explode_rdn(rdn, notypes=False, flags=0):
     """
-    explode_rdn(rdn [, notypes=0]) -> list
+    explode_rdn(dn [, notypes=False [, flags=0]]) -> list
 
     This function takes a RDN and breaks it up into its component parts
     if it is a multi-valued RDN.
