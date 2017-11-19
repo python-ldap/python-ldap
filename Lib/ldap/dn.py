@@ -2,9 +2,6 @@
 dn.py - misc stuff for handling distinguished names (see RFC 4514)
 
 See https://www.python-ldap.org/ for details.
-
-Compability:
-- Tested with Python 2.0+
 """
 
 from ldap.pkginfo import __version__
