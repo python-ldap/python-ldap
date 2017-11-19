@@ -6,12 +6,11 @@ See https://www.python-ldap.org/ for details.
 
 from os import strerror
 
-from ldap import __version__
+from ldap.pkginfo import __version__, __author__, __license__
 
 __all__ = [
   'LDAPObject',
   'SimpleLDAPObject',
-  'NonblockingLDAPObject',
   'ReconnectLDAPObject',
 ]
 
@@ -758,40 +757,6 @@ class SimpleLDAPObject:
     return self.read_rootdse_s(
       attrlist=['namingContexts']
     ).get('namingContexts', [])
-
-
-class NonblockingLDAPObject(SimpleLDAPObject):
-
-  def __init__(self,uri,trace_level=0,trace_file=None,result_timeout=-1):
-    self._result_timeout = result_timeout
-    SimpleLDAPObject.__init__(self,uri,trace_level,trace_file)
-
-  def result(self,msgid=ldap.RES_ANY,all=1,timeout=-1):
-    """
-    """
-    ldap_result = self._ldap_call(self._l.result,msgid,0,self._result_timeout)
-    if not all:
-      return ldap_result
-    start_time = time.time()
-    all_results = []
-    while all:
-      while ldap_result[0] is None:
-        if (timeout>=0) and (time.time()-start_time>timeout):
-          self._ldap_call(self._l.abandon,msgid)
-          raise ldap.TIMEOUT(
-            "LDAP time limit (%d secs) exceeded." % (timeout)
-          )
-        time.sleep(0.00001)
-        ldap_result = self._ldap_call(self._l.result,msgid,0,self._result_timeout)
-      if ldap_result[1] is None:
-        break
-      all_results.extend(ldap_result[1])
-      ldap_result = None,None
-    return all_results
-
-  def search_st(self,base,scope,filterstr='(objectClass=*)',attrlist=None,attrsonly=0,timeout=-1):
-    msgid = self.search(base,scope,filterstr,attrlist,attrsonly)
-    return self.result(msgid,all=1,timeout=timeout)
 
 
 class ReconnectLDAPObject(SimpleLDAPObject):
