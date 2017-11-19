@@ -2,18 +2,6 @@
 functions.py - wraps functions of module _ldap
 
 See https://www.python-ldap.org/ for details.
-
-Compability:
-- Tested with Python 2.0+ but should work with Python 1.5.x
-- functions should behave exactly the same like in _ldap
-
-Usage:
-Directly imported by ldap/__init__.py. The symbols of _ldap are
-overridden.
-
-Thread-lock:
-Basically calls into the LDAP lib are serialized by the module-wide
-lock _ldapmodule_lock.
 """
 
 from ldap import __version__
