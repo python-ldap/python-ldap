@@ -85,26 +85,26 @@ Splitting a LDAPv3 DN to AVA level. Note that both examples have the same result
 but in the first example the non-ASCII chars are passed as is (byte buffer string)
 whereas in the second example the hex-encoded DN representation are passed to the function.
 
->>> ldap.dn.str2dn('cn=Michael Str\xc3\xb6der,dc=stroeder,dc=com',flags=ldap.DN_FORMAT_LDAPV3)
-[[('cn', 'Michael Str\xc3\xb6der', 4)], [('dc', 'stroeder', 1)], [('dc', 'com', 1)]]
->>> ldap.dn.str2dn('cn=Michael Str\C3\B6der,dc=stroeder,dc=com',flags=ldap.DN_FORMAT_LDAPV3)
-[[('cn', 'Michael Str\xc3\xb6der', 4)], [('dc', 'stroeder', 1)], [('dc', 'com', 1)]]
+>>> ldap.dn.str2dn('cn=Michael Str\xc3\xb6der,dc=example,dc=com',flags=ldap.DN_FORMAT_LDAPV3)
+[[('cn', 'Michael Str\xc3\xb6der', 4)], [('dc', 'example', 1)], [('dc', 'com', 1)]]
+>>> ldap.dn.str2dn('cn=Michael Str\C3\B6der,dc=example,dc=com',flags=ldap.DN_FORMAT_LDAPV3)
+[[('cn', 'Michael Str\xc3\xb6der', 4)], [('dc', 'example', 1)], [('dc', 'com', 1)]]
 
 
 Splitting a LDAPv2 DN into RDN parts:
 
->>> ldap.dn.explode_dn('cn=Michael Stroeder;dc=stroeder;dc=com',flags=ldap.DN_FORMAT_LDAPV2)
-['cn=Michael Stroeder', 'dc=stroeder', 'dc=com']
+>>> ldap.dn.explode_dn('cn=John Doe;dc=example;dc=com',flags=ldap.DN_FORMAT_LDAPV2)
+['cn=John Doe', 'dc=example', 'dc=com']
 
 
 Splitting a multi-valued RDN:
 
->>> ldap.dn.explode_rdn('cn=Michael Stroeder+mail=michael@stroeder.com',flags=ldap.DN_FORMAT_LDAPV2)
-['cn=Michael Stroeder', 'mail=michael@stroeder.com']
+>>> ldap.dn.explode_rdn('cn=John Doe+mail=john.doe@example.com',flags=ldap.DN_FORMAT_LDAPV2)
+['cn=John Doe', 'mail=john.doe@example.com']
 
 Splitting a LDAPv3 DN with a multi-valued RDN into its AVA parts:
 
 
->>> ldap.dn.str2dn('cn=Michael Stroeder+mail=michael@stroeder.com,dc=stroeder,dc=com')
-[[('cn', 'Michael Stroeder', 1), ('mail', 'michael@stroeder.com', 1)], [('dc', 'stroeder', 1)], [('dc', 'com', 1)]]
+>>> ldap.dn.str2dn('cn=John Doe+mail=john.doe@example.com,dc=example,dc=com')
+[[('cn', 'John Doe', 1), ('mail', 'john.doe@example.com', 1)], [('dc', 'example', 1)], [('dc', 'com', 1)]]
 
