@@ -79,6 +79,15 @@ class TestDN(unittest.TestCase):
             ]
         )
         self.assertEqual(
+            ldap.dn.str2dn('uid=test42; ou=Testing; dc=example; dc=com', flags=ldap.DN_FORMAT_LDAPV2),
+            [
+                [('uid', 'test42', 1)],
+                [('ou', 'Testing', 1)],
+                [('dc', 'example', 1)],
+                [('dc', 'com', 1)]
+            ]
+        )
+        self.assertEqual(
             ldap.dn.str2dn('uid=test\\, 42,ou=Testing,dc=example,dc=com', flags=0),
             [
                 [('uid', 'test, 42', 1)],
@@ -173,6 +182,10 @@ class TestDN(unittest.TestCase):
         )
         self.assertEqual(
             ldap.dn.explode_dn('uid=test42,ou=Testing,dc=example,dc=com', flags=0),
+            ['uid=test42', 'ou=Testing', 'dc=example', 'dc=com']
+        )
+        self.assertEqual(
+            ldap.dn.explode_dn('uid=test42; ou=Testing; dc=example; dc=com', flags=ldap.DN_FORMAT_LDAPV2),
             ['uid=test42', 'ou=Testing', 'dc=example', 'dc=com']
         )
         self.assertEqual(
