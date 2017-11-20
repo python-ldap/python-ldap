@@ -192,7 +192,7 @@ class TestLdapCExtension(SlapdTestCase):
         l = self._open_conn(bind=False)
         # see if we can get the rootdse with anon search (without prior bind)
         m = l.search_ext(
-            "",
+            '',
             _ldap.SCOPE_BASE,
             '(objectClass=*)',
             ['objectClass', 'namingContexts'],
