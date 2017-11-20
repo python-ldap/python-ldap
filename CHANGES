@@ -22,6 +22,7 @@ Lib/
 * module ldif now uses functions b64encode() and b64decode()
 * fixed pickling and restoring of ReconnectLDAPObject
 * more modules with PEP-8 compliance
+* ldap.ldapobject split into module-package
 
 Tests/
 * scripts do not directly call SlapdTestCase.setUpClass() anymore

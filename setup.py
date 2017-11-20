@@ -156,6 +156,7 @@ setup(
     'ldap.filter',
     'ldap.functions',
     'ldap.ldapobject',
+    'ldap.ldapobject.reconnect',
     'ldap.logger',
     'ldap.modlist',
     'ldap.pkginfo',
