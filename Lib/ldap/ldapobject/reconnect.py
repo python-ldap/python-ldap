@@ -14,6 +14,11 @@ import ldap
 from ldap.ldapobject.simple import SimpleLDAPObject
 
 
+__all__ = [
+    'ReconnectLDAPObject',
+]
+
+
 class ReconnectLDAPObject(SimpleLDAPObject):
     """
     In case of server failure (ldap.SERVER_DOWN) the implementations

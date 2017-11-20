@@ -26,6 +26,7 @@ from ldap.controls import DecodeControlTuples, RequestControlTuples
 
 
 __all__ = [
+    'NO_UNIQUE_ENTRY',
     'LDAPObject',
     'SimpleLDAPObject',
     'ReconnectLDAPObject',
