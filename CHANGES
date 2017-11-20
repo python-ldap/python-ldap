@@ -9,6 +9,7 @@ Modules/
 * removed obsolete back-ward compability constants from common.h
 * build checks whether LDAP_API_VERSION is OpenLDAP 2.4.x
 * _ldap.__author__ and _ldap.__license__ also set from ldap.pkginfo
+* assume C extension API for Python 2.7+
 
 Lib/
 * removed all dependencies on modules string and types
