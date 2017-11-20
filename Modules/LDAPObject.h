@@ -25,7 +25,7 @@ typedef struct {
 } LDAPObject;
 
 extern PyTypeObject LDAP_Type;
-#define LDAPObject_Check(v)     ((v)->ob_type == &LDAP_Type)
+#define LDAPObject_Check(v)     (Py_TYPE(v) == &LDAP_Type)
 
 extern LDAPObject *newLDAPObject( LDAP* );
 
