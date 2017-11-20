@@ -286,12 +286,14 @@ class SimpleLDAPObject:
   def compare_ext_s(self,dn,attr,value,serverctrls=None,clientctrls=None):
     msgid = self.compare_ext(dn,attr,value,serverctrls,clientctrls)
     try:
-      resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid,all=1,timeout=self.timeout)
+        ldap_res = self.result3(msgid,all=1,timeout=self.timeout)
     except ldap.COMPARE_TRUE:
       return 1
     except ldap.COMPARE_FALSE:
       return 0
-    return None
+    raise ldap.PROTOCOL_ERROR(
+        'Compare operation returned wrong result: %r' % (ldap_res)
+    )
 
   def compare(self,dn,attr,value):
     return self.compare_ext(dn,attr,value,None,None)
