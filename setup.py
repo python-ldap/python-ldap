@@ -6,7 +6,6 @@ See https://www.python-ldap.org/ for details.
 
 import sys
 import os
-import pprint
 from ConfigParser import ConfigParser
 
 # Python 2.3.6+ and setuptools are needed to build eggs, so
@@ -49,14 +48,13 @@ class OpenLDAP2BuildConfig:
         cfg.read('setup.cfg')
         _ldap_cfg = dict(cfg.items('_ldap'))
         for name, value in _ldap_cfg.items():
-            _ldap_cfg[name] = filter(None, value.split(' '))
+            _ldap_cfg[name] = [ val for val in value.split(' ') if val ]
         # split values of extra_files
         if 'extra_files' in _ldap_cfg:
             for i in range(len(_ldap_cfg['extra_files'])):
                 destdir, origfiles = self.extra_files[i].split(':')
                 origfileslist = origfiles.split(',')
                 _ldap_cfg['extra_files'][i] = (destdir, origfileslist)
-        #pprint.pprint(_ldap_cfg)
         for name, val in _ldap_cfg.items():
             setattr(self, name, val)
         if 'ldap_r' in self.libs or 'oldap_r' in self.libs:
@@ -82,8 +80,6 @@ LDAP_CLASS = OpenLDAP2BuildConfig(
         ('LDAPMODULE_LICENSE', pkginfo.__license__),
     ],
 )
-
-pprint.pprint(LDAP_CLASS.__dict__)
 
 
 #-- Let distutils/setuptools do the rest
