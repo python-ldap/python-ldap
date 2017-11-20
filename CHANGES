@@ -3,6 +3,8 @@ Released 2.5.2 2017-11-20
 
 Changes since 2.5.1:
 
+* code-cleaning in setup.py
+
 Modules/
 * PyBytes_ instead of PyString_ and added PyInt_FromLong compat macro
 * moved code from version.c to ldapmodule.c
