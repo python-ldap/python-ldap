@@ -66,7 +66,7 @@ class OpenLDAP2BuildConfig:
         if 'ssl' in self.libs and 'crypto' in self.libs:
             self.defines.append('HAVE_TLS')
         self.define_macros = [
-            (defm,)
+            (defm, None)
             for defm in set(self.defines)
         ]
         self.define_macros.extend(meta_defines)
