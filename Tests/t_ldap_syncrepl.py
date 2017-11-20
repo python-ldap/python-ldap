@@ -3,8 +3,6 @@
 Automatic tests for python-ldap's module ldap.syncrepl
 
 See http://www.python-ldap.org/ for details.
-
-$Id: t_ldap_syncrepl.py,v 1.2 2017/11/20 19:34:39 stroeder Exp $
 """
 
 
