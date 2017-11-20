@@ -11,7 +11,7 @@ import time
 import _ldap
 from ldap.pkginfo import __version__, __author__, __license__
 import ldap
-from ldap.ldapobject import SimpleLDAPObject
+from ldap.ldapobject.simple import SimpleLDAPObject
 
 
 class ReconnectLDAPObject(SimpleLDAPObject):
