@@ -64,7 +64,7 @@ def _ldap_function_call(lock, func, *args, **kwargs):
     try: # finally
         try: # error / result logging
             result = func(*args, **kwargs)
-        except LDAPError, err:
+        except LDAPError as err:
             if __debug__ and ldap._trace_level >= 2:
                 ldap._trace_file.write('=> LDAPError: %s\n' % (err))
             raise

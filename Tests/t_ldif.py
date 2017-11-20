@@ -662,7 +662,7 @@ class TestChangeRecords(TestLDIFParser):
             ldif_string = textwrap.dedent(bad_ldif_string).lstrip() + '\n'
             try:
                 res = self._parse_records(ldif_string)
-            except ValueError, value_error:
+            except ValueError as value_error:
                 pass
             else:
                 self.fail("should have raised ValueError: %r" % bad_ldif_string)
