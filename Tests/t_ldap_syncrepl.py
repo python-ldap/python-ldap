@@ -4,7 +4,7 @@ Automatic tests for python-ldap's module ldap.syncrepl
 
 See http://www.python-ldap.org/ for details.
 
-$Id: t_ldap_syncrepl.py,v 1.1 2017/11/20 11:42:19 stroeder Exp $
+$Id: t_ldap_syncrepl.py,v 1.2 2017/11/20 19:34:39 stroeder Exp $
 """
 
 
@@ -347,7 +347,7 @@ class Test00_Syncrepl(SlapdTestCase):
             timeout=None
         )
         self.assertFalse(poll_result)
-        self.assertEquals(self.tester.dn_attrs, LDAP_ENTRIES)
+        self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
 
 
     def test_refreshAndPersist_poll_only(self):
@@ -372,7 +372,7 @@ class Test00_Syncrepl(SlapdTestCase):
             )
             self.assertTrue(poll_result)
 
-        self.assertEquals(self.tester.dn_attrs, LDAP_ENTRIES)
+        self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
 
 
     def test_refreshAndPersist_timeout(self):
@@ -398,7 +398,7 @@ class Test00_Syncrepl(SlapdTestCase):
             self.assertTrue(poll_result)
 
         # Again, server data should not have changed.
-        self.assertEquals(self.tester.dn_attrs, LDAP_ENTRIES)
+        self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
 
         # Run a search with timeout.
         # Nothing is changing the server, so it shoud timeout.
@@ -433,7 +433,7 @@ class Test00_Syncrepl(SlapdTestCase):
             self.assertTrue(poll_result)
 
         # Again, server data should not have changed.
-        self.assertEquals(self.tester.dn_attrs, LDAP_ENTRIES)
+        self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
 
         # Request cancellation.
         self.tester.cancel()
@@ -447,7 +447,7 @@ class Test00_Syncrepl(SlapdTestCase):
         )
 
         # Server data should still be intact.
-        self.assertEquals(self.tester.dn_attrs, LDAP_ENTRIES)
+        self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
 
 
     # TODO:
