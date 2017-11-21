@@ -20,13 +20,13 @@ TOKENS_FINDALL = re.compile(
 ).findall
 
 
-def split_tokens(s):
+def split_tokens(sch_str):
     """
     Returns list of syntax elements with quotes and spaces stripped.
     """
     parts = []
     parens = 0
-    for opar, cpar, unquoted, quoted, residue in TOKENS_FINDALL(s):
+    for opar, cpar, unquoted, quoted, residue in TOKENS_FINDALL(sch_str):
         if unquoted:
             parts.append(unquoted)
         elif quoted:
@@ -39,42 +39,43 @@ def split_tokens(s):
             parts.append(cpar)
         elif residue == '$':
             if not parens:
-                raise ValueError("'$' outside parenthesis in %r" % (s))
+                raise ValueError("'$' outside parenthesis in %r" % (sch_str))
         else:
-            raise ValueError(residue, s)
+            raise ValueError(residue, sch_str)
     if parens:
-        raise ValueError("Unbalanced parenthesis in %r" % (s))
+        raise ValueError("Unbalanced parenthesis in %r" % (sch_str))
     return parts
 
-def extract_tokens(l,known_tokens):
-  """
-  Returns dictionary of known tokens with all values
-  """
-  assert l[0].strip()=="(" and l[-1].strip()==")",ValueError(l)
-  result = {}
-  result.update(known_tokens)
-  i = 0
-  l_len = len(l)
-  while i<l_len:
-    if l[i] in result:
-      token = l[i]
-      i += 1 # Consume token
-      if i<l_len:
-        if l[i] in result:
-          # non-valued
-          result[token] = (())
-        elif l[i]=="(":
-          # multi-valued
-          i += 1 # Consume left parentheses
-          start = i
-          while i<l_len and l[i]!=")":
-            i += 1
-          result[token] = tuple(filter(lambda v:v!='$',l[start:i]))
-          i += 1 # Consume right parentheses
+def extract_tokens(tkl, known_tokens):
+    """
+    Returns dictionary of known tokens with all values
+    """
+    assert tkl[0].strip() == "(" and tkl[-1].strip() == ")", ValueError(tkl)
+    result = dict(known_tokens)
+    i = 0
+    l_len = len(tkl)
+    while i < l_len:
+        if tkl[i] in result:
+            token = tkl[i]
+            i += 1 # Consume token
+            if i < l_len:
+                if tkl[i] in result:
+                    # non-valued
+                    result[token] = (())
+                elif tkl[i] == "(":
+                    # multi-valued
+                    i += 1 # Consume left parentheses
+                    start = i
+                    while i < l_len and tkl[i] != ")":
+                        i += 1
+                    result[token] = tuple([
+                        v for v in tkl[start:i] if v != '$'
+                    ])
+                    i += 1 # Consume right parentheses
+                else:
+                    # single-valued
+                    result[token] = tkl[i],
+                    i += 1 # Consume single value
         else:
-          # single-valued
-          result[token] = l[i],
-          i += 1 # Consume single value
-    else:
-      i += 1 # Consume unrecognized item
-  return result
+            i += 1 # Consume unrecognized item
+    return result
