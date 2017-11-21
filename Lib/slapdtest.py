@@ -5,7 +5,7 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 See https://www.python-ldap.org/ for details.
 """
 
-__version__ = '2.5.2'
+__version__ = '2.5.3'
 
 import os
 import socket

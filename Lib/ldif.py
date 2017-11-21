@@ -14,7 +14,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-__version__ = '2.5.2'
+__version__ = '2.5.3'
 
 __all__ = [
     # constants
