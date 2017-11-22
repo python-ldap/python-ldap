@@ -26,7 +26,7 @@ class TestLdapCExtension(SlapdTestCase):
 
     @classmethod
     def setUpClass(cls):
-        SlapdTestCase.setUpClass()
+        super(TestLdapCExtension, cls).setUpClass()
         # add two initial objects after server was started and is still empty
         suffix_dc = cls.server.suffix.split(',')[0][3:]
         cls.server._log.debug(
@@ -192,7 +192,7 @@ class TestLdapCExtension(SlapdTestCase):
         l = self._open_conn(bind=False)
         # see if we can get the rootdse with anon search (without prior bind)
         m = l.search_ext(
-            "",
+            '',
             _ldap.SCOPE_BASE,
             '(objectClass=*)',
             ['objectClass', 'namingContexts'],

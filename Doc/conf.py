@@ -42,7 +42,7 @@ copyright = '2008-2017, python-ldap project team'
 # The short X.Y version.
 version = '2.5'
 # The full version, including alpha/beta/rc tags.
-release = '2.5.1.0'
+release = '2.5.2.0'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:

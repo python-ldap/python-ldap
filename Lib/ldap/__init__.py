@@ -23,6 +23,8 @@ import _ldap
 assert _ldap.__version__==__version__, \
        ImportError('ldap %s and _ldap %s version mismatch!' % (__version__,_ldap.__version__))
 from _ldap import *
+# call into libldap to initialize it right now
+LIBLDAP_API_INFO = _ldap.get_option(_ldap.OPT_API_INFO)
 
 OPT_NAMES_DICT = {}
 for k,v in vars(_ldap).items():

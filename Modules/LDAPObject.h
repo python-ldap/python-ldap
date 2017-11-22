@@ -7,8 +7,8 @@
 
 #include "lber.h"
 #include "ldap.h"
-#if LDAP_API_VERSION < 2000
-#error Current python-ldap requires OpenLDAP 2.x
+#if LDAP_API_VERSION < 2040
+#error Current python-ldap requires OpenLDAP 2.4.x
 #endif
 
 #if PYTHON_API_VERSION < 1007
@@ -25,7 +25,7 @@ typedef struct {
 } LDAPObject;
 
 extern PyTypeObject LDAP_Type;
-#define LDAPObject_Check(v)     ((v)->ob_type == &LDAP_Type)
+#define LDAPObject_Check(v)     (Py_TYPE(v) == &LDAP_Type)
 
 extern LDAPObject *newLDAPObject( LDAP* );
 

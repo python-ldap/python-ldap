@@ -3,12 +3,9 @@
 slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See https://www.python-ldap.org/ for details.
-
-Python compability note:
-This module only works with Python 2.7.x since
 """
 
-__version__ = '2.5.1'
+__version__ = '2.5.2'
 
 import os
 import socket
@@ -81,8 +78,8 @@ class SlapdObject(object):
     Controller class for a slapd instance, OpenLDAP's server.
 
     This class creates a temporary data store for slapd, runs it
-    listening on a private Unix domain socket and TCP port, and initialises it with a top-level entry and
-    the root user.
+    listening on a private Unix domain socket and TCP port,
+    and initialises it with a top-level entry and the root user.
 
     When a reference to an instance of this class is lost, the slapd
     server is shut down.

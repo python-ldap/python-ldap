@@ -5,70 +5,79 @@ ldap.syncrepl - for implementing syncrepl consumer (see RFC 4533)
 See https://www.python-ldap.org/ for project details.
 """
 
-#__all__ = [
-#  '',
-#  '',
-#]
-
 from uuid import UUID
 
-# Imports from python-ldap 2.4+
-import ldap.ldapobject
-from ldap.controls import RequestControl,ResponseControl,KNOWN_RESPONSE_CONTROLS
-
 # Imports from pyasn1
-from pyasn1.type import tag,namedtype,namedval,univ,constraint
-from pyasn1.codec.ber import encoder,decoder
+from pyasn1.type import tag, namedtype, namedval, univ, constraint
+from pyasn1.codec.ber import encoder, decoder
 
-__all__ = [ 'SyncreplConsumer' ]
+from ldap.pkginfo import __version__, __author__, __license__
+from ldap.controls import RequestControl, ResponseControl, KNOWN_RESPONSE_CONTROLS
 
-# RFC 4533:
-#
-#       syncUUID ::= OCTET STRING (SIZE(16))
-#       syncCookie ::= OCTET STRING
+__all__ = [
+    'SyncreplConsumer',
+]
 
-class syncUUID(univ.OctetString):
-    subtypeSpec = constraint.ValueSizeConstraint(16,16)
 
-class syncCookie(univ.OctetString):
-    pass
+class SyncUUID(univ.OctetString):
+    """
+    syncUUID ::= OCTET STRING (SIZE(16))
+    """
+    subtypeSpec = constraint.ValueSizeConstraint(16, 16)
 
-# 2.2.  Sync Request Control
-#
-#    The Sync Request Control is an LDAP Control [RFC4511] where the
-#    controlType is the object identifier 1.3.6.1.4.1.4203.1.9.1.1 and the
-#    controlValue, an OCTET STRING, contains a BER-encoded
-#    syncRequestValue.  The criticality field is either TRUE or FALSE.
-#
-#       syncRequestValue ::= SEQUENCE {
-#           mode ENUMERATED {
-#               -- 0 unused
-#               refreshOnly       (1),
-#               -- 2 reserved
-#               refreshAndPersist (3)
-#           },
-#           cookie     syncCookie OPTIONAL,
-#           reloadHint BOOLEAN DEFAULT FALSE
-#       }
-#
-#    The Sync Request Control is only applicable to the SearchRequest
-#    Message.
 
-class syncRequestMode(univ.Enumerated):
+class SyncCookie(univ.OctetString):
+    """
+    syncCookie ::= OCTET STRING
+    """
+
+
+class SyncRequestMode(univ.Enumerated):
+    """
+           mode ENUMERATED {
+               -- 0 unused
+               refreshOnly       (1),
+               -- 2 reserved
+               refreshAndPersist (3)
+           },
+    """
     namedValues = namedval.NamedValues(
         ('refreshOnly', 1),
         ('refreshAndPersist', 3)
     )
-    subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(1,3)
+    subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(1, 3)
 
-class syncRequestValue(univ.Sequence):
+
+class SyncRequestValue(univ.Sequence):
+    """
+       syncRequestValue ::= SEQUENCE {
+           mode ENUMERATED {
+               -- 0 unused
+               refreshOnly       (1),
+               -- 2 reserved
+               refreshAndPersist (3)
+           },
+           cookie     syncCookie OPTIONAL,
+           reloadHint BOOLEAN DEFAULT FALSE
+       }
+    """
     componentType = namedtype.NamedTypes(
-        namedtype.NamedType('mode', syncRequestMode()),
-        namedtype.OptionalNamedType('cookie', syncCookie()),
+        namedtype.NamedType('mode', SyncRequestMode()),
+        namedtype.OptionalNamedType('cookie', SyncCookie()),
         namedtype.DefaultedNamedType('reloadHint', univ.Boolean(False))
     )
 
+
 class SyncRequestControl(RequestControl):
+    """
+    The Sync Request Control is an LDAP Control [RFC4511] where the
+    controlType is the object identifier 1.3.6.1.4.1.4203.1.9.1.1 and the
+    controlValue, an OCTET STRING, contains a BER-encoded
+    syncRequestValue.  The criticality field is either TRUE or FALSE.
+    [..]
+    The Sync Request Control is only applicable to the SearchRequest
+    Message.
+    """
     controlType = '1.3.6.1.4.1.4203.1.9.1.1'
 
     def __init__(self, criticality=1, cookie=None, mode='refreshOnly', reloadHint=False):
@@ -78,62 +87,73 @@ class SyncRequestControl(RequestControl):
         self.reloadHint = reloadHint
 
     def encodeControlValue(self):
-        r = syncRequestValue()
-        r.setComponentByName('mode', syncRequestMode(self.mode))
+        rcv = SyncRequestValue()
+        rcv.setComponentByName('mode', SyncRequestMode(self.mode))
         if self.cookie is not None:
-            r.setComponentByName('cookie', syncCookie(self.cookie))
+            rcv.setComponentByName('cookie', SyncCookie(self.cookie))
         if self.reloadHint:
-            r.setComponentbyName('reloadHint', univ.Boolean(self.reloadHint))
-        return encoder.encode(r)
+            rcv.setComponentByName('reloadHint', univ.Boolean(self.reloadHint))
+        return encoder.encode(rcv)
 
-# 2.3.  Sync State Control
-#
-#    The Sync State Control is an LDAP Control [RFC4511] where the
-#    controlType is the object identifier 1.3.6.1.4.1.4203.1.9.1.2 and the
-#    controlValue, an OCTET STRING, contains a BER-encoded syncStateValue.
-#    The criticality is FALSE.
-#
-#       syncStateValue ::= SEQUENCE {
-#           state ENUMERATED {
-#               present (0),
-#               add (1),
-#               modify (2),
-#               delete (3)
-#           },
-#           entryUUID syncUUID,
-#           cookie    syncCookie OPTIONAL
-#       }
-#
-#    The Sync State Control is only applicable to SearchResultEntry and
-#    SearchResultReference Messages.
 
-class syncStateOp(univ.Enumerated):
+class SyncStateOp(univ.Enumerated):
+    """
+           state ENUMERATED {
+               present (0),
+               add (1),
+               modify (2),
+               delete (3)
+           },
+    """
     namedValues = namedval.NamedValues(
         ('present', 0),
         ('add', 1),
         ('modify', 2),
         ('delete', 3)
     )
-    subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0,1,2,3)
+    subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0, 1, 2, 3)
 
-class syncStateValue(univ.Sequence):
+
+class SyncStateValue(univ.Sequence):
+    """
+       syncStateValue ::= SEQUENCE {
+           state ENUMERATED {
+               present (0),
+               add (1),
+               modify (2),
+               delete (3)
+           },
+           entryUUID syncUUID,
+           cookie    syncCookie OPTIONAL
+       }
+    """
     componentType = namedtype.NamedTypes(
-        namedtype.NamedType('state', syncStateOp()),
-        namedtype.NamedType('entryUUID', syncUUID()),
-        namedtype.OptionalNamedType('cookie', syncCookie())
+        namedtype.NamedType('state', SyncStateOp()),
+        namedtype.NamedType('entryUUID', SyncUUID()),
+        namedtype.OptionalNamedType('cookie', SyncCookie())
     )
 
+
 class SyncStateControl(ResponseControl):
+    """
+    The Sync State Control is an LDAP Control [RFC4511] where the
+    controlType is the object identifier 1.3.6.1.4.1.4203.1.9.1.2 and the
+    controlValue, an OCTET STRING, contains a BER-encoded SyncStateValue.
+    The criticality is FALSE.
+    [..]
+    The Sync State Control is only applicable to SearchResultEntry and
+    SearchResultReference Messages.
+    """
     controlType = '1.3.6.1.4.1.4203.1.9.1.2'
-    opnames = ( 'present', 'add', 'modify', 'delete' )
+    opnames = ('present', 'add', 'modify', 'delete')
 
     def decodeControlValue(self, encodedControlValue):
-        d = decoder.decode(encodedControlValue, asn1Spec = syncStateValue())
+        d = decoder.decode(encodedControlValue, asn1Spec=SyncStateValue())
         state = d[0].getComponentByName('state')
-        uuid = UUID(bytes=d[0].getComponentByName('entryUUID'))
+        uuid = UUID(bytes=bytes(d[0].getComponentByName('entryUUID')))
         cookie = d[0].getComponentByName('cookie')
-        if cookie.hasValue():
-            self.cookie = str(self.cookie)
+        if cookie is not None and cookie.hasValue():
+            self.cookie = str(cookie)
         else:
             self.cookie = None
         self.state = self.__class__.opnames[int(state)]
@@ -141,32 +161,34 @@ class SyncStateControl(ResponseControl):
 
 KNOWN_RESPONSE_CONTROLS[SyncStateControl.controlType] = SyncStateControl
 
-# 2.4.  Sync Done Control
-#
-#    The Sync Done Control is an LDAP Control [RFC4511] where the
-#    controlType is the object identifier 1.3.6.1.4.1.4203.1.9.1.3 and the
-#    controlValue contains a BER-encoded syncDoneValue.  The criticality
-#    is FALSE (and hence absent).
-#
-#       syncDoneValue ::= SEQUENCE {
-#           cookie          syncCookie OPTIONAL,
-#           refreshDeletes  BOOLEAN DEFAULT FALSE
-#       }
-#
-#    The Sync Done Control is only applicable to the SearchResultDone
-#    Message.
 
-class syncDoneValue(univ.Sequence):
+class SyncDoneValue(univ.Sequence):
+    """
+       syncDoneValue ::= SEQUENCE {
+           cookie          syncCookie OPTIONAL,
+           refreshDeletes  BOOLEAN DEFAULT FALSE
+       }
+    """
     componentType = namedtype.NamedTypes(
-        namedtype.OptionalNamedType('cookie', syncCookie()),
+        namedtype.OptionalNamedType('cookie', SyncCookie()),
         namedtype.DefaultedNamedType('refreshDeletes', univ.Boolean(False))
     )
 
+
 class SyncDoneControl(ResponseControl):
+    """
+    The Sync Done Control is an LDAP Control [RFC4511] where the
+    controlType is the object identifier 1.3.6.1.4.1.4203.1.9.1.3 and the
+    controlValue contains a BER-encoded syncDoneValue.  The criticality
+    is FALSE (and hence absent).
+    [..]
+    The Sync Done Control is only applicable to the SearchResultDone
+    Message.
+    """
     controlType = '1.3.6.1.4.1.4203.1.9.1.3'
 
     def decodeControlValue(self, encodedControlValue):
-        d = decoder.decode(encodedControlValue, asn1Spec = syncDoneValue())
+        d = decoder.decode(encodedControlValue, asn1Spec=SyncDoneValue())
         cookie = d[0].getComponentByName('cookie')
         if cookie.hasValue():
             self.cookie = str(cookie)
@@ -181,95 +203,121 @@ class SyncDoneControl(ResponseControl):
 KNOWN_RESPONSE_CONTROLS[SyncDoneControl.controlType] = SyncDoneControl
 
 
-# 2.5.  Sync Info Message
-#
-#    The Sync Info Message is an LDAP Intermediate Response Message
-#    [RFC4511] where responseName is the object identifier
-#    1.3.6.1.4.1.4203.1.9.1.4 and responseValue contains a BER-encoded
-#    syncInfoValue.  The criticality is FALSE (and hence absent).
-#
-#       syncInfoValue ::= CHOICE {
-#           newcookie      [0] syncCookie,
-#           refreshDelete  [1] SEQUENCE {
-#               cookie         syncCookie OPTIONAL,
-#               refreshDone    BOOLEAN DEFAULT TRUE
-#           },
-#           refreshPresent [2] SEQUENCE {
-#               cookie         syncCookie OPTIONAL,
-#               refreshDone    BOOLEAN DEFAULT TRUE
-#           },
-#           syncIdSet      [3] SEQUENCE {
-#               cookie         syncCookie OPTIONAL,
-#               refreshDeletes BOOLEAN DEFAULT FALSE,
-#               syncUUIDs      SET OF syncUUID
-#           }
-#       }
-#
-
-class refreshDelete(univ.Sequence):
+class RefreshDelete(univ.Sequence):
+    """
+           refreshDelete  [1] SEQUENCE {
+               cookie         syncCookie OPTIONAL,
+               refreshDone    BOOLEAN DEFAULT TRUE
+           },
+    """
     componentType = namedtype.NamedTypes(
-        namedtype.OptionalNamedType('cookie', syncCookie()),
+        namedtype.OptionalNamedType('cookie', SyncCookie()),
         namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True))
     )
 
-class refreshPresent(univ.Sequence):
+
+class RefreshPresent(univ.Sequence):
+    """
+           refreshPresent [2] SEQUENCE {
+               cookie         syncCookie OPTIONAL,
+               refreshDone    BOOLEAN DEFAULT TRUE
+           },
+    """
     componentType = namedtype.NamedTypes(
-        namedtype.OptionalNamedType('cookie', syncCookie()),
+        namedtype.OptionalNamedType('cookie', SyncCookie()),
         namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True))
     )
 
-class syncUUIDs(univ.SetOf):
-    componentType = syncUUID()
 
-class syncIdSet(univ.Sequence):
+class SyncUUIDs(univ.SetOf):
+    """
+    syncUUIDs      SET OF syncUUID
+    """
+    componentType = SyncUUID()
+
+
+class SyncIdSet(univ.Sequence):
+    """
+     syncIdSet      [3] SEQUENCE {
+         cookie         syncCookie OPTIONAL,
+         refreshDeletes BOOLEAN DEFAULT FALSE,
+         syncUUIDs      SET OF syncUUID
+     }
+    """
     componentType = namedtype.NamedTypes(
-        namedtype.OptionalNamedType('cookie', syncCookie()),
+        namedtype.OptionalNamedType('cookie', SyncCookie()),
         namedtype.DefaultedNamedType('refreshDeletes', univ.Boolean(False)),
-        namedtype.NamedType('syncUUIDs', syncUUIDs())
+        namedtype.NamedType('syncUUIDs', SyncUUIDs())
     )
 
-class syncInfoValue(univ.Choice):
+
+class SyncInfoValue(univ.Choice):
+    """
+       syncInfoValue ::= CHOICE {
+           newcookie      [0] syncCookie,
+           refreshDelete  [1] SEQUENCE {
+               cookie         syncCookie OPTIONAL,
+               refreshDone    BOOLEAN DEFAULT TRUE
+           },
+           refreshPresent [2] SEQUENCE {
+               cookie         syncCookie OPTIONAL,
+               refreshDone    BOOLEAN DEFAULT TRUE
+           },
+           syncIdSet      [3] SEQUENCE {
+               cookie         syncCookie OPTIONAL,
+               refreshDeletes BOOLEAN DEFAULT FALSE,
+               syncUUIDs      SET OF syncUUID
+           }
+       }
+    """
     componentType = namedtype.NamedTypes(
         namedtype.NamedType(
             'newcookie',
-            syncCookie().subtype(
+            SyncCookie().subtype(
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
             )
         ),
         namedtype.NamedType(
             'refreshDelete',
-            refreshDelete().subtype(
+            RefreshDelete().subtype(
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1)
             )
         ),
         namedtype.NamedType(
             'refreshPresent',
-            refreshPresent().subtype(
+            RefreshPresent().subtype(
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 2)
             )
         ),
         namedtype.NamedType(
             'syncIdSet',
-            syncIdSet().subtype(
+            SyncIdSet().subtype(
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 3)
             )
         )
     )
 
+
 class SyncInfoMessage:
+    """
+    The Sync Info Message is an LDAP Intermediate Response Message
+    [RFC4511] where responseName is the object identifier
+    1.3.6.1.4.1.4203.1.9.1.4 and responseValue contains a BER-encoded
+    syncInfoValue.  The criticality is FALSE (and hence absent).
+    """
     responseName = '1.3.6.1.4.1.4203.1.9.1.4'
 
     def __init__(self, encodedMessage):
-        d = decoder.decode(encodedMessage, asn1Spec = syncInfoValue())
+        d = decoder.decode(encodedMessage, asn1Spec=SyncInfoValue())
         self.newcookie = None
         self.refreshDelete = None
         self.refreshPresent = None
         self.syncIdSet = None
 
-        for attr in [ 'newcookie', 'refreshDelete', 'refreshPresent', 'syncIdSet']:
+        for attr in ['newcookie', 'refreshDelete', 'refreshPresent', 'syncIdSet']:
             comp = d[0].getComponentByName(attr)
 
-            if comp.hasValue():
+            if comp is not None and comp.hasValue():
 
                 if attr == 'newcookie':
                     self.newcookie = str(comp)
@@ -287,12 +335,12 @@ class SyncInfoMessage:
                     uuids = []
                     ids = comp.getComponentByName('syncUUIDs')
                     for i in range(len(ids)):
-                        uuid = UUID(bytes=str(ids.getComponentByPosition(i)))
+                        uuid = UUID(bytes=bytes(ids.getComponentByPosition(i)))
                         uuids.append(str(uuid))
                     val['syncUUIDs'] = uuids
                     val['refreshDeletes'] = bool(comp.getComponentByName('refreshDeletes'))
 
-                setattr(self,attr,val)
+                setattr(self, attr, val)
                 return
 
 
@@ -352,9 +400,12 @@ class SyncreplConsumer:
         """
         while True:
             type, msg, mid, ctrls, n, v = self.result4(
-                    msgid=msgid, timeout=timeout,
-                    add_intermediates=1, add_ctrls=1, all = 0
-                    )
+                msgid=msgid,
+                timeout=timeout,
+                add_intermediates=1,
+                add_ctrls=1,
+                all=0,
+            )
 
             if type == 101:
                 # search result. This marks the end of a refreshOnly session.
@@ -363,7 +414,7 @@ class SyncreplConsumer:
                 for c in ctrls:
                     if c.__class__.__name__ != 'SyncDoneControl':
                         continue
-                    self.syncrepl_present(None,refreshDeletes=c.refreshDeletes)
+                    self.syncrepl_present(None, refreshDeletes=c.refreshDeletes)
                     if c.cookie is not None:
                         self.syncrepl_set_cookie(c.cookie)
 
@@ -418,7 +469,6 @@ class SyncreplConsumer:
                             self.syncrepl_present(sim.syncIdSet['syncUUIDs'])
                         if 'cookie' in sim.syncIdSet:
                             self.syncrepl_set_cookie(sim.syncIdSet['cookie'])
-                        pass
 
             if all == 0:
                 return True
@@ -455,7 +505,6 @@ class SyncreplConsumer:
         If called with uuids set to None and refreshDeletes set to True,
         syncrepl_present() should reset the list of recorded uuids, without
         deleting any entries.
-
         """
         pass
 
@@ -464,7 +513,6 @@ class SyncreplConsumer:
         Called by syncrepl_poll() to delete entries. A list
         of UUIDs of the entries to be deleted is given in the
         uuids parameter.
-
         """
         pass
 
@@ -475,7 +523,6 @@ class SyncreplConsumer:
         The provided uuid is used to identify the provided entry in
         any future modification (including dn modification), deletion,
         and presentation operations.
-
         """
         pass
 

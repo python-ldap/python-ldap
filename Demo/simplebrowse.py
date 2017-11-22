@@ -5,7 +5,6 @@
 #
 
 import ldap
-import string
 from traceback import print_exc
 
 url = "ldap://ldap.openldap.org/"
@@ -71,8 +70,8 @@ while 1:
 		if arg == '-':
 			lastdn,dn = dn,lastdn
 		elif arg == '..':
-			dn = string.join(ldap.explode_dn(dn)[1:], ",")
-			dn = string.strip(dn)
+			dn = ldap.explode_dn(dn)[1:].join(",")
+			dn = dn.strip()
                 else:
 		        try:
 			        i = int(arg)

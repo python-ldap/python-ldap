@@ -129,7 +129,5 @@ class SSSResponseControl(ResponseControl):
         # backward compability class attributes
         self.result = self.sortResult
         self.attribute_type_error = self.attributeType
-        # not sure whether to keep this
-        self.result_code = sort_result.prettyPrint()
 
 KNOWN_RESPONSE_CONTROLS[SSSResponseControl.controlType] = SSSResponseControl

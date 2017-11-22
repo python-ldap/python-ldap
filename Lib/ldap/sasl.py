@@ -10,44 +10,47 @@ implementing a callback() - method, which will be called by the
 LDAPObject's sasl_bind_s() method
 Implementing support for new sasl mechanism is very easy --- see
 the examples of digest_md5 and gssapi.
-
-Compability:
-- Tested with Python 2.0+ but should work with Python 1.5.x
 """
 
 from ldap import __version__
 
 if __debug__:
-  # Tracing is only supported in debugging mode
-  import traceback
-  from ldap import _trace_level,_trace_file,_trace_stack_limit
+    # Tracing is only supported in debugging mode
+    from ldap import _trace_level, _trace_file
+
 
 # These are the SASL callback id's , as defined in sasl.h
-CB_USER        = 0x4001
-CB_AUTHNAME    = 0x4002
-CB_LANGUAGE    = 0x4003
-CB_PASS        = 0x4004
-CB_ECHOPROMPT  = 0x4005
-CB_NOECHOPROMPT= 0x4006
-CB_GETREALM    = 0x4008
+CB_USER = 0x4001
+CB_AUTHNAME = 0x4002
+CB_LANGUAGE = 0x4003
+CB_PASS = 0x4004
+CB_ECHOPROMPT = 0x4005
+CB_NOECHOPROMPT = 0x4006
+CB_GETREALM = 0x4008
+
 
 class sasl:
-    """This class handles SASL interactions for authentication.
+    """
+    This class handles SASL interactions for authentication.
     If an instance of this class is passed to ldap's sasl_bind_s()
     method, the library will call its callback() method. For
     specific SASL authentication mechanisms, this method can be
-    overridden"""
+    overridden
+    """
 
-    def __init__(self,cb_value_dict,mech):
-        """ The (generic) base class takes a cb_value_dictionary of
+    def __init__(self, cb_value_dict, mech):
+        """
+        The (generic) base class takes a cb_value_dictionary of
         question-answer pairs. Questions are specified by the respective
         SASL callback id's. The mech argument is a string that specifies
-        the SASL mechaninsm to be uesd."""
+        the SASL mechaninsm to be uesd.
+        """
         self.cb_value_dict = cb_value_dict or {}
         self.mech = mech
 
-    def callback(self,cb_id,challenge,prompt,defresult):
-        """ The callback method will be called by the sasl_bind_s()
+    def callback(self, cb_id, challenge, prompt, defresult):
+        """
+        The callback method will be called by the sasl_bind_s()
         method several times. Each time it will provide the id, which
         tells us what kind of information is requested (the CB_ ...
         constants above). The challenge might be a short (english) text
@@ -60,50 +63,66 @@ class sasl:
         cb_value_dictionary. Note that the current callback interface is not very
         useful for writing generic sasl GUIs, which would need to know all
         the questions to ask, before the answers are returned to the sasl
-        lib (in contrast to one question at a time)."""
+        lib (in contrast to one question at a time).
+        """
 
         # The following print command might be useful for debugging
         # new sasl mechanisms. So it is left here
-        cb_result = self.cb_value_dict.get(cb_id,defresult) or ''
+        cb_result = self.cb_value_dict.get(cb_id, defresult) or ''
         if __debug__:
-          if _trace_level>=1:
-            _trace_file.write("*** id=%d, challenge=%s, prompt=%s, defresult=%s\n-> %s\n" % (
-                cb_id, challenge, prompt, repr(defresult), repr(self.cb_value_dict.get(cb_result))
-              ))
+            if _trace_level >= 1:
+                _trace_file.write("*** id=%d, challenge=%s, prompt=%s, defresult=%s\n-> %s\n" % (
+                    cb_id,
+                    challenge,
+                    prompt,
+                    repr(defresult),
+                    repr(self.cb_value_dict.get(cb_result))
+                ))
         return cb_result
 
 
 class cram_md5(sasl):
-    """This class handles SASL CRAM-MD5 authentication."""
+    """
+    This class handles SASL CRAM-MD5 authentication.
+    """
 
-    def __init__(self,authc_id, password, authz_id=""):
-        auth_dict = {CB_AUTHNAME:authc_id, CB_PASS:password,
-                     CB_USER:authz_id}
-        sasl.__init__(self,auth_dict,"CRAM-MD5")
+    def __init__(self, authc_id, password, authz_id=""):
+        auth_dict = {
+            CB_AUTHNAME: authc_id,
+            CB_PASS: password,
+            CB_USER: authz_id,
+        }
+        sasl.__init__(self, auth_dict, "CRAM-MD5")
 
 
 class digest_md5(sasl):
-    """This class handles SASL DIGEST-MD5 authentication."""
+    """
+    This class handles SASL DIGEST-MD5 authentication.
+    """
 
-    def __init__(self,authc_id, password, authz_id=""):
-        auth_dict = {CB_AUTHNAME:authc_id, CB_PASS:password,
-                     CB_USER:authz_id}
-        sasl.__init__(self,auth_dict,"DIGEST-MD5")
+    def __init__(self, authc_id, password, authz_id=""):
+        auth_dict = {
+            CB_AUTHNAME: authc_id,
+            CB_PASS: password,
+            CB_USER: authz_id,
+        }
+        sasl.__init__(self, auth_dict, "DIGEST-MD5")
 
 
 class gssapi(sasl):
-    """This class handles SASL GSSAPI (i.e. Kerberos V)
-    authentication."""
+    """
+    This class handles SASL GSSAPI (i.e. Kerberos V) authentication.
+    """
 
-    def __init__(self,authz_id=""):
-        sasl.__init__(self, {CB_USER:authz_id},"GSSAPI")
+    def __init__(self, authz_id=""):
+        sasl.__init__(self, {CB_USER: authz_id}, "GSSAPI")
 
 
 class external(sasl):
-    """This class handles SASL EXTERNAL authentication
-    (i.e. X.509 client certificate)"""
+    """
+    This class handles SASL EXTERNAL authentication
+    (i.e. X.509 client certificate)
+    """
 
-    def __init__(self,authz_id=""):
-        sasl.__init__(self, {CB_USER:authz_id},"EXTERNAL")
-
-
+    def __init__(self, authz_id=""):
+        sasl.__init__(self, {CB_USER: authz_id}, "EXTERNAL")

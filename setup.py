@@ -12,7 +12,7 @@ except ImportError:
   from distutils.core import setup, Extension
 
 from ConfigParser import ConfigParser
-import sys,os,string,time
+import sys,os,time
 
 sys.path.insert(0, os.path.join(os.getcwd(), 'Lib/ldap'))
 import pkginfo
@@ -36,15 +36,14 @@ cfg.read('setup.cfg')
 if cfg.has_section('_ldap'):
   for name in dir(LDAP_CLASS):
     if cfg.has_option('_ldap', name):
-      print name + ': ' + cfg.get('_ldap', name)
-      setattr(LDAP_CLASS, name, string.split(cfg.get('_ldap', name)))
+      setattr(LDAP_CLASS, name, cfg.get('_ldap', name).split())
 
 for i in range(len(LDAP_CLASS.defines)):
   LDAP_CLASS.defines[i]=((LDAP_CLASS.defines[i],None))
 
 for i in range(len(LDAP_CLASS.extra_files)):
-  destdir, origfiles = string.split(LDAP_CLASS.extra_files[i], ':')
-  origfileslist = string.split(origfiles, ',')
+  destdir, origfiles = LDAP_CLASS.extra_files[i].split(':')
+  origfileslist = origfiles.split(',')
   LDAP_CLASS.extra_files[i]=(destdir, origfileslist)
 
 #-- Let distutils/setuptools do the rest
@@ -110,7 +109,6 @@ setup(
         'Modules/functions.c',
         'Modules/ldapmodule.c',
         'Modules/message.c',
-        'Modules/version.c',
         'Modules/options.c',
         'Modules/berval.c',
       ],
@@ -125,7 +123,11 @@ setup(
         ('ldap_r' in LDAP_CLASS.libs or 'oldap_r' in LDAP_CLASS.libs)*[('HAVE_LIBLDAP_R',None)] + \
         ('sasl' in LDAP_CLASS.libs or 'sasl2' in LDAP_CLASS.libs or 'libsasl' in LDAP_CLASS.libs)*[('HAVE_SASL',None)] + \
         ('ssl' in LDAP_CLASS.libs and 'crypto' in LDAP_CLASS.libs)*[('HAVE_TLS',None)] + \
-        [('LDAPMODULE_VERSION', pkginfo.__version__)]
+        [
+          ('LDAPMODULE_VERSION', pkginfo.__version__),
+          ('LDAPMODULE_AUTHOR', pkginfo.__author__),
+          ('LDAPMODULE_LICENSE', pkginfo.__license__),
+        ]
     ),
   ],
   #-- Python "stand alone" modules
@@ -146,6 +148,7 @@ setup(
     'ldap.controls.sessiontrack',
     'ldap.controls.simple',
     'ldap.controls.sss',
+    'ldap.controls.vlv',
     'ldap.cidict',
     'ldap.dn',
     'ldap.extop',

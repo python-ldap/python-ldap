@@ -52,16 +52,15 @@ def extract_tokens(l,known_tokens):
   """
   assert l[0].strip()=="(" and l[-1].strip()==")",ValueError(l)
   result = {}
-  result_has_key = result.has_key
   result.update(known_tokens)
   i = 0
   l_len = len(l)
   while i<l_len:
-    if result_has_key(l[i]):
+    if l[i] in result:
       token = l[i]
       i += 1 # Consume token
       if i<l_len:
-        if result_has_key(l[i]):
+        if l[i] in result:
           # non-valued
           result[token] = (())
         elif l[i]=="(":

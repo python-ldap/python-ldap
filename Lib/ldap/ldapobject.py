@@ -2,28 +2,15 @@
 ldapobject.py - wraps class _ldap.LDAPObject
 
 See https://www.python-ldap.org/ for details.
-
-Compability:
-- Tested with Python 2.0+ but should work with Python 1.5.x
-- LDAPObject class should be exactly the same like _ldap.LDAPObject
-
-Usage:
-Directly imported by ldap/__init__.py. The symbols of _ldap are
-overridden.
-
-Thread-lock:
-Basically calls into the LDAP lib are serialized by the module-wide
-lock self._ldap_object_lock.
 """
 
 from os import strerror
 
-from ldap import __version__
+from ldap.pkginfo import __version__, __author__, __license__
 
 __all__ = [
   'LDAPObject',
   'SimpleLDAPObject',
-  'NonblockingLDAPObject',
   'ReconnectLDAPObject',
 ]
 
@@ -112,7 +99,7 @@ class SimpleLDAPObject:
     except LDAPError, e:
       exc_type,exc_value,exc_traceback = sys.exc_info()
       try:
-        if not e.args[0].has_key('info') and e.args[0].has_key('errno'):
+        if 'info' not in e.args[0] and 'errno' in e.args[0]:
           e.args[0]['info'] = strerror(e.args[0]['errno'])
       except IndexError:
         pass
@@ -127,15 +114,15 @@ class SimpleLDAPObject:
     return result
 
   def __setattr__(self,name,value):
-    if self.CLASSATTR_OPTION_MAPPING.has_key(name):
+    if name in self.CLASSATTR_OPTION_MAPPING:
       self.set_option(self.CLASSATTR_OPTION_MAPPING[name],value)
     else:
       self.__dict__[name] = value
 
   def __getattr__(self,name):
-    if self.CLASSATTR_OPTION_MAPPING.has_key(name):
+    if name in self.CLASSATTR_OPTION_MAPPING:
       return self.get_option(self.CLASSATTR_OPTION_MAPPING[name])
-    elif self.__dict__.has_key(name):
+    elif name in self.__dict__:
       return self.__dict__[name]
     else:
       raise AttributeError,'%s has no attribute %s' % (
@@ -299,12 +286,14 @@ class SimpleLDAPObject:
   def compare_ext_s(self,dn,attr,value,serverctrls=None,clientctrls=None):
     msgid = self.compare_ext(dn,attr,value,serverctrls,clientctrls)
     try:
-      resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid,all=1,timeout=self.timeout)
+        ldap_res = self.result3(msgid,all=1,timeout=self.timeout)
     except ldap.COMPARE_TRUE:
       return 1
     except ldap.COMPARE_FALSE:
       return 0
-    return None
+    raise ldap.PROTOCOL_ERROR(
+        'Compare operation returned wrong result: %r' % (ldap_res)
+    )
 
   def compare(self,dn,attr,value):
     return self.compare_ext(dn,attr,value,None,None)
@@ -772,40 +761,6 @@ class SimpleLDAPObject:
     ).get('namingContexts', [])
 
 
-class NonblockingLDAPObject(SimpleLDAPObject):
-
-  def __init__(self,uri,trace_level=0,trace_file=None,result_timeout=-1):
-    self._result_timeout = result_timeout
-    SimpleLDAPObject.__init__(self,uri,trace_level,trace_file)
-
-  def result(self,msgid=ldap.RES_ANY,all=1,timeout=-1):
-    """
-    """
-    ldap_result = self._ldap_call(self._l.result,msgid,0,self._result_timeout)
-    if not all:
-      return ldap_result
-    start_time = time.time()
-    all_results = []
-    while all:
-      while ldap_result[0] is None:
-        if (timeout>=0) and (time.time()-start_time>timeout):
-          self._ldap_call(self._l.abandon,msgid)
-          raise ldap.TIMEOUT(
-            "LDAP time limit (%d secs) exceeded." % (timeout)
-          )
-        time.sleep(0.00001)
-        ldap_result = self._ldap_call(self._l.result,msgid,0,self._result_timeout)
-      if ldap_result[1] is None:
-        break
-      all_results.extend(ldap_result[1])
-      ldap_result = None,None
-    return all_results
-
-  def search_st(self,base,scope,filterstr='(objectClass=*)',attrlist=None,attrsonly=0,timeout=-1):
-    msgid = self.search(base,scope,filterstr,attrlist,attrsonly)
-    return self.result(msgid,all=1,timeout=timeout)
-
-
 class ReconnectLDAPObject(SimpleLDAPObject):
   """
   In case of server failure (ldap.SERVER_DOWN) the implementations
@@ -819,12 +774,13 @@ class ReconnectLDAPObject(SimpleLDAPObject):
   application.
   """
 
-  __transient_attrs__ = {
-    '_l':None,
-    '_ldap_object_lock':None,
-    '_trace_file':None,
-    '_reconnect_lock':None,
-  }
+  __transient_attrs__ = set([
+    '_l',
+    '_ldap_object_lock',
+    '_trace_file',
+    '_reconnect_lock',
+    '_last_bind',
+  ])
 
   def __init__(
     self,uri,
@@ -852,15 +808,18 @@ class ReconnectLDAPObject(SimpleLDAPObject):
 
   def __getstate__(self):
     """return data representation for pickled object"""
-    d = {}
-    for k,v in self.__dict__.items():
-      if not self.__transient_attrs__.has_key(k):
-        d[k] = v
-    return d
+    state = dict([
+        (k,v)
+        for k,v in self.__dict__.items()
+        if k not in self.__transient_attrs__
+    ])
+    state['_last_bind'] = self._last_bind[0].__name__, self._last_bind[1], self._last_bind[2]
+    return state
 
   def __setstate__(self,d):
     """set up the object from pickled data"""
     self.__dict__.update(d)
+    self._last_bind = getattr(SimpleLDAPObject, self._last_bind[0]), self._last_bind[1], self._last_bind[2]
     self._ldap_object_lock = self._ldap_lock()
     self._reconnect_lock = ldap.LDAPLock(desc='reconnect lock within %s' % (repr(self)))
     self._trace_file = sys.stdout
@@ -930,7 +889,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     return # reconnect()
 
   def _apply_method_s(self,func,*args,**kwargs):
-    if not self.__dict__.has_key('_l'):
+    if not hasattr(self,'_l'):
       self.reconnect(self._uri,retry_max=self._retry_max,retry_delay=self._retry_delay)
     try:
       return func(self,*args,**kwargs)

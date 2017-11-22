@@ -248,6 +248,30 @@ class TestEntryRecords(TestLDIFParser):
             ]
         )
 
+    def test_big_binary(self):
+        self.check_records(
+            """
+            dn: cn=x,cn=y,cn=z
+            attrib:: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+             AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+             AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+             AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+             AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+             AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+             AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+             AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+             AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+             =
+
+            """,
+            [
+                (
+                    'cn=x,cn=y,cn=z',
+                    {'attrib': [500*b'\0']},
+                ),
+            ]
+        )
+
     def test_unicode(self):
         self.check_records(
             """
@@ -641,7 +665,7 @@ class TestChangeRecords(TestLDIFParser):
             except ValueError, value_error:
                 pass
             else:
-                self.fail("should have raised ValueError: %r" % ldif_str)
+                self.fail("should have raised ValueError: %r" % bad_ldif_string)
 
     def test_mod_increment(self):
         self.check_records(

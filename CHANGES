@@ -1,4 +1,35 @@
 ----------------------------------------------------------------
+Released 2.5.2 2017-11-20
+
+Changes since 2.5.1:
+
+Modules/
+* PyBytes_ instead of PyString_ and added PyInt_FromLong compat macro
+* moved code from version.c to ldapmodule.c
+* removed obsolete back-ward compability constants from common.h
+* build checks whether LDAP_API_VERSION is OpenLDAP 2.4.x
+* _ldap.__author__ and _ldap.__license__ also set from ldap.pkginfo
+* assume C extension API for Python 2.7+
+
+Lib/
+* removed all dependencies on modules string and types
+* removed use of .has_key()
+* removed class ldap.ldapobject.NonblockingLDAPObject
+* new global constant ldap.LIBLDAP_API_INFO
+* right after importing _ldap there is a call into libldap to initialize it
+* method .decodeControlValue() of SSSResponseControl and VLVResponseControl
+  does not set class attribute result_code anymore
+* always use bytes() for UUID() constructor in ldap.syncrepl
+* module ldif now uses functions b64encode() and b64decode()
+* fixed pickling and restoring of ReconnectLDAPObject
+
+Tests/
+* scripts do not directly call SlapdTestCase.setUpClass() anymore
+* added LDIF test with folded, base64-encoded attribute
+* added more tests for sub-module ldap.dn
+* added tests for ldap.syncrepl (thanks to Karl Kornel)
+
+----------------------------------------------------------------
 Released 2.5.1 2017-11-12
 
 Changes since 2.4.45:

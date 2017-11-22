@@ -2,39 +2,19 @@
 ldap.modlist - create add/modify modlist's
 
 See https://www.python-ldap.org/ for details.
-
-Python compability note:
-This module is known to work with Python 2.0+ but should work
-with Python 1.5.2 as well.
 """
 
 from ldap import __version__
 
-import string,ldap,ldap.cidict
-
-
-def list_dict(l,case_insensitive=0):
-  """
-  return a dictionary with all items of l being the keys of the dictionary
-
-  If argument case_insensitive is non-zero ldap.cidict.cidict will be
-  used for case-insensitive string keys
-  """
-  if case_insensitive:
-    d = ldap.cidict.cidict()
-  else:
-    d = {}
-  for i in l:
-    d[i]=None
-  return d
+import ldap
 
 
 def addModlist(entry,ignore_attr_types=None):
   """Build modify list for call of method LDAPObject.add()"""
-  ignore_attr_types = list_dict(map(string.lower,(ignore_attr_types or [])))
+  ignore_attr_types = set(map(str.lower,ignore_attr_types or []))
   modlist = []
   for attrtype in entry.keys():
-    if ignore_attr_types.has_key(string.lower(attrtype)):
+    if attrtype.lower() in ignore_attr_types:
       # This attribute type is ignored
       continue
     # Eliminate empty attr value strings in list
@@ -66,20 +46,20 @@ def modifyModlist(
       List of attribute type names for which comparison will be made
       case-insensitive
   """
-  ignore_attr_types = list_dict(map(string.lower,(ignore_attr_types or [])))
-  case_ignore_attr_types = list_dict(map(string.lower,(case_ignore_attr_types or [])))
+  ignore_attr_types = set(map(str.lower,ignore_attr_types or []))
+  case_ignore_attr_types = set(map(str.lower,case_ignore_attr_types or []))
   modlist = []
   attrtype_lower_map = {}
   for a in old_entry.keys():
-    attrtype_lower_map[string.lower(a)]=a
+    attrtype_lower_map[str.lower(a)]=a
   for attrtype in new_entry.keys():
-    attrtype_lower = string.lower(attrtype)
-    if ignore_attr_types.has_key(attrtype_lower):
+    attrtype_lower = str.lower(attrtype)
+    if attrtype_lower in ignore_attr_types:
       # This attribute type is ignored
       continue
     # Filter away null-strings
     new_value = filter(lambda x:x!=None,new_entry[attrtype])
-    if attrtype_lower_map.has_key(attrtype_lower):
+    if attrtype_lower in attrtype_lower_map:
       old_value = old_entry.get(attrtype_lower_map[attrtype_lower],[])
       old_value = filter(lambda x:x!=None,old_value)
       del attrtype_lower_map[attrtype_lower]
@@ -92,20 +72,14 @@ def modifyModlist(
       # Replace existing attribute
       replace_attr_value = len(old_value)!=len(new_value)
       if not replace_attr_value:
-        case_insensitive = case_ignore_attr_types.has_key(attrtype_lower)
-        old_value_dict=list_dict(old_value,case_insensitive)
-        new_value_dict=list_dict(new_value,case_insensitive)
-        delete_values = []
-        for v in old_value:
-          if not new_value_dict.has_key(v):
-            replace_attr_value = 1
-            break
-        add_values = []
-        if not replace_attr_value:
-          for v in new_value:
-            if not old_value_dict.has_key(v):
-              replace_attr_value = 1
-              break
+        if attrtype_lower in case_ignore_attr_types:
+          norm_func = str.lower
+          old_value_set = set(map(str.lower,old_value))
+          new_value_set = set(map(str.lower,new_value))
+        else:
+          old_value_set = set(old_value)
+          new_value_set = set(new_value)
+        replace_attr_value = new_value_set != old_value_set
       if replace_attr_value:
         modlist.append((ldap.MOD_DELETE,attrtype,None))
         modlist.append((ldap.MOD_ADD,attrtype,new_value))
@@ -116,7 +90,7 @@ def modifyModlist(
     # Remove all attributes of old_entry which are not present
     # in new_entry at all
     for a in attrtype_lower_map.keys():
-      if ignore_attr_types.has_key(a):
+      if a in ignore_attr_types:
         # This attribute type is ignored
         continue
       attrtype = attrtype_lower_map[a]

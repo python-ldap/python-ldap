@@ -2,12 +2,9 @@
 ldif - generate and parse LDIF data (see RFC 2849)
 
 See https://www.python-ldap.org/ for details.
-
-Python compability note:
-Tested with Python 2.0+, but should work with Python 1.5.2+.
 """
 
-__version__ = '2.5.1'
+__version__ = '2.5.2'
 
 __all__ = [
   # constants
@@ -21,7 +18,10 @@ __all__ = [
   'LDIFCopy',
 ]
 
-import urlparse,urllib,base64,re,types
+import urlparse
+import urllib
+import re
+from base64 import b64encode, b64decode
 
 try:
   from cStringIO import StringIO
@@ -139,7 +139,7 @@ class LDIFWriter:
     """
     if self._needs_base64_encoding(attr_type,attr_value):
       # Encode with base64
-      self._unfold_lines(':: '.join([attr_type,base64.encodestring(attr_value).replace('\n','')]))
+      self._unfold_lines(':: '.join([attr_type, b64encode(attr_value).replace('\n','')]))
     else:
       self._unfold_lines(': '.join([attr_type,attr_value]))
     return # _unparseAttrTypeandValue()
@@ -149,9 +149,7 @@ class LDIFWriter:
     entry
         dictionary holding an entry
     """
-    attr_types = entry.keys()[:]
-    attr_types.sort()
-    for attr_type in attr_types:
+    for attr_type in sorted(entry.keys()):
       for attr_value in entry[attr_type]:
         self._unparseAttrTypeandValue(attr_type,attr_value)
 
@@ -193,9 +191,9 @@ class LDIFWriter:
     # Start with line containing the distinguished name
     self._unparseAttrTypeandValue('dn',dn)
     # Dispatch to record type specific writers
-    if isinstance(record,types.DictType):
+    if isinstance(record,dict):
       self._unparseEntryRecord(record)
-    elif isinstance(record,types.ListType):
+    elif isinstance(record,list):
       self._unparseChangeRecord(record)
     else:
       raise ValueError('Argument record must be dictionary or list instead of %s' % (repr(record)))
@@ -277,7 +275,7 @@ class LDIFParser:
     self.records_read = 0
     self.changetype_counter = {}.fromkeys(CHANGE_TYPES,0)
     # Store some symbols for better performance
-    self._base64_decodestring = base64.decodestring
+    self._b64decode = b64decode
     # Read very first line
     try:
       self._last_line = self._readline()
@@ -346,7 +344,7 @@ class LDIFParser:
       attr_value = unfolded_line[colon_pos+2:].lstrip()
     elif value_spec=='::':
       # attribute value needs base64-decoding
-      attr_value = self._base64_decodestring(unfolded_line[colon_pos+2:])
+      attr_value = self._b64decode(unfolded_line[colon_pos+2:])
     elif value_spec==':<':
       # fetch attribute value from URL
       url = unfolded_line[colon_pos+2:].strip()

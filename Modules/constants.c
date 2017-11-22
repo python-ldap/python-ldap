@@ -280,12 +280,6 @@ LDAPinit_constants( PyObject* d )
   add_int(d,URL_ERR_BADSCOPE);
   add_int(d,URL_ERR_MEM);
 
-  /* author */
-
-  author = PyString_FromString("python-ldap Project");
-  PyDict_SetItemString(d, "__author__", author);
-  Py_DECREF(author);
-
   /* add_int(d,LIBLDAP_R); */
 #ifdef HAVE_LIBLDAP_R
   obj = PyInt_FromLong(1);
