@@ -22,3 +22,10 @@
 --swallow-optional-blank-lines
 -T PyCFunction
 -T PyObject
+-T PyMethodDef
+-T LDAP
+-T LDAPMod
+-T LDAPMessage
+-T LDAPControl
+-T LDAPObject
+-T sasl_interact_t

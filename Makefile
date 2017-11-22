@@ -5,6 +5,7 @@ LCOV_REPORT_OPTIONS=--show-details -no-branch-coverage \
 	--title "python-ldap LCOV report"
 SCAN_REPORT=build/scan_report
 PYTHON_SUPP=/usr/share/doc/python3-devel/valgrind-python.supp
+AUTOPEP8_OPTS=--aggressive
 
 .NOTPARALLEL:
 
@@ -13,7 +14,7 @@ all:
 
 .PHONY: clean
 clean:
-	rm -rf build dist *.egg-info $(VENV) .tox MANIFEST
+	rm -rf build dist *.egg-info .tox MANIFEST
 	rm -f .coverage .coverage.*
 	find . \( -name '*.py[co]' -or -name '*.so*' -or -name '*.dylib' \) \
 	    -delete
@@ -77,3 +78,14 @@ valgrind: build $(PYTHON_SUPP)
 	    echo "Found definitive leak, see build/valgrind.log"; \
 	    exit 1; \
 	fi
+
+# Code autoformatter
+.PHONY: indent
+indent:
+	indent Modules/*.c Modules/*.h
+	rm -f Modules/*.c~ Modules/*.h~
+
+.PHONY: autopep8
+autopep8:
+	$(PYTHON) -m autopep8 -r -i -j0 $(AUTOPEP8_OPTS) \
+	    Demo Lib Tests setup.py
