@@ -157,7 +157,7 @@ except IndexError,e:
          'X-BINDPW=password" db.shelve'
     ).format(script_name=sys.argv[0])
     sys.exit(1)
-except ValueError,e:
+except ValueError as e:
     print('Error parsing command-line arguments:',str(e))
     sys.exit(1)
 
@@ -169,7 +169,7 @@ while watcher_running:
     # Now we login to the LDAP server
     try:
         ldap_connection.simple_bind_s(ldap_url.who, ldap_url.cred)
-    except ldap.INVALID_CREDENTIALS, err:
+    except ldap.INVALID_CREDENTIALS as err:
         logger.error('Login to LDAP server failed: %s', err)
         sys.exit(1)
     except ldap.SERVER_DOWN:
@@ -193,7 +193,7 @@ while watcher_running:
     except KeyboardInterrupt:
         # User asked to exit
         commenceShutdown(None, None)
-    except Exception, err:
+    except Exception as err:
         # Handle any exception
         if watcher_running:
             logger.exception('Unhandled exception, going to retry: %s', err)

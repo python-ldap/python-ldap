@@ -159,7 +159,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         try:
             m = l.simple_bind_s("", "")
             r = l.result4(m, ldap.MSG_ALL, self.timeout)
-        except ldap.SERVER_DOWN, ldap_err:
+        except ldap.SERVER_DOWN as ldap_err:
             errno = ldap_err.args[0]['errno']
             if errno != 107:
                 self.fail("expected errno=107, got %d" % errno)

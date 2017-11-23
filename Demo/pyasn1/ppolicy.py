@@ -17,7 +17,7 @@ from ldap.controls.ppolicy import PasswordPolicyError,PasswordPolicyControl
 
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])
-except IndexError,ValueError:
+except (IndexError,ValueError):
   print('Usage: ppolicy.py <LDAP URL>')
   sys.exit(1)
 
@@ -39,7 +39,7 @@ if ldap_url.cred is None:
 try:
   msgid = ldap_conn.simple_bind(ldap_url.who,ldap_url.cred,serverctrls=[PasswordPolicyControl()])
   res_type,res_data,res_msgid,res_ctrls = ldap_conn.result3(msgid)
-except ldap.INVALID_CREDENTIALS,e:
+except ldap.INVALID_CREDENTIALS as e:
   print('Simple bind failed:',str(e))
   sys.exit(1)
 else:

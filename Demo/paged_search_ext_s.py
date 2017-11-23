@@ -73,7 +73,7 @@ class PagedResultsSearchObject:
             else:
               break # no more pages available
 
-      except ldap.SERVER_DOWN,e:
+      except ldap.SERVER_DOWN as e:
         try:
           self.reconnect(self._uri)
         except AttributeError:

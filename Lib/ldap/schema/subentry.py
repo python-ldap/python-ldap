@@ -430,7 +430,7 @@ class SubSchema:
               schema_attr_type = self.sed[AttributeType][a]
             except KeyError:
               if raise_keyerror:
-                raise KeyError,'No attribute type found in sub schema by name %s' % (a)
+                raise KeyError('No attribute type found in sub schema by name %s' % (a))
               # If there's no schema element for this attribute type
               # but still KeyError is to be ignored we filter it away
               del l[a]

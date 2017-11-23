@@ -40,7 +40,7 @@ if ldap_url.cred is None:
 try:
   ldap_conn.simple_bind_s(ldap_url.who,ldap_url.cred)
 
-except ldap.INVALID_CREDENTIALS,e:
+except ldap.INVALID_CREDENTIALS as e:
   print('Simple bind failed:',str(e))
   sys.exit(1)
 

@@ -41,7 +41,7 @@ if ldap_url.who and ldap_url.cred is None:
 try:
   ldap_conn.simple_bind_s(ldap_url.who or '',ldap_url.cred or '')
 
-except ldap.INVALID_CREDENTIALS,e:
+except ldap.INVALID_CREDENTIALS as e:
   print('Simple bind failed:',str(e))
   sys.exit(1)
 
@@ -59,7 +59,7 @@ except (
   ldap.TIMEOUT,
   ldap.TIMELIMIT_EXCEEDED,
   ldap.SIZELIMIT_EXCEEDED,
-  ldap.ADMINLIMIT_EXCEEDED),e:
+  ldap.ADMINLIMIT_EXCEEDED) as e:
   ldap_conn.abandon(msg_id)
   sys.exit(1)
 

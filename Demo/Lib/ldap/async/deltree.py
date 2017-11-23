@@ -17,7 +17,7 @@ class DeleteLeafs(ldap.async.AsyncSearchHandler):
 
   def startSearch(self,searchRoot,searchScope):
     if not searchScope in [ldap.SCOPE_ONELEVEL,ldap.SCOPE_SUBTREE]:
-      raise ValueError, "Parameter searchScope must be either ldap.SCOPE_ONELEVEL or ldap.SCOPE_SUBTREE."
+      raise ValueError("Parameter searchScope must be either ldap.SCOPE_ONELEVEL or ldap.SCOPE_SUBTREE.")
     self.nonLeafEntries = []
     self.deletedEntries = 0
     ldap.async.AsyncSearchHandler.startSearch(
@@ -47,7 +47,7 @@ class DeleteLeafs(ldap.async.AsyncSearchHandler):
       else:
         try:
           self._l.delete_s(dn)
-        except ldap.NOT_ALLOWED_ON_NONLEAF,e:
+        except ldap.NOT_ALLOWED_ON_NONLEAF as e:
           self.nonLeafEntries.append(dn)
         else:
           self.deletedEntries = self.deletedEntries+1

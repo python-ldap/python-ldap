@@ -253,7 +253,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertNone(ret)
         try:
             r = l.result4(m, _ldap.MSG_ALL, 0.3)  # (timeout /could/ be longer)
-        except _ldap.TIMEOUT, e:
+        except _ldap.TIMEOUT as e:
             pass
         else:
             self.fail("expected TIMEOUT, got %r" % r)
@@ -683,7 +683,7 @@ class TestLdapCExtension(SlapdTestCase):
         try:
             m = l.simple_bind("", "")
             r = l.result4(m, _ldap.MSG_ALL, self.timeout)
-        except _ldap.SERVER_DOWN, ldap_err:
+        except _ldap.SERVER_DOWN as ldap_err:
             errno = ldap_err.args[0]['errno']
             if errno != 107:
                 self.fail("expected errno=107, got %d" % errno)

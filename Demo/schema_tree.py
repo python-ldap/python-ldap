@@ -52,7 +52,7 @@ if subschemasubentry_dn is None:
 
 try:
   options,args=getopt.getopt(sys.argv[1:],'',['html'])
-except getopt.error,e:
+except getopt.error:
   print('Error: %s\nUsage: schema_oc_tree.py [--html] [LDAP URL]')
 
 html_output = options and options[0][0]=='--html'
