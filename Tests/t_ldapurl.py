@@ -178,7 +178,7 @@ class TestParseLDAPUrl(unittest.TestCase):
 class TestLDAPUrl(unittest.TestCase):
 
     def assertNone(self, expr, msg=None):
-        self.failIf(expr is not None, msg or ("%r" % expr))
+        self.assertFalse(expr is not None, msg or ("%r" % expr))
 
     def test_combo(self):
         u = MyLDAPUrl(

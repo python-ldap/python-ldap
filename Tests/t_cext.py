@@ -64,10 +64,10 @@ class TestLdapCExtension(SlapdTestCase):
         return l
 
     def assertNotNone(self, expr, msg=None):
-        self.failIf(expr is None, msg or repr(expr))
+        self.assertFalse(expr is None, msg or repr(expr))
 
     def assertNone(self, expr, msg=None):
-        self.failIf(expr is not None, msg or repr(expr))
+        self.assertFalse(expr is not None, msg or repr(expr))
 
     # Test for the existence of a whole bunch of constants
     # that the C module is supposed to export
