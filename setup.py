@@ -137,6 +137,7 @@ setup(
     'ldap',
     'slapdtest',
     'ldap.async',
+    'ldap.compat',
     'ldap.controls',
     'ldap.controls.deref',
     'ldap.controls.libldap',

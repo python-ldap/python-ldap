@@ -8,7 +8,7 @@ See https://www.python-ldap.org/ for details.
 
 from ldap import __version__
 
-from UserDict import IterableUserDict
+from ldap.compat import IterableUserDict
 
 
 class cidict(IterableUserDict):

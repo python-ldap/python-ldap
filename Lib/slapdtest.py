@@ -14,7 +14,8 @@ import subprocess
 import logging
 from logging.handlers import SysLogHandler
 import unittest
-import urllib
+
+from ldap.compat import quote_plus
 
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_TEMPLATE = r"""
@@ -125,7 +126,7 @@ class SlapdObject(object):
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
         self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
         ldapi_path = os.path.join(self.testrundir, 'ldapi')
-        self.ldapi_uri = "ldapi://%s" % urllib.quote_plus(ldapi_path)
+        self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
 
     def setup_rundir(self):
         """

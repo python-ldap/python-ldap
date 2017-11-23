@@ -24,6 +24,7 @@ import sys,time,pprint,_ldap,ldap,ldap.sasl,ldap.functions
 from ldap.schema import SCHEMA_ATTRS
 from ldap.controls import LDAPControl,DecodeControlTuples,RequestControlTuples
 from ldap.extop import ExtendedRequest,ExtendedResponse
+from ldap.compat import reraise
 
 from ldap import LDAPError
 
@@ -105,7 +106,10 @@ class SimpleLDAPObject:
         pass
       if __debug__ and self._trace_level>=2:
         self._trace_file.write('=> LDAPError - %s: %s\n' % (e.__class__.__name__,str(e)))
-      raise exc_type,exc_value,exc_traceback
+      try:
+        reraise(exc_type, exc_value, exc_traceback)
+      finally:
+        exc_type = exc_value = exc_traceback = None
     else:
       if __debug__ and self._trace_level>=2:
         if not diagnostic_message_success is None:

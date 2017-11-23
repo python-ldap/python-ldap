@@ -6,7 +6,7 @@ See https://www.python-ldap.org/ for details.
 """
 
 import unittest
-import urllib
+from ldap.compat import quote
 
 import ldapurl
 from ldapurl import LDAPUrl
@@ -185,9 +185,9 @@ class TestLDAPUrl(unittest.TestCase):
             "ldap://127.0.0.1:1234/dc=example,dc=com"
             + "?attr1,attr2,attr3"
             + "?sub"
-            + "?" + urllib.quote("(objectClass=*)")
-            + "?bindname=" + urllib.quote("cn=d,c=au")
-            + ",X-BINDPW=" + urllib.quote("???")
+            + "?" + quote("(objectClass=*)")
+            + "?bindname=" + quote("cn=d,c=au")
+            + ",X-BINDPW=" + quote("???")
             + ",trace=8"
         )
         self.assertEqual(u.urlscheme, "ldap")

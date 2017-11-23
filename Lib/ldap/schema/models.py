@@ -4,7 +4,10 @@ schema.py - support for subSchemaSubEntry information
 See https://www.python-ldap.org/ for details.
 """
 
-import UserDict,ldap.cidict
+import sys
+
+import ldap.cidict
+from ldap.compat import IterableUserDict
 
 from ldap.schema.tokenizer import split_tokens,extract_tokens
 
@@ -615,7 +618,7 @@ class NameForm(SchemaElement):
     return '( %s )' % ''.join(result)
 
 
-class Entry(UserDict.IterableUserDict):
+class Entry(IterableUserDict):
   """
   Schema-aware implementation of an LDAP entry class.
 
@@ -628,7 +631,7 @@ class Entry(UserDict.IterableUserDict):
     self._attrtype2keytuple = {}
     self._s = schema
     self.dn = dn
-    UserDict.UserDict.__init__(self,{})
+    IterableUserDict.IterableUserDict.__init__(self,{})
     self.update(entry)
 
   def _at2key(self,nameoroid):

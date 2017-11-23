@@ -473,8 +473,9 @@ def urlfetch(uri,trace_level=0):
     l.unbind_s()
     del l
   else:
-    import urllib,ldif
-    ldif_file = urllib.urlopen(uri)
+    import ldif
+    from ldap.compat import urlopen
+    ldif_file = urlopen(uri)
     ldif_parser = ldif.LDIFRecordList(ldif_file,max_entries=1)
     ldif_parser.parse()
     subschemasubentry_dn,s_temp = ldif_parser.all_records[0]
