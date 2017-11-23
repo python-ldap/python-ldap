@@ -5,14 +5,16 @@ Automatic tests for python-ldap
 See https://www.python-ldap.org/ for details.
 """
 
-import t_cext
-import t_cidict
-import t_ldap_dn
-import t_ldap_filter
-import t_ldap_functions
-import t_ldap_modlist
-import t_ldap_schema_tokenizer
-import t_ldapurl
-import t_ldif
-import t_ldapobject
-import t_ldap_schema_subentry
+from __future__ import absolute_import
+
+from . import t_cext
+from . import t_cidict
+from . import t_ldap_dn
+from . import t_ldap_filter
+from . import t_ldap_functions
+from . import t_ldap_modlist
+from . import t_ldap_schema_tokenizer
+from . import t_ldapurl
+from . import t_ldif
+from . import t_ldapobject
+from . import t_ldap_schema_subentry
