@@ -1,5 +1,6 @@
 # For documentation, see comments in Module/LDAPObject.c and the
 # ldap.sasl module documentation.
+from __future__ import print_function
 
 import ldap,ldap.sasl
 
@@ -60,7 +61,7 @@ for ldap_uri,sasl_mech,sasl_cb_value_dict in [
   ),
 ]:
   sasl_auth = ldap.sasl.sasl(sasl_cb_value_dict,sasl_mech)
-  print 20*'*',sasl_auth.mech,20*'*'
+  print(20*'*',sasl_auth.mech,20*'*')
   # Open the LDAP connection
   l = ldap.initialize(ldap_uri,trace_level=0)
   # Set protocol version to LDAPv3 to enable SASL bind!
@@ -68,15 +69,15 @@ for ldap_uri,sasl_mech,sasl_cb_value_dict in [
   try:
     l.sasl_interactive_bind_s("", sasl_auth)
   except ldap.LDAPError,e:
-    print 'Error using SASL mechanism',sasl_auth.mech,str(e)
+    print('Error using SASL mechanism',sasl_auth.mech,str(e))
   else:
-    print 'Sucessfully bound using SASL mechanism:',sasl_auth.mech
+    print('Sucessfully bound using SASL mechanism:',sasl_auth.mech)
     try:
-      print 'Result of Who Am I? ext. op:',repr(l.whoami_s())
+      print('Result of Who Am I? ext. op:',repr(l.whoami_s()))
     except ldap.LDAPError,e:
-      print 'Error using SASL mechanism',sasl_auth.mech,str(e)
+      print('Error using SASL mechanism',sasl_auth.mech,str(e))
     try:
-      print 'OPT_X_SASL_USERNAME',repr(l.get_option(ldap.OPT_X_SASL_USERNAME))
+      print('OPT_X_SASL_USERNAME',repr(l.get_option(ldap.OPT_X_SASL_USERNAME)))
     except AttributeError:
       pass
 

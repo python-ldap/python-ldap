@@ -27,16 +27,17 @@
 # Matched values control: (mail=*@example.org)
 # dn: uid=jsmith,ou=People,dc=example,dc=com
 # mail: jsmith@example.org
+from __future__ import print_function
 
 import ldap
 from ldap.controls import MatchedValuesControl
 
 def print_result(search_result):
     for n in range(len(search_result)):
-        print "dn: %s" % search_result[n][0]
+        print("dn: %s" % search_result[n][0])
         for attr in search_result[n][1].keys():
             for i in range(len(search_result[n][1][attr])):
-                print "%s: %s" % (attr, search_result[n][1][attr][i])
+                print("%s: %s" % (attr, search_result[n][1][attr][i]))
         print
 
 
@@ -51,13 +52,13 @@ ld = ldap.initialize(uri)
 mv = MatchedValuesControl(criticality=True, controlValue=control_filter)
 
 res = ld.search_ext_s(base, scope, filter, attrlist = ['mail'])
-print "LDAP filter used: %s" % filter
-print "Requesting 'mail' attribute back"
+print("LDAP filter used: %s" % filter)
+print("Requesting 'mail' attribute back")
 print
-print "No matched values control:"
+print("No matched values control:")
 print_result(res)
 
 res = ld.search_ext_s(base, scope, filter, attrlist = ['mail'], serverctrls = [mv])
-print "Matched values control: %s" % control_filter
+print("Matched values control: %s" % control_filter)
 print_result(res)
 

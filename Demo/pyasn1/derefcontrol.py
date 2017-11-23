@@ -3,6 +3,7 @@
 This sample script demonstrates the use of the dereference control
 (see https://tools.ietf.org/html/draft-masarati-ldap-deref)
 """
+from __future__ import print_function
 
 import pprint,ldap,ldap.modlist,ldap.resiter
 
@@ -29,8 +30,8 @@ dc = DereferenceControl(
   }
 )
 
-print 'pyasn1 output of request control:'
-print dc._derefSpecs().prettyPrint()
+print('pyasn1 output of request control:')
+print(dc._derefSpecs().prettyPrint())
 
 msg_id = l.search_ext(
   'dc=demo1,dc=freeipa,dc=org',
@@ -43,6 +44,6 @@ msg_id = l.search_ext(
 for res_type,res_data,res_msgid,res_controls in l.allresults(msg_id,add_ctrls=1):
   for dn,entry,deref_control in res_data:
     # process dn and entry
-    print dn,entry['objectClass']
+    print(dn,entry['objectClass'])
     if deref_control:
       pprint.pprint(deref_control[0].derefRes)

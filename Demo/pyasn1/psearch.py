@@ -10,6 +10,7 @@ pyasn1
 pyasn1-modules
 python-ldap 2.4+
 """
+from __future__ import print_function
 
 import sys,ldap,ldapurl,getpass
 
@@ -18,7 +19,7 @@ from ldap.controls.psearch import PersistentSearchControl,EntryChangeNotificatio
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])
 except IndexError:
-  print 'Usage: psearch.py <LDAP URL>'
+  print('Usage: psearch.py <LDAP URL>')
   sys.exit(1)
 
 # Set debugging level
@@ -33,14 +34,14 @@ ldap_conn = ldap.ldapobject.LDAPObject(
 )
 
 if ldap_url.cred is None:
-  print 'Password for %s:' % (repr(ldap_url.who))
+  print('Password for %s:' % (repr(ldap_url.who)))
   ldap_url.cred = getpass.getpass()
 
 try:
   ldap_conn.simple_bind_s(ldap_url.who,ldap_url.cred)
 
 except ldap.INVALID_CREDENTIALS,e:
-  print 'Simple bind failed:',str(e)
+  print('Simple bind failed:',str(e))
   sys.exit(1)
 
 psc = PersistentSearchControl()
@@ -64,7 +65,7 @@ while True:
       resp_ctrl_classes={EntryChangeNotificationControl.controlType:EntryChangeNotificationControl},
     )
   except ldap.TIMEOUT:
-    print 'Timeout waiting for results...'
+    print('Timeout waiting for results...')
   else:
     for dn,entry,srv_ctrls in res_data:
       ecn_ctrls = [
@@ -76,4 +77,4 @@ while True:
       if ecn_ctrls:
         changeType,previousDN,changeNumber = ecn_ctrls[0].changeType,ecn_ctrls[0].previousDN,ecn_ctrls[0].changeNumber
         change_type_desc = CHANGE_TYPES_STR[changeType]
-        print 'changeType: %s (%d), changeNumber: %s, previousDN: %s' % (change_type_desc,changeType,changeNumber,repr(previousDN))
+        print('changeType: %s (%d), changeNumber: %s, previousDN: %s' % (change_type_desc,changeType,changeNumber,repr(previousDN)))

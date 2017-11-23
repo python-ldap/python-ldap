@@ -8,6 +8,7 @@ Notes:
 
 The bound user needs read access to the attributes entryDN and entryCSN.
 """
+from __future__ import print_function
 
 # Import modules from Python standard lib
 import logging
@@ -157,7 +158,7 @@ except IndexError,e:
     ).format(script_name=sys.argv[0])
     sys.exit(1)
 except ValueError,e:
-    print 'Error parsing command-line arguments:', str(e)
+    print('Error parsing command-line arguments:',str(e))
     sys.exit(1)
 
 while watcher_running:

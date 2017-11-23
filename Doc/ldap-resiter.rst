@@ -46,4 +46,4 @@ processing them in a for-loop.
   for res_type,res_data,res_msgid,res_controls in l.allresults(msg_id):
     for dn,entry in res_data:
       # process dn and entry
-      print dn,entry['objectClass']
+      print(dn,entry['objectClass'])

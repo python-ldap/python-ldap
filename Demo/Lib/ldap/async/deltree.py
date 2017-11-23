@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import ldap,ldap.async
 
 class DeleteLeafs(ldap.async.AsyncSearchHandler):
@@ -62,7 +64,7 @@ def DelTree(l,dn,scope=ldap.SCOPE_ONELEVEL):
   non_leaf_entries = leafs_deleter.nonLeafEntries[:]
   while non_leaf_entries:
     dn = non_leaf_entries.pop()
-    print deleted_entries,len(non_leaf_entries),dn
+    print(deleted_entries,len(non_leaf_entries),dn)
     leafs_deleter.startSearch(dn,ldap.SCOPE_SUBTREE)
     leafs_deleter.processResults()
     deleted_entries = deleted_entries+leafs_deleter.deletedEntries

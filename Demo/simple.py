@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys,getpass
 import ldap
 
@@ -14,7 +15,7 @@ l.simple_bind_s(login_dn, login_pw)
 
 try:
     dn = "ou=CSEE,o=UQ,c=AU"
-    print "Adding", repr(dn)
+    print("Adding", repr(dn))
     l.add_s(dn,
 	 [
 	    ("objectclass",["organizationalUnit"]),
@@ -32,7 +33,7 @@ except _ldap.LDAPError:
 #
 
 dn = "cn=David Leonard,ou=CSEE,o=UQ,c=AU"
-print "Updating", repr(dn)
+print("Updating", repr(dn))
 
 try:
 	l.delete_s(dn)
@@ -100,7 +101,7 @@ res = l.search_s(
 	_ldap.SCOPE_SUBTREE, 
 	"objectclass=*",
       )
-print res
+print(res)
 
 l.unbind()
 
