@@ -105,7 +105,14 @@ class SlapdObject(object):
     TMPDIR = os.environ.get('TMP', os.getcwd())
     SBINDIR = os.environ.get('SBIN', '/usr/sbin')
     BINDIR = os.environ.get('BIN', '/usr/bin')
-    SCHEMADIR = os.environ.get('SCHEMA', '/etc/openldap/schema')
+    if 'SCHEMA' in os.environ:
+        SCHEMADIR = os.environ['SCHEMA']
+    elif os.path.isdir("/etc/openldap/schema"):
+        SCHEMADIR = "/etc/openldap/schema"
+    elif os.path.isdir("/etc/ldap/schema"):
+        SCHEMADIR = "/etc/ldap/schema"
+    else:
+        PATH_SCHEMA_CORE = None
     PATH_LDAPADD = os.path.join(BINDIR, 'ldapadd')
     PATH_LDAPMODIFY = os.path.join(BINDIR, 'ldapmodify')
     PATH_LDAPWHOAMI = os.path.join(BINDIR, 'ldapwhoami')
