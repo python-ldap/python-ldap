@@ -20,11 +20,7 @@ __all__ = [
 
 import re
 from base64 import b64encode, b64decode
-
-try:
-  from cStringIO import StringIO
-except ImportError:
-  from StringIO import StringIO
+from io import StringIO
 
 from ldap.compat import urlparse, urlopen
 
