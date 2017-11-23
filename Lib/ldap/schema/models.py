@@ -267,9 +267,9 @@ class AttributeType(SchemaElement):
           self.syntax_len = None
           for i in l:
             if i.startswith("{") and i.endswith("}"):
-              self.syntax_len=long(i[1:-1])
+              self.syntax_len = int(i[1:-1])
         else:
-          self.syntax_len = long(syntax_len[:-1])
+          self.syntax_len = int(syntax_len[:-1])
     self.single_value = d['SINGLE-VALUE']!=None
     self.collective = d['COLLECTIVE']!=None
     self.no_user_mod = d['NO-USER-MODIFICATION']!=None

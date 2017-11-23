@@ -808,7 +808,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self._retry_max = retry_max
     self._retry_delay = retry_delay
     self._start_tls = 0
-    self._reconnects_done = 0L
+    self._reconnects_done = 0
 
   def __getstate__(self):
     """return data representation for pickled object"""
@@ -886,7 +886,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
             self._trace_file.write('*** %s reconnect to %s successful => repeat last operation\n' % (
               counter_text,uri
             ))
-          self._reconnects_done = self._reconnects_done + 1L
+          self._reconnects_done = self._reconnects_done + 1
           break
     finally:
       self._reconnect_lock.release()
