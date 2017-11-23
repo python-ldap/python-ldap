@@ -20,6 +20,10 @@ addons:
 
 install:
   - pip install "pip>=7.1.0"
-  - pip install tox-travis tox
+  - pip install tox-travis tox codecov coverage
 
 script: tox
+
+after_success:
+  - python -m coverage combine
+  - codecov

@@ -4,6 +4,8 @@
 *.pyc
 __pycache__/
 .tox
+.coverage*
+!.coveragerc
 
 # shared libs installed by 'setup.py test'
 /Lib/*.so*
