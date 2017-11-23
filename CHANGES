@@ -7,6 +7,9 @@ Mandatory prerequisites:
 - Python 2.7.x
 - pyasn1 0.3.7+ and pyasn1_modules 0.1.5+
 
+Infrastructure:
+- Add .gitignore
+
 Modules/
 (thanks to Michael Ströder)
 * removed unused code schema.c

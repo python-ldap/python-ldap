@@ -1,0 +1,17 @@
+
+# Auto-generated
+.*.swp
+*.pyc
+__pycache__/
+.tox
+
+# shared libs installed by 'setup.py test'
+/Lib/*.so*
+/Lib/*.dylib
+/Lib/*.pyd
+
+# Build related
+*.egg-info
+build/
+dist/
+PKG-INFO
