@@ -67,7 +67,11 @@ kwargs = dict()
 if has_setuptools:
   kwargs = dict(
     include_package_data = True,
-    install_requires = ['setuptools'],
+    install_requires = [
+        'setuptools',
+        'pyasn1 >= 0.3.7',
+        'pyasn1_modules >= 0.1.5',
+    ],
     zip_safe = False,
     python_requires = '>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
   )
