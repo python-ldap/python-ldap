@@ -30,7 +30,7 @@ class DeleteLeafs(ldap.async.AsyncSearchHandler):
     )
 
   def _processSingleResult(self,resultType,resultItem):
-    if self._entryResultTypes.has_key(resultType):
+    if resultType in self._entryResultTypes:
       # Don't process search references
       dn,entry = resultItem
       hasSubordinates = entry.get(
