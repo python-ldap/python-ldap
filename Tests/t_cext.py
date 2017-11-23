@@ -576,6 +576,13 @@ class TestLdapCExtension(SlapdTestCase):
         r = l.whoami_s()
         self.assertEqual("", r)
 
+    def test_whoami_after_unbind(self):
+        # https://github.com/pyldap/pyldap/issues/29
+        l = self._open_conn(bind=True)
+        l.unbind_ext()
+        with self.assertRaises(_ldap.LDAPError):
+            l.whoami_s()
+
     def test_passwd(self):
         l = self._open_conn()
         # first, create a user to change password on
