@@ -12,9 +12,16 @@
 # serve to show the default value.
 
 import sys
+import os
 
 # If your extensions are in another directory, add it here.
-#sys.path.append('some/directory')
+_doc_dir = os.path.dirname(__file__)
+sys.path.append(_doc_dir)
+sys.path.append(os.path.join(_doc_dir, '../Lib/'))
+sys.path.insert(0, os.path.join(_doc_dir, '../Lib/ldap'))
+
+# Import fake `_ldap` module
+import fake_ldap_module_for_documentation
 
 # General configuration
 # ---------------------

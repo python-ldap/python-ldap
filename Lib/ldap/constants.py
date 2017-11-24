@@ -10,6 +10,9 @@ The information serves two purposes:
 
 """
 
+# This module cannot import anything from ldap.
+# When building documentation, it is used to initialize ldap.__init__.
+
 from __future__ import print_function
 
 class Constant(object):
