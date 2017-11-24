@@ -6,7 +6,7 @@ See https://www.python-ldap.org/ for details.
 
 # This is also the overall release version number
 
-from pkginfo import __version__, __author__, __license__
+from ldap.pkginfo import __version__, __author__, __license__
 
 import sys
 
@@ -16,8 +16,6 @@ if __debug__:
   _trace_level = 0
   _trace_file = sys.stderr
   _trace_stack_limit = None
-
-from ldap.pkginfo import __version__
 
 import _ldap
 assert _ldap.__version__==__version__, \
