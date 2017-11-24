@@ -32,6 +32,7 @@ class SchemaElement:
 
   schema_element_str
     String which contains the schema element description to be parsed.
+    (Bytestrings are decoded using UTF-8)
 
   Class attributes:
 
@@ -46,6 +47,8 @@ class SchemaElement:
   }
 
   def __init__(self,schema_element_str=None):
+    if sys.version_info >= (3, 0) and isinstance(schema_element_str, bytes):
+      schema_element_str = schema_element_str.decode('utf-8')
     if schema_element_str:
       l = split_tokens(schema_element_str)
       self.set_id(l[1])

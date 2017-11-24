@@ -76,9 +76,9 @@ l_ldap_str2dn( PyObject* unused, PyObject *args )
 	    LDAPAVA *ava = rdn[j];
 	    PyObject *tuple;
 
-	    tuple = Py_BuildValue("(O&O&i)", 
-		LDAPberval_to_object, &ava->la_attr,
-		LDAPberval_to_object, &ava->la_value,
+	    tuple = Py_BuildValue("(O&O&i)",
+		LDAPberval_to_unicode_object, &ava->la_attr,
+		LDAPberval_to_unicode_object, &ava->la_value,
 		ava->la_flags & ~(LDAP_AVA_FREE_ATTR|LDAP_AVA_FREE_VALUE));
 	    if (!tuple) {
 		Py_DECREF(rdnlist);

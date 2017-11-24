@@ -5,6 +5,8 @@ Automatic tests for python-ldap's module ldapurl
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import unicode_literals
+
 import unittest
 from ldap.compat import quote
 
@@ -274,7 +276,7 @@ class TestLDAPUrl(unittest.TestCase):
         u = LDAPUrl("ldap:///dn=foo%3f")
         self.assertEqual(u.dn, "dn=foo?")
         u = LDAPUrl("ldap:///dn=str%c3%b6der.com")
-        self.assertEqual(u.dn, "dn=str\xc3\xb6der.com")
+        self.assertEqual(u.dn, "dn=str\xf6der.com")
 
     def test_parse_attrs(self):
         u = LDAPUrl("ldap:///?")
@@ -338,7 +340,7 @@ class TestLDAPUrl(unittest.TestCase):
         u = LDAPUrl("ldap:///???(cn=Q%3f)")
         self.assertEqual(u.filterstr, "(cn=Q?)")
         u = LDAPUrl("ldap:///???(sn=Str%c3%b6der)") # (possibly bad?)
-        self.assertEqual(u.filterstr, "(sn=Str\xc3\xb6der)")
+        self.assertEqual(u.filterstr, "(sn=Str\xf6der)")
         u = LDAPUrl("ldap:///???(sn=Str\\c3\\b6der)")
         self.assertEqual(u.filterstr, "(sn=Str\\c3\\b6der)") # (recommended)
         u = LDAPUrl("ldap:///???(cn=*\\2a*)")

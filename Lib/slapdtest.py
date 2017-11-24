@@ -5,6 +5,8 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import unicode_literals
+
 __version__ = '2.5.2'
 
 import os
@@ -365,13 +367,15 @@ class SlapdObject(object):
         """
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(self.PATH_LDAPADD, extra_args=extra_args, stdin_data=ldif)
+        self._cli_popen(self.PATH_LDAPADD, extra_args=extra_args,
+                        stdin_data=ldif.encode('utf-8'))
 
     def ldapmodify(self, ldif, extra_args=None):
         """
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args, stdin_data=ldif)
+        self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args,
+                        stdin_data=ldif.encode('utf-8'))
 
 
 class SlapdTestCase(unittest.TestCase):
@@ -383,11 +387,11 @@ class SlapdTestCase(unittest.TestCase):
     server = None
     ldap_object_class = None
 
-    def _open_ldap_conn(self, who=None, cred=None):
+    def _open_ldap_conn(self, who=None, cred=None, **kwargs):
         """
         return a LDAPObject instance after simple bind
         """
-        ldap_conn = self.ldap_object_class(self.server.ldap_uri)
+        ldap_conn = self.ldap_object_class(self.server.ldap_uri, **kwargs)
         ldap_conn.protocol_version = 3
         #ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
         ldap_conn.simple_bind_s(who or self.server.root_dn, cred or self.server.root_pw)

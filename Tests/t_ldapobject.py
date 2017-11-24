@@ -5,6 +5,17 @@ Automatic tests for python-ldap's module ldap.ldapobject
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import unicode_literals
+
+import sys
+
+if sys.version_info[0] <= 2:
+    PY2 = True
+    text_type = unicode
+else:
+    PY2 = False
+    text_type = str
+
 import os
 import unittest
 import pickle
@@ -83,7 +94,101 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             self._ldap_conn
         except AttributeError:
             # open local LDAP connection
-            self._ldap_conn = self._open_ldap_conn()
+            self._ldap_conn = self._open_ldap_conn(bytes_mode=False)
+
+    def test_reject_bytes_base(self):
+        base = self.server.suffix
+        l = self._ldap_conn
+
+        with self.assertRaises(TypeError):
+            l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
+        with self.assertRaises(TypeError):
+            l.search_s(base, ldap.SCOPE_SUBTREE, b'(cn=Foo*)', ['*'])
+        with self.assertRaises(TypeError):
+            l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
+
+    def test_search_keys_are_text(self):
+        base = self.server.suffix
+        l = self._ldap_conn
+        result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
+        result.sort()
+        dn, fields = result[0]
+        self.assertEqual(dn, 'cn=Foo1,%s' % base)
+        self.assertEqual(type(dn), text_type)
+        for key, values in fields.items():
+            self.assertEqual(type(key), text_type)
+            for value in values:
+                self.assertEqual(type(value), bytes)
+
+    def _get_bytes_ldapobject(self, explicit=True):
+        if explicit:
+            kwargs = {'bytes_mode': True}
+        else:
+            kwargs = {}
+        return self._open_ldap_conn(
+            who=self.server.root_dn.encode('utf-8'),
+            cred=self.server.root_pw.encode('utf-8'),
+            **kwargs
+        )
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_bytesmode_search_requires_bytes(self):
+        l = self._get_bytes_ldapobject()
+        base = self.server.suffix
+
+        with self.assertRaises(TypeError):
+            l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
+        with self.assertRaises(TypeError):
+            l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, b'(cn=Foo*)', ['*'])
+        with self.assertRaises(TypeError):
+            l.search_s(base, ldap.SCOPE_SUBTREE, b'(cn=Foo*)', [b'*'])
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_bytesmode_search_results_have_bytes(self):
+        l = self._get_bytes_ldapobject()
+        base = self.server.suffix
+        result = l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, b'(cn=Foo*)', [b'*'])
+        result.sort()
+        dn, fields = result[0]
+        self.assertEqual(dn, b'cn=Foo1,%s' % base)
+        self.assertEqual(type(dn), bytes)
+        for key, values in fields.items():
+            self.assertEqual(type(key), bytes)
+            for value in values:
+                self.assertEqual(type(value), bytes)
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_unset_bytesmode_search_warns_bytes(self):
+        l = self._get_bytes_ldapobject(explicit=False)
+        base = self.server.suffix
+
+        l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
+        l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, b'(cn=Foo*)', ['*'])
+        l.search_s(base, ldap.SCOPE_SUBTREE, b'(cn=Foo*)', [b'*'])
+
+    def test_search_accepts_unicode_dn(self):
+        base = self.server.suffix
+        l = self._ldap_conn
+
+        with self.assertRaises(ldap.NO_SUCH_OBJECT):
+            result = l.search_s("CN=abc\U0001f498def", ldap.SCOPE_SUBTREE)
+
+    def test_filterstr_accepts_unicode(self):
+        l = self._ldap_conn
+        base = self.server.suffix
+        result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=abc\U0001f498def)', ['*'])
+        self.assertEqual(result, [])
+
+    def test_attrlist_accepts_unicode(self):
+        base = self.server.suffix
+        result = self._ldap_conn.search_s(
+            base, ldap.SCOPE_SUBTREE,
+            '(cn=Foo*)', ['abc', 'abc\U0001f498def'])
+        result.sort()
+
+        for dn, attrs in result:
+            self.assertIsInstance(dn, text_type)
+            self.assertEqual(attrs, {})
 
     def test001_search_subtree(self):
         result = self._ldap_conn.search_s(
@@ -98,19 +203,19 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             [
                 (
                     'cn=Foo1,'+self.server.suffix,
-                    {'cn': ['Foo1'], 'objectClass': ['organizationalRole']}
+                    {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}
                 ),
                 (
                     'cn=Foo2,'+self.server.suffix,
-                    {'cn': ['Foo2'], 'objectClass': ['organizationalRole']}
+                    {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}
                 ),
                 (
                     'cn=Foo3,'+self.server.suffix,
-                    {'cn': ['Foo3'], 'objectClass': ['organizationalRole']}
+                    {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}
                 ),
                 (
                     'cn=Foo4,ou=Container,'+self.server.suffix,
-                    {'cn': ['Foo4'], 'objectClass': ['organizationalRole']}
+                    {'cn': [b'Foo4'], 'objectClass': [b'organizationalRole']}
                 ),
             ]
         )
@@ -128,15 +233,15 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             [
                 (
                     'cn=Foo1,'+self.server.suffix,
-                    {'cn': ['Foo1'], 'objectClass': ['organizationalRole']}
+                    {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}
                 ),
                 (
                     'cn=Foo2,'+self.server.suffix,
-                    {'cn': ['Foo2'], 'objectClass': ['organizationalRole']}
+                    {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}
                 ),
                 (
                     'cn=Foo3,'+self.server.suffix,
-                    {'cn': ['Foo3'], 'objectClass': ['organizationalRole']}
+                    {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}
                 ),
             ]
         )
@@ -151,8 +256,21 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         result.sort()
         self.assertEqual(
             result,
-            [('cn=Foo4,ou=Container,'+self.server.suffix, {'cn': ['Foo4']})]
+            [('cn=Foo4,ou=Container,'+self.server.suffix, {'cn': [b'Foo4']})]
         )
+
+    def test_search_subschema(self):
+        l = self._ldap_conn
+        dn = l.search_subschemasubentry_s()
+        self.assertIsInstance(dn, text_type)
+        self.assertEqual(dn, "cn=Subschema")
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_search_subschema_have_bytes(self):
+        l = self._get_bytes_ldapobject(explicit=False)
+        dn = l.search_subschemasubentry_s()
+        self.assertIsInstance(dn, bytes)
+        self.assertEqual(dn, b"cn=Subschema")
 
     def test004_errno107(self):
         l = self.ldap_object_class('ldap://127.0.0.1:42')
@@ -228,20 +346,22 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
         self.assertEqual(
             l1.__getstate__(),
             {
-                '_last_bind': (
+                str('_last_bind'): (
                     'simple_bind_s',
                     (bind_dn, 'user1_pw'),
                     {}
                 ),
-                '_options': [(17, 3)],
-                '_reconnects_done': 0L,
-                '_retry_delay': 60.0,
-                '_retry_max': 1,
-                '_start_tls': 0,
-                '_trace_level': 0,
-                '_trace_stack_limit': 5,
-                '_uri': self.server.ldapi_uri,
-                'timeout': -1,
+                str('_options'): [(17, 3)],
+                str('_reconnects_done'): 0,
+                str('_retry_delay'): 60.0,
+                str('_retry_max'): 1,
+                str('_start_tls'): 0,
+                str('_trace_level'): 0,
+                str('_trace_stack_limit'): 5,
+                str('_uri'): self.server.ldapi_uri,
+                str('bytes_mode'): l1.bytes_mode,
+                str('bytes_mode_hardfail'): l1.bytes_mode_hardfail,
+                str('timeout'): -1,
             },
         )
 

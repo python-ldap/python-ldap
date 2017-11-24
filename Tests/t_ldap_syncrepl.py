@@ -81,34 +81,34 @@ cn: Foo4
 # NOTE: For the dict, it needs to be kept up-to-date as we make changes!
 LDAP_ENTRIES = {
     'ou=Container,dc=slapd-test,dc=python-ldap,dc=org': {
-        'objectClass': ['organizationalUnit'],
-        'ou': ['Container']
+        'objectClass': [b'organizationalUnit'],
+        'ou': [b'Container']
     },
     'cn=Foo2,dc=slapd-test,dc=python-ldap,dc=org': {
-        'objectClass': ['organizationalRole'],
-        'cn': ['Foo2']
+        'objectClass': [b'organizationalRole'],
+        'cn': [b'Foo2']
     },
     'cn=Foo4,ou=Container,dc=slapd-test,dc=python-ldap,dc=org': {
-        'objectClass': ['organizationalRole'],
-        'cn': ['Foo4']
+        'objectClass': [b'organizationalRole'],
+        'cn': [b'Foo4']
     },
     'cn=Manager,dc=slapd-test,dc=python-ldap,dc=org': {
-        'objectClass': ['applicationProcess', 'simpleSecurityObject'],
-        'userPassword': ['password'],
-        'cn': ['Manager']
+        'objectClass': [b'applicationProcess', b'simpleSecurityObject'],
+        'userPassword': [b'password'],
+        'cn': [b'Manager']
     },
     'cn=Foo3,dc=slapd-test,dc=python-ldap,dc=org': {
-        'objectClass': ['organizationalRole'],
-        'cn': ['Foo3']
+        'objectClass': [b'organizationalRole'],
+        'cn': [b'Foo3']
     },
     'cn=Foo1,dc=slapd-test,dc=python-ldap,dc=org': {
-        'objectClass': ['organizationalRole'],
-        'cn': ['Foo1']
+        'objectClass': [b'organizationalRole'],
+        'cn': [b'Foo1']
     },
     'dc=slapd-test,dc=python-ldap,dc=org': {
-        'objectClass': ['dcObject', 'organization'],
-        'dc': ['slapd-test'],
-        'o': ['slapd-test']
+        'objectClass': [b'dcObject', b'organization'],
+        'dc': [b'slapd-test'],
+        'o': [b'slapd-test']
     }
 }
 

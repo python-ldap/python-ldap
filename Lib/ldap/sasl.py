@@ -46,6 +46,8 @@ class sasl:
         the SASL mechaninsm to be uesd.
         """
         self.cb_value_dict = cb_value_dict or {}
+        if not isinstance(mech, bytes):
+            mech = mech.encode('utf-8')
         self.mech = mech
 
     def callback(self, cb_id, challenge, prompt, defresult):
@@ -64,6 +66,8 @@ class sasl:
         useful for writing generic sasl GUIs, which would need to know all
         the questions to ask, before the answers are returned to the sasl
         lib (in contrast to one question at a time).
+
+        Unicode strings are always converted to bytes.
         """
 
         # The following print command might be useful for debugging
@@ -78,6 +82,8 @@ class sasl:
                     repr(defresult),
                     repr(self.cb_value_dict.get(cb_result))
                 ))
+        if not isinstance(cb_result, bytes):
+            cb_result = cb_result.encode('utf-8')
         return cb_result
 
 
