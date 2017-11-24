@@ -1,13 +1,5 @@
 language: python
 
-python:
-- '2.7'
-- '3.3'
-- '3.4'
-- '3.5'
-- '3.6'
-# Note: when updating Python versions, also change setup.py and tox.ini
-
 sudo: false
 
 cache: pip
@@ -18,6 +10,29 @@ addons:
       - ldap-utils
       - slapd
 
+matrix:
+  include:
+    - python: 2.7
+      env:
+        - TOXENV=py27
+        - WITH_GCOV=1
+    - python: 3.3
+      env:
+        - TOXENV=py33
+        - WITH_GCOV=1
+    - python: 3.4
+      env:
+        - TOXENV=py34
+        - WITH_GCOV=1
+    - python: 3.5
+      env:
+        - TOXENV=py35
+        - WITH_GCOV=1
+    - python: 3.6
+      env:
+        - TOXENV=py36
+        - WITH_GCOV=1
+
 install:
   - pip install "pip>=7.1.0"
   - pip install tox-travis tox codecov coverage
@@ -25,5 +40,7 @@ install:
 script: tox
 
 after_success:
+  # gather Python coverage
   - python -m coverage combine
+  # send Python and GCOV coverage
   - codecov
