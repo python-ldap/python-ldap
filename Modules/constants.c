@@ -6,35 +6,12 @@
 #include "lber.h"
 #include "ldap.h"
 
-static PyObject* reverse;
-static PyObject* forward;
-
-/* convert an result integer into a Python string */
-
-PyObject*
-LDAPconstant( int val ) {
-    PyObject *i = PyInt_FromLong( val );
-    PyObject *s = PyObject_GetItem( reverse, i );
-    if (s == NULL) {
-      PyErr_Clear();
-  return i;
-    }
-    Py_DECREF(i);
-    return s;
-}
-
 /* initialise the module constants */
 
 void
 LDAPinit_constants( PyObject* d )
 {
-  PyObject *zero, *author,*obj;
-
-  reverse = PyDict_New();
-  forward = PyDict_New();
-  
-  PyDict_SetItemString( d, "_reverse", reverse );
-  PyDict_SetItemString( d, "_forward", forward );
+  PyObject *obj;
 
 #define add_int(d, name) \
   { \
@@ -90,10 +67,6 @@ LDAPinit_constants( PyObject* d )
   add_int(d,SASL_QUIET);
 
   /* reversibles */
-
-  zero = PyInt_FromLong( 0 );
-  PyDict_SetItem( reverse, zero, Py_None );
-  Py_DECREF( zero );
 
   add_int(d,RES_BIND);
   add_int(d,RES_SEARCH_ENTRY);
