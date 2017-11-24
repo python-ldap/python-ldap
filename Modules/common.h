@@ -27,5 +27,11 @@
 void LDAPadd_methods( PyObject*d, PyMethodDef*methods );
 #define PyNone_Check(o) ((o) == Py_None)
 
+/* Py2/3 compatibility */
+#if PY_VERSION_HEX >= 0x03000000
+/* In Python 3, alias PyInt to PyLong */
+#define PyInt_FromLong PyLong_FromLong
+#endif
+
 #endif /* __h_common_ */
 
