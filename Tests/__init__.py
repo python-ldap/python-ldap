@@ -18,4 +18,5 @@ from . import t_ldap_schema_tokenizer
 from . import t_ldapurl
 from . import t_ldif
 from . import t_ldapobject
+from . import t_edit
 from . import t_ldap_schema_subentry
