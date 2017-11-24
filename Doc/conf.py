@@ -23,6 +23,9 @@ sys.path.insert(0, os.path.join(_doc_dir, '../Lib/ldap'))
 # Import fake `_ldap` module
 import fake_ldap_module_for_documentation
 
+# Now ldap can be used normally
+from ldap import __version__
+
 # General configuration
 # ---------------------
 
@@ -47,9 +50,9 @@ copyright = '2008-2017, python-ldap project team'
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '2.5'
+version = '.'.join(__version__.split('.')[:2])
 # The full version, including alpha/beta/rc tags.
-release = '2.5.2.0'
+release = __version__
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
