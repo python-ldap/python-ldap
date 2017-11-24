@@ -101,6 +101,7 @@ These very kind people have supplied patches or suggested changes:
 * Matej Vela <vela at debian.org>
 
 These people contributed to Python 3 porting (at https://github.com/pyldap/):
+
 * A. Karl Kornel <akkornel at stanford.edu>
 * Alex Willmer <alex at moreati.org.uk>
 * Aymeric Augustin <aymeric.augustin at oscaro.com>
