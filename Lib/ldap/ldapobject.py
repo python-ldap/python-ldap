@@ -502,7 +502,7 @@ class SimpleLDAPObject:
     delete(dn) -> int
     delete_s(dn) -> None
     delete_ext(dn[,serverctrls=None[,clientctrls=None]]) -> int
-    delete_ext_s(dn[,serverctrls=None[,clientctrls=None]]) -> None
+    delete_ext_s(dn[,serverctrls=None[,clientctrls=None]]) -> tuple
         Performs an LDAP delete operation on dn. The asynchronous
         form returns the message id of the initiated request, and the
         result can be obtained from a subsequent call to result().
@@ -570,7 +570,7 @@ class SimpleLDAPObject:
     modify(dn, modlist) -> int
     modify_s(dn, modlist) -> None
     modify_ext(dn, modlist[,serverctrls=None[,clientctrls=None]]) -> int
-    modify_ext_s(dn, modlist[,serverctrls=None[,clientctrls=None]]) -> None
+    modify_ext_s(dn, modlist[,serverctrls=None[,clientctrls=None]]) -> tuple
         Performs an LDAP modify operation on an entry's attributes.
         dn is the DN of the entry to modify, and modlist is the list
         of modifications to make to the entry.
