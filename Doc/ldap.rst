@@ -1169,6 +1169,6 @@ subtree search.
 [('cn=Fred Feuerstein,ou=Testing,dc=stroeder,dc=de', {'cn': ['Fred Feuerstein']})]
 >>> r = l.search_s('ou=Testing,dc=stroeder,dc=de',ldap.SCOPE_SUBTREE,'(objectClass=*)',['cn','mail'])
 >>> for dn,entry in r:
->>>   print 'Processing',repr(dn)
+>>>   print('Processing',repr(dn))
 >>>   handle_ldap_entry(entry)
 

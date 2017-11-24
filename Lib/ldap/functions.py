@@ -53,7 +53,7 @@ def _ldap_function_call(lock,func,*args,**kwargs):
     finally:
       if lock:
         lock.release()
-  except LDAPError,e:
+  except LDAPError as e:
     if __debug__ and ldap._trace_level>=2:
       ldap._trace_file.write('=> LDAPError: %s\n' % (str(e)))
     raise
@@ -62,7 +62,7 @@ def _ldap_function_call(lock,func,*args,**kwargs):
   return result
 
 
-def initialize(uri,trace_level=0,trace_file=sys.stdout,trace_stack_limit=None):
+def initialize(uri,trace_level=0,trace_file=sys.stdout,trace_stack_limit=None, bytes_mode=None):
   """
   Return LDAPObject instance by opening LDAP connection to
   LDAP host specified by LDAP URL
@@ -76,11 +76,13 @@ def initialize(uri,trace_level=0,trace_file=sys.stdout,trace_stack_limit=None):
   trace_file
         File object where to write the trace output to.
         Default is to use stdout.
+  bytes_mode
+        Whether to enable "bytes_mode" for backwards compatibility under Py2.
   """
-  return LDAPObject(uri,trace_level,trace_file,trace_stack_limit)
+  return LDAPObject(uri,trace_level,trace_file,trace_stack_limit,bytes_mode)
 
 
-def open(host,port=389,trace_level=0,trace_file=sys.stdout,trace_stack_limit=None):
+def open(host,port=389,trace_level=0,trace_file=sys.stdout,trace_stack_limit=None,bytes_mode=None):
   """
   Return LDAPObject instance by opening LDAP connection to
   specified LDAP host
@@ -95,10 +97,12 @@ def open(host,port=389,trace_level=0,trace_file=sys.stdout,trace_stack_limit=Non
   trace_file
         File object where to write the trace output to.
         Default is to use stdout.
+  bytes_mode
+        Whether to enable "bytes_mode" for backwards compatibility under Py2.
   """
   import warnings
   warnings.warn('ldap.open() is deprecated! Use ldap.initialize() instead.', DeprecationWarning,2)
-  return initialize('ldap://%s:%d' % (host,port),trace_level,trace_file,trace_stack_limit)
+  return initialize('ldap://%s:%d' % (host,port),trace_level,trace_file,trace_stack_limit,bytes_mode)
 
 init = open
 

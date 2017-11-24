@@ -1,10 +1,22 @@
 ----------------------------------------------------------------
-Released 2.5.2 2017-11-20
+Released 3.0.0 xxxx-xx-xx
 
-Changes since 2.5.1:
+Changes since 2.4.45:
+
+Mandatory prerequisites:
+- Python 2.7.x or 3.3+
+- pyasn1 0.3.7+ and pyasn1_modules 0.1.5+
+
+Python 3 support is merged from the pyldap fork (https://github.com/pyldap)
+
+Infrastructure:
+- Add .gitignore
+- Re-format README to ReStructured Text
+- Setup for automatic testing using Travis CI
 
 Modules/
-* PyBytes_ instead of PyString_ and added PyInt_FromLong compat macro
+(thanks to Michael Ströder)
+* removed unused code schema.c
 * moved code from version.c to ldapmodule.c
 * removed obsolete back-ward compability constants from common.h
 * build checks whether LDAP_API_VERSION is OpenLDAP 2.4.x
@@ -12,36 +24,7 @@ Modules/
 * assume C extension API for Python 2.7+
 
 Lib/
-* removed all dependencies on modules string and types
-* removed use of .has_key()
-* removed class ldap.ldapobject.NonblockingLDAPObject
-* new global constant ldap.LIBLDAP_API_INFO
-* right after importing _ldap there is a call into libldap to initialize it
-* method .decodeControlValue() of SSSResponseControl and VLVResponseControl
-  does not set class attribute result_code anymore
-* always use bytes() for UUID() constructor in ldap.syncrepl
-* module ldif now uses functions b64encode() and b64decode()
-* fixed pickling and restoring of ReconnectLDAPObject
-
-Tests/
-* scripts do not directly call SlapdTestCase.setUpClass() anymore
-* added LDIF test with folded, base64-encoded attribute
-* added more tests for sub-module ldap.dn
-* added tests for ldap.syncrepl (thanks to Karl Kornel)
-
-----------------------------------------------------------------
-Released 2.5.1 2017-11-12
-
-Changes since 2.4.45:
-
-Mandatory prerequisites:
-- Python 2.7.x
-- pyasn1 0.3.7+ and pyasn1_modules 0.1.5+
-
-Modules/
-* removed unused code schema.c
-
-Lib/
+(thanks to Michael Ströder)
 * ldap.__version__, ldap.__author__ and ldap.__license__ now
   imported from new sub-module ldap.pkginfo also to setup.py
 * Added safety assertion when importing _ldap:
@@ -58,9 +41,35 @@ Lib/
   but should not be used in new code because they might be removed
   in a later release.
 * removed SSSRequestControl from ldap.controls.KNOWN_RESPONSE_CONTROLS
+* removed all dependencies on modules string and types
+* removed use of .has_key()
+* removed class ldap.ldapobject.NonblockingLDAPObject
+* new global constant ldap.LIBLDAP_API_INFO
+* right after importing _ldap there is a call into libldap to initialize it
+* method .decodeControlValue() of SSSResponseControl and VLVResponseControl
+  does not set class attribute result_code anymore
+* always use bytes() for UUID() constructor in ldap.syncrepl
+* module ldif now uses functions b64encode() and b64decode()
+* fixed pickling and restoring of ReconnectLDAPObject
+
+Lib/slapdtest.py
+* Automatically try some common locations for SCHEMADIR
+* Ensure server is stopped when the process exits
 
 Tests/
+(thanks to Michael Ströder)
 * added explicit reconnect tests for ReconnectLDAPObject
+* scripts do not directly call SlapdTestCase.setUpClass() anymore
+* added LDIF test with folded, base64-encoded attribute
+* added more tests for sub-module ldap.dn
+* added tests for ldap.syncrepl (thanks to Karl Kornel)
+
+Tests/
+(thanks to pyldap contributors):
+* Expand cidict membership test
+* Add test suite for binds
+* Add test suite for edits
+* Add a smoke-check for listall() and attribute_types()
 
 ----------------------------------------------------------------
 Released 2.4.45 2017-10-09

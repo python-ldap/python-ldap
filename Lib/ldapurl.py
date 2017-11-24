@@ -16,9 +16,7 @@ __all__ = [
   'LDAPUrlExtension','LDAPUrlExtensions','LDAPUrl'
 ]
 
-import UserDict
-
-from urllib import quote,unquote
+from ldap.compat import UserDict, quote, unquote
 
 LDAP_SCOPE_BASE = 0
 LDAP_SCOPE_ONELEVEL = 1
@@ -132,14 +130,14 @@ class LDAPUrlExtension(object):
     return not self.__eq__(other)
 
 
-class LDAPUrlExtensions(UserDict.UserDict):
+class LDAPUrlExtensions(UserDict):
   """
   Models a collection of LDAP URL extensions as
   dictionary type
   """
 
   def __init__(self,default=None):
-    UserDict.UserDict.__init__(self)
+    UserDict.__init__(self)
     for k,v in (default or {}).items():
       self[k]=v
 

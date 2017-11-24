@@ -5,6 +5,8 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import unicode_literals
+
 __version__ = '2.5.2'
 
 import os
@@ -12,9 +14,11 @@ import socket
 import time
 import subprocess
 import logging
+import atexit
 from logging.handlers import SysLogHandler
 import unittest
-import urllib
+
+from ldap.compat import quote_plus
 
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_TEMPLATE = r"""
@@ -104,7 +108,14 @@ class SlapdObject(object):
     TMPDIR = os.environ.get('TMP', os.getcwd())
     SBINDIR = os.environ.get('SBIN', '/usr/sbin')
     BINDIR = os.environ.get('BIN', '/usr/bin')
-    SCHEMADIR = os.environ.get('SCHEMA', '/etc/openldap/schema')
+    if 'SCHEMA' in os.environ:
+        SCHEMADIR = os.environ['SCHEMA']
+    elif os.path.isdir("/etc/openldap/schema"):
+        SCHEMADIR = "/etc/openldap/schema"
+    elif os.path.isdir("/etc/ldap/schema"):
+        SCHEMADIR = "/etc/ldap/schema"
+    else:
+        PATH_SCHEMA_CORE = None
     PATH_LDAPADD = os.path.join(BINDIR, 'ldapadd')
     PATH_LDAPMODIFY = os.path.join(BINDIR, 'ldapmodify')
     PATH_LDAPWHOAMI = os.path.join(BINDIR, 'ldapwhoami')
@@ -125,7 +136,7 @@ class SlapdObject(object):
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
         self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
         ldapi_path = os.path.join(self.testrundir, 'ldapi')
-        self.ldapi_uri = "ldapi://%s" % urllib.quote_plus(ldapi_path)
+        self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
 
     def setup_rundir(self):
         """
@@ -143,6 +154,9 @@ class SlapdObject(object):
         """
         Recursively delete whole directory specified by `path'
         """
+        # cleanup_rundir() is called in atexit handler. Until Python 3.4,
+        # the rest of the world is already destroyed.
+        import os, os.path
         if not os.path.exists(self.testrundir):
             return
         self._log.debug('clean-up %s', self.testrundir)
@@ -213,9 +227,8 @@ class SlapdObject(object):
     def _write_config(self):
         """Writes the slapd.conf file out, and returns the path to it."""
         self._log.debug('Writing config to %s', self._slapd_conf)
-        config_file = file(self._slapd_conf, 'wb')
-        config_file.write(self.gen_config())
-        config_file.close()
+        with open(self._slapd_conf, 'w') as config_file:
+            config_file.write(self.gen_config())
         self._log.info('Wrote config to %s', self._slapd_conf)
 
     def _test_config(self):
@@ -271,6 +284,7 @@ class SlapdObject(object):
 
         if self._proc is None:
             # prepare directory structure
+            atexit.register(self.stop)
             self._cleanup_rundir()
             self.setup_rundir()
             self._write_config()
@@ -353,13 +367,15 @@ class SlapdObject(object):
         """
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(self.PATH_LDAPADD, extra_args=extra_args, stdin_data=ldif)
+        self._cli_popen(self.PATH_LDAPADD, extra_args=extra_args,
+                        stdin_data=ldif.encode('utf-8'))
 
     def ldapmodify(self, ldif, extra_args=None):
         """
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args, stdin_data=ldif)
+        self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args,
+                        stdin_data=ldif.encode('utf-8'))
 
 
 class SlapdTestCase(unittest.TestCase):
@@ -371,11 +387,11 @@ class SlapdTestCase(unittest.TestCase):
     server = None
     ldap_object_class = None
 
-    def _open_ldap_conn(self, who=None, cred=None):
+    def _open_ldap_conn(self, who=None, cred=None, **kwargs):
         """
         return a LDAPObject instance after simple bind
         """
-        ldap_conn = self.ldap_object_class(self.server.ldap_uri)
+        ldap_conn = self.ldap_object_class(self.server.ldap_uri, **kwargs)
         ldap_conn.protocol_version = 3
         #ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
         ldap_conn.simple_bind_s(who or self.server.root_dn, cred or self.server.root_pw)

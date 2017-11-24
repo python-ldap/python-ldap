@@ -5,6 +5,8 @@ Automatic tests for python-ldap's module ldif
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import unicode_literals
+
 # from Python's standard lib
 import unittest
 import textwrap
@@ -184,7 +186,7 @@ class TestEntryRecords(TestLDIFParser):
              value
             attrib2: %s
 
-            """ % (b'asdf.'*20), [
+            """ % ('asdf.'*20), [
                 (
                     'cn=x,cn=y,cn=z',
                     {
@@ -273,6 +275,26 @@ class TestEntryRecords(TestLDIFParser):
         )
 
     def test_unicode(self):
+        # Encode "Ströder" as UTF-8+Base64
+        # Putting "Ströder" in a single line would be an invalid LDIF file
+        # per https://tools.ietf.org/html/rfc2849 (only safe ascii is allowed in a file)
+        self.check_records(
+            """
+            dn: cn=Michael Stroeder,dc=stroeder,dc=com
+            lastname:: U3Ryw7ZkZXI=
+
+            """,
+            [
+                (
+                    'cn=Michael Stroeder,dc=stroeder,dc=com',
+                    {'lastname': [b'Str\303\266der']},
+                ),
+            ]
+        )
+
+    def test_unencoded_unicode(self):
+        # Encode "Ströder" as UTF-8, without base64
+        # This is an invalid LDIF file, but such files are often found in the wild.
         self.check_records(
             """
             dn: cn=Michael Stroeder,dc=stroeder,dc=com
@@ -662,7 +684,7 @@ class TestChangeRecords(TestLDIFParser):
             ldif_string = textwrap.dedent(bad_ldif_string).lstrip() + '\n'
             try:
                 res = self._parse_records(ldif_string)
-            except ValueError, value_error:
+            except ValueError as value_error:
                 pass
             else:
                 self.fail("should have raised ValueError: %r" % bad_ldif_string)

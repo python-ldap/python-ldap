@@ -5,6 +5,8 @@ Automatic tests for python-ldap's module ldap.dn
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import unicode_literals
+
 # from Python's standard lib
 import unittest
 
@@ -27,9 +29,10 @@ class TestDN(unittest.TestCase):
         self.assertEqual(ldap.dn.is_dn(',cn=foobar,ou=ae-dir'), False)
         self.assertEqual(ldap.dn.is_dn('cn=foobar,ou=ae-dir,'), False)
         self.assertEqual(ldap.dn.is_dn('uid=xkcd,cn=foobar,ou=ae-dir'), True)
+        self.assertEqual(ldap.dn.is_dn('cn=äöüÄÖÜß,o=äöüÄÖÜß'), True)
         self.assertEqual(
             ldap.dn.is_dn(
-                'cn=\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c.o=\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f'
+                r'cn=\c3\a4\c3\b6\c3\bc\c3\84\c3\96\c3\9c\c3\9f,o=\c3\a4\c3\b6\c3\bc\c3\84\c3\96\c3\9c\c3\9f'
             ),
             True
         )
@@ -97,9 +100,9 @@ class TestDN(unittest.TestCase):
             ]
         )
         self.assertEqual(
-            ldap.dn.str2dn('cn=\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f,dc=example,dc=com', flags=0),
+            ldap.dn.str2dn('cn=äöüÄÖÜß,dc=example,dc=com', flags=0),
             [
-                [('cn', '\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f', 4)],
+                [('cn', 'äöüÄÖÜß', 4)],
                 [('dc', 'example', 1)],
                 [('dc', 'com', 1)]
             ]
@@ -107,7 +110,7 @@ class TestDN(unittest.TestCase):
         self.assertEqual(
             ldap.dn.str2dn('cn=\\c3\\a4\\c3\\b6\\c3\\bc\\c3\\84\\c3\\96\\c3\\9c\\c3\\9f,dc=example,dc=com', flags=0),
             [
-                [('cn', '\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f', 4)],
+                [('cn', 'äöüÄÖÜß', 4)],
                 [('dc', 'example', 1)],
                 [('dc', 'com', 1)]
             ]
@@ -156,19 +159,11 @@ class TestDN(unittest.TestCase):
         )
         self.assertEqual(
             ldap.dn.dn2str([
-                [('cn', '\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f', 4)],
+                [('cn', 'äöüÄÖÜß', 4)],
                 [('dc', 'example', 1)],
                 [('dc', 'com', 1)]
             ]),
-            'cn=\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f,dc=example,dc=com'
-        )
-        self.assertEqual(
-            ldap.dn.dn2str([
-                [('cn', '\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f', 4)],
-                [('dc', 'example', 1)],
-                [('dc', 'com', 1)]
-            ]),
-            'cn=\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f,dc=example,dc=com'
+            'cn=äöüÄÖÜß,dc=example,dc=com'
         )
 
     def test_explode_dn(self):
@@ -197,12 +192,12 @@ class TestDN(unittest.TestCase):
             ['uid=test\\, 42', 'ou=Testing', 'dc=example', 'dc=com']
         )
         self.assertEqual(
-            ldap.dn.explode_dn('cn=\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f,dc=example,dc=com', flags=0),
-            ['cn=\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f', 'dc=example', 'dc=com']
+            ldap.dn.explode_dn('cn=äöüÄÖÜß,dc=example,dc=com', flags=0),
+            ['cn=äöüÄÖÜß', 'dc=example', 'dc=com']
         )
         self.assertEqual(
             ldap.dn.explode_dn('cn=\\c3\\a4\\c3\\b6\\c3\\bc\\c3\\84\\c3\\96\\c3\\9c\\c3\\9f,dc=example,dc=com', flags=0),
-            ['cn=\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f', 'dc=example', 'dc=com']
+            ['cn=äöüÄÖÜß', 'dc=example', 'dc=com']
         )
 
     def test_explode_rdn(self):
@@ -239,12 +234,12 @@ class TestDN(unittest.TestCase):
             ['uid=test\\+ 42']
         )
         self.assertEqual(
-            ldap.dn.explode_rdn('cn=\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f', flags=0),
-            ['cn=\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f']
+            ldap.dn.explode_rdn('cn=äöüÄÖÜß', flags=0),
+            ['cn=äöüÄÖÜß']
         )
         self.assertEqual(
             ldap.dn.explode_rdn('cn=\\c3\\a4\\c3\\b6\\c3\\bc\\c3\\84\\c3\\96\\c3\\9c\\c3\\9f', flags=0),
-            ['cn=\xc3\xa4\xc3\xb6\xc3\xbc\xc3\x84\xc3\x96\xc3\x9c\xc3\x9f']
+            ['cn=äöüÄÖÜß']
         )
 
 

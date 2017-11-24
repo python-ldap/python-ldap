@@ -5,6 +5,8 @@ Automatic tests for python-ldap's C wrapper module _ldap
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import unicode_literals
+
 import os
 import unittest
 from slapdtest import SlapdTestCase
@@ -64,10 +66,10 @@ class TestLdapCExtension(SlapdTestCase):
         return l
 
     def assertNotNone(self, expr, msg=None):
-        self.failIf(expr is None, msg or repr(expr))
+        self.assertFalse(expr is None, msg or repr(expr))
 
     def assertNone(self, expr, msg=None):
-        self.failIf(expr is not None, msg or repr(expr))
+        self.assertFalse(expr is not None, msg or repr(expr))
 
     # Test for the existence of a whole bunch of constants
     # that the C module is supposed to export
@@ -195,7 +197,7 @@ class TestLdapCExtension(SlapdTestCase):
             '',
             _ldap.SCOPE_BASE,
             '(objectClass=*)',
-            ['objectClass', 'namingContexts'],
+            [str('objectClass'), str('namingContexts')],
         )
         self.assertEqual(type(m), type(0))
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
@@ -205,9 +207,9 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(ctrls, [])
         root_dse = pmsg[0][1]
         self.assertTrue('objectClass' in root_dse)
-        self.assertTrue('OpenLDAProotDSE' in root_dse['objectClass'])
+        self.assertTrue(b'OpenLDAProotDSE' in root_dse['objectClass'])
         self.assertTrue('namingContexts' in root_dse)
-        self.assertEqual(root_dse['namingContexts'], [self.server.suffix])
+        self.assertEqual(root_dse['namingContexts'], [self.server.suffix.encode('ascii')])
 
     def test_unbind(self):
         l = self._open_conn()
@@ -235,8 +237,8 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(len(pmsg[0]), 2)
         self.assertEqual(pmsg[0][0], self.server.suffix)
         self.assertEqual(pmsg[0][0], self.server.suffix)
-        self.assertTrue('dcObject' in pmsg[0][1]['objectClass'])
-        self.assertTrue('organization' in pmsg[0][1]['objectClass'])
+        self.assertTrue(b'dcObject' in pmsg[0][1]['objectClass'])
+        self.assertTrue(b'organization' in pmsg[0][1]['objectClass'])
         self.assertEqual(msgid, m)
         self.assertEqual(ctrls, [])
 
@@ -253,7 +255,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertNone(ret)
         try:
             r = l.result4(m, _ldap.MSG_ALL, 0.3)  # (timeout /could/ be longer)
-        except _ldap.TIMEOUT, e:
+        except _ldap.TIMEOUT as e:
             pass
         else:
             self.fail("expected TIMEOUT, got %r" % r)
@@ -278,9 +280,9 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.add_ext(
             "cn=Foo," + self.server.suffix,
             [
-                ('objectClass', 'organizationalRole'),
-                ('cn', 'Foo'),
-                ('description', 'testing'),
+                ('objectClass', b'organizationalRole'),
+                ('cn', b'Foo'),
+                ('description', b'testing'),
             ]
         )
         self.assertEqual(type(m), type(0))
@@ -302,9 +304,9 @@ class TestLdapCExtension(SlapdTestCase):
             (
                 'cn=Foo,'+self.server.suffix,
                 {
-                    'objectClass': ['organizationalRole'],
-                    'cn': ['Foo'],
-                    'description': ['testing'],
+                    'objectClass': [b'organizationalRole'],
+                    'cn': [b'Foo'],
+                    'description': [b'testing'],
                 }
             )
         )
@@ -319,10 +321,10 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.add_ext(
             dn,
             [
-                ('objectClass', 'person'),
-                ('sn', 'CompareTest'),
-                ('cn', 'CompareTest'),
-                ('userPassword', 'the_password'),
+                ('objectClass', b'person'),
+                ('sn', b'CompareTest'),
+                ('cn', b'CompareTest'),
+                ('userPassword', b'the_password'),
             ],
         )
         self.assertEqual(type(m), type(0))
@@ -373,8 +375,8 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.add_ext(
             dn,
             [
-                ('objectClass', 'organizationalRole'),
-                ('cn', 'Deleteme'),
+                ('objectClass', b'organizationalRole'),
+                ('cn', b'Deleteme'),
             ]
         )
         self.assertEqual(type(m), type(0))
@@ -395,7 +397,7 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.modify_ext(
             "cn=DoesNotExist,"+self.server.suffix,
             [
-                (_ldap.MOD_ADD, 'description', ['blah']),
+                (_ldap.MOD_ADD, 'description', [b'blah']),
             ]
         )
         try:
@@ -413,7 +415,7 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.modify_ext(
             "cn=DoesNotExist,"+self.server.suffix,
             [
-                (_ldap.MOD_ADD, 'description', ['dummy']),
+                (_ldap.MOD_ADD, 'description', [b'dummy']),
             ]
         )
         self.assertTrue(isinstance(m, int))
@@ -434,10 +436,10 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.add_ext(
             dn,
             [
-                ('objectClass', 'person'),
-                ('cn', 'AddToMe'),
-                ('sn', 'Modify'),
-                ('description', 'a description'),
+                ('objectClass', b'person'),
+                ('cn', b'AddToMe'),
+                ('sn', b'Modify'),
+                ('description', b'a description'),
             ]
         )
         self.assertEqual(type(m), type(0))
@@ -447,7 +449,7 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.modify_ext(
             dn,
             [
-                (_ldap.MOD_ADD, 'description', ['b desc', 'c desc']),
+                (_ldap.MOD_ADD, 'description', [b'b desc', b'c desc']),
             ]
         )
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
@@ -466,7 +468,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(pmsg[0][0], dn)
         d = list(pmsg[0][1]['description'])
         d.sort()
-        self.assertEqual(d, ['a description', 'b desc', 'c desc'])
+        self.assertEqual(d, [b'a description', b'b desc', b'c desc'])
 
     def test_rename(self):
         l = self._open_conn()
@@ -474,8 +476,8 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.add_ext(
             dn,
             [
-                ('objectClass', 'organizationalRole'),
-                ('cn', 'RenameMe'),
+                ('objectClass', b'organizationalRole'),
+                ('cn', b'RenameMe'),
             ]
         )
         self.assertEqual(type(m), type(0))
@@ -507,15 +509,15 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(ctrls, [])
         self.assertEqual(len(pmsg), 1)
         self.assertEqual(pmsg[0][0], dn2)
-        self.assertEqual(pmsg[0][1]['cn'], ['IAmRenamed'])
+        self.assertEqual(pmsg[0][1]['cn'], [b'IAmRenamed'])
 
         # create the container
         containerDn = "ou=RenameContainer,"+self.server.suffix
         m = l.add_ext(
             containerDn,
             [
-                ('objectClass', 'organizationalUnit'),
-                ('ou', 'RenameContainer'),
+                ('objectClass', b'organizationalUnit'),
+                ('ou', b'RenameContainer'),
             ]
         )
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
@@ -551,7 +553,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(ctrls, [])
         self.assertEqual(len(pmsg), 1)
         self.assertEqual(pmsg[0][0], dn3)
-        self.assertEqual(pmsg[0][1]['cn'], ['IAmRenamedAgain'])
+        self.assertEqual(pmsg[0][1]['cn'], [b'IAmRenamedAgain'])
 
 
     def test_whoami(self):
@@ -576,6 +578,13 @@ class TestLdapCExtension(SlapdTestCase):
         r = l.whoami_s()
         self.assertEqual("", r)
 
+    def test_whoami_after_unbind(self):
+        # https://github.com/pyldap/pyldap/issues/29
+        l = self._open_conn(bind=True)
+        l.unbind_ext()
+        with self.assertRaises(_ldap.LDAPError):
+            l.whoami_s()
+
     def test_passwd(self):
         l = self._open_conn()
         # first, create a user to change password on
@@ -583,10 +592,10 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.add_ext(
             dn,
             [
-                ('objectClass', 'person'),
-                ('sn', 'PasswordTest'),
-                ('cn', 'PasswordTest'),
-                ('userPassword', 'initial'),
+                ('objectClass', b'person'),
+                ('sn', b'PasswordTest'),
+                ('cn', b'PasswordTest'),
+                ('userPassword', b'initial'),
             ]
         )
         self.assertEqual(type(m), type(0))
@@ -683,7 +692,7 @@ class TestLdapCExtension(SlapdTestCase):
         try:
             m = l.simple_bind("", "")
             r = l.result4(m, _ldap.MSG_ALL, self.timeout)
-        except _ldap.SERVER_DOWN, ldap_err:
+        except _ldap.SERVER_DOWN as ldap_err:
             errno = ldap_err.args[0]['errno']
             if errno != 107:
                 self.fail("expected errno=107, got %d" % errno)

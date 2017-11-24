@@ -4,6 +4,7 @@ dn.py - misc stuff for handling distinguished names (see RFC 4514)
 See https://www.python-ldap.org/ for details.
 """
 
+import sys
 from ldap.pkginfo import __version__
 
 import _ldap
@@ -46,6 +47,8 @@ def str2dn(dn,flags=0):
   """
   if not dn:
     return []
+  if sys.version_info[0] < 3 and isinstance(dn, unicode):
+      dn = dn.encode('utf-8')
   return ldap.functions._ldap_function_call(None,_ldap.str2dn,dn,flags)
 
 

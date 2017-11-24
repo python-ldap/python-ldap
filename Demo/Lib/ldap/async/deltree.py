@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import ldap,ldap.async
 
 class DeleteLeafs(ldap.async.AsyncSearchHandler):
@@ -15,7 +17,7 @@ class DeleteLeafs(ldap.async.AsyncSearchHandler):
 
   def startSearch(self,searchRoot,searchScope):
     if not searchScope in [ldap.SCOPE_ONELEVEL,ldap.SCOPE_SUBTREE]:
-      raise ValueError, "Parameter searchScope must be either ldap.SCOPE_ONELEVEL or ldap.SCOPE_SUBTREE."
+      raise ValueError("Parameter searchScope must be either ldap.SCOPE_ONELEVEL or ldap.SCOPE_SUBTREE.")
     self.nonLeafEntries = []
     self.deletedEntries = 0
     ldap.async.AsyncSearchHandler.startSearch(
@@ -28,7 +30,7 @@ class DeleteLeafs(ldap.async.AsyncSearchHandler):
     )
 
   def _processSingleResult(self,resultType,resultItem):
-    if self._entryResultTypes.has_key(resultType):
+    if resultType in self._entryResultTypes:
       # Don't process search references
       dn,entry = resultItem
       hasSubordinates = entry.get(
@@ -45,7 +47,7 @@ class DeleteLeafs(ldap.async.AsyncSearchHandler):
       else:
         try:
           self._l.delete_s(dn)
-        except ldap.NOT_ALLOWED_ON_NONLEAF,e:
+        except ldap.NOT_ALLOWED_ON_NONLEAF as e:
           self.nonLeafEntries.append(dn)
         else:
           self.deletedEntries = self.deletedEntries+1
@@ -62,7 +64,7 @@ def DelTree(l,dn,scope=ldap.SCOPE_ONELEVEL):
   non_leaf_entries = leafs_deleter.nonLeafEntries[:]
   while non_leaf_entries:
     dn = non_leaf_entries.pop()
-    print deleted_entries,len(non_leaf_entries),dn
+    print(deleted_entries,len(non_leaf_entries),dn)
     leafs_deleter.startSearch(dn,ldap.SCOPE_SUBTREE)
     leafs_deleter.processResults()
     deleted_entries = deleted_entries+leafs_deleter.deletedEntries

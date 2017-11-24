@@ -9,6 +9,7 @@ pyasn1
 pyasn1-modules
 python-ldap 2.4+
 """
+from __future__ import print_function
 
 import sys,ldap,ldapurl,getpass
 
@@ -19,7 +20,7 @@ SEARCH_TIMEOUT=30.0
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])
 except IndexError:
-  print 'Usage: noopsearch.py <LDAP URL>'
+  print('Usage: noopsearch.py <LDAP URL>')
   sys.exit(1)
 
 # Set debugging level
@@ -34,14 +35,14 @@ ldap_conn = ldap.ldapobject.LDAPObject(
 )
 
 if ldap_url.who and ldap_url.cred is None:
-  print 'Password for %s:' % (repr(ldap_url.who))
+  print('Password for %s:' % (repr(ldap_url.who)))
   ldap_url.cred = getpass.getpass()
 
 try:
   ldap_conn.simple_bind_s(ldap_url.who or '',ldap_url.cred or '')
 
-except ldap.INVALID_CREDENTIALS,e:
-  print 'Simple bind failed:',str(e)
+except ldap.INVALID_CREDENTIALS as e:
+  print('Simple bind failed:',str(e))
   sys.exit(1)
 
 try:
@@ -58,7 +59,7 @@ except (
   ldap.TIMEOUT,
   ldap.TIMELIMIT_EXCEEDED,
   ldap.SIZELIMIT_EXCEEDED,
-  ldap.ADMINLIMIT_EXCEEDED),e:
+  ldap.ADMINLIMIT_EXCEEDED) as e:
   ldap_conn.abandon(msg_id)
   sys.exit(1)
 
@@ -69,5 +70,5 @@ noop_srch_ctrl = [
   if c.controlType==SearchNoOpControl.controlType
 ][0]
 
-print 'Number of search results: %d' % noop_srch_ctrl.numSearchResults
-print 'Number of search continuations: %d' % noop_srch_ctrl.numSearchContinuations
+print('Number of search results: %d' % noop_srch_ctrl.numSearchResults)
+print('Number of search continuations: %d' % noop_srch_ctrl.numSearchContinuations)

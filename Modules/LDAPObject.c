@@ -14,7 +14,11 @@
 #include "options.h"
 
 #ifdef HAVE_SASL
+#ifdef __APPLE__
+#include <sasl/sasl.h>
+#else
 #include <sasl.h>
+#endif
 #endif
 
 static void free_attrs(char***, PyObject*);
@@ -138,7 +142,7 @@ Tuple_to_LDAPMod( PyObject* tup, int no_op )
 
     if (list == Py_None) {
         /* None indicates a NULL mod_bvals */
-    } else if (PyString_Check(list)) {
+    } else if (PyBytes_Check(list)) {
         /* Single string is a singleton list */
         lm->mod_bvalues = PyMem_NEW(struct berval *, 2);
         if (lm->mod_bvalues == NULL)
@@ -147,8 +151,8 @@ Tuple_to_LDAPMod( PyObject* tup, int no_op )
         if (lm->mod_bvalues[0] == NULL)
             goto nomem;
         lm->mod_bvalues[1] = NULL;
-        lm->mod_bvalues[0]->bv_len = PyString_Size(list);
-        lm->mod_bvalues[0]->bv_val = PyString_AsString(list);
+        lm->mod_bvalues[0]->bv_len = PyBytes_Size(list);
+        lm->mod_bvalues[0]->bv_val = PyBytes_AsString(list);
     } else if (PySequence_Check(list)) {
         nstrs = PySequence_Length(list);
         lm->mod_bvalues = PyMem_NEW(struct berval *, nstrs + 1);
@@ -162,14 +166,14 @@ Tuple_to_LDAPMod( PyObject* tup, int no_op )
           item = PySequence_GetItem(list, i);
           if (item == NULL)
               goto error;
-          if (!PyString_Check(item)) {
+          if (!PyBytes_Check(item)) {
               PyErr_SetObject( PyExc_TypeError, Py_BuildValue( "sO",
-                  "expected a string in the list", item));
+                  "expected a byte string in the list", item));
               Py_DECREF(item);
               goto error;
           }
-          lm->mod_bvalues[i]->bv_len = PyString_Size(item);
-          lm->mod_bvalues[i]->bv_val = PyString_AsString(item);
+          lm->mod_bvalues[i]->bv_len = PyBytes_Size(item);
+          lm->mod_bvalues[i]->bv_val = PyBytes_AsString(item);
           Py_DECREF(item);
         }
         if (nstrs == 0)
@@ -264,7 +268,11 @@ attrs_from_List( PyObject *attrlist, char***attrsp, PyObject** seq) {
 
     if (attrlist == Py_None) {
         /* None means a NULL attrlist */
-    } else if (PyString_Check(attrlist)) {
+#if PY_MAJOR_VERSION == 2
+    } else if (PyBytes_Check(attrlist)) {
+#else
+    } else if (PyUnicode_Check(attrlist)) {
+#endif
         /* caught by John Benninghoff <johnb@netscape.com> */
         PyErr_SetObject( PyExc_TypeError, Py_BuildValue("sO",
                   "expected *list* of strings, not a string", attrlist ));
@@ -285,12 +293,21 @@ attrs_from_List( PyObject *attrlist, char***attrsp, PyObject** seq) {
             item = PySequence_Fast_GET_ITEM(*seq, i);
             if (item == NULL)
                 goto error;
-            if (!PyString_Check(item)) {
+#if PY_MAJOR_VERSION == 2
+            /* Encoded by Python to UTF-8 */
+            if (!PyBytes_Check(item)) {
+#else
+            if (!PyUnicode_Check(item)) {
+#endif
                 PyErr_SetObject(PyExc_TypeError, Py_BuildValue("sO",
                                 "expected string in list", item));
                 goto error;
             }
-            attrs[i] = PyString_AsString(item);
+#if PY_MAJOR_VERSION == 2
+            attrs[i] = PyBytes_AsString(item);
+#else
+            attrs[i] = PyUnicode_AsUTF8(item);
+#endif
         }
         attrs[len] = NULL;
     }
@@ -547,7 +564,7 @@ static int interaction ( unsigned flags,
   if (result == NULL) 
     /*searching for a better error code */
     return LDAP_OPERATIONS_ERROR; 
-  c_result = PyString_AsString(result); /*xxx Error checking?? */
+  c_result = PyBytes_AsString(result); /*xxx Error checking?? */
   
   /* according to the sasl docs, we should malloc() the returned
      string only for calls where interact->id == SASL_CB_PASS, so we
@@ -643,7 +660,7 @@ l_ldap_sasl_bind_s( LDAPObject* self, PyObject* args )
 
     if (ldaperror == LDAP_SASL_BIND_IN_PROGRESS) {
         if (servercred && servercred->bv_val && *servercred->bv_val)
-            return PyString_FromStringAndSize( servercred->bv_val, servercred->bv_len );
+            return PyBytes_FromStringAndSize( servercred->bv_val, servercred->bv_len );
     } else if (ldaperror != LDAP_SUCCESS)
         return LDAPerror( self->ldap, "l_ldap_sasl_bind_s" );
     return PyInt_FromLong( ldaperror );
@@ -695,7 +712,7 @@ l_ldap_sasl_interactive_bind_s( LDAPObject* self, PyObject* args )
     /* now we extract the sasl mechanism from the SASL Object */
     mechanism = PyObject_GetAttrString(SASLObject, "mech");
     if (mechanism == NULL) return NULL;
-    c_mechanism = PyString_AsString(mechanism);
+    c_mechanism = PyBytes_AsString(mechanism);
     Py_DECREF(mechanism);
     mechanism = NULL;
 
@@ -1184,7 +1201,7 @@ l_ldap_whoami_s( LDAPObject* self, PyObject* args )
     if ( ldaperror!=LDAP_SUCCESS )
         return LDAPerror( self->ldap, "ldap_whoami_s" );
 
-    result = LDAPberval_to_object(bvalue);
+    result = LDAPberval_to_unicode_object(bvalue);
 
     return result;
 }
@@ -1380,23 +1397,6 @@ static PyMethodDef methods[] = {
     { NULL, NULL }
 };
 
-/* get attribute */
-
-static PyObject*
-getattr(LDAPObject* self, char* name) 
-{
-        return Py_FindMethod(methods, (PyObject*)self, name);
-}
-
-/* set attribute */
-
-static int
-setattr(LDAPObject* self, char* name, PyObject* value) 
-{
-        PyErr_SetString(PyExc_AttributeError, name);
-        return -1;
-}
-
 /* type entry */
 
 PyTypeObject LDAP_Type = {
@@ -1412,8 +1412,8 @@ PyTypeObject LDAP_Type = {
         /* methods */
         (destructor)dealloc,    /*tp_dealloc*/
         0,                      /*tp_print*/
-        (getattrfunc)getattr,   /*tp_getattr*/
-        (setattrfunc)setattr,   /*tp_setattr*/
+        0,                      /*tp_getattr*/
+        0,                      /*tp_setattr*/
         0,                      /*tp_compare*/
         0,                      /*tp_repr*/
         0,                      /*tp_as_number*/

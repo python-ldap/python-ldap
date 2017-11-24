@@ -1,10 +1,11 @@
+from __future__ import print_function
 import ldap
 from getpass import getpass
 
 # Create LDAPObject instance
 l = ldap.initialize('ldap://localhost:1389',trace_level=1)
 
-print 'Password:'
+print('Password:')
 cred = getpass()
 
 try:
@@ -15,7 +16,7 @@ try:
   # Try a bind to provoke failure if protocol version is not supported
   l.bind_s('cn=root,dc=stroeder,dc=com',cred,ldap.AUTH_SIMPLE)
 
-  print 'Using rename_s():'
+  print('Using rename_s():')
 
   l.rename_s(
     'uid=fred,ou=Unstructured testing tree,dc=stroeder,dc=com',

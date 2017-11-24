@@ -10,6 +10,7 @@ import time
 
 import ldif
 import ldap.schema
+from ldap.schema.models import ObjectClass
 
 TEST_SUBSCHEMA_FILES = (
     'Tests/ldif/subschema-ipa.demo1.freeipa.org.ldif',
@@ -29,6 +30,15 @@ class TestSubschemaLDIF(unittest.TestCase):
             ldif_parser.parse()
             _, subschema_subentry = ldif_parser.all_records[0]
             sub_schema = ldap.schema.SubSchema(subschema_subentry)
+
+            # Smoke-check for listall() and attribute_types()
+            for objclass in sub_schema.listall(ObjectClass):
+                must, may = sub_schema.attribute_types([objclass])
+
+                for oid, attributetype in must.items():
+                    self.assertEqual(attributetype.oid, oid)
+                for oid, attributetype in may.items():
+                    self.assertEqual(attributetype.oid, oid)
 
 
 if __name__ == '__main__':

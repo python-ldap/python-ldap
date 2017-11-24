@@ -1,6 +1,7 @@
 """
 Example showing the use of the password extended operation.
 """
+from __future__ import print_function
 
 import sys,ldap,ldapurl,getpass
 
@@ -11,9 +12,9 @@ ldapmodule_trace_file = sys.stderr
 
 lu = ldapurl.LDAPUrl(sys.argv[1])
 
-print 'Old password'
+print('Old password')
 oldpw = getpass.getpass()
-print 'New password'
+print('New password')
 newpw = getpass.getpass()
 
 # Set path name of file containing all CA certificates

@@ -1,3 +1,4 @@
+from __future__ import print_function
 url = "ldap://localhost:1390/"
 base = "dc=stroeder,dc=de"
 search_flt = r'(objectClass=*)'
@@ -72,7 +73,7 @@ class PagedResultsSearchObject:
             else:
               break # no more pages available
 
-      except ldap.SERVER_DOWN,e:
+      except ldap.SERVER_DOWN as e:
         try:
           self.reconnect(self._uri)
         except AttributeError:
@@ -104,4 +105,4 @@ result_pages,all_results = l.paged_search_ext_s(
 
 l.unbind_s()
 
-print 'Received %d results in %d pages.' % (len(all_results),result_pages)
+print('Received %d results in %d pages.' % (len(all_results),result_pages))

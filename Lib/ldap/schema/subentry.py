@@ -294,7 +294,8 @@ class SubSchema:
       if oc_se and oc_se.kind==0:
         struct_ocs[oc_se.oid] = None
     result = None
-    struct_oc_list = struct_ocs.keys()
+    # Build a copy of the oid list, to be cleaned as we go.
+    struct_oc_list = list(struct_ocs)
     while struct_oc_list:
       oid = struct_oc_list.pop()
       for child_oid in oc_tree[oid]:
@@ -417,20 +418,20 @@ class SubSchema:
 
     # Remove all mandantory attribute types from
     # optional attribute type list
-    for a in r_may.keys():
+    for a in list(r_may.keys()):
       if a in r_must:
         del r_may[a]
 
     # Apply attr_type_filter to results
     if attr_type_filter:
       for l in [r_must,r_may]:
-        for a in l.keys():
+        for a in list(l.keys()):
           for afk,afv in attr_type_filter:
             try:
               schema_attr_type = self.sed[AttributeType][a]
             except KeyError:
               if raise_keyerror:
-                raise KeyError,'No attribute type found in sub schema by name %s' % (a)
+                raise KeyError('No attribute type found in sub schema by name %s' % (a))
               # If there's no schema element for this attribute type
               # but still KeyError is to be ignored we filter it away
               del l[a]
@@ -455,7 +456,9 @@ def urlfetch(uri,trace_level=0):
   if uri.startswith('ldap:') or uri.startswith('ldaps:') or uri.startswith('ldapi:'):
     import ldapurl
     ldap_url = ldapurl.LDAPUrl(uri)
-    l=ldap.initialize(ldap_url.initializeUrl(),trace_level)
+
+    # This is an internal function; don't enable bytes_mode.
+    l=ldap.initialize(ldap_url.initializeUrl(),trace_level,bytes_mode=False)
     l.protocol_version = ldap.VERSION3
     l.simple_bind_s(ldap_url.who or '', ldap_url.cred or '')
     subschemasubentry_dn = l.search_subschemasubentry_s(ldap_url.dn)
@@ -472,8 +475,9 @@ def urlfetch(uri,trace_level=0):
     l.unbind_s()
     del l
   else:
-    import urllib,ldif
-    ldif_file = urllib.urlopen(uri)
+    import ldif
+    from ldap.compat import urlopen
+    ldif_file = urlopen(uri)
     ldif_parser = ldif.LDIFRecordList(ldif_file,max_entries=1)
     ldif_parser.parse()
     subschemasubentry_dn,s_temp = ldif_parser.all_records[0]

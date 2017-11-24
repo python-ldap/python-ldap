@@ -4,7 +4,10 @@ schema.py - support for subSchemaSubEntry information
 See https://www.python-ldap.org/ for details.
 """
 
-import UserDict,ldap.cidict
+import sys
+
+import ldap.cidict
+from ldap.compat import IterableUserDict
 
 from ldap.schema.tokenizer import split_tokens,extract_tokens
 
@@ -29,6 +32,7 @@ class SchemaElement:
 
   schema_element_str
     String which contains the schema element description to be parsed.
+    (Bytestrings are decoded using UTF-8)
 
   Class attributes:
 
@@ -43,6 +47,8 @@ class SchemaElement:
   }
 
   def __init__(self,schema_element_str=None):
+    if sys.version_info >= (3, 0) and isinstance(schema_element_str, bytes):
+      schema_element_str = schema_element_str.decode('utf-8')
     if schema_element_str:
       l = split_tokens(schema_element_str)
       self.set_id(l[1])
@@ -264,9 +270,9 @@ class AttributeType(SchemaElement):
           self.syntax_len = None
           for i in l:
             if i.startswith("{") and i.endswith("}"):
-              self.syntax_len=long(i[1:-1])
+              self.syntax_len = int(i[1:-1])
         else:
-          self.syntax_len = long(syntax_len[:-1])
+          self.syntax_len = int(syntax_len[:-1])
     self.single_value = d['SINGLE-VALUE']!=None
     self.collective = d['COLLECTIVE']!=None
     self.no_user_mod = d['NO-USER-MODIFICATION']!=None
@@ -615,7 +621,7 @@ class NameForm(SchemaElement):
     return '( %s )' % ''.join(result)
 
 
-class Entry(UserDict.IterableUserDict):
+class Entry(IterableUserDict):
   """
   Schema-aware implementation of an LDAP entry class.
 
@@ -628,7 +634,7 @@ class Entry(UserDict.IterableUserDict):
     self._attrtype2keytuple = {}
     self._s = schema
     self.dn = dn
-    UserDict.UserDict.__init__(self,{})
+    IterableUserDict.IterableUserDict.__init__(self,{})
     self.update(entry)
 
   def _at2key(self,nameoroid):

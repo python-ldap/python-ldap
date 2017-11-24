@@ -67,7 +67,7 @@ class SearchNoOpMixIn:
       ldap.TIMELIMIT_EXCEEDED,
       ldap.SIZELIMIT_EXCEEDED,
       ldap.ADMINLIMIT_EXCEEDED
-    ),e:
+    ) as e:
       self.abandon(msg_id)
       raise e
     else:
