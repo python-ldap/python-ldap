@@ -100,6 +100,27 @@ These very kind people have supplied patches or suggested changes:
 * Andreas Hasenack <ahasenack at terra.com.br>
 * Matej Vela <vela at debian.org>
 
+These people contributed to Python 3 porting (at https://github.com/pyldap/):
+* A. Karl Kornel <akkornel at stanford.edu>
+* Alex Willmer <alex at moreati.org.uk>
+* Aymeric Augustin <aymeric.augustin at oscaro.com>
+* Bradley Baetz <bbaetz at google.com>
+* Christian Heimes <cheimes at redhat.com>
+* Dirk Mueller <dirk at dmllr.de>
+* Jon Dufresne <jon.dufresne at gmail.com>
+* Martin Basti <mbasti at redhat.com>
+* Miro Hroncok <miro at hroncok.cz>
+* Paul Aurich <paul at darkrain42.org>
+* Petr Viktorin <pviktori at redhat.com>
+* Pieterjan De Potter <pieterjan.depotter at ugent.be>
+* Raphaël Barrois <raphael.barrois at polyconseil.fr>
+* Robert Kuska <rkuska at redhat.com>
+* Stanislav Láznička <stlaz at users.noreply.github.com>
+* Tobias Bräutigam <tobias.braeutigam at gonicus.de>
+* Tom van Dijk <t.vandijk at utwente.nl>
+* Wentao Han <wentao.han at gmail.com>
+* William Brown <firstyear at redhat.com>
+
 Thanks to all the guys on the python-ldap mailing list for
 their contributions and input into this package.
 
