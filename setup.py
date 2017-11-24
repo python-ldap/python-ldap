@@ -85,7 +85,7 @@ setup(
   (e.g. processing LDIF, LDAPURLs, LDAPv3 schema, LDAPv3 extended operations
   and controls, etc.). 
   """,
-  author = pkginfo.__author__,
+  author = 'python-ldap project',
   author_email = 'python-ldap@python.org',
   url = 'https://www.python-ldap.org/',
   download_url = 'https://pypi.python.org/pypi/python-ldap/',
