@@ -8,6 +8,12 @@
 
 #include "LDAPObject.h"
 
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC PyInit__ldap(void);
+#else
+PyMODINIT_FUNC init_ldap(void);
+#endif
+
 #define _STR(x)        #x
 #define STR(x) _STR(x)
 
@@ -15,38 +21,24 @@ static char version_str[] = STR(LDAPMODULE_VERSION);
 static char author_str[] = STR(LDAPMODULE_AUTHOR);
 static char license_str[] = STR(LDAPMODULE_LICENSE);
 
-void
-LDAPinit_pkginfo( PyObject* d )
+static void
+init_pkginfo( PyObject* m )
 {
-	PyObject *version;
-	PyObject *author;
-	PyObject *license;
-
-	version = PyString_FromString(version_str);
-	author = PyString_FromString(author_str);
-	license = PyString_FromString(license_str);
-
-	PyDict_SetItemString( d, "__version__", version );
-	PyDict_SetItemString(d, "__author__", author);
-	PyDict_SetItemString(d, "__license__", license);
-
-	Py_DECREF(version);
-	Py_DECREF(author);
-	Py_DECREF(license);
+	PyModule_AddStringConstant(m, "__version__", version_str);
+	PyModule_AddStringConstant(m, "__author__", author_str);
+	PyModule_AddStringConstant(m, "__license__", license_str);
 }
 
-DL_EXPORT(void) init_ldap(void);
-
 /* dummy module methods */
-
 static PyMethodDef methods[]  = {
 	{ NULL, NULL }
 };
 
 /* module initialisation */
 
-DL_EXPORT(void)
-init_ldap()
+
+/* Common initialization code */
+PyObject* init_ldap_module()
 {
 	PyObject *m, *d;
 
@@ -55,12 +47,26 @@ init_ldap()
 #endif
 
 	/* Create the module and add the functions */
+#if PY_MAJOR_VERSION >= 3
+        static struct PyModuleDef ldap_moduledef = {
+                PyModuleDef_HEAD_INIT,
+                "_ldap",              /* m_name */
+                "",                   /* m_doc */
+                -1,                   /* m_size */
+                methods,              /* m_methods */
+        };
+        m = PyModule_Create(&ldap_moduledef);
+#else
 	m = Py_InitModule("_ldap", methods);
+#endif
+
+        PyType_Ready(&LDAP_Type);
 
 	/* Add some symbolic constants to the module */
 	d = PyModule_GetDict(m);
 
-	LDAPinit_pkginfo(d);
+	init_pkginfo(m);
+
 	LDAPinit_constants(d);
 	LDAPinit_errors(d);
 	LDAPinit_functions(d);
@@ -69,4 +75,17 @@ init_ldap()
 	/* Check for errors */
 	if (PyErr_Occurred())
 		Py_FatalError("can't initialize module _ldap");
+
+        return m;
 }
+
+
+#if PY_MAJOR_VERSION < 3
+PyMODINIT_FUNC init_ldap() {
+    init_ldap_module();
+}
+#else
+PyMODINIT_FUNC PyInit__ldap() {
+    return init_ldap_module();
+}
+#endif
