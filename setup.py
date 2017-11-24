@@ -4,6 +4,8 @@ setup.py - Setup package with the help Python's DistUtils
 See https://www.python-ldap.org/ for details.
 """
 
+import sys,os
+
 has_setuptools = False
 try:
   from setuptools import setup, Extension
@@ -11,8 +13,15 @@ try:
 except ImportError:
   from distutils.core import setup, Extension
 
-from ConfigParser import ConfigParser
-import sys,os,time
+if sys.version_info[0] == 2 and sys.version_info[1] < 7:
+    raise RuntimeError('This software requires Python 2.7 or 3.x.')
+if sys.version_info[0] >= 3 and sys.version_info < (3, 3):
+    raise RuntimeError('The C API from Python 3.3+ is required.')
+
+if sys.version_info[0] >= 3:
+    from configparser import ConfigParser
+else:
+    from ConfigParser import ConfigParser
 
 sys.path.insert(0, os.path.join(os.getcwd(), 'Lib/ldap'))
 import pkginfo
@@ -59,7 +68,8 @@ if has_setuptools:
   kwargs = dict(
     include_package_data = True,
     install_requires = ['setuptools'],
-    zip_safe = False
+    zip_safe = False,
+    python_requires = '>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
   )
 
 setup(
@@ -88,8 +98,17 @@ setup(
     'Operating System :: Microsoft :: Windows',
     'Operating System :: POSIX',
     'Programming Language :: C',
+
     'Programming Language :: Python',
     'Programming Language :: Python :: 2',
+    'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.3',
+    'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6',
+    # Note: when updating Python versions, also change .travis.yml and tox.ini
+
     'Topic :: Database',
     'Topic :: Internet',
     'Topic :: Software Development :: Libraries :: Python Modules',

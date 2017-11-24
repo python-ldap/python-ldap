@@ -1,0 +1,25 @@
+language: python
+
+python:
+- '2.7'
+- '3.3'
+- '3.4'
+- '3.5'
+- '3.6'
+# Note: when updating Python versions, also change setup.py and tox.ini
+
+sudo: false
+
+cache: pip
+
+addons:
+  apt:
+    packages:
+      - ldap-utils
+      - slapd
+
+install:
+  - pip install "pip>=7.1.0"
+  - pip install tox-travis tox
+
+script: tox
