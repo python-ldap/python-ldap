@@ -19,7 +19,7 @@ clean:
 .PHONY: lcov-clean lcov-coverage lcov-report lcov-open lcov
 lcov-clean:
 	rm -rf $(LCOV_INFO) $(LCOV_REPORT)
-	find build -name '*.gc??' -delete
+	if [ -d build ]; then find build -name '*.gc??' -delete; fi
 
 lcov-coverage:
 	WITH_GCOV=1 tox -e py27,py36
