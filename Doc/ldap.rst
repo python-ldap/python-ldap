@@ -647,7 +647,7 @@ and wait for and return with the server's result, or with
 
 .. py:method:: LDAPObject.add_ext(dn, modlist [, serverctrls=None [, clientctrls=None]]) -> int
 
-.. py:method:: LDAPObject.add_ext_s(dn, modlist [, serverctrls=None [, clientctrls=None]]) -> None
+.. py:method:: LDAPObject.add_ext_s(dn, modlist [, serverctrls=None [, clientctrls=None]]) -> tuple
 
    Performs an LDAP add operation. The *dn* argument is the distinguished
    name (DN) of the entry to add, and *modlist* is a list of attributes to be
@@ -713,7 +713,7 @@ and wait for and return with the server's result, or with
 
 .. py:method:: LDAPObject.delete_ext(dn [, serverctrls=None [, clientctrls=None]]) -> int
 
-.. py:method:: LDAPObject.delete_ext_s(dn [, serverctrls=None [, clientctrls=None]]) -> None
+.. py:method:: LDAPObject.delete_ext_s(dn [, serverctrls=None [, clientctrls=None]]) -> tuple
 
    Performs an LDAP delete operation on *dn*. The asynchronous form
    returns the message id of the initiated request, and the result can be obtained
@@ -751,7 +751,7 @@ and wait for and return with the server's result, or with
 
 .. py:method:: LDAPObject.modify_ext(dn, modlist [, serverctrls=None [, clientctrls=None]]) -> int
 
-.. py:method:: LDAPObject.modify_ext_s(dn, modlist [, serverctrls=None [, clientctrls=None]]) -> None
+.. py:method:: LDAPObject.modify_ext_s(dn, modlist [, serverctrls=None [, clientctrls=None]]) -> tuple
 
    Performs an LDAP modify operation on an entry's attributes.
    The *dn* argument is the distinguished name (DN) of the entry to modify,
