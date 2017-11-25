@@ -37,6 +37,17 @@ You can `subscribe or unsubscribe`_ to this list or browse the `list archive`_.
 .. _list archive: https://mail.python.org/pipermail/python-ldap/
 
 
+Documentation
+-------------
+
+The documentation for python-ldap 3.x is hosted at `Read the Docs`_.
+
+You can switch between versions of the library, or download PDF or HTML
+versions for offline use, using the right sidebar.
+
+.. _Read the Docs: http://python-ldap.readthedocs.io/en/latest/
+
+
 Contents
 --------
 
@@ -45,6 +56,7 @@ Contents
 
    installing.rst
    reference/index.rst
+   resources.rst
 
 
 Bytes/text management
