@@ -2,7 +2,6 @@
 import ldap.async
 import ldap.controls.deref
 import ldap.controls.openldap
-import ldap.controls.pagedresults
 import ldap.controls.ppolicy
 import ldap.controls.psearch
 import ldap.controls.pwdpolicy

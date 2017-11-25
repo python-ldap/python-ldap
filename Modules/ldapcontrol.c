@@ -304,7 +304,7 @@ decode_rfc2696(PyObject *self, PyObject *args)
     struct berval ldctl_value;
     ber_tag_t tag;
     struct berval *cookiep;
-    unsigned long count;
+    unsigned long count = 0;
     Py_ssize_t ldctl_value_len;
 
     if (!PyArg_ParseTuple(args, "s#:decode_page_control",
@@ -324,7 +324,7 @@ decode_rfc2696(PyObject *self, PyObject *args)
         goto endlbl;
     }
 
-    res = Py_BuildValue("(lO&)", count, LDAPberval_to_object, cookiep);
+    res = Py_BuildValue("(kO&)", count, LDAPberval_to_object, cookiep);
     ber_bvfree(cookiep);
 
  endlbl:
