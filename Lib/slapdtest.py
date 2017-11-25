@@ -115,7 +115,7 @@ class SlapdObject(object):
     elif os.path.isdir("/etc/ldap/schema"):
         SCHEMADIR = "/etc/ldap/schema"
     else:
-        PATH_SCHEMA_CORE = None
+        SCHEMADIR = None
     PATH_LDAPADD = os.path.join(BINDIR, 'ldapadd')
     PATH_LDAPMODIFY = os.path.join(BINDIR, 'ldapmodify')
     PATH_LDAPWHOAMI = os.path.join(BINDIR, 'ldapwhoami')
@@ -137,6 +137,17 @@ class SlapdObject(object):
         self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
         ldapi_path = os.path.join(self.testrundir, 'ldapi')
         self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
+
+    def _check_requirements(self):
+        binaries = [
+            self.PATH_LDAPADD, self.PATH_LDAPMODIFY, self.PATH_LDAPWHOAMI,
+            self.PATH_SLAPD, self.PATH_SLAPTEST
+        ]
+        for binary in binaries:
+            if not os.path.isfile(binary):
+                raise ValueError('Binary {} is missing.'.format(binary))
+        if self.SCHEMADIR is None:
+            raise ValueError('SCHEMADIR is None, ldap schemas are missing.')
 
     def setup_rundir(self):
         """
@@ -283,6 +294,7 @@ class SlapdObject(object):
         """
 
         if self._proc is None:
+            self._check_requirements()
             # prepare directory structure
             atexit.register(self.stop)
             self._cleanup_rundir()
