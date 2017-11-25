@@ -56,7 +56,7 @@ for i in range(len(LDAP_CLASS.extra_files)):
   LDAP_CLASS.extra_files[i]=(destdir, origfileslist)
 
 if os.environ.get('WITH_GCOV'):
-  # Insrumentation for measuring code coverage
+  # Instrumentation for measuring code coverage
   LDAP_CLASS.extra_compile_args.extend(
     ['-O0', '-pg', '-fprofile-arcs', '-ftest-coverage']
   )
