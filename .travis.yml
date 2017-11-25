@@ -18,6 +18,9 @@ addons:
       - ldap-utils
       - slapd
 
+env:
+  - WITH_GCOV=1
+
 install:
   - pip install "pip>=7.1.0"
   - pip install tox-travis tox codecov coverage
@@ -25,5 +28,7 @@ install:
 script: tox
 
 after_success:
+  # gather Python coverage
   - python -m coverage combine
+  # send Python and GCOV coverage
   - codecov

@@ -34,7 +34,7 @@ class OpenLDAP2:
   extra_link_args = []
   extra_objects = []
   libs = ['ldap', 'lber']
-  defines = [ ]
+  defines = []
   extra_files = []
 
 LDAP_CLASS = OpenLDAP2
@@ -54,6 +54,14 @@ for i in range(len(LDAP_CLASS.extra_files)):
   destdir, origfiles = LDAP_CLASS.extra_files[i].split(':')
   origfileslist = origfiles.split(',')
   LDAP_CLASS.extra_files[i]=(destdir, origfileslist)
+
+if os.environ.get('WITH_GCOV'):
+  # Insrumentation for measuring code coverage
+  LDAP_CLASS.extra_compile_args.extend(
+    ['-O0', '-pg', '-fprofile-arcs', '-ftest-coverage']
+  )
+  LDAP_CLASS.extra_link_args.append('-pg')
+  LDAP_CLASS.libs.append('gcov')
 
 #-- Let distutils/setuptools do the rest
 name = 'python-ldap'
