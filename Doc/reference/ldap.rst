@@ -614,6 +614,8 @@ with names ending in :py:const:`_ext` or :py:const:`_ext_s`:
   request.
 
 
+.. _sending-ldap-requests:
+
 Sending LDAP requests
 ---------------------
 

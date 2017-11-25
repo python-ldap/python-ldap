@@ -57,6 +57,7 @@ Contents
    installing.rst
    reference/index.rst
    resources.rst
+   faq.rst
 
 
 Bytes/text management
