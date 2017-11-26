@@ -351,8 +351,10 @@ l_ldap_unbind_ext( LDAPObject* self, PyObject* args )
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -392,8 +394,10 @@ l_ldap_abandon_ext( LDAPObject* self, PyObject* args )
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -434,13 +438,18 @@ l_ldap_add_ext( LDAPObject* self, PyObject *args )
         return NULL;
 
     if (!PyNone_Check(serverctrls)) {
-        if (!LDAPControls_from_object(serverctrls, &server_ldcs))
+        if (!LDAPControls_from_object(serverctrls, &server_ldcs)) {
+            LDAPMods_DEL( mods );
             return NULL;
+        }
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPMods_DEL( mods );
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -482,8 +491,10 @@ l_ldap_simple_bind( LDAPObject* self, PyObject* args )
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -631,8 +642,10 @@ l_ldap_sasl_bind_s( LDAPObject* self, PyObject* args )
             return NULL;
     }
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -695,8 +708,10 @@ l_ldap_sasl_interactive_bind_s( LDAPObject* self, PyObject* args )
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     /* now we extract the sasl mechanism from the SASL Object */
@@ -755,8 +770,10 @@ l_ldap_cancel( LDAPObject* self, PyObject* args )
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -801,8 +818,10 @@ l_ldap_compare_ext( LDAPObject* self, PyObject *args )
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -842,8 +861,10 @@ l_ldap_delete_ext( LDAPObject* self, PyObject *args )
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -884,13 +905,18 @@ l_ldap_modify_ext( LDAPObject* self, PyObject *args )
         return NULL;
 
     if (!PyNone_Check(serverctrls)) {
-        if (!LDAPControls_from_object(serverctrls, &server_ldcs))
+        if (!LDAPControls_from_object(serverctrls, &server_ldcs)) {
+            LDAPMods_DEL( mods );
             return NULL;
+        }
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPMods_DEL( mods );
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -934,8 +960,10 @@ l_ldap_rename( LDAPObject* self, PyObject *args )
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -1132,13 +1160,18 @@ l_ldap_search_ext( LDAPObject* self, PyObject* args )
     }
 
     if (!PyNone_Check(serverctrls)) {
-        if (!LDAPControls_from_object(serverctrls, &server_ldcs))
+        if (!LDAPControls_from_object(serverctrls, &server_ldcs)) {
+            free_attrs( &attrs,  attrs_seq);
             return NULL;
+        }
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            free_attrs( &attrs,  attrs_seq);
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -1182,8 +1215,10 @@ l_ldap_whoami_s( LDAPObject* self, PyObject* args )
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -1290,8 +1325,10 @@ l_ldap_passwd( LDAPObject* self, PyObject *args )
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
@@ -1340,8 +1377,10 @@ l_ldap_extended_operation( LDAPObject* self, PyObject *args )
     }
 
     if (!PyNone_Check(clientctrls)) {
-        if (!LDAPControls_from_object(clientctrls, &client_ldcs))
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL( server_ldcs );
             return NULL;
+        }
     }
 
     LDAP_BEGIN_ALLOW_THREADS( self );
