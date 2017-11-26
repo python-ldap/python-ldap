@@ -272,6 +272,13 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(msgid, m)
         self.assertEqual(ctrls, [])
 
+    def test_invalid_search_filter(self):
+        l = self._open_conn()
+        with self.assertRaises(_ldap.FILTER_ERROR):
+            l.search_ext(
+                self.server.suffix, _ldap.SCOPE_SUBTREE, 'bogus filter expr'
+            )
+
     def test_add(self):
         """
         test add operation
@@ -725,6 +732,46 @@ class TestLdapCExtension(SlapdTestCase):
             pass
         else:
             self.fail("expected INVALID_CREDENTIALS, got %r" % r)
+
+    # TODO: test_extop
+
+    def assertInvalidControls(self, func, *args, **kwargs):
+        post = kwargs.pop('post', ())
+        self.assertFalse(kwargs)
+        # last two args are serverctrls, clientctrls
+        with self.assertRaises(TypeError) as e:
+            func(*(args + (object, None) + post))
+        self.assertEqual(e.exception.args, ('expected a list', object))
+        with self.assertRaises(TypeError) as e:
+            func(*(args + (None, object) + post))
+        self.assertEqual(e.exception.args, ('expected a list', object))
+
+    def test_invalid_controls(self):
+        l = self._open_conn()
+        self.assertInvalidControls(l.simple_bind, "", "")
+        self.assertInvalidControls(l.whoami_s)
+        self.assertInvalidControls(l.passwd, 'dn', 'initial', 'changed')
+        self.assertInvalidControls(l.add_ext, 'dn', [('cn', b'cn')])
+        self.assertInvalidControls(
+            l.modify_ext, 'dn', [(_ldap.MOD_ADD, 'attr', [b'value'])])
+        self.assertInvalidControls(l.compare_ext, 'dn', 'val1', 'val2')
+        self.assertInvalidControls(
+            l.rename, 'dn', 'newdn', 'container', False)
+        self.assertInvalidControls(
+            l.search_ext, 'dn', _ldap.SCOPE_SUBTREE, '(objectClass=*)',
+            None, 1)
+        self.assertInvalidControls(l.delete_ext, 'dn')
+        m = l.search_ext(
+            self.server.suffix, _ldap.SCOPE_SUBTREE, '(objectClass=*)')
+        self.assertInvalidControls(l.abandon_ext, m)
+        self.assertInvalidControls(l.cancel, 0)
+        self.assertInvalidControls(l.extop, 'oid', 'value')
+        if hasattr(l, 'sasl_bind_s'):
+            self.assertInvalidControls(l.sasl_bind_s, 'dn', 'MECH', 'CRED')
+        if hasattr(l, 'sasl_interactive_bind_s'):
+            self.assertInvalidControls(
+                l.sasl_interactive_bind_s, 'who', 'SASLObject', post=(1,))
+        self.assertInvalidControls(l.unbind_ext)
 
 
 if __name__ == '__main__':
