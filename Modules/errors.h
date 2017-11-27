@@ -9,6 +9,7 @@
 
 extern PyObject* LDAPexception_class;
 extern PyObject* LDAPerror( LDAP*, char*msg );
+extern PyObject* LDAPerror_TypeError(const char *, PyObject *);
 extern void LDAPinit_errors( PyObject* );
 PyObject* LDAPerr(int errnum);
 

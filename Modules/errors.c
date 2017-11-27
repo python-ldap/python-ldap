@@ -36,11 +36,15 @@ static PyObject* errobjects[ LDAP_ERROR_MAX-LDAP_ERROR_MIN+1 ];
 PyObject*
 LDAPerr(int errnum)
 {
-  if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX)
+  if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX) {
     PyErr_SetNone(errobjects[errnum+LDAP_ERROR_OFFSET]);
-  else
-    PyErr_SetObject(LDAPexception_class, 
-    Py_BuildValue("{s:i}", "errnum", errnum));
+  } else {
+    PyObject *args = Py_BuildValue("{s:i}", "errnum", errnum);
+    if (args == NULL)
+      return NULL;
+    PyErr_SetObject(LDAPexception_class, args);
+    Py_DECREF(args);
+  }
   return NULL;
 }
 
@@ -121,6 +125,18 @@ LDAPerror( LDAP *l, char *msg )
     Py_DECREF(info);
     return NULL;
   }
+}
+
+/* Raise TypeError with custom message and object */
+PyObject*
+LDAPerror_TypeError(const char *msg, PyObject *obj) {
+    PyObject *args = Py_BuildValue("sO", msg, obj);
+    if (args == NULL) {
+        return NULL;
+    }
+    PyErr_SetObject(PyExc_TypeError, args);
+    Py_DECREF(args);
+    return NULL;
 }
 
 

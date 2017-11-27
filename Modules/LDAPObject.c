@@ -113,9 +113,7 @@ Tuple_to_LDAPMod( PyObject* tup, int no_op )
     Py_ssize_t i, len, nstrs;
 
     if (!PyTuple_Check(tup)) {
-        PyErr_SetObject(PyExc_TypeError, Py_BuildValue("sO",
-           "expected a tuple", tup));
-        return NULL;
+        return LDAPerror_TypeError("expected a tuple", tup);
     }
 
     if (no_op) {
@@ -167,9 +165,7 @@ Tuple_to_LDAPMod( PyObject* tup, int no_op )
           if (item == NULL)
               goto error;
           if (!PyBytes_Check(item)) {
-              PyErr_SetObject( PyExc_TypeError, Py_BuildValue( "sO",
-                  "expected a byte string in the list", item));
-              Py_DECREF(item);
+              LDAPerror_TypeError("expected a byte string in the list", item);
               goto error;
           }
           lm->mod_bvalues[i]->bv_len = PyBytes_Size(item);
@@ -214,17 +210,13 @@ List_to_LDAPMods( PyObject *list, int no_op ) {
     PyObject *item;
 
     if (!PySequence_Check(list)) {
-        PyErr_SetObject( PyExc_TypeError, Py_BuildValue("sO",
-                        "expected list of tuples", list ));
-        return NULL;
+        return LDAPerror_TypeError("expected list of tuples", list);
     }
 
     len = PySequence_Length(list);
 
     if (len < 0) {
-        PyErr_SetObject( PyExc_TypeError, Py_BuildValue("sO",
-                         "expected list of tuples", list ));
-        return NULL;
+        return LDAPerror_TypeError("expected list of tuples", list);
     }
 
     lms = PyMem_NEW(LDAPMod *, len + 1);
@@ -274,8 +266,8 @@ attrs_from_List( PyObject *attrlist, char***attrsp, PyObject** seq) {
     } else if (PyUnicode_Check(attrlist)) {
 #endif
         /* caught by John Benninghoff <johnb@netscape.com> */
-        PyErr_SetObject( PyExc_TypeError, Py_BuildValue("sO",
-                  "expected *list* of strings, not a string", attrlist ));
+        LDAPerror_TypeError(
+            "expected *list* of strings, not a string", attrlist);
         goto error;
     } else {
         *seq = PySequence_Fast(attrlist, "expected list of strings or None");
@@ -296,16 +288,15 @@ attrs_from_List( PyObject *attrlist, char***attrsp, PyObject** seq) {
 #if PY_MAJOR_VERSION == 2
             /* Encoded by Python to UTF-8 */
             if (!PyBytes_Check(item)) {
-#else
-            if (!PyUnicode_Check(item)) {
-#endif
-                PyErr_SetObject(PyExc_TypeError, Py_BuildValue("sO",
-                                "expected string in list", item));
+                LDAPerror_TypeError("expected bytes in list", item);
                 goto error;
             }
-#if PY_MAJOR_VERSION == 2
             attrs[i] = PyBytes_AsString(item);
 #else
+            if (!PyUnicode_Check(item)) {
+                LDAPerror_TypeError("expected string in list", item);
+                goto error;
+            }
             attrs[i] = PyUnicode_AsUTF8(item);
 #endif
         }
