@@ -131,18 +131,11 @@ int
 LDAPinit_constants( PyObject* m )
 {
     PyObject *exc;
-    int result;
-
-#define check_result() {  \
-    if (result != 0) return -1;  \
-}
 
     /* simple constants */
 
-    result = PyModule_AddIntConstant(m, "OPT_ON", 1);
-    check_result();
-    result = PyModule_AddIntConstant(m, "OPT_OFF", 0);
-    check_result();
+    if (PyModule_AddIntConstant(m, "OPT_ON", 1) != 0) return -1;
+    if (PyModule_AddIntConstant(m, "OPT_OFF", 0) != 0) return -1;
 
     /* exceptions */
 
@@ -151,36 +144,29 @@ LDAPinit_constants( PyObject* m )
         return -1;
     }
 
-    result = PyModule_AddObject(m, "LDAPError", LDAPexception_class);
-    check_result();
+    if (PyModule_AddObject(m, "LDAPError", LDAPexception_class) != 0) return -1;
     Py_INCREF(LDAPexception_class);
 
     /* XXX - backward compatibility with pre-1.8 */
-    result = PyModule_AddObject(m, "error", LDAPexception_class);
-    check_result();
+    if (PyModule_AddObject(m, "error", LDAPexception_class) != 0) return -1;
     Py_INCREF(LDAPexception_class);
 
     /* Generated constants -- see Lib/ldap/constants.py */
 
-#define seterrobj2(n, o) \
-    PyModule_AddObject(m, #n, (errobjects[LDAP_##n+LDAP_ERROR_OFFSET] = o))
-
 #define add_err(n) {  \
     exc = PyErr_NewException("ldap." #n, LDAPexception_class, NULL);  \
     if (exc == NULL) return -1;  \
-    result = seterrobj2(n, exc);  \
-    check_result();  \
+    errobjects[LDAP_##n+LDAP_ERROR_OFFSET] = exc;  \
+    if (PyModule_AddObject(m, #n, exc) != 0) return -1;  \
     Py_INCREF(exc);  \
 }
 
 #define add_int(n) {  \
-    result = PyModule_AddIntConstant(m, #n, LDAP_##n);  \
-    check_result();  \
+    if (PyModule_AddIntConstant(m, #n, LDAP_##n) != 0) return -1;  \
 }
 
 #define add_string(n) {  \
-    result = PyModule_AddStringConstant(m, #n, LDAP_##n);  \
-    check_result();  \
+    if (PyModule_AddStringConstant(m, #n, LDAP_##n) != 0) return -1;  \
 }
 
 #include "constants_generated.h"

@@ -325,27 +325,24 @@ add_int(URL_ERR_BADSCOPE);
 add_int(URL_ERR_MEM);
 
 #ifdef HAVE_LIBLDAP_R
-result = PyModule_AddIntConstant(m, "LIBLDAP_R", 1);
+if (PyModule_AddIntConstant(m, "LIBLDAP_R", 1) != 0) return -1;
 #else
-result = PyModule_AddIntConstant(m, "LIBLDAP_R", 0);
+if (PyModule_AddIntConstant(m, "LIBLDAP_R", 0) != 0) return -1;
 #endif
-check_result();
 
 
 #ifdef HAVE_SASL
-result = PyModule_AddIntConstant(m, "SASL_AVAIL", 1);
+if (PyModule_AddIntConstant(m, "SASL_AVAIL", 1) != 0) return -1;
 #else
-result = PyModule_AddIntConstant(m, "SASL_AVAIL", 0);
+if (PyModule_AddIntConstant(m, "SASL_AVAIL", 0) != 0) return -1;
 #endif
-check_result();
 
 
 #ifdef HAVE_TLS
-result = PyModule_AddIntConstant(m, "TLS_AVAIL", 1);
+if (PyModule_AddIntConstant(m, "TLS_AVAIL", 1) != 0) return -1;
 #else
-result = PyModule_AddIntConstant(m, "TLS_AVAIL", 0);
+if (PyModule_AddIntConstant(m, "TLS_AVAIL", 0) != 0) return -1;
 #endif
-check_result();
 
 add_string(CONTROL_MANAGEDSAIT);
 add_string(CONTROL_PROXY_AUTHZ);
