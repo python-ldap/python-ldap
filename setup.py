@@ -136,7 +136,6 @@ setup(
         'Modules/ldapcontrol.c',
         'Modules/common.c',
         'Modules/constants.c',
-        'Modules/errors.c',
         'Modules/functions.c',
         'Modules/ldapmodule.c',
         'Modules/message.c',

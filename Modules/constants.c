@@ -6,346 +6,184 @@
 #include "lber.h"
 #include "ldap.h"
 
+/* the base exception class */
+
+PyObject*
+LDAPexception_class;
+
+/* list of exception classes */
+
+#define LDAP_ERROR_MIN          LDAP_REFERRAL_LIMIT_EXCEEDED
+
+#ifdef LDAP_PROXIED_AUTHORIZATION_DENIED
+  #define LDAP_ERROR_MAX          LDAP_PROXIED_AUTHORIZATION_DENIED
+#else
+  #ifdef LDAP_ASSERTION_FAILED
+    #define LDAP_ERROR_MAX          LDAP_ASSERTION_FAILED
+  #else
+    #define LDAP_ERROR_MAX          LDAP_OTHER
+  #endif
+#endif
+
+#define LDAP_ERROR_OFFSET       -LDAP_ERROR_MIN
+
+static PyObject* errobjects[ LDAP_ERROR_MAX-LDAP_ERROR_MIN+1 ];
+
+
+/* Convert a bare LDAP error number into an exception */
+PyObject*
+LDAPerr(int errnum)
+{
+  if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX) {
+    PyErr_SetNone(errobjects[errnum+LDAP_ERROR_OFFSET]);
+  } else {
+    PyObject *args = Py_BuildValue("{s:i}", "errnum", errnum);
+    if (args == NULL)
+      return NULL;
+    PyErr_SetObject(LDAPexception_class, args);
+    Py_DECREF(args);
+  }
+  return NULL;
+}
+
+/* Convert an LDAP error into an informative python exception */
+PyObject*
+LDAPerror( LDAP *l, char *msg )
+{
+  if (l == NULL) {
+    PyErr_SetFromErrno( LDAPexception_class );
+    return NULL;
+  }
+  else {
+    int myerrno, errnum, opt_errnum;
+    PyObject *errobj;
+    PyObject *info;
+    PyObject *str;
+    PyObject *pyerrno;
+
+    /* at first save errno for later use before it gets overwritten by another call */
+    myerrno = errno;
+
+    char *matched, *error;
+
+    opt_errnum = ldap_get_option(l, LDAP_OPT_ERROR_NUMBER, &errnum);
+    if (opt_errnum != LDAP_OPT_SUCCESS)
+      errnum = opt_errnum;
+
+    if (errnum == LDAP_NO_MEMORY)
+      return PyErr_NoMemory();
+
+    if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX)
+      errobj = errobjects[errnum+LDAP_ERROR_OFFSET];
+    else
+      errobj = LDAPexception_class;
+
+    info = PyDict_New();
+    if (info == NULL)
+      return NULL;
+
+    str = PyUnicode_FromString(ldap_err2string(errnum));
+    if (str)
+      PyDict_SetItemString( info, "desc", str );
+    Py_XDECREF(str);
+
+    if (myerrno != 0) {
+        pyerrno = PyInt_FromLong(myerrno);
+        if (pyerrno)
+            PyDict_SetItemString( info, "errno", pyerrno );
+        Py_XDECREF(pyerrno);
+    }
+
+    if (ldap_get_option(l, LDAP_OPT_MATCHED_DN, &matched) >= 0
+      && matched != NULL) {
+        if (*matched != '\0') {
+      str = PyUnicode_FromString(matched);
+      if (str)
+          PyDict_SetItemString( info, "matched", str );
+      Py_XDECREF(str);
+        }
+        ldap_memfree(matched);
+    }
+
+    if (errnum == LDAP_REFERRAL) {
+        str = PyUnicode_FromString(msg);
+        if (str)
+      PyDict_SetItemString( info, "info", str );
+        Py_XDECREF(str);
+    } else if (ldap_get_option(l, LDAP_OPT_ERROR_STRING, &error) >= 0) {
+        if (error != NULL && *error != '\0') {
+            str = PyUnicode_FromString(error);
+            if (str)
+                PyDict_SetItemString( info, "info", str );
+            Py_XDECREF(str);
+        }
+        ldap_memfree(error);
+    }
+    PyErr_SetObject( errobj, info );
+    Py_DECREF(info);
+    return NULL;
+  }
+}
+
 /* initialise the module constants */
 
-void
-LDAPinit_constants( PyObject* d )
+int
+LDAPinit_constants( PyObject* m )
 {
-  PyObject *obj;
+    PyObject *exc;
+    int result;
 
-#define add_int(d, name) \
-  { \
-    PyObject *i = PyInt_FromLong(LDAP_##name); \
-    PyDict_SetItemString( d, #name, i ); \
-    Py_DECREF(i); \
-  }
+#define check_result() {  \
+    if (result != 0) return -1;  \
+}
 
-  /* simple constants */
+    /* simple constants */
 
-  add_int(d,API_VERSION);
-  add_int(d,VENDOR_VERSION);
+    result = PyModule_AddIntConstant(m, "OPT_ON", 1);
+    check_result();
+    result = PyModule_AddIntConstant(m, "OPT_OFF", 0);
+    check_result();
 
-        add_int(d,PORT);
-  add_int(d,VERSION1);
-  add_int(d,VERSION2);
-  add_int(d,VERSION3);
-  add_int(d,VERSION_MIN);
-  add_int(d,VERSION);
-  add_int(d,VERSION_MAX);
-  add_int(d,TAG_MESSAGE);
-  add_int(d,TAG_MSGID);
+    /* exceptions */
 
-  add_int(d,REQ_BIND);
-  add_int(d,REQ_UNBIND);
-  add_int(d,REQ_SEARCH);
-  add_int(d,REQ_MODIFY);
-  add_int(d,REQ_ADD);
-  add_int(d,REQ_DELETE);
-  add_int(d,REQ_MODRDN);
-  add_int(d,REQ_COMPARE);
-  add_int(d,REQ_ABANDON);
+    LDAPexception_class = PyErr_NewException("ldap.LDAPError", NULL, NULL);
+    if (LDAPexception_class == NULL) {
+        return -1;
+    }
 
-  add_int(d,TAG_LDAPDN);
-  add_int(d,TAG_LDAPCRED);
-  add_int(d,TAG_CONTROLS);
-  add_int(d,TAG_REFERRAL);
+    result = PyModule_AddObject(m, "LDAPError", LDAPexception_class);
+    check_result();
+    Py_INCREF(LDAPexception_class);
 
-  add_int(d,REQ_EXTENDED);
-#if LDAP_API_VERSION >= 2004
-  add_int(d,TAG_NEWSUPERIOR);
-  add_int(d,TAG_EXOP_REQ_OID);
-  add_int(d,TAG_EXOP_REQ_VALUE);
-  add_int(d,TAG_EXOP_RES_OID);
-  add_int(d,TAG_EXOP_RES_VALUE);
-#ifdef HAVE_SASL
-  add_int(d,TAG_SASL_RES_CREDS);
-#endif
-#endif
+    /* XXX - backward compatibility with pre-1.8 */
+    result = PyModule_AddObject(m, "error", LDAPexception_class);
+    check_result();
+    Py_INCREF(LDAPexception_class);
 
-  add_int(d,SASL_AUTOMATIC);
-  add_int(d,SASL_INTERACTIVE);
-  add_int(d,SASL_QUIET);
+    /* Generated constants -- see Lib/ldap/constants.py */
 
-  /* reversibles */
+#define seterrobj2(n, o) \
+    PyModule_AddObject(m, #n, (errobjects[LDAP_##n+LDAP_ERROR_OFFSET] = o))
 
-  add_int(d,RES_BIND);
-  add_int(d,RES_SEARCH_ENTRY);
-  add_int(d,RES_SEARCH_RESULT);
-  add_int(d,RES_MODIFY);
-  add_int(d,RES_ADD);
-  add_int(d,RES_DELETE);
-  add_int(d,RES_MODRDN);
-  add_int(d,RES_COMPARE);
-  add_int(d,RES_ANY);
+#define add_err(n) {  \
+    exc = PyErr_NewException("ldap." #n, LDAPexception_class, NULL);  \
+    if (exc == NULL) return -1;  \
+    result = seterrobj2(n, exc);  \
+    check_result();  \
+    Py_INCREF(exc);  \
+}
 
-  add_int(d,RES_SEARCH_REFERENCE);
-  add_int(d,RES_EXTENDED);
-  add_int(d,RES_UNSOLICITED);
+#define add_int(n) {  \
+    result = PyModule_AddIntConstant(m, #n, LDAP_##n);  \
+    check_result();  \
+}
 
-  add_int(d,RES_INTERMEDIATE);
+#define add_string(n) {  \
+    result = PyModule_AddStringConstant(m, #n, LDAP_##n);  \
+    check_result();  \
+}
 
-  /* non-reversibles */
+#include "constants_generated.h"
 
-  add_int(d,AUTH_NONE);
-  add_int(d,AUTH_SIMPLE);
-  add_int(d,SCOPE_BASE);
-  add_int(d,SCOPE_ONELEVEL);
-  add_int(d,SCOPE_SUBTREE);
-#ifdef LDAP_SCOPE_SUBORDINATE
-  add_int(d,SCOPE_SUBORDINATE);
-#endif
-  add_int(d,MOD_ADD);
-  add_int(d,MOD_DELETE);
-  add_int(d,MOD_REPLACE);
-  add_int(d,MOD_INCREMENT);
-  add_int(d,MOD_BVALUES);
-
-  add_int(d,MSG_ONE);
-  add_int(d,MSG_ALL);
-  add_int(d,MSG_RECEIVED);
-
-  /* (errors.c contains the error constants) */
-
-  add_int(d,DEREF_NEVER);
-  add_int(d,DEREF_SEARCHING);
-  add_int(d,DEREF_FINDING);
-  add_int(d,DEREF_ALWAYS);
-  add_int(d,NO_LIMIT);
-
-  add_int(d,OPT_API_INFO);
-  add_int(d,OPT_DEREF);
-  add_int(d,OPT_SIZELIMIT);
-  add_int(d,OPT_TIMELIMIT);
-#ifdef LDAP_OPT_REFERRALS
-  add_int(d,OPT_REFERRALS);
-#endif
-  add_int(d,OPT_ERROR_NUMBER);
-  add_int(d,OPT_RESTART);
-  add_int(d,OPT_PROTOCOL_VERSION);
-  add_int(d,OPT_SERVER_CONTROLS);
-  add_int(d,OPT_CLIENT_CONTROLS);
-  add_int(d,OPT_API_FEATURE_INFO);
-  add_int(d,OPT_HOST_NAME);
-
-  add_int(d,OPT_DESC);
-  add_int(d,OPT_DIAGNOSTIC_MESSAGE);
-
-  add_int(d,OPT_ERROR_STRING);
-  add_int(d,OPT_MATCHED_DN);
-  add_int(d,OPT_DEBUG_LEVEL);
-  add_int(d,OPT_TIMEOUT);
-  add_int(d,OPT_REFHOPLIMIT);
-  add_int(d,OPT_NETWORK_TIMEOUT);
-  add_int(d,OPT_URI);
-#ifdef LDAP_OPT_DEFBASE
-  add_int(d,OPT_DEFBASE);
-#endif
-#ifdef HAVE_TLS
-  add_int(d,OPT_X_TLS);
-#ifdef LDAP_OPT_X_TLS_NEWCTX
-  add_int(d,OPT_X_TLS_CTX);
-#endif
-  add_int(d,OPT_X_TLS_CACERTFILE);
-  add_int(d,OPT_X_TLS_CACERTDIR);
-  add_int(d,OPT_X_TLS_CERTFILE);
-  add_int(d,OPT_X_TLS_KEYFILE);
-  add_int(d,OPT_X_TLS_REQUIRE_CERT);
-  add_int(d,OPT_X_TLS_CIPHER_SUITE);
-  add_int(d,OPT_X_TLS_RANDOM_FILE);
-  add_int(d,OPT_X_TLS_DHFILE);
-  add_int(d,OPT_X_TLS_NEVER);
-  add_int(d,OPT_X_TLS_HARD);
-  add_int(d,OPT_X_TLS_DEMAND);
-  add_int(d,OPT_X_TLS_ALLOW);
-  add_int(d,OPT_X_TLS_TRY);
-#ifdef LDAP_OPT_X_TLS_PEERCERT
-  add_int(d,OPT_X_TLS_PEERCERT);
-#endif
-#ifdef LDAP_OPT_X_TLS_VERSION
-  add_int(d,OPT_X_TLS_VERSION);
-#endif
-#ifdef LDAP_OPT_X_TLS_CIPHER
-  add_int(d,OPT_X_TLS_CIPHER);
-#endif
-#ifdef LDAP_OPT_X_TLS_PEERCERT
-  add_int(d,OPT_X_TLS_PEERCERT);
-#endif
-#ifdef LDAP_OPT_X_TLS_CRLCHECK
-  /* only available if OpenSSL supports it => might cause backward compability problems */
-  add_int(d,OPT_X_TLS_CRLCHECK);
-#ifdef LDAP_OPT_X_TLS_CRLFILE
-  add_int(d,OPT_X_TLS_CRLFILE);
-#endif
-  add_int(d,OPT_X_TLS_CRL_NONE);
-  add_int(d,OPT_X_TLS_CRL_PEER);
-  add_int(d,OPT_X_TLS_CRL_ALL);
-#endif
-#ifdef LDAP_OPT_X_TLS_NEWCTX
-  add_int(d,OPT_X_TLS_NEWCTX);
-#endif
-#ifdef LDAP_OPT_X_TLS_PROTOCOL_MIN
-  add_int(d,OPT_X_TLS_PROTOCOL_MIN);
-#endif
-#ifdef LDAP_OPT_X_TLS_PACKAGE
-  add_int(d,OPT_X_TLS_PACKAGE);
-#endif
-#endif
-  add_int(d,OPT_X_SASL_MECH);
-  add_int(d,OPT_X_SASL_REALM);
-  add_int(d,OPT_X_SASL_AUTHCID);
-  add_int(d,OPT_X_SASL_AUTHZID);
-  add_int(d,OPT_X_SASL_SSF);
-  add_int(d,OPT_X_SASL_SSF_EXTERNAL);
-  add_int(d,OPT_X_SASL_SECPROPS);
-  add_int(d,OPT_X_SASL_SSF_MIN);
-  add_int(d,OPT_X_SASL_SSF_MAX);
-#ifdef LDAP_OPT_X_SASL_NOCANON
-  add_int(d,OPT_X_SASL_NOCANON);
-#endif
-#ifdef LDAP_OPT_X_SASL_USERNAME
-  add_int(d,OPT_X_SASL_USERNAME);
-#endif
-#ifdef LDAP_OPT_CONNECT_ASYNC
-  add_int(d,OPT_CONNECT_ASYNC);
-#endif
-#ifdef LDAP_OPT_X_KEEPALIVE_IDLE
-  add_int(d,OPT_X_KEEPALIVE_IDLE);
-#endif
-#ifdef LDAP_OPT_X_KEEPALIVE_PROBES
-  add_int(d,OPT_X_KEEPALIVE_PROBES);
-#endif
-#ifdef LDAP_OPT_X_KEEPALIVE_INTERVAL
-  add_int(d,OPT_X_KEEPALIVE_INTERVAL);
-#endif
-
-  add_int(d,DN_FORMAT_LDAP);
-  add_int(d,DN_FORMAT_LDAPV3);
-  add_int(d,DN_FORMAT_LDAPV2);
-  add_int(d,DN_FORMAT_DCE);
-  add_int(d,DN_FORMAT_UFN);
-  add_int(d,DN_FORMAT_AD_CANONICAL);
-  /* add_int(d,DN_FORMAT_LBER); */    /* "for testing only" */
-  add_int(d,DN_FORMAT_MASK);
-  add_int(d,DN_PRETTY);
-  add_int(d,DN_SKIP);
-  add_int(d,DN_P_NOLEADTRAILSPACES);
-  add_int(d,DN_P_NOSPACEAFTERRDN);
-  add_int(d,DN_PEDANTIC);
-
-  add_int(d,AVA_NULL);
-  add_int(d,AVA_STRING);
-  add_int(d,AVA_BINARY);
-  add_int(d,AVA_NONPRINTABLE);
-  
-  /*add_int(d,OPT_ON);*/
-  obj = PyInt_FromLong(1);
-  PyDict_SetItemString( d, "OPT_ON", obj );
-  Py_DECREF(obj);
-  /*add_int(d,OPT_OFF);*/
-  obj = PyInt_FromLong(0);
-  PyDict_SetItemString( d, "OPT_OFF", obj );      
-  Py_DECREF(obj);
-  
-  add_int(d,OPT_SUCCESS);
-
-  /* XXX - these belong in errors.c */
-
-  add_int(d,URL_ERR_BADSCOPE);
-  add_int(d,URL_ERR_MEM);
-
-  /* add_int(d,LIBLDAP_R); */
-#ifdef HAVE_LIBLDAP_R
-  obj = PyInt_FromLong(1);
-#else
-  obj = PyInt_FromLong(0);
-#endif
-  PyDict_SetItemString( d, "LIBLDAP_R", obj );
-  Py_DECREF(obj);
-
-  /* add_int(d,SASL); */
-#ifdef HAVE_SASL
-  obj = PyInt_FromLong(1);
-#else
-  obj = PyInt_FromLong(0);
-#endif
-  PyDict_SetItemString( d, "SASL_AVAIL", obj );
-  Py_DECREF(obj);
-
-  /* add_int(d,TLS); */
-#ifdef HAVE_TLS
-  obj = PyInt_FromLong(1);
-#else
-  obj = PyInt_FromLong(0);
-#endif
-  PyDict_SetItemString( d, "TLS_AVAIL", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_MANAGEDSAIT);
-  PyDict_SetItemString( d, "CONTROL_MANAGEDSAIT", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_PROXY_AUTHZ);
-  PyDict_SetItemString( d, "CONTROL_PROXY_AUTHZ", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_SUBENTRIES);
-  PyDict_SetItemString( d, "CONTROL_SUBENTRIES", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_VALUESRETURNFILTER);
-  PyDict_SetItemString( d, "CONTROL_VALUESRETURNFILTER", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_ASSERT);
-  PyDict_SetItemString( d, "CONTROL_ASSERT", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_PRE_READ);
-  PyDict_SetItemString( d, "CONTROL_PRE_READ", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_POST_READ);
-  PyDict_SetItemString( d, "CONTROL_POST_READ", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_SORTREQUEST);
-  PyDict_SetItemString( d, "CONTROL_SORTREQUEST", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_SORTRESPONSE);
-  PyDict_SetItemString( d, "CONTROL_SORTRESPONSE", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_PAGEDRESULTS);
-  PyDict_SetItemString( d, "CONTROL_PAGEDRESULTS", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_SYNC);
-  PyDict_SetItemString( d, "CONTROL_SYNC", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_SYNC_STATE);
-  PyDict_SetItemString( d, "CONTROL_SYNC_STATE", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_SYNC_DONE);
-  PyDict_SetItemString( d, "CONTROL_SYNC_DONE", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_SYNC_INFO);
-  PyDict_SetItemString( d, "SYNC_INFO", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_PASSWORDPOLICYREQUEST);
-  PyDict_SetItemString( d, "CONTROL_PASSWORDPOLICYREQUEST", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_PASSWORDPOLICYRESPONSE);
-  PyDict_SetItemString( d, "CONTROL_PASSWORDPOLICYRESPONSE", obj );
-  Py_DECREF(obj);
-
-  obj = PyUnicode_FromString(LDAP_CONTROL_RELAX);
-  PyDict_SetItemString( d, "CONTROL_RELAX", obj );
-  Py_DECREF(obj);
-
+    return 0;
 }

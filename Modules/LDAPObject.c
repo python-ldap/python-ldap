@@ -5,7 +5,6 @@
 
 #include <math.h>
 #include <limits.h>
-#include "errors.h"
 #include "constants.h"
 #include "LDAPObject.h"
 #include "ldapcontrol.h"

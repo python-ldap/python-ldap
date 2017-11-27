@@ -2,7 +2,6 @@
 
 #include "common.h"
 #include "constants.h"
-#include "errors.h"
 #include "functions.h"
 #include "ldapcontrol.h"
 
@@ -67,8 +66,10 @@ PyObject* init_ldap_module()
 
 	init_pkginfo(m);
 
-	LDAPinit_constants(d);
-	LDAPinit_errors(d);
+	if (LDAPinit_constants(m) == -1) {
+		return NULL;
+	}
+
 	LDAPinit_functions(d);
 	LDAPinit_control(d);
 
