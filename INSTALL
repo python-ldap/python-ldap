@@ -24,3 +24,37 @@ Quick build instructions:
     edit setup.cfg (see Build/ for platform-specific examples)
     python setup.py build
     python setup.py install
+
+--------------------
+Reference leak tests
+--------------------
+
+Reference leak tests require a pydebug build of CPython and pytest with
+pytest-leaks plugin. A pydebug build has a global reference counter, which
+keeps track of all reference increments and decrements. The leak plugin runs
+each tests multiple times and checks if the reference count increases.
+
+Download and compile pydebug build
+----------------------------------
+
+- curl -O https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tar.xz
+- tar xJf Python-3.6.3.tar.xz
+- cd Python-3.6.3
+- ./configure --with-pydebug
+- make
+
+Create virtual env
+------------------
+
+- ./python -m venv /tmp/refleak
+- /tmp/refleak/bin/pip install pytest pytest-leaks
+
+Run refleak tests
+-----------------
+
+- cd path/to/python-ldap
+- /tmp/refleak/bin/pip install --upgrade .
+- /tmp/refleak/bin/pytest -v -R: Tests/t_*.py
+
+Run ``/tmp/refleak/bin/pip install --upgrade .`` every time a file outside
+of ``Tests/`` is modified.

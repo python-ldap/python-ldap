@@ -117,6 +117,7 @@ class SlapdObject(object):
     else:
         SCHEMADIR = None
     PATH_LDAPADD = os.path.join(BINDIR, 'ldapadd')
+    PATH_LDAPDELETE = os.path.join(BINDIR, 'ldapdelete')
     PATH_LDAPMODIFY = os.path.join(BINDIR, 'ldapmodify')
     PATH_LDAPWHOAMI = os.path.join(BINDIR, 'ldapwhoami')
     PATH_SLAPD = os.environ.get('SLAPD', os.path.join(SBINDIR, 'slapd'))
@@ -125,8 +126,10 @@ class SlapdObject(object):
     # time in secs to wait before trying to access slapd via LDAP (again)
     _start_sleep = 1.5
 
+    # create loggers once, multiple calls mess up refleak tests
+    _log = combined_logger('python-ldap-test')
+
     def __init__(self):
-        self._log = combined_logger('python-ldap-test')
         self._proc = None
         self._port = self._avail_tcp_port()
         self.server_id = self._port % 4096
@@ -189,9 +192,11 @@ class SlapdObject(object):
         find an available port for TCP connection
         """
         sock = socket.socket()
-        sock.bind((self.local_host, 0))
-        port = sock.getsockname()[1]
-        sock.close()
+        try:
+            sock.bind((self.local_host, 0))
+            port = sock.getsockname()[1]
+        finally:
+            sock.close()
         self._log.info('Found available port %d', port)
         return port
 
@@ -316,6 +321,15 @@ class SlapdObject(object):
             self._proc.terminate()
             self.wait()
         self._cleanup_rundir()
+        if hasattr(atexit, 'unregister'):
+            # Python 3
+            atexit.unregister(self.stop)
+        elif hasattr(atexit, '_exithandlers'):
+            # Python 2, can be None during process shutdown
+            try:
+                atexit._exithandlers.remove(self.stop)
+            except ValueError:
+                pass
 
     def restart(self):
         """
@@ -358,7 +372,10 @@ class SlapdObject(object):
             '-H', ldap_uri or self.ldapi_uri,
         ] + self._cli_auth_args() + (extra_args or [])
         self._log.debug('Run command: %r', ' '.join(args))
-        proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        proc = subprocess.Popen(
+            args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
         self._log.debug('stdin_data=%r', stdin_data)
         stdout_data, stderr_data = proc.communicate(stdin_data)
         if stdout_data is not None:
@@ -366,7 +383,11 @@ class SlapdObject(object):
         if stderr_data is not None:
             self._log.debug('stderr_data=%r', stderr_data)
         if proc.wait() != 0:
-            raise RuntimeError('ldapadd process failed')
+            raise RuntimeError(
+                '{!r} process failed:\n{!r}\n{!r}'.format(
+                    args, stdout_data, stderr_data
+                )
+            )
         return stdout_data, stderr_data
 
     def ldapwhoami(self, extra_args=None):
@@ -388,6 +409,17 @@ class SlapdObject(object):
         """
         self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args,
                         stdin_data=ldif.encode('utf-8'))
+
+    def ldapdelete(self, dn, recursive=False, extra_args=None):
+        """
+        Runs ldapdelete on this slapd instance, deleting 'dn'
+        """
+        if extra_args is None:
+            extra_args = []
+        if recursive:
+            extra_args.append('-r')
+        extra_args.append(dn)
+        self._cli_popen(self.PATH_LDAPDELETE, extra_args=extra_args)
 
 
 class SlapdTestCase(unittest.TestCase):
