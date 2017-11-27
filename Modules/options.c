@@ -1,7 +1,7 @@
 /* See https://www.python-ldap.org/ for details. */
 
 #include "common.h"
-#include "errors.h"
+#include "constants.h"
 #include "LDAPObject.h"
 #include "ldapcontrol.h"
 #include "options.h"

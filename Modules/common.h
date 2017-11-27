@@ -24,6 +24,8 @@
 #define streq( a, b ) \
 	( (*(a)==*(b)) && 0==strcmp(a,b) )
 
+extern PyObject* LDAPerror_TypeError(const char *, PyObject *);
+
 void LDAPadd_methods( PyObject*d, PyMethodDef*methods );
 #define PyNone_Check(o) ((o) == Py_None)
 

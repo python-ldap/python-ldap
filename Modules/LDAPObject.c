@@ -5,7 +5,6 @@
 
 #include <math.h>
 #include <limits.h>
-#include "errors.h"
 #include "constants.h"
 #include "LDAPObject.h"
 #include "ldapcontrol.h"
@@ -1059,7 +1058,12 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
 
     pmsg = LDAPmessage_to_python( self->ldap, msg, add_ctrls, add_intermediates );
 
-    result_str = LDAPconstant( res_type );
+    if (res_type == 0) {
+        result_str = Py_None;
+        Py_INCREF(Py_None);
+    } else {
+        result_str = PyInt_FromLong( res_type );
+    }
 
     if (pmsg == NULL) {
             retval = NULL;

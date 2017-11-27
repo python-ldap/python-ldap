@@ -4,7 +4,7 @@
 #include "functions.h"
 #include "LDAPObject.h"
 #include "berval.h"
-#include "errors.h"
+#include "constants.h"
 #include "options.h"
 
 /* ldap_initialize */

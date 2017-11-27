@@ -3,7 +3,6 @@
 #include "common.h"
 #include "message.h"
 #include "berval.h"
-#include "errors.h"
 #include "ldapcontrol.h"
 #include "constants.h"
 

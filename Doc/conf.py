@@ -12,9 +12,19 @@
 # serve to show the default value.
 
 import sys
+import os
 
 # If your extensions are in another directory, add it here.
-#sys.path.append('some/directory')
+_doc_dir = os.path.dirname(__file__)
+sys.path.append(_doc_dir)
+sys.path.append(os.path.join(_doc_dir, '../Lib/'))
+sys.path.insert(0, os.path.join(_doc_dir, '../Lib/ldap'))
+
+# Import fake `_ldap` module
+import fake_ldap_module_for_documentation
+
+# Now ldap can be used normally
+from ldap import __version__
 
 # General configuration
 # ---------------------
@@ -40,9 +50,9 @@ copyright = '2008-2017, python-ldap project team'
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '2.5'
+version = '.'.join(__version__.split('.')[:2])
 # The full version, including alpha/beta/rc tags.
-release = '2.5.2.0'
+release = __version__
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -74,12 +84,12 @@ pygments_style = 'sphinx'
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path.
-html_style = 'pyramid.css'
+#html_style = 'pyramid.css'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['/usr/lib/python2.7/site-packages/sphinx/themes/pyramid/static']
+#html_static_path = ['/usr/lib/python2.7/site-packages/sphinx/themes/pyramid/static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
