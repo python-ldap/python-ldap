@@ -153,21 +153,21 @@ LDAPinit_constants( PyObject* m )
 
     /* Generated constants -- see Lib/ldap/constants.py */
 
-#define add_err(n) {  \
+#define add_err(n) do {  \
     exc = PyErr_NewException("ldap." #n, LDAPexception_class, NULL);  \
     if (exc == NULL) return -1;  \
     errobjects[LDAP_##n+LDAP_ERROR_OFFSET] = exc;  \
     if (PyModule_AddObject(m, #n, exc) != 0) return -1;  \
     Py_INCREF(exc);  \
-}
+} while (0)
 
-#define add_int(n) {  \
+#define add_int(n) do {  \
     if (PyModule_AddIntConstant(m, #n, LDAP_##n) != 0) return -1;  \
-}
+} while (0)
 
-#define add_string(n) {  \
+#define add_string(n) do {  \
     if (PyModule_AddStringConstant(m, #n, LDAP_##n) != 0) return -1;  \
-}
+} while (0)
 
 #include "constants_generated.h"
 
