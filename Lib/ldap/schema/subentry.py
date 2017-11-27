@@ -12,7 +12,10 @@ SCHEMA_CLASS_MAPPING = ldap.cidict.cidict()
 SCHEMA_ATTR_MAPPING = {}
 
 for _name in dir():
-  o = eval(_name)
+  try:
+    o = eval(_name)
+  except SyntaxError:
+    continue
   if hasattr(o,'schema_attribute'):
     SCHEMA_CLASS_MAPPING[o.schema_attribute] = o
     SCHEMA_ATTR_MAPPING[o] = o.schema_attribute
