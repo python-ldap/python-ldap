@@ -998,7 +998,7 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
     PyObject *result_str, *retval, *pmsg, *pyctrls = 0;
     int res_msgid = 0;
     char *retoid = 0;
-    PyObject *valuestr = 0;
+    PyObject *valuestr = NULL;
 
     if (!PyArg_ParseTuple( args, "|iidiii", &msgid, &all, &timeout, &add_ctrls, &add_intermediates, &add_extop ))
         return NULL;
@@ -1071,6 +1071,7 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
         } else
             e = "ldap_parse_result";
         ldap_msgfree(msg);
+        Py_XDECREF(valuestr);
         return LDAPerror( self->ldap, e );
     }
 
@@ -1080,6 +1081,7 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
         ldap_set_option(self->ldap, LDAP_OPT_ERROR_NUMBER, &err);
         LDAP_END_ALLOW_THREADS( self );
         ldap_msgfree(msg);
+        Py_XDECREF(valuestr);
         return LDAPerror(self->ldap, "LDAPControls_to_List");
     }
     ldap_controls_free(serverctrls);
@@ -1108,9 +1110,7 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
         Py_DECREF(pmsg);
         }
     }
-    if (valuestr) {
-        Py_DECREF(valuestr);
-    }
+    Py_XDECREF(valuestr);
     Py_XDECREF(pyctrls);
     Py_DECREF(result_str);
     return retval;
