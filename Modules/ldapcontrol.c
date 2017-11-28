@@ -71,7 +71,8 @@ Tuple_to_LDAPControl( PyObject* tup )
     Py_ssize_t len;
 
     if (!PyTuple_Check(tup)) {
-      return LDAPerror_TypeError("expected a tuple", tup);
+      LDAPerror_TypeError("expected a tuple", tup);
+      return NULL;
     }
 
     if (!PyArg_ParseTuple( tup, "sbO", &oid, &iscritical, &bytes ))

@@ -112,7 +112,8 @@ Tuple_to_LDAPMod( PyObject* tup, int no_op )
     Py_ssize_t i, len, nstrs;
 
     if (!PyTuple_Check(tup)) {
-        return LDAPerror_TypeError("expected a tuple", tup);
+        LDAPerror_TypeError("expected a tuple", tup);
+        return NULL;
     }
 
     if (no_op) {
@@ -209,13 +210,15 @@ List_to_LDAPMods( PyObject *list, int no_op ) {
     PyObject *item;
 
     if (!PySequence_Check(list)) {
-        return LDAPerror_TypeError("expected list of tuples", list);
+        LDAPerror_TypeError("expected list of tuples", list);
+        return NULL;
     }
 
     len = PySequence_Length(list);
 
     if (len < 0) {
-        return LDAPerror_TypeError("expected list of tuples", list);
+        LDAPerror_TypeError("expected list of tuples", list);
+        return NULL;
     }
 
     lms = PyMem_NEW(LDAPMod *, len + 1);
