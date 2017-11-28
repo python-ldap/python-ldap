@@ -54,7 +54,7 @@ class sasl:
         """
         The callback method will be called by the sasl_bind_s()
         method several times. Each time it will provide the id, which
-        tells us what kind of information is requested (the CB_ ...
+        tells us what kind of information is requested (the CB_*
         constants above). The challenge might be a short (english) text
         or some binary string, from which the return value is calculated.
         The prompt argument is always a human-readable description string;
