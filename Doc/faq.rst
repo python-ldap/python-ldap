@@ -35,41 +35,41 @@ Usage
 
 
 **Q**: My code imports module ``_ldap``.
-That used to work but from version 2.0.0pre that does not work anymore?
+That used to work, but after an upgrade it does not work anymore. Why?
 
-   **A**: Despite some outdated programming examples the extension module
-    ``_ldap`` **MUST NOT** be imported directly unless 
-    you really know what you're doing (e.g. for internal regression testing).
+   **A**: Despite some outdated programming examples, the extension module
+    ``_ldap`` **MUST NOT** be imported directly, unless you really know what
+    you're doing (e.g. for internal regression testing).
 
-    Import ``ldap`` instead which is a Python wrapper around ``_ldap``
+    Import ``ldap`` instead, which is a Python wrapper around ``_ldap``
     providing the full functionality.
 
 **Q**: My script bound to MS Active Directory but a a search operation results
-in an exception :exc:`ldap.OPERATIONS_ERROR` with the diagnostic messages text
-"In order to perform this operation a successful bind must be
-completed on the connection."
+in the exception :exc:`ldap.OPERATIONS_ERROR` with the diagnostic messages text
+“In order to perform this operation a successful bind must be
+completed on the connection.”
 What's happening here?
 
-    **A**: When searching from the domain level MS AD returns referrals (search continuations)
+    **A**: When searching from the domain level, MS AD returns referrals (search continuations)
     for some objects to indicate to the client where to look for these objects.
-    Client-chasing of referrals is a broken concept since LDAPv3 does not specify
+    Client-chasing of referrals is a broken concept, since LDAPv3 does not specify
     which credentials to use when chasing the referral. Windows clients are supposed
-    to simply use their Windows credentials but this does not work in general when
+    to simply use their Windows credentials, but this does not work in general when
     chasing referrals received from and pointing to arbitrary LDAP servers.
 
-    Therefore per default ``libldap`` automatically chases the referrals
+    Therefore, per default, ``libldap`` automatically chases the referrals
     internally with an *anonymous* access which fails with MS AD.
 
-    So best thing is to switch this behaviour off::
+    So, the best thing to do is to switch this behaviour off::
 
       l = ldap.initialize('ldap://foobar')
       l.set_option(ldap.OPT_REFERRALS,0)
 
-**Q**: Why am I seeing ``ldap.SUCCESS`` traceback as output?
+**Q**: Why am I seeing a ``ldap.SUCCESS`` traceback as output?
 
-    **A**: Most likely you are using one of the non-synchronous calls, and probably
+    **A**: Most likely, you are using one of the non-synchronous calls, and probably
     mean to be using a synchronous call
-    (see detailed explanation in :ref:`sending-ldap-requests`.
+    (see detailed explanation in :ref:`sending-ldap-requests`).
 
 **Q**: Can I use LDAPv2 via python-ldap?
 
@@ -87,13 +87,14 @@ Installing
 
 **Q**: Does it work with Windows 32?
 
-    **A**: You can find links to pre-compiled packages for Win32 on the
-    :ref:`Download information` page.
+    **A**: Yes. You can find links to unofficial pre-compiled packages
+    for Windows on the :ref:`installing` page.
 
 
 **Q**: Can python-ldap be built against OpenLDAP 2.3 libs or older?
 
-    **A**: No, for recent python-ldap 2.4.x the OpenLDAP 2.4 client libs or newer are required.
+    **A**: No.
+    The needed minimal version of OpenLDAP is documented in :ref:`build prerequisites`.
     Patched builds of python-ldap linked to older libs are not supported by the
     python-ldap project.
 
@@ -123,8 +124,8 @@ telling Lib/ldap.py and Lib/ldap/schema.py are not found::
          --global-option="-I$(xcrun --show-sdk-path)/usr/include/sasl"
 
 
-**Q**: While importing module ldap some shared lib files are not found.
-Error message looks similar to this::
+**Q**: While importing module ``ldap``, some shared lib files are not found.
+The error message looks similar to this::
 
       ImportError: ld.so.1: /usr/local/bin/python: fatal: liblber.so.2: open failed: No such file or directory
 
@@ -133,9 +134,9 @@ Error message looks similar to this::
     **A1**: You need to make sure that the path to ``liblber.so.2`` and
     ``libldap.so.2`` is in your ``LD_LIBRARY_PATH`` environment variable.
 
-    **A2**: Alternatively if you're on Linux you can add the path to
+    **A2**: Alternatively, if you're on Linux, you can add the path to
     ``liblber.so.2`` and ``libldap.so.2`` to ``/etc/ld.so.conf``
-    and invoke command ``ldconfig`` afterwards.
+    and invoke the command ``ldconfig`` afterwards.
 
 
 
@@ -151,32 +152,32 @@ Historic
 But the python-ldap docs say LDAP libs 2.x are needed. I'm confused!
 
   Short answer:
-      See answer above and :ref:`download information` for
+      See answer above and the :ref:`installing` page for
       a more recent version.
 
   Long answer:
       E.g. some Win32 DLLs floating around for download are based on
       the old Umich LDAP code which is not maintained anymore for
-      ``many`` years! Last Umich 3.3 release was 1997 if I remember correctly.
+      *many* years! Last Umich 3.3 release was 1997 if I remember correctly.
 
       The OpenLDAP project took over the Umich code and started releasing
       OpenLDAP 1.x series mainly fixing bugs and doing some improvements
-      to the database backend. Still only LDAPv2 was supported at server
+      to the database backend. Still, only LDAPv2 was supported at server
       and client side. (Many commercial vendors also derived their products
       from the Umich code.)
 
-      OpenLDAP 2.x is a full-fledged LDAPv3 implementation. Still it has
+      OpenLDAP 2.x is a full-fledged LDAPv3 implementation. It has
       its roots in Umich code but has many more features/improvements.
 
 
-**Q**: While importing module ldap there are undefined references reported.
-Error message looks similar to this::
+**Q**: While importing module ``ldap``, there are undefined references reported.
+The error message looks similar to this::
 
     ImportError: /usr/local/lib/libldap.so.2: undefined symbol: res_query
 
 ..
 
-    **A**: Especially on older Linux systems you might have to explicitly link
+    **A**: Especially on older Linux systems, you might have to explicitly link
     against ``libresolv``.
 
     Tweak ``setup.cfg`` to contain this line::

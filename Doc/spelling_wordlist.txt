@@ -31,7 +31,7 @@ controlType
 controlValue
 criticality
 cryptographic
-cyrus
+Cyrus
 defresult
 dereferenced
 dereferencing
@@ -91,7 +91,7 @@ objectClass
 oc
 oid
 oids
-openldap
+OpenLDAP
 postalAddress
 pre
 previousDN

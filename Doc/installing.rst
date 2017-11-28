@@ -1,4 +1,4 @@
-.. _Download information:
+.. _installing:
 
 Installing python-ldap
 ######################
@@ -7,7 +7,7 @@ Installing from PyPI
 ====================
 
 The preferred point for downloading the “official” source distribution
-is now the `PyPI repository`_ which supports installing via `pip`_.
+is the `PyPI repository`_ which supports installing via `pip`_.
 For example::
 
     python -m pip install python-ldap
@@ -15,7 +15,7 @@ For example::
 .. _PyPI repository: https://pypi.python.org/pypi/python-ldap/
 .. _pip: https://pip.pypa.io/en/stable/
 
-For installing from PyPI, you will need the :ref:`build prerequisites`
+For installing from PyPI, you will need the same :ref:`build prerequisites`
 as when installing from source.
 
 We do not currently provide pre-built packages (wheels).
@@ -94,7 +94,7 @@ From a source repository::
 If you have more than one Python interpreter installed locally, you should
 use the same one you plan to use python-ldap with.
 
-See further instructions can be found in `Setuptools documentation`_.
+Further instructions can be found in `Setuptools documentation`_.
 
 
 .. _Setuptools documentation: https://docs.python.org/3/distributing/index.html
@@ -112,13 +112,13 @@ on the local system when building python-ldap:
 - `OpenLDAP`_ client libs version 2.4.11 or later
   It is not possible and not supported to build with prior versions.
 - `OpenSSL`_ (optional)
-- `cyrus-sasl`_ (optional)
+- `Cyrus SASL`_ (optional)
 - Kerberos libraries, MIT or Heimdal (optional)
 
 .. _Python: https://www.python.org/
 .. _OpenLDAP: https://www.openldap.org/
 .. _OpenSSL: https://www.openssl.org/
-.. _cyrus-sasl: https://www.cyrusimap.org/sasl/
+.. _Cyrus SASL: https://www.cyrusimap.org/sasl/
 
 
 setup.cfg
@@ -126,9 +126,9 @@ setup.cfg
 
 The file setup.cfg allows to set some build and installation
 parameters for reflecting the local installation of required
-software packages. Only section [_ldap] is described here.
-More information about other sections can be found in the
-documentation of Python's DistUtils.
+software packages. Only section ``[_ldap]`` is described here.
+More information about other sections can be found in
+`Setuptools documentation`_.
 
 .. data:: library_dirs
 
@@ -148,8 +148,9 @@ documentation of Python's DistUtils.
 
 .. data:: extra_objects
 
-.. _libs-used-label:
 
+
+.. _libs-used-label:
 
 Libraries used
 ---------------
@@ -159,7 +160,7 @@ Libraries used
 .. data:: ldap_r
    :noindex:
 
-   The LDAP protocol library of OpenLDAP. ldap_r is the reentrant version
+   The LDAP protocol library of OpenLDAP. ``ldap_r`` is the reentrant version
    and should be preferred.
 
 .. data:: lber
@@ -170,25 +171,25 @@ Libraries used
 .. data:: sasl2
    :noindex:
 
-   The Cyrus-SASL library if needed and present during build
+   The Cyrus-SASL library (optional)
 
 .. data:: ssl
    :noindex:
 
-   The SSL/TLS library of OpenSSL if needed and present during build
+   The SSL/TLS library of OpenSSL (optional)
 
 .. data:: crypto
    :noindex:
 
-   The basic cryptographic library of OpenSSL if needed and present during build
+   The basic cryptographic library of OpenSSL (optional)
 
 Example
 -------
 
 The following example is for a full-featured build (including SSL and SASL support)
 of python-ldap with OpenLDAP installed in a different prefix directory
-(here /opt/openldap-2.4) and SASL header files found in /usr/include/sasl.
-Debugging symbols are preserved with compile option -g.
+(here ``/opt/openldap-2.4``) and SASL header files found in /usr/include/sasl.
+Debugging symbols are preserved with compile option ``-g``.
 
 ::
 
