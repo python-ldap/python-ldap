@@ -395,7 +395,7 @@ class LDIFParser:
 
   def parse_entry_records(self):
     """
-    Continously read and parse LDIF entry records
+    Continuously read and parse LDIF entry records
     """
     # Local symbol for better performance
     next_key_and_value = self._next_key_and_value

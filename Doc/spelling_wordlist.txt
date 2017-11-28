@@ -27,7 +27,6 @@ changeTypes
 cidict
 clientctrls
 conf
-Continously
 controlType
 controlValue
 criticality
@@ -53,7 +52,7 @@ filterstr
 filterStr
 formatOID
 func
-heimdal
+Heimdal
 hostport
 hrefTarget
 hrefText
