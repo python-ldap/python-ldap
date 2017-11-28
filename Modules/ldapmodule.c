@@ -37,7 +37,7 @@ static PyMethodDef methods[]  = {
 
 
 /* Common initialization code */
-PyObject* init_ldap_module()
+PyObject* init_ldap_module(void)
 {
 	PyObject *m, *d;
 
