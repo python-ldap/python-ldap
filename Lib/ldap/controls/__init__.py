@@ -96,7 +96,7 @@ class ResponseControl:
 class LDAPControl(RequestControl,ResponseControl):
   """
   Base class for combined request/response controls mainly
-  for backward-compability to python-ldap 2.3.x
+  for backward-compatibility to python-ldap 2.3.x
   """
 
   def __init__(self,controlType=None,criticality=False,controlValue=None,encodedControlValue=None):

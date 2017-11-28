@@ -484,7 +484,7 @@ class SyncreplConsumer:
 
     def syncrepl_get_cookie(self):
         """
-        Called by syncrepl_search() to retreive the cookie stored by syncrepl_set_cookie()
+        Called by syncrepl_search() to retrieve the cookie stored by syncrepl_set_cookie()
         """
         pass
 

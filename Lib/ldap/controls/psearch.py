@@ -40,13 +40,13 @@ class PersistentSearchControl(RequestControl):
   Implements the request control for persistent search.
 
   changeTypes
-    List of strings specifiying the types of changes returned by the server.
+    List of strings specifying the types of changes returned by the server.
     Setting to None requests all changes.
   changesOnly
     Boolean which indicates whether only changes are returned by the server.
   returnECs
     Boolean which indicates whether the server should return an
-    Entry Change Notication response control
+    Entry Change Notification response control
   """
 
   class PersistentSearchControlValue(univ.Sequence):

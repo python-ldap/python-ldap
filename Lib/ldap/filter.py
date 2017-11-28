@@ -3,7 +3,7 @@ filters.py - misc stuff for handling LDAP filter strings (see RFC2254)
 
 See https://www.python-ldap.org/ for details.
 
-Compability:
+Compatibility:
 - Tested with Python 2.0+
 """
 

@@ -36,7 +36,7 @@ class WrongResultType(Exception):
 
 class AsyncSearchHandler:
   """
-  Class for stream-processsing LDAP search results
+  Class for stream-processing LDAP search results
 
   Arguments:
 

@@ -60,7 +60,7 @@ to get up to date information which versions are available.
 Windows
 -------
 
-Unoficial packages for Windows are available on
+Unofficial packages for Windows are available on
 `Christoph Gohlke's page <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_.
 
 

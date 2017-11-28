@@ -647,7 +647,7 @@ class SimpleLDAPObject:
 
         This method is used to wait for and return the result of an
         operation previously initiated by one of the LDAP asynchronous
-        operation routines (eg search(), modify(), etc.) They all
+        operation routines (e.g. search(), modify(), etc.) They all
         returned an invocation identifier (a message id) upon successful
         initiation of their operation. This id is guaranteed to be
         unique across an LDAP session, and can be used to request the

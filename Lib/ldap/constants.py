@@ -288,7 +288,7 @@ CONSTANTS = (
     TLSInt('OPT_X_TLS_PEERCERT', optional=True),
 
     # only available if OpenSSL supports it => might cause
-    # backward compability problems
+    # backward compatibility problems
     TLSInt('OPT_X_TLS_CRLCHECK', optional=True),
 
     TLSInt('OPT_X_TLS_CRLFILE', optional=True),

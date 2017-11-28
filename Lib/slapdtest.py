@@ -83,7 +83,7 @@ class SlapdObject(object):
 
     This class creates a temporary data store for slapd, runs it
     listening on a private Unix domain socket and TCP port,
-    and initialises it with a top-level entry and the root user.
+    and initializes it with a top-level entry and the root user.
 
     When a reference to an instance of this class is lost, the slapd
     server is shut down.

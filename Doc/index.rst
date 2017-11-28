@@ -63,7 +63,7 @@ Contents
 Bytes/text management
 ---------------------
 
-The LDAP protocol states that some fields (distinguised names, relative distinguished names,
+The LDAP protocol states that some fields (distinguished names, relative distinguished names,
 attribute names, queries) be encoded in UTF-8; some other (mostly attribute *values*) **MAY**
 contain any type of data, and thus be treated as bytes.
 
