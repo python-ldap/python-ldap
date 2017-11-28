@@ -37,6 +37,12 @@ directory "%(directory)s"
 suffix "%(suffix)s"
 rootdn "%(rootdn)s"
 rootpw "%(rootpw)s"
+
+TLSCACertificateFile "%(cafile)s"
+TLSCertificateFile "%(servercert)s"
+TLSCertificateKeyFile "%(serverkey)s"
+# ignore missing client cert but fail with invalid client cert
+TLSVerifyClient try
 """
 
 LOCALHOST = '127.0.0.1'
@@ -140,6 +146,15 @@ class SlapdObject(object):
         self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
         ldapi_path = os.path.join(self.testrundir, 'ldapi')
         self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
+        # TLS certs
+        capath = os.path.abspath(os.path.join(
+            os.getcwd(), 'Tests/certs'
+        ))
+        self.cafile = os.path.join(capath, 'ca.pem')
+        self.servercert = os.path.join(capath, 'server.pem')
+        self.serverkey = os.path.join(capath, 'server.key')
+        self.clientcert = os.path.join(capath, 'client.pem')
+        self.clientkey = os.path.join(capath, 'client.key')
 
     def _check_requirements(self):
         binaries = [
@@ -218,6 +233,9 @@ class SlapdObject(object):
             'rootpw': self.root_pw,
             'root_uid': os.getuid(),
             'root_gid': os.getgid(),
+            'cafile': self.cafile,
+            'servercert': self.servercert,
+            'serverkey': self.serverkey,
         }
         return self.slapd_conf_template % config_dict
 
