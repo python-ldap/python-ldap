@@ -83,6 +83,12 @@ class EditionTests(unittest.TestCase):
             ("cn=Added,ou=Container," + base,
                 {'cn': [b'Added'], 'objectClass': [b'organizationalRole']}),
         ])
+        # Delete object
+        self.ldap.delete_s(dn)
+        result = self.ldap.search_s(
+            base, ldap.SCOPE_SUBTREE, '(cn=Added)', ['*']
+        )
+        self.assertEqual(result, [])
 
 
 if __name__ == '__main__':

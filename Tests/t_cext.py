@@ -51,6 +51,40 @@ class TestLdapCExtension(SlapdTestCase):
             ])
         )
 
+    def setUp(self):
+        super(TestLdapCExtension, self).setUp()
+        self._writesuffix = None
+
+    def tearDown(self):
+        # cleanup test subtree
+        if self._writesuffix is not None:
+            self.server.ldapdelete(self._writesuffix, recursive=True)
+        super(TestLdapCExtension, self).tearDown()
+
+    @property
+    def writesuffix(self):
+        """Initialize writesuffix on demand
+
+        Creates a clean subtree for tests that write to slapd. ldapdelete
+        is not able to delete a Root DSE, therefore we need a temporary
+        work space.
+
+        :return: DN
+        """
+        if self._writesuffix is not None:
+            return self._writesuffix
+        self._writesuffix = 'ou=write tests,%s' % self.server.suffix
+        # Add writeable subtree
+        self.server.ldapadd(
+            "\n".join([
+                'dn: ' + self._writesuffix,
+                'objectClass: organizationalUnit',
+                'ou:' + self._writesuffix.split(',')[0][3:],
+                ''
+            ])
+        )
+        return self._writesuffix
+
     def _open_conn(self, bind=True):
         """
         Starts a server, and returns a LDAPObject bound to it
@@ -285,7 +319,7 @@ class TestLdapCExtension(SlapdTestCase):
         """
         l = self._open_conn()
         m = l.add_ext(
-            "cn=Foo," + self.server.suffix,
+            "cn=Foo," + self.writesuffix,
             [
                 ('objectClass', b'organizationalRole'),
                 ('cn', b'Foo'),
@@ -299,7 +333,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(msgid, m)
         self.assertEqual(ctrls, [])
         # search for it back
-        m = l.search_ext(self.server.suffix, _ldap.SCOPE_SUBTREE, '(cn=Foo)')
+        m = l.search_ext(self.writesuffix, _ldap.SCOPE_SUBTREE, '(cn=Foo)')
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         # Expect to get the objects
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
@@ -309,7 +343,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(
             pmsg[0],
             (
-                'cn=Foo,'+self.server.suffix,
+                'cn=Foo,'+self.writesuffix,
                 {
                     'objectClass': [b'organizationalRole'],
                     'cn': [b'Foo'],
@@ -324,7 +358,7 @@ class TestLdapCExtension(SlapdTestCase):
         """
         l = self._open_conn()
         # first, add an object with a field we can compare on
-        dn = "cn=CompareTest," + self.server.suffix
+        dn = "cn=CompareTest," + self.writesuffix
         m = l.add_ext(
             dn,
             [
@@ -378,7 +412,7 @@ class TestLdapCExtension(SlapdTestCase):
     def test_delete(self):
         l = self._open_conn()
         # first, add an object we will delete
-        dn = "cn=Deleteme,"+self.server.suffix
+        dn = "cn=Deleteme,"+self.writesuffix
         m = l.add_ext(
             dn,
             [
@@ -402,7 +436,7 @@ class TestLdapCExtension(SlapdTestCase):
 
         # try deleting an object that doesn't exist
         m = l.modify_ext(
-            "cn=DoesNotExist,"+self.server.suffix,
+            "cn=DoesNotExist,"+self.writesuffix,
             [
                 (_ldap.MOD_ADD, 'description', [b'blah']),
             ]
@@ -439,7 +473,7 @@ class TestLdapCExtension(SlapdTestCase):
         """
         l = self._open_conn()
         # first, add an object we will delete
-        dn = "cn=AddToMe,"+self.server.suffix
+        dn = "cn=AddToMe,"+self.writesuffix
         m = l.add_ext(
             dn,
             [
@@ -465,7 +499,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(msgid, m)
         self.assertEqual(ctrls, [])
         # search for it back
-        m = l.search_ext(self.server.suffix, _ldap.SCOPE_SUBTREE, '(cn=AddToMe)')
+        m = l.search_ext(self.writesuffix, _ldap.SCOPE_SUBTREE, '(cn=AddToMe)')
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         # Expect to get the objects
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
@@ -479,7 +513,7 @@ class TestLdapCExtension(SlapdTestCase):
 
     def test_rename(self):
         l = self._open_conn()
-        dn = "cn=RenameMe,"+self.server.suffix
+        dn = "cn=RenameMe,"+self.writesuffix
         m = l.add_ext(
             dn,
             [
@@ -500,7 +534,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(ctrls, [])
 
         # make sure the old one is gone
-        m = l.search_ext(self.server.suffix, _ldap.SCOPE_SUBTREE, '(cn=RenameMe)')
+        m = l.search_ext(self.writesuffix, _ldap.SCOPE_SUBTREE, '(cn=RenameMe)')
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
         self.assertEqual(len(pmsg), 0) # expect no results
@@ -508,8 +542,8 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(ctrls, [])
 
         # check that the new one looks right
-        dn2 = "cn=IAmRenamed,"+self.server.suffix
-        m = l.search_ext(self.server.suffix, _ldap.SCOPE_SUBTREE, '(cn=IAmRenamed)')
+        dn2 = "cn=IAmRenamed,"+self.writesuffix
+        m = l.search_ext(self.writesuffix, _ldap.SCOPE_SUBTREE, '(cn=IAmRenamed)')
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
         self.assertEqual(msgid, m)
@@ -519,7 +553,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(pmsg[0][1]['cn'], [b'IAmRenamed'])
 
         # create the container
-        containerDn = "ou=RenameContainer,"+self.server.suffix
+        containerDn = "ou=RenameContainer,"+self.writesuffix
         m = l.add_ext(
             containerDn,
             [
@@ -542,18 +576,18 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(ctrls, [])
 
         # make sure dn2 is gone
-        m = l.search_ext(self.server.suffix, _ldap.SCOPE_SUBTREE, '(cn=IAmRenamed)')
+        m = l.search_ext(self.writesuffix, _ldap.SCOPE_SUBTREE, '(cn=IAmRenamed)')
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
         self.assertEqual(len(pmsg), 0) # expect no results
         self.assertEqual(msgid, m)
         self.assertEqual(ctrls, [])
 
-        m = l.search_ext(self.server.suffix, _ldap.SCOPE_SUBTREE, '(objectClass=*)')
+        m = l.search_ext(self.writesuffix, _ldap.SCOPE_SUBTREE, '(objectClass=*)')
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
 
         # make sure dn3 is there
-        m = l.search_ext(self.server.suffix, _ldap.SCOPE_SUBTREE, '(cn=IAmRenamedAgain)')
+        m = l.search_ext(self.writesuffix, _ldap.SCOPE_SUBTREE, '(cn=IAmRenamedAgain)')
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
         self.assertEqual(msgid, m)
@@ -595,7 +629,7 @@ class TestLdapCExtension(SlapdTestCase):
     def test_passwd(self):
         l = self._open_conn()
         # first, create a user to change password on
-        dn = "cn=PasswordTest," + self.server.suffix
+        dn = "cn=PasswordTest," + self.writesuffix
         m = l.add_ext(
             dn,
             [
