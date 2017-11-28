@@ -20,7 +20,7 @@ derived classes which has these methods:
 
 
 Examples
-========
+--------
 
 .. _ldap.resiter.ResultProcessor-example:
 
