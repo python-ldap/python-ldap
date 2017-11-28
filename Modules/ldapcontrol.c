@@ -4,6 +4,7 @@
 #include "LDAPObject.h"
 #include "ldapcontrol.h"
 #include "berval.h"
+#include "constants.h"
 
 #include "lber.h"
 
