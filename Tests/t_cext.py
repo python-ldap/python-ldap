@@ -807,6 +807,35 @@ class TestLdapCExtension(SlapdTestCase):
                 l.sasl_interactive_bind_s, 'who', 'SASLObject', post=(1,))
         self.assertInvalidControls(l.unbind_ext)
 
+    @unittest.skipUnless(_ldap.TLS_AVAIL, "needs tls")
+    def test_tls_ext(self):
+        l = self._open_conn(bind=False)
+        # StartTLS needs LDAPv3
+        l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
+        l.set_option(_ldap.OPT_X_TLS_CACERTFILE, self.server.cafile)
+        # re-create TLS context
+        l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
+        l.start_tls_s()
+
+    @unittest.skipUnless(_ldap.TLS_AVAIL, "needs tls")
+    def test_tls_ext_noca(self):
+        l = self._open_conn(bind=False)
+        l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
+        l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
+        with self.assertRaises(_ldap.CONNECT_ERROR):
+            l.start_tls_s()
+
+    @unittest.skipUnless(_ldap.TLS_AVAIL, "needs tls")
+    def test_tls_ext_clientcert(self):
+        l = self._open_conn(bind=False)
+        l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
+        l.set_option(_ldap.OPT_X_TLS_CACERTFILE, self.server.cafile)
+        l.set_option(_ldap.OPT_X_TLS_CERTFILE, self.server.clientcert)
+        l.set_option(_ldap.OPT_X_TLS_KEYFILE, self.server.clientkey)
+        l.set_option(_ldap.OPT_X_TLS_REQUIRE_CERT, _ldap.OPT_X_TLS_HARD)
+        l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
+        l.start_tls_s()
+        # TODO verify that client auth actually works
 
 if __name__ == '__main__':
     unittest.main()
