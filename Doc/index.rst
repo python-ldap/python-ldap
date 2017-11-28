@@ -45,7 +45,11 @@ The documentation for python-ldap 3.x is hosted at `Read the Docs`_.
 You can switch between versions of the library, or download PDF or HTML
 versions for offline use, using the right sidebar.
 
+Documentation for some older versions is available for download at the
+`GitHub release page`_.
+
 .. _Read the Docs: http://python-ldap.readthedocs.io/en/latest/
+.. _GitHub release page: https://github.com/python-ldap/python-ldap/releases
 
 
 Contents
