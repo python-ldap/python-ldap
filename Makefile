@@ -1,7 +1,9 @@
+PYTHON=python3
 LCOV_INFO=build/lcov.info
 LCOV_REPORT=build/lcov_report
 LCOV_REPORT_OPTIONS=--show-details -no-branch-coverage \
 	--title "python-ldap LCOV report"
+SCAN_REPORT=build/scan_report
 
 .NOTPARALLEL:
 
@@ -40,3 +42,10 @@ lcov-open: $(LCOV_REPORT)
 lcov: lcov-clean
 	$(MAKE) lcov-coverage
 	$(MAKE) lcov-report
+
+# clang-analyzer for static C code analysis
+.PHONY: scan-build
+scan-build:
+	scan-build -o $(SCAN_REPORT) --html-title="python-ldap scan report" \
+		-analyze-headers --view \
+		$(PYTHON) setup.py clean --all build
