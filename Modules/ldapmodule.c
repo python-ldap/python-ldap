@@ -41,9 +41,9 @@ PyObject* init_ldap_module()
 {
 	PyObject *m, *d;
 
-#if defined(MS_WINDOWS) || defined(__CYGWIN__)
-	LDAP_Type.ob_type = &PyType_Type;
-#endif
+	/* Initialize LDAP class */
+	if (PyType_Ready(&LDAP_Type) < 0)
+		return NULL;
 
 	/* Create the module and add the functions */
 #if PY_MAJOR_VERSION >= 3
@@ -58,8 +58,6 @@ PyObject* init_ldap_module()
 #else
 	m = Py_InitModule("_ldap", methods);
 #endif
-
-        PyType_Ready(&LDAP_Type);
 
 	/* Add some symbolic constants to the module */
 	d = PyModule_GetDict(m);
