@@ -59,7 +59,7 @@ def combined_logger(
             pass
     # for writing to syslog
     new_logger = logging.getLogger(log_name)
-    if sys_log_format:
+    if sys_log_format and os.path.exists('/dev/log'):
         my_syslog_formatter = logging.Formatter(
             fmt=' '.join((log_name, sys_log_format)))
         my_syslog_handler = logging.handlers.SysLogHandler(
