@@ -40,7 +40,7 @@ This module defines the following functions:
    when using multiple URIs you cannot determine to which URI your client
    gets connected.
 
-   Note that internally the OpenLDAP funtion
+   Note that internally the OpenLDAP function
    `ldap_initialize(3) <https://www.openldap.org/software/man.cgi?query=ldap_init&sektion=3>`_
    is called which just initializes the LDAP connection struct in the C API
    - nothing else. Therefore the first call to an operation method (bind,
@@ -141,7 +141,7 @@ following option identifiers are defined as constants:
 
 .. py:data:: OPT_DEREF
 
-   Specifies how alias derefencing is done within the underlying LDAP C lib.
+   Specifies how alias dereferencing is done within the underlying LDAP C lib.
 
 .. py:data:: OPT_ERROR_STRING
 
@@ -296,7 +296,7 @@ The module defines the following exceptions:
 
 .. py:exception:: LDAPError
 
-   This is the base class of all execeptions raised by the module :py:mod:`ldap`.
+   This is the base class of all exceptions raised by the module :py:mod:`ldap`.
    Unlike the C interface, errors are not returned as result codes, but
    are instead turned into exceptions, raised as soon an the error condition
    is detected.
@@ -413,7 +413,7 @@ The module defines the following exceptions:
 
 .. py:exception:: IS_LEAF
 
-   The object specified is a leaf of the diretcory tree.
+   The object specified is a leaf of the directory tree.
    Sets the :py:const:`matched` field of the exception dictionary value.
 
 .. py:exception:: LOCAL_ERROR
@@ -836,7 +836,7 @@ and wait for and return with the server's result, or with
 
    This method is used to wait for and return the result of an operation
    previously initiated by one of the LDAP *asynchronous* operations
-   (eg :py:meth:`search()`, :py:meth:`modify()`, etc.)
+   (e.g. :py:meth:`search()`, :py:meth:`modify()`, etc.)
 
    The *msgid* parameter is the integer identifier returned by that method.
    The identifier is guaranteed to be unique across an LDAP session,

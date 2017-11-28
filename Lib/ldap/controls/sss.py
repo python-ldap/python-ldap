@@ -126,7 +126,7 @@ class SSSResponseControl(ResponseControl):
             self.attributeType = attribute_type
         else:
             self.attributeType = None
-        # backward compability class attributes
+        # backward compatibility class attributes
         self.result = self.sortResult
         self.attribute_type_error = self.attributeType
 

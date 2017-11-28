@@ -9,7 +9,7 @@
 
 This module parses and generates LDAP URLs.    It is implemented in pure Python
 and does not rely on any  non-standard modules. Therefore it can be used stand-
-alone without  the rest of the python-ldap package.    Compability note: This
+alone without  the rest of the python-ldap package.  Compatibility note: This
 module has been solely tested on Python 2.x and above.
 
 .. seealso::
@@ -91,7 +91,7 @@ Example
 ^^^^^^^
 
 Important security advice:
-For security reasons you shouldn't specify passwords in LDAP URLs
+For security reasons you should not specify passwords in LDAP URLs
 unless you really know what you are doing.
 
 The following example demonstrates how to parse a LDAP URL

@@ -26,7 +26,7 @@ DEREF_CONTROL_OID = '1.3.6.1.4.1.4203.666.5.16'
 # Request types
 #---------------------------------------------------------------------------
 
-# For compability with ASN.1 declaration in I-D
+# For compatibility with ASN.1 declaration in I-D
 AttributeList = AttributeDescriptionList
 
 class DerefSpec(univ.Sequence):

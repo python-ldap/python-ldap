@@ -94,5 +94,5 @@ del dn2str
 
 # More constants
 
-# For compability of 2.3 and 2.4 OpenLDAP API
+# For compatibility of 2.3 and 2.4 OpenLDAP API
 OPT_DIAGNOSTIC_MESSAGE = OPT_ERROR_STRING

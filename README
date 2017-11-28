@@ -14,7 +14,7 @@ stuff (e.g. processing LDIF, LDAPURLs, LDAPv3 sub-schema, etc.).
 
 Not included: Direct BER support
 
-See INSTALL for version compability
+See INSTALL for version compatibility
 
 See TODO for planned features. Contributors welcome.
 

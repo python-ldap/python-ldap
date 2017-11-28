@@ -134,7 +134,7 @@ class VLVResponseControl(ResponseControl):
             self.contextID = str(context_id)
         else:
             self.contextID = None
-        # backward compability class attributes
+        # backward compatibility class attributes
         self.target_position = self.targetPosition
         self.content_count = self.contentCount
         self.result = self.virtualListViewResult

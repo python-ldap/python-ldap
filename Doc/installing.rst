@@ -60,7 +60,7 @@ to get up to date information which versions are available.
 Windows
 -------
 
-Unoficial packages for Windows are available on
+Unofficial packages for Windows are available on
 `Christoph Gohlke's page <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_.
 
 
@@ -113,7 +113,7 @@ on the local system when building python-ldap:
   It is not possible and not supported to build with prior versions.
 - `OpenSSL`_ (optional)
 - `cyrus-sasl`_ (optional)
-- Kerberos libraries, MIT or heimdal (optional)
+- Kerberos libraries, MIT or Heimdal (optional)
 
 .. _Python: https://www.python.org/
 .. _OpenLDAP: https://www.openldap.org/

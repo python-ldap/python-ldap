@@ -24,7 +24,7 @@ Usage
   **A0**: Yes, from 3.0 on.
 
   **A1**. For earlier versions, there's `pyldap`_, an independent fork
-  now merged into pyhon-ldap.
+  now merged into python-ldap.
 
 .. _pyldap: https://pypi.python.org/pypi/pyldap
 

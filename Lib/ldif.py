@@ -209,7 +209,7 @@ class LDIFWriter:
 def CreateLDIF(dn,record,base64_attrs=None,cols=76):
   """
   Create LDIF single formatted record including trailing empty line.
-  This is a compability function. Use is deprecated!
+  This is a compatibility function. Use is deprecated!
 
   dn
         string-representation of distinguished name
@@ -395,7 +395,7 @@ class LDIFParser:
 
   def parse_entry_records(self):
     """
-    Continously read and parse LDIF entry records
+    Continuously read and parse LDIF entry records
     """
     # Local symbol for better performance
     next_key_and_value = self._next_key_and_value
@@ -449,7 +449,7 @@ class LDIFParser:
 
   def parse(self):
     """
-    Invokes LDIFParser.parse_entry_records() for backward compability
+    Invokes LDIFParser.parse_entry_records() for backward compatibility
     """
     return self.parse_entry_records() # parse()
 
@@ -633,7 +633,7 @@ class LDIFCopy(LDIFParser):
 def ParseLDIF(f,ignore_attrs=None,maxentries=0):
   """
   Parse LDIF records read from file.
-  This is a compability function. Use is deprecated!
+  This is a compatibility function. Use is deprecated!
   """
   ldif_parser = LDIFRecordList(
     f,ignored_attr_types=ignore_attrs,max_entries=maxentries,process_url_schemes=0
