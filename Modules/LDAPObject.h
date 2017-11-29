@@ -22,6 +22,7 @@ typedef struct {
 	LDAP* ldap;
 	_threadstate	_save; /* for thread saving on referrals */
 	int valid;
+	int need_tls_newctx;
 } LDAPObject;
 
 extern PyTypeObject LDAP_Type;

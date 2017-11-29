@@ -14,7 +14,8 @@ __all__ = [
   'LDAPObject',
   'SimpleLDAPObject',
   'ReconnectLDAPObject',
-  'LDAPBytesWarning'
+  'LDAPBytesWarning',
+  'LDAPTLSWarning',
 ]
 
 
@@ -25,6 +26,7 @@ if __debug__:
 import sys,time,pprint,_ldap,ldap,ldap.sasl,ldap.functions
 import warnings
 
+from _ldap import LDAPTLSWarning
 from ldap.schema import SCHEMA_ATTRS
 from ldap.controls import LDAPControl,DecodeControlTuples,RequestControlTuples
 from ldap.extop import ExtendedRequest,ExtendedResponse

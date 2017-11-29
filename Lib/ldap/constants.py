@@ -281,7 +281,6 @@ CONSTANTS = (
     TLSInt('OPT_X_TLS_DEMAND'),
     TLSInt('OPT_X_TLS_ALLOW'),
     TLSInt('OPT_X_TLS_TRY'),
-    TLSInt('OPT_X_TLS_PEERCERT', optional=True),
 
     TLSInt('OPT_X_TLS_VERSION', optional=True),
     TLSInt('OPT_X_TLS_CIPHER', optional=True),

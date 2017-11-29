@@ -23,7 +23,7 @@ option_error(int res, const char *fn)
         PyErr_SetString(PyExc_ValueError, "option error");
     else if (res == LDAP_PARAM_ERROR)
         PyErr_SetString(PyExc_ValueError, "parameter error");
-    else if (res == LDAP_NO_MEMORY) 
+    else if (res == LDAP_NO_MEMORY)
         PyErr_NoMemory();
     else
         PyErr_Format(PyExc_SystemError, "error %d from %s", res, fn);
@@ -184,14 +184,47 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
 	    PyErr_Format(PyExc_ValueError, "unknown option %d", option);
 	    return 0;
     }
-	
+
     if (self) LDAP_BEGIN_ALLOW_THREADS(self);
     res = ldap_set_option(ld, option, ptr);
     if (self) LDAP_END_ALLOW_THREADS(self);
 
     if ((option == LDAP_OPT_SERVER_CONTROLS) || (option == LDAP_OPT_CLIENT_CONTROLS))
         LDAPControl_List_DEL(controls);
-    
+
+#if defined(HAVE_TLS) && defined(LDAP_OPT_X_TLS_NEWCTX)
+    /* set needs_tls_newctx for any OPT_X_TLS option */
+    if (self != NULL) {
+        switch(option) {
+        case LDAP_OPT_X_TLS_REQUIRE_CERT:  /* fallthrough */
+#ifdef LDAP_OPT_X_TLS_CRLCHECK
+        case LDAP_OPT_X_TLS_CRLCHECK:  /* fallthrough */
+#endif
+#ifdef LDAP_OPT_X_TLS_CRLFILE
+        case LDAP_OPT_X_TLS_CRLFILE:  /* fallthrough */
+#endif
+#ifdef LDAP_OPT_X_TLS_PROTOCOL_MIN
+        case LDAP_OPT_X_TLS_PROTOCOL_MIN:  /* fallthrough */
+#endif
+        case LDAP_OPT_X_TLS_CACERTFILE:  /* fallthrough */
+        case LDAP_OPT_X_TLS_CACERTDIR:  /* fallthrough */
+        case LDAP_OPT_X_TLS_CERTFILE:  /* fallthrough */
+        case LDAP_OPT_X_TLS_KEYFILE:  /* fallthrough */
+        case LDAP_OPT_X_TLS_CIPHER_SUITE:  /* fallthrough */
+        case LDAP_OPT_X_TLS_RANDOM_FILE:  /* fallthrough */
+        case LDAP_OPT_X_TLS_DHFILE:  /* fallthrough */
+            self->need_tls_newctx = 1;
+            break;
+        case LDAP_OPT_X_TLS_NEWCTX:
+            self->need_tls_newctx = 0;
+            break;
+        default:
+            break;
+        }
+    }
+    #endif /* HAVE_TLS */
+
+
     if (res != LDAP_OPT_SUCCESS) {
         option_error(res, "ldap_set_option");
         return 0;
@@ -223,7 +256,7 @@ LDAP_get_option(LDAPObject *self, int option)
 	    if (self) LDAP_END_ALLOW_THREADS(self);
 	    if (res != LDAP_OPT_SUCCESS)
 		return option_error(res, "ldap_get_option");
-    
+
 	    /* put the extensions into tuple form */
 	    num_extensions = 0;
 	    while (apiinfo.ldapai_extensions[num_extensions])

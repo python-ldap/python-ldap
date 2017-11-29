@@ -84,7 +84,13 @@ This module defines the following functions:
 .. py:function:: set_option(option, invalue) -> None
 
    This function sets the value of the global option specified by *option* to
-   *invalue*.
+   *invalue*. Any change to global settings
+
+   .. note::
+
+      Most global settings do not affect existing :py:class:`LDAPObject`
+      connections. Applications should call :py:func:`set_option()` before
+      they establish connections with :py:func:`initialize`.
 
 
 .. _ldap-constants:
@@ -124,10 +130,10 @@ Options
 
    :manpage:`ldap.conf(5)` and :manpage:`ldap_get_option(3)`
 
-
-For use with functions :py:func:set_option() and :py:func:get_option()
-and methods :py:method:LDAPObject.set_option() and :py:method:LDAPObject.get_option() the
-following option identifiers are defined as constants:
+For use with functions :py:func:`set_option()` and :py:func:`get_option()`
+and methods :py:meth:`LDAPObject.set_option()` and
+:py:meth:`LDAPObject.get_option()` the following option identifiers
+are defined as constants:
 
 .. py:data:: OPT_API_FEATURE_INFO
 
@@ -220,33 +226,153 @@ SASL options
 TLS options
 :::::::::::
 
+.. warning::
+   libldap does not materialize all TLS settings immediately. You must use
+   :py:const:`OPT_X_TLS_NEWCTX` to instruct libldap to apply pending TLS
+   settings and create a new internal TLS context::
+
+      conn = ldap.initialize(ldap_uri)
+      conn.set_option(ldap.OPT_X_TLS_CACERTFILE, '/path/to/ca.pem')
+      conn.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+      conn.start_tls_s()
+      conn.simple_bind_s(dn, password)
+
 .. py:data:: OPT_X_TLS
+
+   .. deprecated:: 3.0
+      The option is deprecated in OpenLDAP and should no longer be used. It
+      will be removed in the future.
+
+.. py:data:: OPT_X_TLS_ALL
+
+   Value for :py:const:`OPT_X_TLS_CRLCHECK`
 
 .. py:data:: OPT_X_TLS_ALLOW
 
+   Value for :py:const:`OPT_X_TLS_REQUIRE_CERT`
+
 .. py:data:: OPT_X_TLS_CACERTDIR
+
+   get/set path to directory with CA certs
 
 .. py:data:: OPT_X_TLS_CACERTFILE
 
+   get/set path to PEM file with CA certs
+
 .. py:data:: OPT_X_TLS_CERTFILE
+
+   get/set path to file with PEM encoded cert for client cert authentication,
+   requires :py:const:`OPT_X_TLS_KEYFILE`.
+
+.. py:data:: OPT_X_TLS_CIPHER
+
+   get cipher suite name from TLS session
 
 .. py:data:: OPT_X_TLS_CIPHER_SUITE
 
+   get/set allowed cipher suites
+
+.. py:data:: OPT_X_TLS_CRLCHECK
+
+   get/set CRL check mode. CRL validation needs :py:const:`OPT_X_TLS_CRLFILE`
+
+   :py:const:`OPT_X_TLS_NONE`
+      Don't perform CRL checks
+
+   :py:const:`OPT_X_TLS_PEER`
+      Perform CRL check for peer's end entity cert.
+
+   :py:const:`OPT_X_TLS_ALL`
+      Perform CRL checks for the whole cert chain
+
+.. py:data:: OPT_X_TLS_CRLFILE
+
+   get/set path to CRL file
+
 .. py:data:: OPT_X_TLS_CTX
+
+   get address of internal memory address of TLS context (**DO NOT USE**)
 
 .. py:data:: OPT_X_TLS_DEMAND
 
+   Value for :py:const:`OPT_X_TLS_REQUIRE_CERT`
+
 .. py:data:: OPT_X_TLS_HARD
+
+   Value for :py:const:`OPT_X_TLS_REQUIRE_CERT`
 
 .. py:data:: OPT_X_TLS_KEYFILE
 
+   get/set path to file with PEM encoded key for client cert authentication,
+   requires :py:const:`OPT_X_TLS_CERTFILE`.
+
 .. py:data:: OPT_X_TLS_NEVER
+
+   Value for :py:const:`OPT_X_TLS_REQUIRE_CERT`
+
+.. py:data:: OPT_X_TLS_NEWCTX
+
+   set and apply TLS settings to underlying TLS context
+
+.. py:data:: OPT_X_TLS_NONE
+
+   Value for :py:const:`OPT_X_TLS_CRLCHECK`
+
+.. py:data:: OPT_X_TLS_PACKAGE
+
+   Get TLS implementation, known values are
+
+   * ``GnuTLS``
+   * ``MozNSS`` (Mozilla NSS)
+   * ``OpenSSL``
+
+.. py:data:: OPT_X_TLS_PEER
+
+   Value for :py:const:`OPT_X_TLS_CRLCHECK`
+
+.. py:data:: OPT_X_TLS_PEERCERT
+
+   Get peer's certificate as BER/DER data structure (not supported)
+
+.. py:data:: OPT_X_TLS_PROTOCOL_MIN
+
+   get/set minimum protocol version (wire protocol version as int)
+
+   * ``0x300`` for SSL 3.0
+   * ``0x301`` for TLS 1.0
+   * ``0x302`` for TLS 1.1
+   * ``0x303`` for TLS 1.2
+   * ``0x304`` for TLS 1.3
 
 .. py:data:: OPT_X_TLS_RANDOM_FILE
 
+   get/set path to /dev/urandom (**DO NOT USE**)
+
 .. py:data:: OPT_X_TLS_REQUIRE_CERT
 
+   get/set validation strategy for server cert.
+
+   :py:const:`OPT_X_TLS_NEVER`
+      Don't check server cert and host name
+
+   :py:const:`OPT_X_TLS_ALLOW`
+      Ignore cert validation errors and don't check host name
+
+   :py:const:`OPT_X_TLS_DEMAND`
+      Validate peer cert chain and host name
+
+   :py:const:`OPT_X_TLS_HARD`
+      Same as :py:const:`OPT_X_TLS_DEMAND`
+
 .. py:data:: OPT_X_TLS_TRY
+
+   .. deprecated:: 3.0
+      This value is only used by slapd server internally. It will be removed
+      in the future.
+
+.. py:data:: OPT_X_TLS_VERSION
+
+   Get negotiated TLS protocol version as string
 
 .. _ldap-keepalive-options:
 
@@ -564,6 +690,8 @@ The above exceptions are raised when a result code from an underlying API
 call does not indicate success.
 
 
+.. _ldap-warnings:
+
 Warnings
 ========
 
@@ -572,6 +700,16 @@ Warnings
     Raised when bytes/text mismatch in non-strict bytes mode.
 
     See :ref:`bytes_mode` for details.
+
+    .. versionadded:: 3.0.0
+
+.. py:exception:: LDAPTLSWarning
+
+    Raised when python-ldap detects missing call of
+    :py:meth:`LDAPObject.set_option` with
+    option :py:const:`OPT_X_TLS_NEWCTX`.
+
+    See :ref:`ldap-tls-options` for details.
 
     .. versionadded:: 3.0.0
 

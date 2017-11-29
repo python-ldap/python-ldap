@@ -8,7 +8,9 @@ See https://www.python-ldap.org/ for details.
 from __future__ import unicode_literals
 
 import os
+import sys
 import unittest
+import warnings
 
 from slapdtest import SlapdTestCase, requires_tls
 
@@ -817,6 +819,18 @@ class TestLdapCExtension(SlapdTestCase):
                 l.sasl_interactive_bind_s, 'who', 'SASLObject', post=(1,))
         self.assertInvalidControls(l.unbind_ext)
 
+    def assertTLSError(self, exc):
+        self.assertIsInstance(exc, _ldap.CONNECT_ERROR)
+        # known resaons:
+        # Ubuntu on Travis: '(unknown error code)'
+        # OpenSSL 1.1: error:1416F086:SSL routines:\
+        #    tls_process_server_certificate:certificate verify failed
+        # NSS: TLS error -8172:Peer's certificate issuer has \
+        #    been marked as not trusted by the user.
+        candidates = ('certificate', 'tls', '(unknown error code)')
+        if not any(s in str(exc).lower() for s in candidates):
+            self.fail(exc)
+
     @requires_tls()
     def test_tls_ext(self):
         l = self._open_conn(bind=False)
@@ -833,16 +847,7 @@ class TestLdapCExtension(SlapdTestCase):
         l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
         with self.assertRaises(_ldap.CONNECT_ERROR) as e:
             l.start_tls_s()
-        # known resaons:
-        # Ubuntu on Travis: '(unknown error code)'
-        # OpenSSL 1.1: error:1416F086:SSL routines:\
-        #    tls_process_server_certificate:certificate verify failed
-        # NSS: TLS error -8172:Peer's certificate issuer has \
-        #    been marked as not trusted by the user.
-        msg = str(e.exception)
-        candidates = ('certificate', 'tls', '(unknown error code)')
-        if not any(s in msg.lower() for s in candidates):
-            self.fail(msg)
+        self.assertTLSError(e.exception)
 
     @requires_tls()
     def test_tls_ext_clientcert(self):
@@ -853,7 +858,35 @@ class TestLdapCExtension(SlapdTestCase):
         l.set_option(_ldap.OPT_X_TLS_KEYFILE, self.server.clientkey)
         l.set_option(_ldap.OPT_X_TLS_REQUIRE_CERT, _ldap.OPT_X_TLS_HARD)
         l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
-        l.start_tls_s()
+        with warnings.catch_warnings(record=True) as w:
+            warnings.resetwarnings()
+            warnings.simplefilter('once', _ldap.LDAPTLSWarning)
+            l.start_tls_s()
+        # No warning for OPT_X_TLS_NEWCTX
+        self.assertEqual(len(w), 0)
+
+    @requires_tls()
+    def test_tls_warn_newctx(self):
+        l = self._open_conn(bind=False)
+        l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
+        # don't check cert chain
+        l.set_option(_ldap.OPT_X_TLS_REQUIRE_CERT, _ldap.OPT_X_TLS_NEVER)
+        l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
+        # load CA cert but don't call NEWCTX
+        l.set_option(_ldap.OPT_X_TLS_CACERTFILE, self.server.cafile)
+        with warnings.catch_warnings(record=True) as w:
+            warnings.resetwarnings()
+            warnings.simplefilter('always', _ldap.LDAPTLSWarning)
+            # This emits one warning.
+            l.start_tls_s()
+        self.assertEqual(len(w), 1)
+        self.assertEqual(w[0].category, _ldap.LDAPTLSWarning)
+        self.assertEqual(
+            str(w[0].message),
+            "An OPT_X_TLS option was set but not applied. You must call "
+            "set_opt(ldap.OPT_X_TLS_NEWCTX, 0) on the connection to apply "
+            "new settings!"
+        )
 
     @requires_tls()
     def test_tls_packages(self):

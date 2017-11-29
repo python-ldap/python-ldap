@@ -11,6 +11,10 @@
 PyObject*
 LDAPexception_class;
 
+/* warnings */
+
+PyObject *LDAPTLSWarning_class;
+
 /* list of exception classes */
 
 #define LDAP_ERROR_MIN          LDAP_REFERRAL_LIMIT_EXCEEDED
@@ -149,6 +153,18 @@ LDAPinit_constants( PyObject* m )
     /* XXX - backward compatibility with pre-1.8 */
     if (PyModule_AddObject(m, "error", LDAPexception_class) != 0) return -1;
     Py_INCREF(LDAPexception_class);
+
+    /* TLS Warning */
+    LDAPTLSWarning_class = PyErr_NewException("ldap.LDAPTLSWarning",
+                                              PyExc_RuntimeWarning,
+                                              NULL);
+    if (LDAPTLSWarning_class == NULL) {
+        return -1;
+    }
+    if (PyModule_AddObject(m, "LDAPTLSWarning", LDAPTLSWarning_class) != 0) {
+        return -1;
+    }
+    Py_INCREF(LDAPTLSWarning_class);
 
     /* Generated constants -- see Lib/ldap/constants.py */
 

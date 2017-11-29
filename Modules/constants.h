@@ -11,6 +11,7 @@ extern int LDAPinit_constants( PyObject* m );
 extern PyObject* LDAPconstant( int );
 
 extern PyObject* LDAPexception_class;
+extern PyObject* LDAPTLSWarning_class;
 extern PyObject* LDAPerror( LDAP*, char*msg );
 PyObject* LDAPerr(int errnum);
 

@@ -9,7 +9,10 @@ PYTHON_SUPP=/usr/share/doc/python3-devel/valgrind-python.supp
 .NOTPARALLEL:
 
 .PHONY: all
-all:
+all: Modules/constants_generated.h
+
+Modules/constants_generated.h: Lib/ldap/constants.py
+	$(PYTHON) $^ > $@
 
 .PHONY: clean
 clean:

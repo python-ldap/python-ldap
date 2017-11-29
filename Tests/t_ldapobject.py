@@ -350,6 +350,9 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             "LDAP connection" % self.server.suffix
         )
 
+    def test_ldaptlswarning(self):
+        self.assertIsSubclass(ldap.LDAPBytesWarning, Warning)
+
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
     """
