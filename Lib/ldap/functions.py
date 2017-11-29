@@ -77,7 +77,7 @@ def initialize(uri,trace_level=0,trace_file=sys.stdout,trace_stack_limit=None, b
         File object where to write the trace output to.
         Default is to use stdout.
   bytes_mode
-        Whether to enable "bytes_mode" for backwards compatibility under Py2.
+        Whether to enable :ref:`bytes_mode` for backwards compatibility under Py2.
   """
   return LDAPObject(uri,trace_level,trace_file,trace_stack_limit,bytes_mode)
 
