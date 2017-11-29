@@ -1434,12 +1434,7 @@ static PyMethodDef methods[] = {
 /* type entry */
 
 PyTypeObject LDAP_Type = {
-#if defined(MS_WINDOWS) || defined(__CYGWIN__)
-        /* see http://www.python.org/doc/FAQ.html#3.24 */
         PyVarObject_HEAD_INIT(NULL, 0)
-#else /* ! MS_WINDOWS */
-        PyVarObject_HEAD_INIT(&PyType_Type, 0)
-#endif /* MS_WINDOWS */
         "LDAP",                 /*tp_name*/
         sizeof(LDAPObject),     /*tp_basicsize*/
         0,                      /*tp_itemsize*/
