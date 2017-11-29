@@ -60,11 +60,10 @@ LDAPerror( LDAP *l, char *msg )
     PyObject *info;
     PyObject *str;
     PyObject *pyerrno;
+    char *matched, *error;
 
     /* at first save errno for later use before it gets overwritten by another call */
     myerrno = errno;
-
-    char *matched, *error;
 
     opt_errnum = ldap_get_option(l, LDAP_OPT_ERROR_NUMBER, &errnum);
     if (opt_errnum != LDAP_OPT_SUCCESS)

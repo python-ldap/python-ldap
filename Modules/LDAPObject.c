@@ -998,6 +998,9 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
     int res_msgid = 0;
     char *retoid = 0;
     PyObject *valuestr = NULL;
+    int result = LDAP_SUCCESS;
+    char **refs = NULL;
+    LDAPControl **serverctrls = 0;
 
     if (!PyArg_ParseTuple( args, "|iidiii", &msgid, &all, &timeout, &add_ctrls, &add_intermediates, &add_extop ))
         return NULL;
@@ -1033,9 +1036,6 @@ l_ldap_result4( LDAPObject* self, PyObject *args )
     if (msg)
         res_msgid = ldap_msgid(msg);
 
-    int result = LDAP_SUCCESS;
-    char **refs = NULL;
-    LDAPControl **serverctrls = 0;
     if (res_type == LDAP_RES_SEARCH_ENTRY) {
         /* LDAPmessage_to_python will parse entries and read the controls for each entry */
     } else if (res_type == LDAP_RES_SEARCH_REFERENCE) {
