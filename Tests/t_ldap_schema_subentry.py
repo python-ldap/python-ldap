@@ -7,11 +7,16 @@ See https://www.python-ldap.org/ for details.
 
 import os
 import unittest
-import time
+
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
+import ldap
 
 import ldif
+from ldap.ldapobject import SimpleLDAPObject
 import ldap.schema
 from ldap.schema.models import ObjectClass
+from slapdtest import SlapdTestCase
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -42,6 +47,49 @@ class TestSubschemaLDIF(unittest.TestCase):
                     self.assertEqual(attributetype.oid, oid)
                 for oid, attributetype in may.items():
                     self.assertEqual(attributetype.oid, oid)
+
+
+class TestSubschemaUrlfetch(unittest.TestSuite):
+    def test_urlfetch_file(self):
+        freeipa_uri = 'file://{}'.format(TEST_SUBSCHEMA_FILES[0])
+        dn, schema = ldap.schema.urlfetch(freeipa_uri)
+        self.assertEqual(dn, 'cn=schema')
+        self.assertIsInstance(schema, ldap.schema.subentry.SubSchema)
+        obj = schema.get_obj(ObjectClass, '2.5.6.9')
+        self.assertEqual(
+            str(obj),
+            "( 2.5.6.9 NAME 'groupOfNames' SUP top STRUCTURAL MUST cn "
+            "MAY ( member $ businessCategory $ seeAlso $ owner $ ou $ o "
+            "$ description ) )"
+        )
+
+
+class TestSubschemaUrlfetchSlapd(SlapdTestCase):
+    ldap_object_class = SimpleLDAPObject
+
+    def assertSlapdSchema(self, dn, schema):
+        self.assertEqual(dn, 'cn=Subschema')
+        self.assertIsInstance(schema, ldap.schema.subentry.SubSchema)
+        obj = schema.get_obj(ObjectClass, '1.3.6.1.1.3.1')
+        self.assertEqual(
+            str(obj),
+            "( 1.3.6.1.1.3.1 NAME 'uidObject' DESC 'RFC2377: uid object' "
+            "SUP top AUXILIARY MUST uid )"
+        )
+        entries = schema.ldap_entry()
+        self.assertIsInstance(entries, dict)
+        self.assertEqual(sorted(entries), [
+            'attributeTypes', 'ldapSyntaxes', 'matchingRuleUse',
+            'matchingRules', 'objectClasses',
+        ])
+
+    def test_urlfetch_ldap(self):
+        dn, schema = ldap.schema.urlfetch(self.server.ldap_uri)
+        self.assertSlapdSchema(dn, schema)
+
+    def test_urlfetch_ldapi(self):
+        dn, schema = ldap.schema.urlfetch(self.server.ldapi_uri)
+        self.assertSlapdSchema(dn, schema)
 
 
 if __name__ == '__main__':

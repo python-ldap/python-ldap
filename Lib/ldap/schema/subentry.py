@@ -452,7 +452,7 @@ def urlfetch(uri,trace_level=0):
   is loaded with urllib.
   """
   uri = uri.strip()
-  if uri.startswith('ldap:') or uri.startswith('ldaps:') or uri.startswith('ldapi:'):
+  if uri.startswith(('ldap:', 'ldaps:', 'ldapi:')):
     import ldapurl
     ldap_url = ldapurl.LDAPUrl(uri)
 
