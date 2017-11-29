@@ -64,8 +64,8 @@ Unofficial packages for Windows are available on
 `Christoph Gohlke's page <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_.
 
 
-`FreeBSD <https://www.freebsd.org/`_
-------------------------------------
+`FreeBSD <https://www.freebsd.org/>`_
+-------------------------------------
 
 The CVS repository of FreeBSD contains the package
 `py-ldap <https://svnweb.freebsd.org/ports/head/net/py-ldap/>`_
