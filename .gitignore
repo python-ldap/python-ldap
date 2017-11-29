@@ -17,3 +17,6 @@ __pycache__/
 build/
 dist/
 PKG-INFO
+
+# generated in the sample workflow
+/__venv__/

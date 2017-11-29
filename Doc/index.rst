@@ -29,6 +29,10 @@ Get it!
 :ref:`Installation instructions <installing>` are available for
 several platforms.
 
+Source code can be obtained using Git::
+
+    git clone https://github.com/python-ldap/python-ldap
+
 
 Mailing list
 ------------
@@ -66,6 +70,7 @@ Contents
    installing.rst
    reference/index.rst
    resources.rst
+   contributing.rst
    faq.rst
 
 

@@ -29,6 +29,8 @@ clientctrls
 conf
 controlType
 controlValue
+committers
+CPython
 criticality
 cryptographic
 Cyrus
@@ -92,6 +94,7 @@ oc
 oid
 oids
 OpenLDAP
+Pagure
 postalAddress
 pre
 previousDN
@@ -148,3 +151,4 @@ userPassword
 usr
 uuids
 whitespace
+workflow
