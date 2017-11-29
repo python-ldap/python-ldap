@@ -37,6 +37,14 @@ matrix:
     - python: 3.6
       env: TOXENV=doc
 
+env:
+    global:
+        # -Wno-int-in-bool-context: don't complain about PyMem_MALLOC()
+        # -Werror: turn all warnings into fatal errors
+        - CFLAGS="-Wno-int-in-bool-context -Werror"
+        # pass CFLAGS and WITH_GCOV to tox tasks
+        - TOX_TESTENV_PASSENV="CFLAGS WITH_GCOV"
+
 install:
   - pip install "pip>=7.1.0"
   - pip install tox-travis tox codecov coverage
