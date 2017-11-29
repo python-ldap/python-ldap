@@ -1,60 +1,9 @@
-------------------------------
-Installing python-ldap
-------------------------------
-
-Prerequisites:
-
-  Required:
-
-    - Python 2.3 or newer (see http://www.python.org)
-
-    - OpenLDAP 2.4.11+ client libs (see http://www.openldap.org)
-      It is not possible and not supported
-      by the python-ldap project to build with prior versions.
-
-  Optional dependencies of OpenLDAP libs:
-
-    - Cyrus SASL 2.1.x or newer (see http://asg.web.cmu.edu/sasl/sasl-library.html)
-
-    - OpenSSL 0.9.7 or newer (see http://www.openssl.org)
-    
-    - MIT Kerberos or heimdal libs
-
 Quick build instructions:
+
     edit setup.cfg (see Build/ for platform-specific examples)
     python setup.py build
     python setup.py install
 
---------------------
-Reference leak tests
---------------------
+Detailed instructions are in Doc/installing.rst, or online at:
 
-Reference leak tests require a pydebug build of CPython and pytest with
-pytest-leaks plugin. A pydebug build has a global reference counter, which
-keeps track of all reference increments and decrements. The leak plugin runs
-each tests multiple times and checks if the reference count increases.
-
-Download and compile pydebug build
-----------------------------------
-
-- curl -O https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tar.xz
-- tar xJf Python-3.6.3.tar.xz
-- cd Python-3.6.3
-- ./configure --with-pydebug
-- make
-
-Create virtual env
-------------------
-
-- ./python -m venv /tmp/refleak
-- /tmp/refleak/bin/pip install pytest pytest-leaks
-
-Run refleak tests
------------------
-
-- cd path/to/python-ldap
-- /tmp/refleak/bin/pip install --upgrade .
-- /tmp/refleak/bin/pytest -v -R: Tests/t_*.py
-
-Run ``/tmp/refleak/bin/pip install --upgrade .`` every time a file outside
-of ``Tests/`` is modified.
+    http://python-ldap.readthedocs.io/en/latest/installing.html
