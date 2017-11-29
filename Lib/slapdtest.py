@@ -43,6 +43,11 @@ TLSCertificateFile "%(servercert)s"
 TLSCertificateKeyFile "%(serverkey)s"
 # ignore missing client cert but fail with invalid client cert
 TLSVerifyClient try
+
+authz-regexp
+    "C=DE, O=python-ldap, OU=slapd-test, CN=([A-Za-z]+)"
+    "ldap://ou=people,dc=local???($1)"
+
 """
 
 LOCALHOST = '127.0.0.1'
@@ -289,6 +294,7 @@ class SlapdObject(object):
         slapd_args = [
             self.PATH_SLAPD,
             '-f', self._slapd_conf,
+            '-F', self.testrundir,
             '-h', '%s' % ' '.join((self.ldap_uri, self.ldapi_uri)),
         ]
         if self._log.isEnabledFor(logging.DEBUG):
