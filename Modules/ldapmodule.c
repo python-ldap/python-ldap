@@ -41,10 +41,6 @@ PyObject* init_ldap_module(void)
 {
 	PyObject *m, *d;
 
-	/* Initialize LDAP class */
-	if (PyType_Ready(&LDAP_Type) < 0)
-		return NULL;
-
 	/* Create the module and add the functions */
 #if PY_MAJOR_VERSION >= 3
         static struct PyModuleDef ldap_moduledef = {
@@ -58,6 +54,11 @@ PyObject* init_ldap_module(void)
 #else
 	m = Py_InitModule("_ldap", methods);
 #endif
+        /* Initialize LDAP class */
+        if (PyType_Ready(&LDAP_Type) < 0) {
+		Py_DECREF(m);
+		return NULL;
+	}
 
 	/* Add some symbolic constants to the module */
 	d = PyModule_GetDict(m);

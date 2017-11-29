@@ -92,10 +92,11 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 	 ) {
 	     PyObject* valuelist;
 	     PyObject* pyattr;
+	     struct berval **bvals;
+
 	     pyattr = PyUnicode_FromString(attr);
 
-	     struct berval ** bvals =
-	     	ldap_get_values_len( ld, entry, attr );
+	     bvals = ldap_get_values_len( ld, entry, attr );
 
 	     /* Find which list to append to */
 	     if ( PyDict_Contains( attrdict, pyattr ) ) {
