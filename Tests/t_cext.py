@@ -835,7 +835,6 @@ class TestLdapCExtension(SlapdTestCase):
         l.set_option(_ldap.OPT_X_TLS_REQUIRE_CERT, _ldap.OPT_X_TLS_HARD)
         l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
         l.start_tls_s()
-        # TODO verify that client auth actually works
 
 if __name__ == '__main__':
     unittest.main()
