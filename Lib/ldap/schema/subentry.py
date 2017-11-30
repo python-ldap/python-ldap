@@ -456,10 +456,9 @@ def urlfetch(uri,trace_level=0):
     import ldapurl
     ldap_url = ldapurl.LDAPUrl(uri)
 
-    # This is an internal function; don't enable bytes_mode.
-    l=ldap.initialize(ldap_url.initializeUrl(),trace_level,bytes_mode=False)
+    l=ldap.initialize(ldap_url.initializeUrl(),trace_level)
     l.protocol_version = ldap.VERSION3
-    l.simple_bind_s(ldap_url.who or '', ldap_url.cred or '')
+    l.simple_bind_s(ldap_url.who or u'', ldap_url.cred or u'')
     subschemasubentry_dn = l.search_subschemasubentry_s(ldap_url.dn)
     if subschemasubentry_dn is None:
       s_temp = None
