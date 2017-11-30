@@ -10,64 +10,64 @@ else:
     text_type = str
 
 import ldap, unittest
-from slapdtest import SlapdObject
+from slapdtest import SlapdTestCase
 
 from ldap.ldapobject import LDAPObject
 
-server = None
 
+class EditionTests(SlapdTestCase):
 
-class EditionTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(EditionTests, cls).setUpClass()
+        base = cls.server.suffix
+        suffix_dc = base.split(',')[0][3:]
+
+        # insert some Foo* objects via ldapadd
+        cls.server.ldapadd("\n".join([
+            'dn: '+cls.server.suffix,
+            'objectClass: dcObject',
+            'objectClass: organization',
+            'dc: '+suffix_dc,
+            'o: '+suffix_dc,
+            '',
+            'dn: '+cls.server.root_dn,
+            'objectClass: applicationProcess',
+            'cn: '+cls.server.root_cn,
+            '',
+            "dn: cn=Foo1,"+base,
+            "objectClass: organizationalRole",
+            "cn: Foo1",
+            "",
+            "dn: cn=Foo2,"+base,
+            "objectClass: organizationalRole",
+            "cn: Foo2",
+            "",
+            "dn: cn=Foo3,"+base,
+            "objectClass: organizationalRole",
+            "cn: Foo3",
+            "",
+            "dn: ou=Container,"+base,
+            "objectClass: organizationalUnit",
+            "ou: Container",
+            "",
+            "dn: cn=Foo4,ou=Container,"+base,
+            "objectClass: organizationalRole",
+            "cn: Foo4",
+            "",
+        ])+"\n")
 
     def setUp(self):
-        global server
-        if server is None:
-            server = SlapdObject()
-            server.start()
-            base = server.suffix
-            suffix_dc = base.split(',')[0][3:]
+        self.ldap = LDAPObject(self.server.ldap_uri, bytes_mode=False)
+        self.ldap.protocol_version = 3
+        self.ldap.set_option(ldap.OPT_REFERRALS, 0)
+        self.ldap.simple_bind_s(
+            self.server.root_dn,
+            self.server.root_pw
+        )
 
-            # insert some Foo* objects via ldapadd
-            server.ldapadd("\n".join([
-                'dn: '+server.suffix,
-                'objectClass: dcObject',
-                'objectClass: organization',
-                'dc: '+suffix_dc,
-                'o: '+suffix_dc,
-                '',
-                'dn: '+server.root_dn,
-                'objectClass: applicationProcess',
-                'cn: '+server.root_cn,
-                '',
-                "dn: cn=Foo1,"+base,
-                "objectClass: organizationalRole",
-                "cn: Foo1",
-                "",
-                "dn: cn=Foo2,"+base,
-                "objectClass: organizationalRole",
-                "cn: Foo2",
-                "",
-                "dn: cn=Foo3,"+base,
-                "objectClass: organizationalRole",
-                "cn: Foo3",
-                "",
-                "dn: ou=Container,"+base,
-                "objectClass: organizationalUnit",
-                "ou: Container",
-                "",
-                "dn: cn=Foo4,ou=Container,"+base,
-                "objectClass: organizationalRole",
-                "cn: Foo4",
-                "",
-            ])+"\n")
-
-        l = LDAPObject(server.ldap_uri, bytes_mode=False)
-        l.protocol_version = 3
-        l.set_option(ldap.OPT_REFERRALS,0)
-        l.simple_bind_s(server.root_dn,
-                server.root_pw)
-        self.ldap = l
-        self.server = server
+    def tearDown(self):
+        self.ldap.unbind()
 
     def test_add_object(self):
         base = self.server.suffix
