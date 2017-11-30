@@ -1,6 +1,6 @@
-include MANIFEST.in Makefile CHANGES INSTALL LICENCE README TODO PKG-INFO
+include MANIFEST.in Makefile CHANGES INSTALL LICENCE README TODO
 include tox.ini .coveragerc
-include Modules/*.c Modules/*.h Modules/LICENSE
+include Modules/*.c Modules/*.h
 recursive-include Build *.cfg*
 recursive-include Lib *.py
 recursive-include Demo *.py
