@@ -14,7 +14,7 @@ os.environ['LDAPNOINIT'] = '1'
 
 from ldap.ldapobject import SimpleLDAPObject
 import ldap.sasl
-from slapdtest import SlapdTestCase
+from slapdtest import SlapdTestCase, requires_tls
 
 
 LDIF = """
@@ -75,6 +75,7 @@ class TestSasl(SlapdTestCase):
             "dn:{}".format(self.server.root_dn.lower())
         )
 
+    @requires_tls(skip_nss=True)
     def test_external_tlscert(self):
         ldap_conn = self.ldap_object_class(self.server.ldap_uri)
         ldap_conn.set_option(ldap.OPT_X_TLS_CACERTFILE, self.server.cafile)
@@ -82,12 +83,7 @@ class TestSasl(SlapdTestCase):
         ldap_conn.set_option(ldap.OPT_X_TLS_KEYFILE, self.server.clientkey)
         ldap_conn.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_HARD)
         ldap_conn.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
-        try:
-            ldap_conn.start_tls_s()
-        except ldap.CONNECT_ERROR as e:
-            # TODO: On Fedora 27 OpenLDAP server refuses STARTTLS when test
-            # is executed with other tests,
-            raise unittest.SkipTest("buggy start_tls_s: {}".format(e))
+        ldap_conn.start_tls_s()
 
         auth = ldap.sasl.external()
         ldap_conn.sasl_interactive_bind_s("", auth)

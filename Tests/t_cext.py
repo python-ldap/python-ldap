@@ -9,7 +9,8 @@ from __future__ import unicode_literals
 
 import os
 import unittest
-from slapdtest import SlapdTestCase
+
+from slapdtest import SlapdTestCase, requires_tls
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
@@ -717,12 +718,6 @@ class TestLdapCExtension(SlapdTestCase):
             return
         # TODO
 
-    def test_tls(self):
-        l = self._open_conn()
-        if not self._require_attr(l, 'start_tls_s'):    # HAVE_TLS
-            return
-        # TODO
-
     def test_cancel(self):
         l = self._open_conn()
         if not self._require_attr(l, 'cancel'):         # FEATURE_CANCEL
@@ -807,7 +802,7 @@ class TestLdapCExtension(SlapdTestCase):
                 l.sasl_interactive_bind_s, 'who', 'SASLObject', post=(1,))
         self.assertInvalidControls(l.unbind_ext)
 
-    @unittest.skipUnless(_ldap.TLS_AVAIL, "needs tls")
+    @requires_tls(skip_nss=True)
     def test_tls_ext(self):
         l = self._open_conn(bind=False)
         # StartTLS needs LDAPv3
@@ -817,15 +812,17 @@ class TestLdapCExtension(SlapdTestCase):
         l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
         l.start_tls_s()
 
-    @unittest.skipUnless(_ldap.TLS_AVAIL, "needs tls")
+    @requires_tls(skip_nss=False)
     def test_tls_ext_noca(self):
         l = self._open_conn(bind=False)
         l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
-        l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
-        with self.assertRaises(_ldap.CONNECT_ERROR):
+        with self.assertRaises(_ldap.CONNECT_ERROR) as e:
             l.start_tls_s()
+        # some platforms return '(unknown error code)' as reason
+        if '(unknown error code)' not in str(e.exception):
+            self.assertIn('not trusted', str(e.exception))
 
-    @unittest.skipUnless(_ldap.TLS_AVAIL, "needs tls")
+    @requires_tls(skip_nss=True)
     def test_tls_ext_clientcert(self):
         l = self._open_conn(bind=False)
         l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
@@ -835,6 +832,13 @@ class TestLdapCExtension(SlapdTestCase):
         l.set_option(_ldap.OPT_X_TLS_REQUIRE_CERT, _ldap.OPT_X_TLS_HARD)
         l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
         l.start_tls_s()
+
+    @requires_tls(skip_nss=False)
+    def test_tls_packages(self):
+        # libldap has tls_g.c, tls_m.c, and tls_o.c with ldap_int_tls_impl
+        package = _ldap.get_option(_ldap.OPT_X_TLS_PACKAGE)
+        self.assertIn(package, {"GnuTLS", "MozNSS", "OpenSSL"})
+
 
 if __name__ == '__main__':
     unittest.main()

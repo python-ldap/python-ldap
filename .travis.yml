@@ -43,8 +43,8 @@ env:
         # -Werror: turn all warnings into fatal errors
         # -Werror=declaration-after-statement: strict ISO C90
         - CFLAGS="-std=c90 -Wno-int-in-bool-context -Werror -Werror=declaration-after-statement"
-        # pass CFLAGS and WITH_GCOV to tox tasks
-        - TOX_TESTENV_PASSENV="CFLAGS WITH_GCOV"
+        # pass CFLAGS, CI (for Travis CI) and WITH_GCOV to tox tasks
+        - TOX_TESTENV_PASSENV="CFLAGS CI WITH_GCOV"
 
 install:
   - pip install "pip>=7.1.0"

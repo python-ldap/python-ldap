@@ -18,6 +18,10 @@ import atexit
 from logging.handlers import SysLogHandler
 import unittest
 
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
+
+import ldap
 from ldap.compat import quote_plus
 
 # a template string for generating simple slapd.conf file
@@ -51,6 +55,41 @@ authz-regexp
 """
 
 LOCALHOST = '127.0.0.1'
+
+
+def identity(test_item):
+    """Identity decorator
+
+    """
+    return test_item
+
+
+def skip_unless_travis(reason):
+    """Skip test unless test case is executed on CI like Travis CI
+    """
+    if os.environ.get('CI', False):
+        return identity
+    else:
+        return unittest.skip(reason)
+
+
+def requires_tls(skip_nss=False):
+    """Decorator for TLS tests
+
+    Tests are not skipped on CI (e.g. Travis CI)
+    
+    :param skip_nss: Skip test when libldap is compiled with NSS as TLS lib
+    """
+    if not ldap.TLS_AVAIL:
+        return skip_unless_travis("test needs ldap.TLS_AVAIL")
+    elif skip_nss and ldap.get_option(ldap.OPT_X_TLS_PACKAGE) == 'MozNSS':
+        return skip_unless_travis(
+            "Test doesn't work correctly with Mozilla NSS, see "
+            "https://bugzilla.redhat.com/show_bug.cgi?id=1519167"
+        )
+    else:
+        return identity
+
 
 def combined_logger(
         log_name,
