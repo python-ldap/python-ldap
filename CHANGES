@@ -3,11 +3,16 @@ Released 3.0.0 xxxx-xx-xx
 
 Changes since 2.4.45:
 
-Mandatory prerequisites:
-- Python 2.7.x or 3.3+
-- pyasn1 0.3.7+ and pyasn1_modules 0.1.5+
+New dependencies (automatically installed when using pip):
+- pyasn1 0.3.7+
+- pyasn1_modules 0.1.5+
 
-Python 3 support is merged from the pyldap fork (https://github.com/pyldap)
+Removed support for Python 2.6.
+
+Python 3 support and bytes_mode:
+- merged from the pyldap fork (https://github.com/pyldap)
+- please see documentation on bytes_mode and text/bytes handling:
+    https://python-ldap.readthedocs.io/en/latest/bytes_mode.html
 
 Infrastructure:
 - Add .gitignore
