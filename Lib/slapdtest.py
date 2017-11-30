@@ -7,7 +7,7 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import unicode_literals
 
-__version__ = '2.5.2'
+__version__ = '3.0.0b1'
 
 import os
 import socket
