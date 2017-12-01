@@ -1,26 +1,39 @@
 ----------------------------------------------------------------
-Released 3.0.0 xxxx-xx-xx
+Released 3.0.0b1 xxxx-xx-xx
 
 Changes since 2.4.45:
+(this list includes changes from 2.5.x)
 
 New dependencies (automatically installed when using pip):
-- pyasn1 0.3.7+
-- pyasn1_modules 0.1.5+
+* pyasn1 0.3.7+
+* pyasn1_modules 0.1.5+
+
+Python 3 support and bytes_mode:
+* merged from the pyldap fork (https://github.com/pyldap)
+* please see documentation on bytes_mode and text/bytes handling:
+    https://python-ldap.readthedocs.io/en/latest/bytes_mode.html
 
 Removed support for Python 2.6.
 
-Python 3 support and bytes_mode:
-- merged from the pyldap fork (https://github.com/pyldap)
-- please see documentation on bytes_mode and text/bytes handling:
-    https://python-ldap.readthedocs.io/en/latest/bytes_mode.html
-
 Infrastructure:
-- Add .gitignore
-- Re-format README to ReStructured Text
-- Setup for automatic testing using Travis CI
+* Move to Git
+* Don't define search path for includes and libs in the default setup.cfg
+* Include sasl/sasl.h from the standard path
+* Re-format README to ReStructured Text
+* Setup for automatic testing using Travis CI
+* Add coverage reporting for Python and C
+* Add install requires into setup.py
+* Remove distclean.sh in favor of make clean
+* Use `package`, `depends`, `install_requires` in setup.py
+* Add make target for scan-build (static analysis using clang)
 
 Modules/
-(thanks to Michael Ströder)
+* Remove unused LDAPberval helper functions
+* Fix type conversion in page control
+* Fix multiple ref leaks in error-handling code
+* Fix reference leak in result4
+* Fix several compiler warnings
+and, thanks to Michael Ströder:
 * removed unused code schema.c
 * moved code from version.c to ldapmodule.c
 * removed obsolete back-ward compability constants from common.h
@@ -29,7 +42,9 @@ Modules/
 * assume C extension API for Python 2.7+
 
 Lib/
-(thanks to Michael Ströder)
+* Avoid eval() for getting module-level variables to fix running under pytest
+* Compability changes for pyasn1 0.3 or newer
+and, thanks to Michael Ströder:
 * ldap.__version__, ldap.__author__ and ldap.__license__ now
   imported from new sub-module ldap.pkginfo also to setup.py
 * Added safety assertion when importing _ldap:
@@ -37,8 +52,6 @@ Lib/
 * removed stand-alone module dsml
 * slapdtest.SlapdObject.restart() just restarts slapd
   without cleaning any data
-* Compability changes for pyasn1 0.3.x or newer
-  (thanks to Ilya Etingof and Christian Heimes)
 * The methods SSSResponseControl.decodeControlValue() and
   VLVResponseControl.decodeControlValue() now follow the coding
   convention to use camel-cased ASN.1 name as class attribute name.
@@ -60,21 +73,31 @@ Lib/
 Lib/slapdtest.py
 * Automatically try some common locations for SCHEMADIR
 * Ensure server is stopped when the process exits
+* Check for LDAP schema and slapd binaries
 
 Tests/
-(thanks to Michael Ströder)
-* added explicit reconnect tests for ReconnectLDAPObject
-* scripts do not directly call SlapdTestCase.setUpClass() anymore
-* added LDIF test with folded, base64-encoded attribute
-* added more tests for sub-module ldap.dn
-* added tests for ldap.syncrepl (thanks to Karl Kornel)
-
-Tests/
-(thanks to pyldap contributors):
 * Expand cidict membership test
 * Add test suite for binds
 * Add test suite for edits
 * Add a smoke-check for listall() and attribute_types()
+* Add test case for SASL EXTERNAL auth
+* Add tests for start_tls
+* In CI, treat compiler warnings as fatal errors
+* Added tests for ldap.syncrepl
+and, thanks to Michael Ströder:
+* added explicit reconnect tests for ReconnectLDAPObject
+* scripts do not directly call SlapdTestCase.setUpClass() anymore
+* added LDIF test with folded, base64-encoded attribute
+* added more tests for sub-module ldap.dn
+
+Doc/
+* Build documentation without the compiled C extension
+* Merge contents from python-ldap.org
+* Move reference documentation in its own section
+* Document return value of {modify,add,delete}_ext_s() as a tuple
+* Add tests for documentation (build & spelling)
+* Link to documentation of old versions
+* Add a contributing guide
 
 ----------------------------------------------------------------
 Released 2.4.45 2017-10-09
