@@ -18,7 +18,7 @@ In python-ldap 2.x (for Python 2), bytes were used for all fields,
 including those guaranteed to be text.
 
 From version 3.0, python-ldap uses text where appropriate.
-On Python 2, the `bytes mode <bytes_mode>`_ setting influences how text is
+On Python 2, the :ref:`bytes mode <bytes_mode>` setting influences how text is
 handled.
 
 
