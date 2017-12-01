@@ -112,8 +112,8 @@ on the local system when building python-ldap:
 
 - `Python`_ version 2.7, or 3.3 or later including its development files
 - C compiler corresponding to your Python version (on Linux, it is usually ``gcc``)
-- `OpenLDAP`_ client libs version 2.4.11 or later
-  It is not possible and not supported to build with prior versions.
+- `OpenLDAP`_ client libs version 2.4.11 or later;
+  it is not possible and not supported to build with prior versions.
 - `OpenSSL`_ (optional)
 - `Cyrus SASL`_ (optional)
 - Kerberos libraries, MIT or Heimdal (optional)
