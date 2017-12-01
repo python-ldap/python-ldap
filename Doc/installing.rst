@@ -44,10 +44,10 @@ hit a problem already fixed in recent releases.
 `openSUSE Linux <https://www.opensuse.org/>`_
 ---------------------------------------------
 
-ships with python-ldap and there's an additional
+Ships with python-ldap and there's an additional
 `download repository <http://download.opensuse.org/repositories/devel:/languages:/python/>`_
 which contains builds of latest releases
-(see also `OBS package <https://build.opensuse.org/package/show/devel:languages:python/python-ldap>`_
+(see also `OBS package <https://build.opensuse.org/package/show/devel:languages:python/python-ldap>`_).
 
 `Debian Linux <https://www.debian.org>`_
 ----------------------------------------
