@@ -3,6 +3,14 @@
 Installing python-ldap
 ######################
 
+.. warning::
+
+    You are reading documentation for an unreleased version.
+
+    Following these instructions will currently get you version 2.5.2,
+    which does not support Python 3.
+
+
 Installing from PyPI
 ====================
 
