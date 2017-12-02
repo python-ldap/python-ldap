@@ -5,3 +5,5 @@ recursive-include Build *.cfg*
 recursive-include Lib *.py
 recursive-include Demo *.py
 recursive-include Tests *.py *.ldif
+recursive-include Doc *.rst conf.py spelling_wordlist.txt Makefile
+prune Doc/.build
