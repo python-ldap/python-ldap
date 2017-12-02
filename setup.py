@@ -175,13 +175,14 @@ setup(
   py_modules = [
     'ldapurl',
     'ldif',
-    'slapdtest',
+
   ],
   packages = [
     'ldap',
     'ldap.controls',
     'ldap.extop',
     'ldap.schema',
+    'slapdtest',
   ],
   package_dir = {'': 'Lib',},
   data_files = LDAP_CLASS.extra_files,

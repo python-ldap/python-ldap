@@ -24,6 +24,8 @@ os.environ['LDAPNOINIT'] = '1'
 import ldap
 from ldap.compat import quote_plus
 
+HERE = os.path.abspath(os.path.dirname(__file__))
+
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_TEMPLATE = r"""
 serverID %(serverid)s
@@ -191,14 +193,11 @@ class SlapdObject(object):
         ldapi_path = os.path.join(self.testrundir, 'ldapi')
         self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
         # TLS certs
-        capath = os.path.abspath(os.path.join(
-            os.getcwd(), 'Tests/certs'
-        ))
-        self.cafile = os.path.join(capath, 'ca.pem')
-        self.servercert = os.path.join(capath, 'server.pem')
-        self.serverkey = os.path.join(capath, 'server.key')
-        self.clientcert = os.path.join(capath, 'client.pem')
-        self.clientkey = os.path.join(capath, 'client.key')
+        self.cafile = os.path.join(HERE, 'certs/ca.pem')
+        self.servercert = os.path.join(HERE, 'certs/server.pem')
+        self.serverkey = os.path.join(HERE, 'certs/server.key')
+        self.clientcert = os.path.join(HERE, 'certs/client.pem')
+        self.clientkey = os.path.join(HERE, 'certs/client.key')
 
     def _check_requirements(self):
         binaries = [
