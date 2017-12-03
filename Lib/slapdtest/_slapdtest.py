@@ -64,13 +64,16 @@ def identity(test_item):
     return test_item
 
 
-def skip_unless_ci(reason):
+def skip_unless_ci(reason, feature=None):
     """Skip test unless test case is executed on CI like Travis CI
     """
-    if os.environ.get('CI', False):
-        return identity
-    else:
+    if not os.environ.get('CI', False):
         return unittest.skip(reason)
+    elif feature in os.environ.get('CI_DISABLED', '').split(':'):
+        return unittest.skip(reason)
+    else:
+        # Don't skip on Travis
+        return identity
 
 
 def requires_tls(skip_nss=False):
@@ -81,12 +84,21 @@ def requires_tls(skip_nss=False):
     :param skip_nss: Skip test when libldap is compiled with NSS as TLS lib
     """
     if not ldap.TLS_AVAIL:
-        return skip_unless_ci("test needs ldap.TLS_AVAIL")
+        return skip_unless_ci("test needs ldap.TLS_AVAIL", feature='TLS')
     elif skip_nss and ldap.get_option(ldap.OPT_X_TLS_PACKAGE) == 'MozNSS':
         return skip_unless_ci(
             "Test doesn't work correctly with Mozilla NSS, see "
-            "https://bugzilla.redhat.com/show_bug.cgi?id=1519167"
+            "https://bugzilla.redhat.com/show_bug.cgi?id=1519167",
+            feature="NSS"
         )
+    else:
+        return identity
+
+
+def requires_sasl():
+    if not ldap.SASL_AVAIL:
+        return skip_unless_ci(
+            "test needs ldap.SASL_AVAIL", feature='SASL')
     else:
         return identity
 

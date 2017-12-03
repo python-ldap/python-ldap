@@ -14,7 +14,7 @@ os.environ['LDAPNOINIT'] = '1'
 
 from ldap.ldapobject import SimpleLDAPObject
 import ldap.sasl
-from slapdtest import SlapdTestCase, requires_tls
+from slapdtest import SlapdTestCase, requires_sasl, requires_tls
 
 
 LDIF = """
@@ -39,6 +39,7 @@ cn: {certuser}
 """
 
 
+@requires_sasl()
 class TestSasl(SlapdTestCase):
     ldap_object_class = SimpleLDAPObject
     # from Tests/certs/client.pem

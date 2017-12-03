@@ -212,6 +212,21 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertNotNone(_ldap.URL_ERR_BADSCOPE)
         self.assertNotNone(_ldap.URL_ERR_MEM)
 
+    def test_test_flags(self):
+        # test flag, see slapdtest and tox.ini
+        disabled = os.environ.get('CI_DISABLED')
+        if not disabled:
+            self.skipTest("No CI_DISABLED env var")
+        disabled = set(disabled.split(':'))
+        if 'TLS' in disabled:
+            self.assertFalse(_ldap.TLS_AVAIL)
+        else:
+            self.assertFalse(_ldap.TLS_AVAIL)
+        if 'SASL' in disabled:
+            self.assertFalse(_ldap.SASL_AVAIL)
+        else:
+            self.assertFalse(_ldap.SASL_AVAIL)
+
     def test_simple_bind(self):
         l = self._open_conn()
 
