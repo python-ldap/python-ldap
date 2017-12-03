@@ -140,10 +140,20 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
 	    if (!PyArg_Parse(value, "d:set_option", &doubleval))
 		return 0;
             if (doubleval >= 0) {
-	        set_timeval_from_double( &tv, doubleval );
+                set_timeval_from_double( &tv, doubleval );
+                ptr = &tv;
+            } else if (doubleval == -1) {
+                /* -1 is infinity timeout */
+                tv.tv_sec = -1;
+                tv.tv_usec = 0;
                 ptr = &tv;
             } else {
-    	        ptr = NULL;
+                PyErr_Format(
+                    PyExc_ValueError,
+                    "timeout must be >= 0 or -1 for infinity, got %d",
+                    option
+                );
+                return 0;
             }
 	    break;
     case LDAP_OPT_SERVER_CONTROLS:
