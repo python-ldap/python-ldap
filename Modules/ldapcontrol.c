@@ -343,16 +343,33 @@ encode_assertion_control(PyObject *self, PyObject *args)
         goto endlbl;
     }
 
+    /* XXX: ldap_create() is a nasty and slow hack. It's creating a full blown
+     * LDAP object just to encode assertion controls.
+     */
+    Py_BEGIN_ALLOW_THREADS
     err = ldap_create(&ld);
+    Py_END_ALLOW_THREADS
+
     if (err != LDAP_SUCCESS)
     	return LDAPerror(ld, "ldap_create");
 
     err = ldap_create_assertion_control_value(ld,assertion_filterstr,&ctrl_val);
-    if (err != LDAP_SUCCESS)
-    	return LDAPerror(ld, "ldap_create_assertion_control_value");
+
+    if (err != LDAP_SUCCESS) {
+        LDAPerror(ld, "ldap_create_assertion_control_value");
+        Py_BEGIN_ALLOW_THREADS
+        ldap_unbind_ext(ld, NULL, NULL);
+        Py_END_ALLOW_THREADS
+        return NULL;
+    }
+    Py_BEGIN_ALLOW_THREADS
+    ldap_unbind_ext(ld, NULL, NULL);
+    Py_END_ALLOW_THREADS
 
     res = LDAPberval_to_object(&ctrl_val);
-
+    if (ctrl_val.bv_val != NULL) {
+        ber_memfree(ctrl_val.bv_val);
+    }
     endlbl:
 
     return res;
@@ -371,5 +388,3 @@ LDAPinit_control(PyObject *d)
 {
     LDAPadd_methods(d, methods);
 }
-
-

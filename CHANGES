@@ -35,6 +35,7 @@ Modules/
 * Fix several compiler warnings
 * Fix memory leak in whoami
 * Fix internal error handling of LDAPControl_to_List()
+* Fix two memory leaks and release GIL in encode_assertion_control
 and, thanks to Michael Ströder:
 * removed unused code schema.c
 * moved code from version.c to ldapmodule.c
