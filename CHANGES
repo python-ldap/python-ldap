@@ -34,6 +34,7 @@ Modules/
 * Fix reference leak in result4
 * Fix several compiler warnings
 * Fix memory leak in whoami
+* Fix internal error handling of LDAPControl_to_List()
 and, thanks to Michael Ströder:
 * removed unused code schema.c
 * moved code from version.c to ldapmodule.c
