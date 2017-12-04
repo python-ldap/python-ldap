@@ -259,6 +259,7 @@ If you are tasked with releasing python-ldap, remember to:
 * Bump all instances of the version number.
 * Go through all changes since last version, and add them to ``CHANGES``.
 * Run :ref:`additional tests` as appropriate, fix any regressions.
+* Change the release date in ``CHANGES``.
 * Merge all that (using pull requests).
 * Run ``python setup.py sdist``, and smoke-test the resulting package
   (install in a clean virtual environment, import ``ldap``).
