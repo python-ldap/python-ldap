@@ -146,6 +146,8 @@ for checking things independent of the Python version:
 * ``doc`` checks syntax and spelling of the documentation
 * ``coverage-report`` generates a test coverage report for Python code.
   It must be used last, e.g. ``tox -e py27,py36,coverage-report``.
+* ``py2-nosasltls`` and ``py3-nosasltls`` check functionality without
+  SASL and TLS bindings compiled in.
 
 
 When your change is ready, commit to Git, and submit a pull request on GitHub.
