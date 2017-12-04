@@ -70,10 +70,11 @@ and, thanks to Michael Ströder:
 * module ldif now uses functions b64encode() and b64decode()
 * fixed pickling and restoring of ReconnectLDAPObject
 
-Lib/slapdtest.py
+Lib/slapdtest
 * Automatically try some common locations for SCHEMADIR
 * Ensure server is stopped when the process exits
 * Check for LDAP schema and slapd binaries
+* slapdtest is now a package and includes testing certificates
 
 Tests/
 * Expand cidict membership test
