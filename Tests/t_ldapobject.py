@@ -19,7 +19,7 @@ else:
 import os
 import unittest
 import pickle
-from slapdtest import SlapdTestCase
+from slapdtest import SlapdTestCase, requires_sasl
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
@@ -298,6 +298,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         else:
             self.fail("expected INVALID_CREDENTIALS, got %r" % r)
 
+    @requires_sasl()
     def test006_sasl_extenal_bind_s(self):
         l = self.ldap_object_class(self.server.ldapi_uri)
         l.sasl_external_bind_s()
@@ -322,6 +323,7 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
 
     ldap_object_class = ReconnectLDAPObject
 
+    @requires_sasl()
     def test101_reconnect_sasl_external(self):
         l = self.ldap_object_class(self.server.ldapi_uri)
         l.sasl_external_bind_s()
