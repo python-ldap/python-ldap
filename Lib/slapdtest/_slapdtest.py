@@ -7,8 +7,6 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import unicode_literals
 
-__version__ = '3.0.0b1'
-
 import os
 import socket
 import time
@@ -23,6 +21,8 @@ os.environ['LDAPNOINIT'] = '1'
 
 import ldap
 from ldap.compat import quote_plus
+
+HERE = os.path.abspath(os.path.dirname(__file__))
 
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_TEMPLATE = r"""
@@ -64,7 +64,7 @@ def identity(test_item):
     return test_item
 
 
-def skip_unless_travis(reason):
+def skip_unless_ci(reason):
     """Skip test unless test case is executed on CI like Travis CI
     """
     if os.environ.get('CI', False):
@@ -81,9 +81,9 @@ def requires_tls(skip_nss=False):
     :param skip_nss: Skip test when libldap is compiled with NSS as TLS lib
     """
     if not ldap.TLS_AVAIL:
-        return skip_unless_travis("test needs ldap.TLS_AVAIL")
+        return skip_unless_ci("test needs ldap.TLS_AVAIL")
     elif skip_nss and ldap.get_option(ldap.OPT_X_TLS_PACKAGE) == 'MozNSS':
-        return skip_unless_travis(
+        return skip_unless_ci(
             "Test doesn't work correctly with Mozilla NSS, see "
             "https://bugzilla.redhat.com/show_bug.cgi?id=1519167"
         )
@@ -191,14 +191,11 @@ class SlapdObject(object):
         ldapi_path = os.path.join(self.testrundir, 'ldapi')
         self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
         # TLS certs
-        capath = os.path.abspath(os.path.join(
-            os.getcwd(), 'Tests/certs'
-        ))
-        self.cafile = os.path.join(capath, 'ca.pem')
-        self.servercert = os.path.join(capath, 'server.pem')
-        self.serverkey = os.path.join(capath, 'server.key')
-        self.clientcert = os.path.join(capath, 'client.pem')
-        self.clientkey = os.path.join(capath, 'client.key')
+        self.cafile = os.path.join(HERE, 'certs/ca.pem')
+        self.servercert = os.path.join(HERE, 'certs/server.pem')
+        self.serverkey = os.path.join(HERE, 'certs/server.key')
+        self.clientcert = os.path.join(HERE, 'certs/client.pem')
+        self.clientkey = os.path.join(HERE, 'certs/client.key')
 
     def _check_requirements(self):
         binaries = [
