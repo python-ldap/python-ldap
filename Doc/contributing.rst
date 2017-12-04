@@ -168,13 +168,15 @@ We use several specialized tools for debugging and maintenance.
 Make targets
 ------------
 
-``make lcov-open``
+``make lcov lcov-open``
     Generate and view test coverage for C code.
     Requires ``make`` and ``lcov``.
 
 ``make scan-build``
     Run static analysis. Requires ``clang``.
 
+``make valgrind``
+    Run Valgrind to check for memory leaks. Requires ``valgrind``
 
 Reference leak tests
 --------------------

@@ -26,6 +26,7 @@ Infrastructure:
 * Remove distclean.sh in favor of make clean
 * Use `package`, `depends`, `install_requires` in setup.py
 * Add make target for scan-build (static analysis using clang)
+* Add make target and suppression file for Valgrind (memory checker)
 
 Modules/
 * Remove unused LDAPberval helper functions

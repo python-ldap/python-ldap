@@ -4,6 +4,7 @@ LCOV_REPORT=build/lcov_report
 LCOV_REPORT_OPTIONS=--show-details -no-branch-coverage \
 	--title "python-ldap LCOV report"
 SCAN_REPORT=build/scan_report
+PYTHON_SUPP=/usr/share/doc/python3-devel/valgrind-python.supp
 
 .NOTPARALLEL:
 
@@ -18,6 +19,9 @@ clean:
 	    -delete
 	find . -depth -name __pycache__ -exec rm -rf {} \;
 
+build:
+	mkdir -p build
+
 # LCOV report (measuring test coverage for C code)
 .PHONY: lcov-clean lcov-coverage lcov-report lcov-open lcov
 lcov-clean:
@@ -27,7 +31,7 @@ lcov-clean:
 lcov-coverage:
 	WITH_GCOV=1 tox -e py27,py36
 
-$(LCOV_INFO):
+$(LCOV_INFO): build
 	lcov --capture --directory build --output-file $(LCOV_INFO)
 
 $(LCOV_REPORT): $(LCOV_INFO)
@@ -49,3 +53,13 @@ scan-build:
 	scan-build -o $(SCAN_REPORT) --html-title="python-ldap scan report" \
 		-analyze-headers --view \
 		$(PYTHON) setup.py clean --all build
+
+# valgrind memory checker
+.PHONY: valgrind
+valgrind: build
+	valgrind --leak-check=full \
+	    --suppressions=$(PYTHON_SUPP) \
+	    --suppressions=Misc/python-ldap.supp \
+	    --gen-suppressions=all \
+	    --log-file=build/valgrind.log \
+	    $(PYTHON) setup.py test
