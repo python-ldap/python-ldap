@@ -172,22 +172,21 @@ LDAPControls_to_List(LDAPControl **ldcs)
     if (tmp)
         while (*tmp++) num_ctrls++;
 
-    if (!(res = PyList_New(num_ctrls)))
-        goto endlbl;
+    if ((res = PyList_New(num_ctrls)) == NULL) {
+        return NULL;
+    }
 
     for (i = 0; i < num_ctrls; i++) {
-        if (!(pyctrl = Py_BuildValue("sbO&", ldcs[i]->ldctl_oid,
-                                     ldcs[i]->ldctl_iscritical,
-                                     LDAPberval_to_object,
-                                     &ldcs[i]->ldctl_value))) {
-            goto endlbl;
+        pyctrl = Py_BuildValue("sbO&",
+                               ldcs[i]->ldctl_oid,
+                               ldcs[i]->ldctl_iscritical,
+                               LDAPberval_to_object, &ldcs[i]->ldctl_value);
+        if (pyctrl == NULL) {
+            Py_DECREF(res);
+            return NULL;
         }
         PyList_SET_ITEM(res, i, pyctrl);
     }
-    Py_INCREF(res);
-
- endlbl:
-    Py_XDECREF(res);
     return res;
 }
 
