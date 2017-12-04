@@ -140,10 +140,20 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
 	    if (!PyArg_Parse(value, "d:set_option", &doubleval))
 		return 0;
             if (doubleval >= 0) {
-	        set_timeval_from_double( &tv, doubleval );
+                set_timeval_from_double( &tv, doubleval );
+                ptr = &tv;
+            } else if (doubleval == -1) {
+                /* -1 is infinity timeout */
+                tv.tv_sec = -1;
+                tv.tv_usec = 0;
                 ptr = &tv;
             } else {
-    	        ptr = NULL;
+                PyErr_Format(
+                    PyExc_ValueError,
+                    "timeout must be >= 0 or -1 for infinity, got %d",
+                    option
+                );
+                return 0;
             }
 	    break;
     case LDAP_OPT_SERVER_CONTROLS:
@@ -180,10 +190,9 @@ LDAP_get_option(LDAPObject *self, int option)
     struct timeval *tv;
     LDAPAPIInfo apiinfo;
     LDAPControl **lcs;
-    LDAPControl *lc;
     char *strval;
-    PyObject *extensions, *v, *tup;
-    Py_ssize_t i, num_extensions, num_controls;
+    PyObject *extensions, *v;
+    Py_ssize_t i, num_extensions;
     LDAP *ld;
 
     ld = self ? self->ldap : NULL;
@@ -352,27 +361,8 @@ LDAP_get_option(LDAPObject *self, int option)
 	    if (res != LDAP_OPT_SUCCESS)
 		return option_error(res, "ldap_get_option");
 
-            if (lcs == NULL)
-                return PyList_New(0);
-            
-            /* Get the number of controls */
-            num_controls = 0;
-            while (lcs[num_controls])
-                num_controls++;
-
-            /* We'll build a list of controls, with each control a tuple */
-            v = PyList_New(num_controls);
-            for (i = 0; i < num_controls; i++) {
-                lc = lcs[i];
-                tup = Py_BuildValue("(sbs)", 
-                                    lc->ldctl_oid,
-                                    lc->ldctl_iscritical,
-                                    lc->ldctl_value.bv_val);
-                PyList_SET_ITEM(v, i, tup);
-            }
-            
+            v = LDAPControls_to_List(lcs);
             ldap_controls_free(lcs);
-
             return v;
             
     default:

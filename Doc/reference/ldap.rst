@@ -156,6 +156,9 @@ following option identifiers are defined as constants:
 
 .. py:data:: OPT_NETWORK_TIMEOUT
 
+   .. versionchanged:: 3.0
+      A timeout of ``-1`` resets timeout to infinity.
+
 .. py:data:: OPT_PROTOCOL_VERSION
 
    Sets the LDAP protocol version used for a connection. This is mapped to
@@ -179,6 +182,9 @@ following option identifiers are defined as constants:
 .. py:data:: OPT_TIMELIMIT
 
 .. py:data:: OPT_TIMEOUT
+
+   .. versionchanged:: 3.0
+      A timeout of ``-1`` resets timeout to infinity.
 
 .. py:data:: OPT_URI
 
