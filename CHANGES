@@ -33,6 +33,7 @@ Modules/
 * Fix multiple ref leaks in error-handling code
 * Fix reference leak in result4
 * Fix several compiler warnings
+* Fix memory leak in whoami
 and, thanks to Michael Ströder:
 * removed unused code schema.c
 * moved code from version.c to ldapmodule.c

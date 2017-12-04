@@ -1227,10 +1227,13 @@ l_ldap_whoami_s( LDAPObject* self, PyObject* args )
     LDAPControl_List_DEL( server_ldcs );
     LDAPControl_List_DEL( client_ldcs );
 
-    if ( ldaperror!=LDAP_SUCCESS )
+    if ( ldaperror!=LDAP_SUCCESS ) {
+        ber_bvfree(bvalue);
         return LDAPerror( self->ldap, "ldap_whoami_s" );
+    }
 
     result = LDAPberval_to_unicode_object(bvalue);
+    ber_bvfree(bvalue);
 
     return result;
 }
