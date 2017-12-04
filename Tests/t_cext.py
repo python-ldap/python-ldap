@@ -818,9 +818,16 @@ class TestLdapCExtension(SlapdTestCase):
         l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
         with self.assertRaises(_ldap.CONNECT_ERROR) as e:
             l.start_tls_s()
-        # some platforms return '(unknown error code)' as reason
-        if '(unknown error code)' not in str(e.exception):
-            self.assertIn('not trusted', str(e.exception))
+        # known resaons:
+        # Ubuntu on Travis: '(unknown error code)'
+        # OpenSSL 1.1: error:1416F086:SSL routines:\
+        #    tls_process_server_certificate:certificate verify failed
+        # NSS: TLS error -8172:Peer's certificate issuer has \
+        #    been marked as not trusted by the user.
+        msg = str(e.exception)
+        candidates = ('certificate', 'tls', '(unknown error code)')
+        if not any(s in msg.lower() for s in candidates):
+            self.fail(msg)
 
     @requires_tls(skip_nss=True)
     def test_tls_ext_clientcert(self):
