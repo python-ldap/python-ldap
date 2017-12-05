@@ -1,4 +1,4 @@
-#! python
+#!/usr/bin/env python
 
 #
 # simple LDAP server browsing example
