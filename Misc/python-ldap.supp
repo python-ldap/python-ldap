@@ -1,0 +1,41 @@
+# Valgrind suppression file for Python 3.6.
+
+{
+   Ignore libldap memory leak, https://github.com/python-ldap/python-ldap/issues/82
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:ber_memalloc_x
+   fun:ber_flatten
+   fun:ldap_cancel
+   fun:l_ldap_cancel
+   ...
+}
+
+{
+   Known leak in SASL interaction, https://github.com/python-ldap/python-ldap/issues/81
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:strdup
+   fun:interaction
+   fun:py_ldap_sasl_interaction
+   fun:ldap_int_sasl_bind
+   fun:ldap_sasl_interactive_bind
+   fun:ldap_sasl_interactive_bind_s
+   fun:l_ldap_sasl_interactive_bind_s
+   ...
+}
+
+{
+   Ignore possible leaks in exception initialization
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyObject_Malloc
+   ...
+   fun:PyErr_NewException
+   fun:LDAPinit_constants
+   fun:init_ldap_module
+   ...
+}

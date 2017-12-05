@@ -150,5 +150,6 @@ userApplications
 userPassword
 usr
 uuids
+Valgrind
 whitespace
 workflow
