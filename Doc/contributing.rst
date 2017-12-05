@@ -168,15 +168,33 @@ We use several specialized tools for debugging and maintenance.
 Make targets
 ------------
 
+Make targets currently use the ``python3`` executable.
+Specify a different one using, for example::
+
+    make PYTHON=/usr/local/bin/python
+
+Notable targets are:
+
 ``make lcov lcov-open``
     Generate and view test coverage for C code.
-    Requires ``make`` and ``lcov``.
+    Requires LCOV_.
 
 ``make scan-build``
     Run static analysis. Requires ``clang``.
 
 ``make valgrind``
-    Run Valgrind to check for memory leaks. Requires ``valgrind``
+    Run Valgrind_ to check for memory leaks. Requires ``valgrind`` and
+    a Python suppression file, which you can specify as ``PYTHON_SUPP``, e.g.::
+
+        make valgrind PYTHON_SUPP=/your/path/to/valgrind-python.supp
+
+    The suppression file is ``Misc/valgrind-python.supp`` in the Python
+    source distribution, and it's frequently packaged together with
+    Python development headers.
+
+.. _LCOV: https://github.com/linux-test-project/lcov
+.. _Valgrind: http://valgrind.org/
+
 
 Reference leak tests
 --------------------

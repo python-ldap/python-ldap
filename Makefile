@@ -56,7 +56,13 @@ scan-build:
 
 # valgrind memory checker
 .PHONY: valgrind
-valgrind: build
+$(PYTHON_SUPP):
+	@ >&2 echo "valgrind-python.supp not found"
+	@ >&2 echo "install Python development files and run:"
+	@ >&2 echo "    $(MAKE) valgrind PYTHON_SUPP=/your/path/to/valgrind-python.supp"
+	exit 1;
+
+valgrind: build $(PYTHON_SUPP)
 	valgrind --leak-check=full \
 	    --suppressions=$(PYTHON_SUPP) \
 	    --suppressions=Misc/python-ldap.supp \
