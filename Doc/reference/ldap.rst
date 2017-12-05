@@ -564,6 +564,18 @@ The above exceptions are raised when a result code from an underlying API
 call does not indicate success.
 
 
+Warnings
+========
+
+.. py:class:: LDAPBytesWarning
+
+    Raised when bytes/text mismatch in non-strict bytes mode.
+
+    See :ref:`bytes_mode` for details.
+
+    .. versionadded:: 3.0.0
+
+
 .. _ldap-objects:
 
 LDAPObject classes
