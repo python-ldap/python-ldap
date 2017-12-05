@@ -66,7 +66,9 @@ Unspecified: relaxed mode with warnings
 
     Text values returned from python-ldap are always ``unicode``.
     Text values supplied to python-ldap should be ``unicode``;
-    warnings are emitted when they are not.
+    warnings of type :class:`ldap.LDAPBytesWarning` are emitted when they
+    are not. :class:`ldap.LDAPBytesWarning` is a subclass of
+    :class:`BytesWarning`.
 
 Backwards-compatible behavior is not scheduled for removal until Python 2
 itself reaches end of life.
@@ -103,3 +105,18 @@ Note that only the result's *values* are of the ``bytes`` type:
             'sn': [b'Barrois'],
         }),
     ]
+
+
+Filter warning
+--------------
+
+The bytes mode warnings can be filtered out and ignored with a
+simple filter.
+
+.. code-block:: python
+
+   import warnings
+   import ldap
+
+   if hasattr(ldap, 'LDAPBytesWarning'):
+       warnings.simplefilter('ignore', ldap.LDAPBytesWarning)

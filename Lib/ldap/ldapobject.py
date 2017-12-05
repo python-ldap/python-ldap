@@ -14,6 +14,7 @@ __all__ = [
   'LDAPObject',
   'SimpleLDAPObject',
   'ReconnectLDAPObject',
+  'LDAPBytesWarning'
 ]
 
 
@@ -36,6 +37,12 @@ if PY2:
   text_type = unicode
 else:
   text_type = str
+
+
+class LDAPBytesWarning(BytesWarning):
+  """python-ldap bytes mode warning
+  """
+
 
 class NO_UNIQUE_ENTRY(ldap.NO_SUCH_OBJECT):
   """
@@ -84,7 +91,7 @@ class SimpleLDAPObject:
         "Under Python 2, python-ldap uses bytes by default. "
         "This will be removed in Python 3 (no bytes for DN/RDN/field names). "
         "Please call initialize(..., bytes_mode=False) explicitly.",
-        BytesWarning,
+        LDAPBytesWarning,
         stacklevel=2,
       )
       bytes_mode = True
@@ -122,7 +129,7 @@ class SimpleLDAPObject:
           warnings.warn(
             "Received non-bytes value %r with default (disabled) bytes mode; please choose an explicit "
             "option for bytes_mode on your LDAP connection" % (value,),
-            BytesWarning,
+            LDAPBytesWarning,
             stacklevel=6,
           )
           return value.encode('utf-8')
