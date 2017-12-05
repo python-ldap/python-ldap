@@ -26,12 +26,17 @@ TEST_CTRL_EXPECTED = [
 ]
 
 
-class TestGlobalOptions(unittest.TestCase):
+class BaseTestOptions(object):
+    """Common tests for getting/setting options
+
+    Used in subclasses below
+    """
+
     def get_option(self, option):
-        return ldap.get_option(option)
+        raise NotImplementedError()
 
     def set_option(self, option, value):
-        return ldap.set_option(option, value)
+        raise NotImplementedError()
 
     def _check_option(self, option, value, expected=SENTINEL,
                       nonevalue=None):
@@ -111,7 +116,21 @@ class TestGlobalOptions(unittest.TestCase):
         self.assertIn('read-only', str(e.exception))
 
 
-class TestLDAPObjectOptions(TestGlobalOptions, SlapdTestCase):
+class TestGlobalOptions(BaseTestOptions, unittest.TestCase):
+    """Test setting/getting options globally
+    """
+
+    def get_option(self, option):
+        return ldap.get_option(option)
+
+    def set_option(self, option, value):
+        return ldap.set_option(option, value)
+
+
+class TestLDAPObjectOptions(BaseTestOptions, SlapdTestCase):
+    """Test setting/getting connection-specific options
+    """
+
     ldap_object_class = SimpleLDAPObject
 
     def setUp(self):
