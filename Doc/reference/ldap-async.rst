@@ -1,49 +1,60 @@
-**************************************************************
-:py:mod:`ldap.async` Stream-processing of large search results
-**************************************************************
+********************************************************************
+:py:mod:`ldap.asyncsearch` Stream-processing of large search results
+********************************************************************
 
-.. py:module:: ldap.async
+.. py:module:: ldap.asyncsearch
    :synopsis: Framework for stream-processing of large search results.
 
 With newer Python versions one might want to consider using
 :py:mod:`ldap.resiter` instead.
 
 
+.. versionchanged:: 3.0
+   In Python 3.7 ``async`` is a reserved keyword. The module
+   :py:mod:`ldap.async` has been renamed to :py:mod:`ldap.asyncsearch`. The
+   old name :py:mod:`ldap.async` is still available for backwards
+   compatibility.
+
+.. deprecated:: 3.0
+   The old name :py:mod:`ldap.async` is deprecated, but will not be removed
+   until Python 3.6 reaches end-of-life.
+
+
 Classes
 =======
 
-.. autoclass:: ldap.async.AsyncSearchHandler
+.. autoclass:: ldap.asyncsearch.AsyncSearchHandler
    :members:
 
-.. autoclass:: ldap.async.List
+.. autoclass:: ldap.asyncsearch.List
    :members:
 
-.. autoclass:: ldap.async.Dict
+.. autoclass:: ldap.asyncsearch.Dict
    :members:
 
-.. autoclass:: ldap.async.IndexedDict
+.. autoclass:: ldap.asyncsearch.IndexedDict
    :members:
 
-.. autoclass:: ldap.async.LDIFWriter
+.. autoclass:: ldap.asyncsearch.LDIFWriter
    :members:
 
-.. _ldap.async-example:
+.. _ldap.asyncsearch-example:
 
 Examples
 ========
 
-.. _ldap.async-example.List:
+.. _ldap.asyncsearch-example.List:
 
-Using ldap.async.List
-^^^^^^^^^^^^^^^^^^^^^
+Using ldap.asyncsearch.List
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This example demonstrates how to use class ldap.async.List for
+This example demonstrates how to use class ldap.asyncsearch.List for
 retrieving partial search results even though the exception
 :exc:`ldap.SIZELIMIT_EXCEEDED` was raised because a server side limit was hit. ::
 
-   import sys,ldap,ldap.async
+   import sys,ldap,ldap.asyncsearch
 
-   s = ldap.async.List(
+   s = ldap.asyncsearch.List(
      ldap.initialize('ldap://localhost'),
    )
 
@@ -67,17 +78,17 @@ retrieving partial search results even though the exception
      )
    )
 
-.. _ldap.async-example.LDIFWriter:
+.. _ldap.asyncsearch-example.LDIFWriter:
 
-Using ldap.async.LDIFWriter
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Using ldap.asyncsearch.LDIFWriter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This example demonstrates how to use class ldap.async.LDIFWriter
+This example demonstrates how to use class ldap.asyncsearch.LDIFWriter
 for writing search results as LDIF to stdout. ::
 
-   import sys,ldap,ldap.async
+   import sys,ldap,ldap.asyncsearch
 
-   s = ldap.async.LDIFWriter(
+   s = ldap.asyncsearch.LDIFWriter(
      ldap.initialize('ldap://localhost:1390'),
      sys.stdout
    )

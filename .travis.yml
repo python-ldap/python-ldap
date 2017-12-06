@@ -34,6 +34,10 @@ matrix:
       env:
         - TOXENV=py36
         - WITH_GCOV=1
+    - python: 3.7-dev
+      env:
+        - TOXENV=py37
+        - WITH_GCOV=1
     - python: 2.7
       env:
         - TOXENV=py2-nosasltls
@@ -44,6 +48,10 @@ matrix:
         - WITH_GCOV=1
     - python: 3.6
       env: TOXENV=doc
+  allow_failures:
+     - env:
+        - TOXENV=py37
+        - WITH_GCOV=1
 
 env:
     global:
