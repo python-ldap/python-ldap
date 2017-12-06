@@ -16,8 +16,11 @@ else:
     PY2 = False
     text_type = str
 
+import contextlib
+import linecache
 import os
 import unittest
+import warnings
 import pickle
 import warnings
 from slapdtest import SlapdTestCase, requires_sasl
@@ -329,7 +332,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertIsInstance(self.server.suffix, text_type)
         with warnings.catch_warnings(record=True) as w:
             warnings.resetwarnings()
-            warnings.simplefilter('default')
+            warnings.simplefilter('always', ldap.LDAPBytesWarning)
             conn = self._get_bytes_ldapobject(explicit=False)
             result = conn.search_s(
                 self.server.suffix,
@@ -349,6 +352,64 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             "mode; please choose an explicit option for bytes_mode on your "
             "LDAP connection" % self.server.suffix
         )
+
+    @contextlib.contextmanager
+    def catch_byteswarnings(self, *args, **kwargs):
+        with warnings.catch_warnings(record=True) as w:
+            conn = self._get_bytes_ldapobject(*args, **kwargs)
+            warnings.resetwarnings()
+            warnings.simplefilter('always', ldap.LDAPBytesWarning)
+            yield conn, w
+
+    def _test_byteswarning_level_search(self, methodname):
+        with self.catch_byteswarnings(explicit=False) as (conn, w):
+            method = getattr(conn, methodname)
+            result = method(
+                self.server.suffix.encode('utf-8'),
+                ldap.SCOPE_SUBTREE,
+                '(cn=Foo*)',
+                attrlist=['*'],  # CORRECT LINE
+            )
+            self.assertEqual(len(result), 4)
+
+        self.assertEqual(len(w), 2, w)
+
+        def _normalize(filename):
+            # Python 2 likes to report the ".pyc" file in warnings,
+            # tracebacks or __file__.
+            # Use the corresponding ".py" in that case.
+            if filename.endswith('.pyc'):
+                return filename[:-1]
+            return filename
+
+        self.assertIs(w[0].category, ldap.LDAPBytesWarning)
+        self.assertIn(
+            u"Received non-bytes value u'(cn=Foo*)'",
+            text_type(w[0].message)
+        )
+        self.assertEqual(_normalize(w[1].filename), _normalize(__file__))
+        self.assertEqual(_normalize(w[0].filename), _normalize(__file__))
+        self.assertIn(
+            'CORRECT LINE',
+            linecache.getline(w[0].filename, w[0].lineno)
+        )
+
+        self.assertIs(w[1].category, ldap.LDAPBytesWarning)
+        self.assertIn(
+            u"Received non-bytes value u'*'",
+            text_type(w[1].message)
+        )
+        self.assertIn(_normalize(w[1].filename), _normalize(__file__))
+        self.assertIn(
+            'CORRECT LINE',
+            linecache.getline(w[1].filename, w[1].lineno)
+        )
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_byteswarning_level_search(self):
+        self._test_byteswarning_level_search('search_s')
+        self._test_byteswarning_level_search('search_st')
+        self._test_byteswarning_level_search('search_ext_s')
 
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):

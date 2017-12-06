@@ -39,6 +39,9 @@ else:
   text_type = str
 
 
+# See SimpleLDAPObject._bytesify_input
+_LDAP_WARN_SKIP_FRAME = True
+
 class LDAPBytesWarning(BytesWarning):
   """python-ldap bytes mode warning
   """
@@ -126,11 +129,27 @@ class SimpleLDAPObject:
         if self.bytes_mode_hardfail:
           raise TypeError("All provided fields *must* be bytes when bytes mode is on; got %r" % (value,))
         else:
+          # Raise LDAPBytesWarning.
+          # Call stacks with _bytesify_input tend to be complicated, so
+          # getting a useful stacklevel is tricky.
+          # We walk stack frames, ignoring all functions in this file
+          # and in the _ldap extension, based on a marker in globals().
+          stacklevel = 0
+          try:
+            getframe = sys._getframe
+          except AttributeError:
+            pass
+          else:
+            frame = sys._getframe(stacklevel)
+            # walk up the stacks until we leave the file
+            while frame and frame.f_globals.get('_LDAP_WARN_SKIP_FRAME'):
+                stacklevel += 1
+                frame = frame.f_back
           warnings.warn(
             "Received non-bytes value %r with default (disabled) bytes mode; please choose an explicit "
             "option for bytes_mode on your LDAP connection" % (value,),
             LDAPBytesWarning,
-            stacklevel=6,
+            stacklevel=stacklevel+1,
           )
           return value.encode('utf-8')
     else:
