@@ -132,6 +132,29 @@ on the local system when building python-ldap:
 .. _Cyrus SASL: https://www.cyrusimap.org/sasl/
 
 
+Debian
+------
+
+Packages for building and testing::
+
+    apt-get install build-essential python3-dev python2.7-dev libldap2-dev \
+        libsasl2-dev slapd ldap-utils python-tox valgrind
+
+
+Fedora
+------
+
+Packages for building and testing::
+
+    dnf install "@C Development Tools and Libraries" openldap-devel \
+        python2-devel python3-devel python3-tox valgrind clang-analyzer
+
+.. note::
+
+   ``openldap-2.4.45-2`` (Fedora 26), ``openldap-2.4.45-4`` (Fedora 27) or
+   newer are required.
+
+
 setup.cfg
 =========
 

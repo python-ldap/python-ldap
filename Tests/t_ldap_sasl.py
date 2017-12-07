@@ -76,7 +76,7 @@ class TestSasl(SlapdTestCase):
             "dn:{}".format(self.server.root_dn.lower())
         )
 
-    @requires_tls(skip_nss=True)
+    @requires_tls()
     def test_external_tlscert(self):
         ldap_conn = self.ldap_object_class(self.server.ldap_uri)
         ldap_conn.set_option(ldap.OPT_X_TLS_CACERTFILE, self.server.cafile)

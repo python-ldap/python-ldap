@@ -817,7 +817,7 @@ class TestLdapCExtension(SlapdTestCase):
                 l.sasl_interactive_bind_s, 'who', 'SASLObject', post=(1,))
         self.assertInvalidControls(l.unbind_ext)
 
-    @requires_tls(skip_nss=True)
+    @requires_tls()
     def test_tls_ext(self):
         l = self._open_conn(bind=False)
         # StartTLS needs LDAPv3
@@ -827,7 +827,7 @@ class TestLdapCExtension(SlapdTestCase):
         l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
         l.start_tls_s()
 
-    @requires_tls(skip_nss=False)
+    @requires_tls()
     def test_tls_ext_noca(self):
         l = self._open_conn(bind=False)
         l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
@@ -844,7 +844,7 @@ class TestLdapCExtension(SlapdTestCase):
         if not any(s in msg.lower() for s in candidates):
             self.fail(msg)
 
-    @requires_tls(skip_nss=True)
+    @requires_tls()
     def test_tls_ext_clientcert(self):
         l = self._open_conn(bind=False)
         l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
@@ -855,7 +855,7 @@ class TestLdapCExtension(SlapdTestCase):
         l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
         l.start_tls_s()
 
-    @requires_tls(skip_nss=False)
+    @requires_tls()
     def test_tls_packages(self):
         # libldap has tls_g.c, tls_m.c, and tls_o.c with ldap_int_tls_impl
         package = _ldap.get_option(_ldap.OPT_X_TLS_PACKAGE)

@@ -76,21 +76,13 @@ def skip_unless_ci(reason, feature=None):
         return identity
 
 
-def requires_tls(skip_nss=False):
+def requires_tls():
     """Decorator for TLS tests
 
     Tests are not skipped on CI (e.g. Travis CI)
-    
-    :param skip_nss: Skip test when libldap is compiled with NSS as TLS lib
     """
     if not ldap.TLS_AVAIL:
         return skip_unless_ci("test needs ldap.TLS_AVAIL", feature='TLS')
-    elif skip_nss and ldap.get_option(ldap.OPT_X_TLS_PACKAGE) == 'MozNSS':
-        return skip_unless_ci(
-            "Test doesn't work correctly with Mozilla NSS, see "
-            "https://bugzilla.redhat.com/show_bug.cgi?id=1519167",
-            feature="NSS"
-        )
     else:
         return identity
 
