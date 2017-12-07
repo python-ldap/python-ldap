@@ -136,20 +136,22 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
 	    break;
     case LDAP_OPT_TIMEOUT:
     case LDAP_OPT_NETWORK_TIMEOUT:
-        /* Float valued timeval options, 'd' also handles int/long */
-        if (!PyArg_Parse(value, "d:set_option", &doubleval)) {
-            /* clear error and try again with None */
-            PyErr_Clear();
-            if (PyNone_Check(value)) {
-                /* None is mapped to infinity timeout */
-                doubleval = -1;
-            }
-            else {
-                PyErr_Format(
-                    PyExc_TypeError,
-                    "A float or None is expected for timeout, got %.100s",
-                    Py_TYPE(value)->tp_name
-                );
+        /* Float valued timeval options */
+        if (value == Py_None) {
+            /* None is mapped to infinity timeout */
+            doubleval = -1;
+        } else {
+            /* 'd' handles int/long */
+            if (!PyArg_Parse(value, "d:set_option", &doubleval)) {
+                if (PyErr_ExceptionMatches(PyExc_TypeError)) {
+                    /* TypeError: mention either float or None is expected */
+                    PyErr_Clear();
+                    PyErr_Format(
+                        PyExc_TypeError,
+                        "A float or None is expected for timeout, got %.100s",
+                        Py_TYPE(value)->tp_name
+                    );
+                }
                 return 0;
             }
         }

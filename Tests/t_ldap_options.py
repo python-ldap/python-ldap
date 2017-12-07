@@ -64,6 +64,8 @@ class BaseTestOptions(object):
             self._check_option(option, -5)
         with self.assertRaises(TypeError):
             self.set_option(option, object)
+        with self.assertRaises(OverflowError):
+            self._check_option(option, 10**1000)
         old = self.get_option(option)
         try:
             self.set_option(option, None)
