@@ -63,9 +63,17 @@ $(PYTHON_SUPP):
 	exit 1;
 
 valgrind: build $(PYTHON_SUPP)
-	valgrind --leak-check=full \
+	valgrind \
+	    --leak-check=full \
+	    --track-fds=yes \
 	    --suppressions=$(PYTHON_SUPP) \
 	    --suppressions=Misc/python-ldap.supp \
 	    --gen-suppressions=all \
 	    --log-file=build/valgrind.log \
 	    $(PYTHON) setup.py test
+
+	@grep -A7 "blocks are definitely lost" build/valgrind.log; \
+	if [ $$? == 0 ]; then \
+	    echo "Found definitive leak, see build/valgrind.log"; \
+	    exit 1; \
+	fi
