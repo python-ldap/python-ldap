@@ -19,6 +19,7 @@ else:
 import os
 import unittest
 import pickle
+import warnings
 from slapdtest import SlapdTestCase, requires_sasl
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -314,7 +315,41 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         l.abandon(m)
         with self.assertRaises(ldap.TIMEOUT):
             result = l.result(m, timeout=0.001)
-        
+
+    def assertIsSubclass(self, cls, other):
+        self.assertTrue(
+            issubclass(cls, other),
+            cls.__mro__
+        )
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_ldapbyteswarning(self):
+        self.assertIsSubclass(ldap.LDAPBytesWarning, BytesWarning)
+        self.assertIsSubclass(ldap.LDAPBytesWarning, Warning)
+        self.assertIsInstance(self.server.suffix, text_type)
+        with warnings.catch_warnings(record=True) as w:
+            warnings.resetwarnings()
+            warnings.simplefilter('default')
+            conn = self._get_bytes_ldapobject(explicit=False)
+            result = conn.search_s(
+                self.server.suffix,
+                ldap.SCOPE_SUBTREE,
+                b'(cn=Foo*)',
+                attrlist=[b'*'],
+            )
+            self.assertEqual(len(result), 4)
+
+        # ReconnectLDAP only emits one warning
+        self.assertGreaterEqual(len(w), 1, w)
+        msg = w[-1]
+        self.assertIs(msg.category, ldap.LDAPBytesWarning)
+        self.assertEqual(
+            text_type(msg.message),
+            "Received non-bytes value u'%s' with default (disabled) bytes "
+            "mode; please choose an explicit option for bytes_mode on your "
+            "LDAP connection" % self.server.suffix
+        )
+
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
     """
