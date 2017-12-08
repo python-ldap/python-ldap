@@ -132,22 +132,38 @@ on the local system when building python-ldap:
 .. _Cyrus SASL: https://www.cyrusimap.org/sasl/
 
 
+Alpine
+------
+
+Packages for building::
+
+    # apk add build-base openldap-dev python2-dev python3-dev
+
+CentOS
+------
+
+Packages for building::
+
+   # yum groupinstall "Development tools"
+   # yum install openldap-devel python-devel
+
 Debian
 ------
 
 Packages for building and testing::
 
-    apt-get install build-essential python3-dev python2.7-dev libldap2-dev \
-        libsasl2-dev slapd ldap-utils python-tox valgrind
-
+   # apt-get install build-essential python3-dev python2.7-dev
+       libldap2-dev libsasl2-dev slapd ldap-utils python-tox \
+       lcov valgrind
 
 Fedora
 ------
 
 Packages for building and testing::
 
-    dnf install "@C Development Tools and Libraries" openldap-devel \
-        python2-devel python3-devel python3-tox valgrind clang-analyzer
+   # dnf install "@C Development Tools and Libraries" openldap-devel \
+       python2-devel python3-devel python3-tox \
+       lcov clang-analyzer valgrind
 
 .. note::
 
