@@ -38,8 +38,7 @@ class BaseTestOptions(object):
     def set_option(self, option, value):
         raise NotImplementedError()
 
-    def _check_option(self, option, value, expected=SENTINEL,
-                      nonevalue=None):
+    def _check_option(self, option, value, expected=SENTINEL):
         old = self.get_option(option)
         try:
             self.set_option(option, value)
@@ -49,10 +48,7 @@ class BaseTestOptions(object):
             else:
                 self.assertEqual(new, expected)
         finally:
-            self.set_option(
-                option,
-                old if old is not None else nonevalue
-            )
+            self.set_option(option, old)
             self.assertEqual(self.get_option(option), old)
 
     def test_invalid(self):
@@ -62,12 +58,22 @@ class BaseTestOptions(object):
             self.set_option(-1, '')
 
     def _test_timeout(self, option):
-        self._check_option(option, 10.5, nonevalue=-1)
-        self._check_option(option, 0, nonevalue=-1)
+        self._check_option(option, 10.5)
+        self._check_option(option, 0)
         with self.assertRaises(ValueError):
-            self._check_option(option, -5, nonevalue=-1)
+            self._check_option(option, -5)
         with self.assertRaises(TypeError):
             self.set_option(option, object)
+        with self.assertRaises(OverflowError):
+            self._check_option(option, 10**1000)
+        old = self.get_option(option)
+        try:
+            self.set_option(option, None)
+            self.assertEqual(self.get_option(option), None)
+            self.set_option(option, -1)
+            self.assertEqual(self.get_option(option), None)
+        finally:
+            self.set_option(option, old)
 
     def test_timeout(self):
         self._test_timeout(ldap.OPT_TIMEOUT)
@@ -148,6 +154,30 @@ class TestLDAPObjectOptions(BaseTestOptions, SlapdTestCase):
 
     def set_option(self, option, value):
         return self.conn.set_option(option, value)
+
+    def test_network_timeout_attribute(self):
+        option = ldap.OPT_NETWORK_TIMEOUT
+        old = self.get_option(option)
+        try:
+            self.assertEqual(self.conn.network_timeout, old)
+
+            self.conn.network_timeout = 5
+            self.assertEqual(self.conn.network_timeout, 5)
+            self.assertEqual(self.get_option(option), 5)
+
+            self.conn.network_timeout = -1
+            self.assertEqual(self.conn.network_timeout, None)
+            self.assertEqual(self.get_option(option), None)
+
+            self.conn.network_timeout = 10.5
+            self.assertEqual(self.conn.network_timeout, 10.5)
+            self.assertEqual(self.get_option(option), 10.5)
+
+            self.conn.network_timeout = None
+            self.assertEqual(self.conn.network_timeout, None)
+            self.assertEqual(self.get_option(option), None)
+        finally:
+            self.set_option(option, old)
 
     # test is failing with:
     # pyasn1.error.SubstrateUnderrunError: Short octet stream on tag decoding

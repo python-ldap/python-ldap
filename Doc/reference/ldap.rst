@@ -157,7 +157,7 @@ following option identifiers are defined as constants:
 .. py:data:: OPT_NETWORK_TIMEOUT
 
    .. versionchanged:: 3.0
-      A timeout of ``-1`` resets timeout to infinity.
+      A timeout of ``-1`` or ``None`` resets timeout to infinity.
 
 .. py:data:: OPT_PROTOCOL_VERSION
 
@@ -184,7 +184,7 @@ following option identifiers are defined as constants:
 .. py:data:: OPT_TIMEOUT
 
    .. versionchanged:: 3.0
-      A timeout of ``-1`` resets timeout to infinity.
+      A timeout of ``-1`` or ``None`` resets timeout to infinity.
 
 .. py:data:: OPT_URI
 
@@ -1137,6 +1137,8 @@ These attributes are mutable unless described as read-only.
    This option is mapped to option constant :py:const:`OPT_NETWORK_TIMEOUT`
    and used in the underlying OpenLDAP client lib.
 
+   .. versionchanged:: 3.0.0
+      A timeout of ``-1`` or ``None`` resets timeout to infinity.
 
 .. py:attribute:: LDAPObject.protocol_version -> int
 

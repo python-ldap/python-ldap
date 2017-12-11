@@ -136,26 +136,44 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
 	    break;
     case LDAP_OPT_TIMEOUT:
     case LDAP_OPT_NETWORK_TIMEOUT:
-	    /* Float valued timeval options */
-	    if (!PyArg_Parse(value, "d:set_option", &doubleval))
-		return 0;
-            if (doubleval >= 0) {
-                set_timeval_from_double( &tv, doubleval );
-                ptr = &tv;
-            } else if (doubleval == -1) {
-                /* -1 is infinity timeout */
-                tv.tv_sec = -1;
-                tv.tv_usec = 0;
-                ptr = &tv;
-            } else {
-                PyErr_Format(
-                    PyExc_ValueError,
-                    "timeout must be >= 0 or -1 for infinity, got %d",
-                    option
-                );
+        /* Float valued timeval options */
+        if (value == Py_None) {
+            /* None is mapped to infinity timeout */
+            doubleval = -1;
+        } else {
+            /* 'd' handles int/long */
+            if (!PyArg_Parse(value, "d:set_option", &doubleval)) {
+                if (PyErr_ExceptionMatches(PyExc_TypeError)) {
+                    /* TypeError: mention either float or None is expected */
+                    PyErr_Clear();
+                    PyErr_Format(
+                        PyExc_TypeError,
+                        "A float or None is expected for timeout, got %.100s",
+                        Py_TYPE(value)->tp_name
+                    );
+                }
                 return 0;
             }
-	    break;
+        }
+
+        if (doubleval >= 0) {
+            set_timeval_from_double( &tv, doubleval );
+            ptr = &tv;
+        } else if (doubleval == -1) {
+            /* -1 is infinity timeout */
+            tv.tv_sec = -1;
+            tv.tv_usec = 0;
+            ptr = &tv;
+        } else {
+            PyErr_Format(
+                PyExc_ValueError,
+                "timeout must be >= 0 or -1/None for infinity, got %d",
+                option
+            );
+            return 0;
+        }
+        break;
+
     case LDAP_OPT_SERVER_CONTROLS:
     case LDAP_OPT_CLIENT_CONTROLS:
             if (!LDAPControls_from_object(value, &controls))
