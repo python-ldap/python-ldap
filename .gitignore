@@ -6,6 +6,7 @@ __pycache__/
 .tox
 .coverage*
 !.coveragerc
+/.cache
 
 # shared libs installed by 'setup.py test'
 /Lib/*.so*
