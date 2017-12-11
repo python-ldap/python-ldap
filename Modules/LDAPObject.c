@@ -16,7 +16,7 @@
 #include <sasl/sasl.h>
 #endif
 
-static void free_attrs(char***, PyObject*);
+static void free_attrs(char***);
 
 /* constructor */
 
@@ -248,13 +248,10 @@ error:
  */
 
 int
-attrs_from_List( PyObject *attrlist, char***attrsp, PyObject** seq) {
+attrs_from_List( PyObject *attrlist, char***attrsp) {
 
     char **attrs = NULL;
-    Py_ssize_t i, len;
-    PyObject *item;
-
-    *seq = NULL;
+    PyObject *seq = NULL;
 
     if (attrlist == Py_None) {
         /* None means a NULL attrlist */
@@ -268,8 +265,16 @@ attrs_from_List( PyObject *attrlist, char***attrsp, PyObject** seq) {
             "expected *list* of strings, not a string", attrlist);
         goto error;
     } else {
-        *seq = PySequence_Fast(attrlist, "expected list of strings or None");
-        if (*seq == NULL)
+        PyObject *item = NULL;
+        Py_ssize_t i, len, strlen;
+#if PY_MAJOR_VERSION >= 3
+        const char *str;
+#else
+        char *str;
+#endif
+
+        seq = PySequence_Fast(attrlist, "expected list of strings or None");
+        if (seq == NULL)
             goto error;
 
         len = PySequence_Length(attrlist);
@@ -280,25 +285,36 @@ attrs_from_List( PyObject *attrlist, char***attrsp, PyObject** seq) {
 
         for (i = 0; i < len; i++) {
             attrs[i] = NULL;
-            item = PySequence_Fast_GET_ITEM(*seq, i);
+            item = PySequence_Fast_GET_ITEM(seq, i);
             if (item == NULL)
                 goto error;
 #if PY_MAJOR_VERSION == 2
-            /* Encoded by Python to UTF-8 */
+            /* Encoded in Python to UTF-8 */
             if (!PyBytes_Check(item)) {
                 LDAPerror_TypeError("expected bytes in list", item);
                 goto error;
             }
-            attrs[i] = PyBytes_AsString(item);
+            if (PyBytes_AsStringAndSize(item, &str, &strlen) == -1) {
+                goto error;
+            }
 #else
             if (!PyUnicode_Check(item)) {
                 LDAPerror_TypeError("expected string in list", item);
                 goto error;
             }
-            attrs[i] = PyUnicode_AsUTF8(item);
+            str = PyUnicode_AsUTF8AndSize(item, &strlen);
 #endif
+            /* Make a copy. PyBytes_AsString* / PyUnicode_AsUTF8* return
+             * internal values that must be treated like const char. Python
+             * 3.7 actually returns a const char.
+             */
+            attrs[i] = (char *)PyMem_NEW(char *, strlen + 1);
+            if (attrs[i] == NULL)
+                goto nomem;
+            memcpy(attrs[i], str, strlen + 1);
         }
         attrs[len] = NULL;
+        Py_DECREF(seq);
     }
 
     *attrsp = attrs;
@@ -307,22 +323,26 @@ attrs_from_List( PyObject *attrlist, char***attrsp, PyObject** seq) {
 nomem:
     PyErr_NoMemory();
 error:
-    free_attrs(&attrs, *seq);
+    Py_XDECREF(seq);
+    free_attrs(&attrs);
     return 0;
 }
 
 /* free memory allocated from above routine */
 
 static void
-free_attrs( char*** attrsp, PyObject* seq ) {
+free_attrs( char*** attrsp) {
     char **attrs = *attrsp;
+    char **p;
 
-    if (attrs != NULL) {
-        PyMem_DEL(attrs);
-        *attrsp = NULL;
+    if (attrs == NULL)
+        return;
+
+    *attrsp = NULL;
+    for (p = attrs; *p != NULL; p++) {
+        PyMem_DEL(*p);
     }
-
-    Py_XDECREF(seq);
+    PyMem_DEL(attrs);
 }
 
 /*------------------------------------------------------------
@@ -1130,7 +1150,6 @@ l_ldap_search_ext( LDAPObject* self, PyObject* args )
 
     PyObject *serverctrls = Py_None;
     PyObject *clientctrls = Py_None;
-    PyObject *attrs_seq = NULL;
     LDAPControl** server_ldcs = NULL;
     LDAPControl** client_ldcs = NULL;
 
@@ -1148,7 +1167,7 @@ l_ldap_search_ext( LDAPObject* self, PyObject* args )
                            &serverctrls, &clientctrls, &timeout, &sizelimit )) return NULL;
     if (not_valid(self)) return NULL;
 
-    if (!attrs_from_List( attrlist, &attrs, &attrs_seq ))
+    if (!attrs_from_List( attrlist, &attrs ))
          return NULL;
 
     if (timeout >= 0) {
@@ -1160,14 +1179,14 @@ l_ldap_search_ext( LDAPObject* self, PyObject* args )
 
     if (!PyNone_Check(serverctrls)) {
         if (!LDAPControls_from_object(serverctrls, &server_ldcs)) {
-            free_attrs( &attrs,  attrs_seq);
+            free_attrs( &attrs );
             return NULL;
         }
     }
 
     if (!PyNone_Check(clientctrls)) {
         if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
-            free_attrs( &attrs,  attrs_seq);
+            free_attrs( &attrs );
             LDAPControl_List_DEL( server_ldcs );
             return NULL;
         }
@@ -1178,7 +1197,7 @@ l_ldap_search_ext( LDAPObject* self, PyObject* args )
                              server_ldcs, client_ldcs, tvp, sizelimit, &msgid );
     LDAP_END_ALLOW_THREADS( self );
 
-    free_attrs( &attrs,  attrs_seq);
+    free_attrs( &attrs );
     LDAPControl_List_DEL( server_ldcs );
     LDAPControl_List_DEL( client_ldcs );
 
