@@ -28,6 +28,16 @@
 }
 
 {
+   NSS backend leaks one string during first initialization
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:PL_strdup
+   fun:tlsm_init
+   ...
+}
+
+{
    Ignore possible leaks in exception initialization
    Memcheck:Leak
    match-leak-kinds: possible
