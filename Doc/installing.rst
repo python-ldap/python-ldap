@@ -1,3 +1,5 @@
+.. highlight:: console
+
 .. _installing:
 
 Installing python-ldap
@@ -18,7 +20,7 @@ The preferred point for downloading the “official” source distribution
 is the `PyPI repository`_ which supports installing via `pip`_.
 For example::
 
-    python -m pip install python-ldap
+    $ python -m pip install python-ldap
 
 .. _PyPI repository: https://pypi.python.org/pypi/python-ldap/
 .. _pip: https://pip.pypa.io/en/stable/
@@ -83,8 +85,8 @@ Mac OS X
 
 You can install directly with pip::
 
-    xcode-select --install
-    pip install python-ldap \
+    $ xcode-select --install
+    $ pip install python-ldap \
         --global-option=build_ext \
         --global-option="-I$(xcrun --show-sdk-path)/usr/include/sasl"
 
@@ -98,8 +100,8 @@ Installing from Source
 python-ldap is built and installed using the Python setuptools.
 From a source repository::
 
-    python -m pip install setuptools
-    python setup.py install
+    $ python -m pip install setuptools
+    $ python setup.py install
 
 If you have more than one Python interpreter installed locally, you should
 use the same one you plan to use python-ldap with.
@@ -152,7 +154,7 @@ Debian
 
 Packages for building and testing::
 
-   # apt-get install build-essential python3-dev python2.7-dev
+   # apt-get install build-essential python3-dev python2.7-dev \
        libldap2-dev libsasl2-dev slapd ldap-utils python-tox \
        lcov valgrind
 
