@@ -25,6 +25,7 @@ TEST_SUBSCHEMA_FILES = (
     os.path.join(HERE, 'data', 'subschema-openldap-all.ldif'),
 )
 
+
 class TestSubschemaLDIF(unittest.TestCase):
     """
     test ldap.schema.SubSchema with subschema subentries read from LDIF files
@@ -49,7 +50,7 @@ class TestSubschemaLDIF(unittest.TestCase):
                     self.assertEqual(attributetype.oid, oid)
 
 
-class TestSubschemaUrlfetch(unittest.TestSuite):
+class TestSubschemaUrlfetch(unittest.TestCase):
     def test_urlfetch_file(self):
         freeipa_uri = 'file://{}'.format(TEST_SUBSCHEMA_FILES[0])
         dn, schema = ldap.schema.urlfetch(freeipa_uri)

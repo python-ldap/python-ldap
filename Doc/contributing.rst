@@ -224,7 +224,7 @@ Run reference leak tests::
 
     $ cd path/to/python-ldap
     $ /tmp/refleak/bin/pip install --upgrade .
-    $ /tmp/refleak/bin/pytest -v -R: Tests/t_*.py
+    $ /tmp/refleak/bin/pytest -v -R:
 
 Run ``/tmp/refleak/bin/pip install --upgrade .`` every time a file outside
 of ``Tests/`` is modified.
