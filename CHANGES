@@ -1,4 +1,38 @@
 ----------------------------------------------------------------
+Released 3.0.0b2 2017-12-11
+
+Changes since 3.0.0b1:
+
+The module `ldap.async` is renamed to `ldap.asyncsearch`, due to
+`async` becoming a keyword in Python 3.7.
+The old module name is deprecated, but will be available as long
+as Python 3.6 is supported.
+
+Lib/
+* Use custom ldap.LDAPBytesWarning class
+* Rename ldap.async to ldap.asyncsearch
+
+Modules/
+* Support None for set_option(OPT_TIMEOUT) and OPT_NETWORK_TIMEOUT
+* Fix error reporting of LDAPObject.set_option()
+* Change memory handling in attrs_from_List()
+
+Test/
+* Remove workaround for OpenLDAP NSS issue
+
+Demo/
+* Use uniform shebang in all demos
+
+Doc/
+* Provide build deps for Alpine and CentOS
+* Move sample workflow out of the main Contributing guide
+
+Infrastructure:
+* Add valgrind target to check for memory leaks
+* Minimal configuration for pytest
+
+
+----------------------------------------------------------------
 Released 3.0.0b1 2017-12-04
 
 Changes since 2.4.45:
