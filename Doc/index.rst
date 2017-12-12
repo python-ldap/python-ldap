@@ -57,7 +57,7 @@ versions for offline use, using the sidebar on the right.
 Documentation for some older versions is available for download at the
 `GitHub release page`_.
 
-.. _Read the Docs: http://python-ldap.readthedocs.io/en/latest/
+.. _Read the Docs: https://python-ldap.readthedocs.io/en/latest/
 .. _GitHub release page: https://github.com/python-ldap/python-ldap/releases
 
 

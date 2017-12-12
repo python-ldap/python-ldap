@@ -79,7 +79,7 @@ Or, if you prefer to avoid closed-source services:
 * Run tests with `tox`_; ignore Python interpreters you don't have locally.
 * Read the documentation directly at `Read the Docs`_.
 
-.. _Read the Docs: http://python-ldap.readthedocs.io/
+.. _Read the Docs: https://python-ldap.readthedocs.io/
 
 If you're new to some aspect of the project, you're welcome to use (or adapt)
 our :ref:`sample workflow <sample workflow>`.
