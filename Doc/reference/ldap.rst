@@ -956,7 +956,7 @@ and wait for and return with the server's result, or with
 .. py:method:: LDAPObject.sasl_interactive_bind_s(who, auth[, serverctrls=None [, clientctrls=None [, sasl_flags=ldap.SASL_QUIET]]]) -> None
 
    This call is used to bind to the directory with a SASL bind request.
-   
+
    *auth* is an :py:class:`ldap.sasl.sasl()` instance.
 
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
@@ -1196,4 +1196,3 @@ subtree search.
 >>> for dn,entry in r:
 >>>   print('Processing',repr(dn))
 >>>   handle_ldap_entry(entry)
-

@@ -38,4 +38,3 @@ This requires :py:mod:`pyasn1` and :py:mod:`pyasn1_modules` to be installed.
 
 .. autoclass:: ldap.extop.dds.RefreshResponse
    :members:
-

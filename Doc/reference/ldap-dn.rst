@@ -107,4 +107,3 @@ Splitting a LDAPv3 DN with a multi-valued RDN into its AVA parts:
 
 >>> ldap.dn.str2dn('cn=John Doe+mail=john.doe@example.com,dc=example,dc=com')
 [[('cn', 'John Doe', 1), ('mail', 'john.doe@example.com', 1)], [('dc', 'example', 1)], [('dc', 'com', 1)]]
-

@@ -465,7 +465,7 @@ class TestEntryRecords(TestLDIFParser):
             """
 
             # comment before version
-               
+
             version: 1
 
 
@@ -584,7 +584,7 @@ class TestChangeRecords(TestLDIFParser):
             """
 
             # comment before version
-               
+
             version: 1
 
 

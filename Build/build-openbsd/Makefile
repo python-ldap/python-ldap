@@ -10,7 +10,7 @@ HOMEPAGE=		https://www.python-ldap.org/
 FAKE=			Yes
 CONFIGURE_STYLE=	gnu
 SEPARATE_BUILD=		Yes
-EXTRACT_ONLY=	
+EXTRACT_ONLY=
 
 CONFIGURE_ARGS+=	--with-ldap=${LOCALBASE}
 

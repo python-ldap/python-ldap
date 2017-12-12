@@ -1,7 +1,7 @@
 /* See https://www.python-ldap.org/ for details. */
 
-#ifndef __h_LDAPObject 
-#define __h_LDAPObject 
+#ifndef __h_LDAPObject
+#define __h_LDAPObject
 
 #include "common.h"
 
@@ -48,4 +48,3 @@ extern LDAPObject *newLDAPObject( LDAP* );
 	}
 
 #endif /* __h_LDAPObject */
-

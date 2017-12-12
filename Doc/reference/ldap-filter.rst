@@ -35,4 +35,3 @@ The :mod:`ldap.filter` module defines the following functions:
    whole filter string.
 
    .. % -> string
-

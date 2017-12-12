@@ -61,4 +61,3 @@ print_result(res)
 res = ld.search_ext_s(base, scope, filter, attrlist = ['mail'], serverctrls = [mv])
 print("Matched values control: %s" % control_filter)
 print_result(res)
-

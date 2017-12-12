@@ -24,7 +24,3 @@ l.set_option(ldap.OPT_TIMELIMIT,60)
 #print("time limit:",l.get_option(ldap.OPT_TIMELIMIT))
 print("Binding...")
 l.simple_bind_s("","")
-
-
-
-

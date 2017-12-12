@@ -112,4 +112,3 @@ for writing search results as LDIF to stdout. ::
        s.endResultBreak-s.beginResultsDropped
      )
    )
-

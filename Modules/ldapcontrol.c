@@ -27,13 +27,13 @@ LDAPControl_DumpList( LDAPControl** lcs ) {
 } */
 
 /* Free a single LDAPControl object created by Tuple_to_LDAPControl */
-  
+
 static void
 LDAPControl_DEL( LDAPControl* lc )
 {
     if (lc == NULL)
         return;
-  
+
     if (lc->ldctl_oid)
         PyMem_DEL(lc->ldctl_oid);
     PyMem_DEL(lc);
@@ -78,7 +78,7 @@ Tuple_to_LDAPControl( PyObject* tup )
 
     if (!PyArg_ParseTuple( tup, "sbO", &oid, &iscritical, &bytes ))
         return NULL;
-  
+
     lc = PyMem_NEW(LDAPControl, 1);
     if (lc == NULL) {
         PyErr_NoMemory();
@@ -110,7 +110,7 @@ Tuple_to_LDAPControl( PyObject* tup )
         LDAPControl_DEL(lc);
         return NULL;
     }
-    
+
     lc->ldctl_value = berbytes;
 
     return lc;
@@ -126,7 +126,7 @@ LDAPControls_from_object(PyObject* list, LDAPControl ***controls_ret)
     LDAPControl** ldcs;
     LDAPControl* ldc;
     PyObject* item;
-  
+
     if (!PySequence_Check(list)) {
         LDAPerror_TypeError("expected a list", list);
         return 0;

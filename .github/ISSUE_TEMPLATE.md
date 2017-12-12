@@ -12,12 +12,12 @@ Issue description:
 
 
 
-Steps to reproduce: 
+Steps to reproduce:
 
 
 
-Operating system: 
+Operating system:
 
-Python version: 
+Python version:
 
-python-ldap version: 
+python-ldap version:

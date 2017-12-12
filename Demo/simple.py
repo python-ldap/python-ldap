@@ -97,11 +97,10 @@ l.add_s(dn,
 #
 
 res = l.search_s(
-	"ou=CSEE, o=UQ, c=AU", 
-	_ldap.SCOPE_SUBTREE, 
+	"ou=CSEE, o=UQ, c=AU",
+	_ldap.SCOPE_SUBTREE,
 	"objectclass=*",
       )
 print(res)
 
 l.unbind()
-

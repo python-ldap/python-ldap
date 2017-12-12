@@ -95,4 +95,3 @@ class TestSasl(SlapdTestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
