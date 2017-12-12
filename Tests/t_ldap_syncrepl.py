@@ -241,7 +241,7 @@ class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
         """
         The 'present' message from the LDAP server is the most complicated
         part of the refresh phase.  Suggest looking here for more info:
-        http://syncrepl-client.readthedocs.io/en/latest/client.html
+        https://syncrepl-client.readthedocs.io/en/latest/client.html
         """
         if (uuids is not None) and (refreshDeletes is False):
             self.present.extend(uuids)

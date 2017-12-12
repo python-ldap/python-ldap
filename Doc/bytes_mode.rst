@@ -85,7 +85,7 @@ General instructions for this are provided `in Python documentation`_ and in
 the `Conservative porting guide`_.
 
 .. _in Python documentation: https://docs.python.org/3/howto/pyporting.html
-.. _Conservative porting guide: http://portingguide.readthedocs.io/en/latest/
+.. _Conservative porting guide: https://portingguide.readthedocs.io/en/latest/
 
 
 When porting from python-ldap 2.x, users are advised to update their code
