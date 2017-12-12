@@ -5,13 +5,7 @@ See https://www.python-ldap.org/ for details.
 """
 
 import sys,os
-
-has_setuptools = False
-try:
-  from setuptools import setup, Extension
-  has_setuptools = True
-except ImportError:
-  from distutils.core import setup, Extension
+from setuptools import setup, Extension
 
 if sys.version_info[0] == 2 and sys.version_info[1] < 7:
     raise RuntimeError('This software requires Python 2.7 or 3.x.')
@@ -65,24 +59,6 @@ if os.environ.get('WITH_GCOV'):
 
 #-- Let distutils/setuptools do the rest
 name = 'python-ldap'
-
-# Python 2.3.6+ and setuptools are needed to build eggs, so
-# let's handle setuptools' additional  keyword arguments to
-# setup() in a fashion that doesn't break compatibility  to
-# distutils. This still allows 'normal' builds where either
-# Python > 2.3.5 or setuptools (or both ;o) are not available.
-kwargs = {}
-if has_setuptools:
-  kwargs = {
-    'include_package_data': True,
-    'install_requires': [
-        'setuptools',
-        'pyasn1 >= 0.3.7',
-        'pyasn1_modules >= 0.1.5',
-    ],
-    'zip_safe': False,
-    'python_requires': '>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
-  }
 
 setup(
   #-- Package description
@@ -186,6 +162,12 @@ setup(
   ],
   package_dir = {'': 'Lib',},
   data_files = LDAP_CLASS.extra_files,
+  include_package_data=True,
+  install_requires=[
+    'pyasn1 >= 0.3.7',
+    'pyasn1_modules >= 0.1.5',
+  ],
+  zip_safe=False,
+  python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
   test_suite = 'Tests',
-  **kwargs
 )
