@@ -253,4 +253,3 @@ Debugging symbols are preserved with compile option ``-g``.
   extra_objects =
 
   libs = ldap_r lber sasl2 ssl crypto
-

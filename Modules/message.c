@@ -46,8 +46,8 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermedi
 	 char *dn;
 	 char *attr;
 	 BerElement *ber = NULL;
-	 PyObject* entrytuple; 
-	 PyObject* attrdict; 
+	 PyObject* entrytuple;
+	 PyObject* attrdict;
 	 PyObject* pydn;
 
 	 dn = ldap_get_dn( ld, entry );

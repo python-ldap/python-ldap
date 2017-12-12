@@ -20,4 +20,3 @@ This module defines the following classes:
 
 .. autoclass:: ldap.syncrepl.SyncreplConsumer
    :members:
-

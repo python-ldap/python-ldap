@@ -20,4 +20,3 @@ ldif_collector = ldif.LDIFCopy(
   process_url_schemes=['file','ftp','http']
 )
 ldif_collector.parse()
-

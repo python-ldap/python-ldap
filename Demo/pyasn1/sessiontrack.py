@@ -58,4 +58,3 @@ ldap_conn.search_ext_s(
   ldap_url.attrs or ['*'],
   serverctrls=[st_ctrl]
 )
-

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-ldap.controls.deref - classes for 
+ldap.controls.deref - classes for
 (see https://tools.ietf.org/html/draft-masarati-ldap-deref)
 
 See https://www.python-ldap.org/ for project details.

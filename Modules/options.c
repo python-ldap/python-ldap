@@ -23,7 +23,7 @@ option_error(int res, const char *fn)
         PyErr_SetString(PyExc_ValueError, "option error");
     else if (res == LDAP_PARAM_ERROR)
         PyErr_SetString(PyExc_ValueError, "parameter error");
-    else if (res == LDAP_NO_MEMORY) 
+    else if (res == LDAP_NO_MEMORY)
         PyErr_NoMemory();
     else
         PyErr_Format(PyExc_SystemError, "error %d from %s", res, fn);
@@ -184,14 +184,14 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
 	    PyErr_Format(PyExc_ValueError, "unknown option %d", option);
 	    return 0;
     }
-	
+
     if (self) LDAP_BEGIN_ALLOW_THREADS(self);
     res = ldap_set_option(ld, option, ptr);
     if (self) LDAP_END_ALLOW_THREADS(self);
 
     if ((option == LDAP_OPT_SERVER_CONTROLS) || (option == LDAP_OPT_CLIENT_CONTROLS))
         LDAPControl_List_DEL(controls);
-    
+
     if (res != LDAP_OPT_SUCCESS) {
         option_error(res, "ldap_set_option");
         return 0;
@@ -223,7 +223,7 @@ LDAP_get_option(LDAPObject *self, int option)
 	    if (self) LDAP_END_ALLOW_THREADS(self);
 	    if (res != LDAP_OPT_SUCCESS)
 		return option_error(res, "ldap_get_option");
-    
+
 	    /* put the extensions into tuple form */
 	    num_extensions = 0;
 	    while (apiinfo.ldapai_extensions[num_extensions])
@@ -382,7 +382,7 @@ LDAP_get_option(LDAPObject *self, int option)
             v = LDAPControls_to_List(lcs);
             ldap_controls_free(lcs);
             return v;
-            
+
     default:
 	    PyErr_Format(PyExc_ValueError, "unknown option %d", option);
 	    return NULL;

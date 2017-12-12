@@ -1,8 +1,8 @@
 /* common utility macros
  * See https://www.python-ldap.org/ for details. */
 
-#ifndef __h_common 
-#define __h_common 
+#ifndef __h_common
+#define __h_common
 
 #define PY_SSIZE_T_CLEAN
 
@@ -36,4 +36,3 @@ void LDAPadd_methods( PyObject*d, PyMethodDef*methods );
 #endif
 
 #endif /* __h_common_ */
-
