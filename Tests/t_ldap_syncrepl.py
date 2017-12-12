@@ -247,7 +247,7 @@ class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
             self.present.extend(uuids)
 
         elif (uuids is None) and (refreshDeletes is False):
-            deleted_uuids = list()
+            deleted_uuids = []
             for uuid in self.uuid_dn.keys():
                 if uuid not in self.present:
                     deleted_uuids.append(uuid)

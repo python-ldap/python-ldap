@@ -11,7 +11,7 @@ from ldap.compat import IterableUserDict
 
 from ldap.schema.tokenizer import split_tokens,extract_tokens
 
-NOT_HUMAN_READABLE_LDAP_SYNTAXES = set([
+NOT_HUMAN_READABLE_LDAP_SYNTAXES = {
   '1.3.6.1.4.1.1466.115.121.1.4',  # Audio
   '1.3.6.1.4.1.1466.115.121.1.5',  # Binary
   '1.3.6.1.4.1.1466.115.121.1.8',  # Certificate
@@ -21,7 +21,7 @@ NOT_HUMAN_READABLE_LDAP_SYNTAXES = set([
   '1.3.6.1.4.1.1466.115.121.1.28', # JPEG
   '1.3.6.1.4.1.1466.115.121.1.40', # Octet String
   '1.3.6.1.4.1.1466.115.121.1.49', # Supported Algorithm
-])
+}
 
 
 class SchemaElement:

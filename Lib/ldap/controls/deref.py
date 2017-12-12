@@ -107,10 +107,10 @@ class DereferenceControl(LDAPControl):
     self.derefRes = {}
     for deref_res in decodedValue:
       deref_attr,deref_val,deref_vals = deref_res[0],deref_res[1],deref_res[2]
-      partial_attrs_dict = dict([
-        (str(tv[0]),map(str,tv[1]))
+      partial_attrs_dict = {
+        str(tv[0]): map(str,tv[1])
         for tv in deref_vals or []
-      ])
+      }
       try:
         self.derefRes[str(deref_attr)].append((str(deref_val),partial_attrs_dict))
       except KeyError:

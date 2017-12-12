@@ -8,16 +8,16 @@ import ldap
 
 from ldap import __version__
 
-SEARCH_RESULT_TYPES = set([
+SEARCH_RESULT_TYPES = {
   ldap.RES_SEARCH_ENTRY,
   ldap.RES_SEARCH_RESULT,
   ldap.RES_SEARCH_REFERENCE,
-])
+}
 
-ENTRY_RESULT_TYPES = set([
+ENTRY_RESULT_TYPES = {
   ldap.RES_SEARCH_ENTRY,
   ldap.RES_SEARCH_RESULT,
-])
+}
 
 
 class WrongResultType(Exception):
@@ -207,7 +207,7 @@ class IndexedDict(Dict):
 
   def __init__(self,l,indexed_attrs=None):
     Dict.__init__(self,l)
-    self.indexed_attrs = indexed_attrs or tuple()
+    self.indexed_attrs = indexed_attrs or ()
     self.index = {}.fromkeys(self.indexed_attrs,{})
 
   def _processSingleResult(self,resultType,resultItem):

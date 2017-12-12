@@ -32,7 +32,7 @@ CHANGE_TYPES_INT = {
   'modify':4,
   'modDN':8,
 }
-CHANGE_TYPES_STR = dict([(v,k) for k,v in CHANGE_TYPES_INT.items()])
+CHANGE_TYPES_STR = {v: k for k,v in CHANGE_TYPES_INT.items()}
 
 
 class PersistentSearchControl(RequestControl):

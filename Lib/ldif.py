@@ -69,7 +69,7 @@ def list_dict(l):
   """
   return a dictionary with all items of l being the keys of the dictionary
   """
-  return dict([(i,None) for i in l])
+  return {i: None for i in l}
 
 
 class LDIFWriter:

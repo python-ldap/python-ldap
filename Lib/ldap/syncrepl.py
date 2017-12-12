@@ -323,7 +323,7 @@ class SyncInfoMessage:
                     self.newcookie = str(comp)
                     return
 
-                val = dict()
+                val = {}
 
                 cookie = comp.getComponentByName('cookie')
                 if cookie.hasValue():

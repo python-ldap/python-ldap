@@ -227,10 +227,10 @@ class SimpleLDAPObject:
       return result_value
     if hasattr(result_value, 'items'):
       # It's a attribute_name: [values] dict
-      return dict(
-        (self._maybe_rebytesify_text(key), value)
+      return {
+        self._maybe_rebytesify_text(key): value
         for (key, value) in result_value.items()
-      )
+      }
     elif isinstance(result_value, bytes):
       return result_value
     else:
@@ -991,13 +991,13 @@ class ReconnectLDAPObject(SimpleLDAPObject):
   application.
   """
 
-  __transient_attrs__ = set([
+  __transient_attrs__ = {
     '_l',
     '_ldap_object_lock',
     '_trace_file',
     '_reconnect_lock',
     '_last_bind',
-  ])
+  }
 
   def __init__(
     self,uri,
@@ -1025,11 +1025,11 @@ class ReconnectLDAPObject(SimpleLDAPObject):
 
   def __getstate__(self):
     """return data representation for pickled object"""
-    state = dict([
-        (k,v)
+    state = {
+        k: v
         for k,v in self.__dict__.items()
         if k not in self.__transient_attrs__
-    ])
+    }
     state['_last_bind'] = self._last_bind[0].__name__, self._last_bind[1], self._last_bind[2]
     return state
 

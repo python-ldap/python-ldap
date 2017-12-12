@@ -45,9 +45,9 @@ class SyncReplClient(ReconnectLDAPObject, SyncreplConsumer):
         if db_path:
             self.__data = shelve.open(db_path, 'c')
         else:
-            self.__data = dict()
+            self.__data = {}
         # We need this for later internal use
-        self.__presentUUIDs = dict()
+        self.__presentUUIDs = {}
 
     def close_db(self):
         # Close the data store properly to avoid corruption
@@ -64,7 +64,7 @@ class SyncReplClient(ReconnectLDAPObject, SyncreplConsumer):
         logger.debug('dn=%r attributes=%r uuid=%r', dn, attributes, uuid)
         # First we determine the type of change we have here
         # (and store away the previous data for later if needed)
-        previous_attributes = dict()
+        previous_attributes = {}
         if uuid in self.__data:
             change_type = 'modify'
             previous_attributes = self.__data[uuid]
