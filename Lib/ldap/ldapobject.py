@@ -96,8 +96,8 @@ class SimpleLDAPObject:
     trace_level=0,trace_file=None,trace_stack_limit=5,bytes_mode=None,
     bytes_strictness=None,
   ):
-    self._trace_level = trace_level
-    self._trace_file = trace_file or sys.stdout
+    self._trace_level = trace_level or ldap._trace_level
+    self._trace_file = trace_file or ldap._trace_file
     self._trace_stack_limit = trace_stack_limit
     self._uri = uri
     self._ldap_object_lock = self._ldap_lock('opcall')
@@ -1123,7 +1123,8 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self._last_bind = getattr(SimpleLDAPObject, self._last_bind[0]), self._last_bind[1], self._last_bind[2]
     self._ldap_object_lock = self._ldap_lock()
     self._reconnect_lock = ldap.LDAPLock(desc='reconnect lock within %s' % (repr(self)))
-    self._trace_file = sys.stdout
+    # XXX cannot pickle file, use default trace file
+    self._trace_file = ldap._trace_file
     self.reconnect(self._uri)
 
   def _store_last_bind(self,method,*args,**kwargs):

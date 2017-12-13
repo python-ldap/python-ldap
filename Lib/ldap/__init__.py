@@ -8,13 +8,20 @@ See https://www.python-ldap.org/ for details.
 
 from ldap.pkginfo import __version__, __author__, __license__
 
+import os
 import sys
 
 if __debug__:
   # Tracing is only supported in debugging mode
+  import atexit
   import traceback
-  _trace_level = 0
-  _trace_file = sys.stderr
+  _trace_level = int(os.environ.get("PYTHON_LDAP_TRACE_LEVEL", 0))
+  _trace_file = os.environ.get("PYTHON_LDAP_TRACE_FILE")
+  if _trace_file is None:
+    _trace_file = sys.stderr
+  else:
+    _trace_file = open(_trace_file, 'a')
+    atexit.register(_trace_file.close)
   _trace_stack_limit = None
 
 import _ldap
