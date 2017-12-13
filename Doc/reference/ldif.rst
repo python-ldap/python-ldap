@@ -22,7 +22,19 @@ Functions
 
 .. autofunction:: ldif.CreateLDIF
 
+   .. deprecated:: 3.0
+
+      ``ldif.CreateLDIF()`` is deprecated. It will be removed in version 3.1.
+      Use :meth:`ldif.LDIFWriter.unparse` with a file or ``io.StringIO``
+      instead.
+
 .. autofunction:: ldif.ParseLDIF
+
+   .. deprecated:: 3.0
+
+      ``ldif.ParseLDIF()`` is deprecated. It will be removed in version 3.1.
+      Use the ``all_records`` attribute of the returned value of
+      ``ldif.LDIFRecordList.parse()`` instead.
 
 
 Classes

@@ -23,6 +23,7 @@ __all__ = [
 import re
 from base64 import b64encode, b64decode
 from io import StringIO
+import warnings
 
 from ldap.compat import urlparse, urlopen
 
@@ -209,7 +210,7 @@ class LDIFWriter:
 def CreateLDIF(dn,record,base64_attrs=None,cols=76):
   """
   Create LDIF single formatted record including trailing empty line.
-  This is a compatibility function. Use is deprecated!
+  This is a compatibility function.
 
   dn
         string-representation of distinguished name
@@ -222,6 +223,12 @@ def CreateLDIF(dn,record,base64_attrs=None,cols=76):
         Specifies how many columns a line may have before it's
         folded into many lines.
   """
+  warnings.warn(
+    'ldif.CreateLDIF() is deprecated. Use LDIFWriter.unparse() instead. It '
+    'will be removed in python-ldap 3.1',
+    category=DeprecationWarning,
+    stacklevel=2,
+  )
   f = StringIO()
   ldif_writer = LDIFWriter(f,base64_attrs,cols,'\n')
   ldif_writer.unparse(dn,record)
@@ -633,8 +640,14 @@ class LDIFCopy(LDIFParser):
 def ParseLDIF(f,ignore_attrs=None,maxentries=0):
   """
   Parse LDIF records read from file.
-  This is a compatibility function. Use is deprecated!
+  This is a compatibility function.
   """
+  warnings.warn(
+    'ldif.ParseLDIF() is deprecated. Use LDIFRecordList.parse() instead. It '
+    'will be removed in python-ldap 3.1',
+    category=DeprecationWarning,
+    stacklevel=2,
+  )
   ldif_parser = LDIFRecordList(
     f,ignored_attr_types=ignore_attrs,max_entries=maxentries,process_url_schemes=0
   )

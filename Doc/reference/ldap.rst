@@ -73,8 +73,21 @@ This module defines the following functions:
    string containing solely the host name. *port* is an integer specifying the
    port where the LDAP server is  listening (default is 389).
 
-   Note: Using this function is deprecated.
+   .. deprecated:: 3.0
 
+      ``ldap.open()`` is deprecated. It will be removed in version 3.1. Use
+      :func:`ldap.initialize()` with a URI like ``'ldap://<hostname>:<port>'``
+      instead.
+
+.. py:function:: init(host [, port=PORT]) -> LDAPObject object
+
+   Alias of :func:`ldap.open()`.
+
+   .. deprecated:: 3.0
+
+      ``ldap.init()`` is deprecated. It will be removed in version 3.1. Use
+      :func:`ldap.initialize()` with a URI like ``'ldap://<hostname>:<port>'``
+      instead.
 
 .. py:function:: get_option(option) -> int|string
 
