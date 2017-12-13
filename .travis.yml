@@ -34,6 +34,9 @@ matrix:
       env:
         - TOXENV=py36
         - WITH_GCOV=1
+    - python: pypy
+      env:
+        - TOXENV=pypy
     - python: 3.7-dev
       env:
         - TOXENV=py37
@@ -52,6 +55,8 @@ matrix:
      - env:
         - TOXENV=py37
         - WITH_GCOV=1
+     - env:
+        - TOXENV=pypy
 
 env:
     global:
