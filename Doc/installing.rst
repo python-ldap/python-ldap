@@ -55,7 +55,7 @@ hit a problem already fixed in recent releases.
 ---------------------------------------------
 
 Ships with python-ldap and there's an additional
-`download repository <http://download.opensuse.org/repositories/devel:/languages:/python/>`_
+`download repository <https://download.opensuse.org/repositories/devel:/languages:/python/>`_
 which contains builds of latest releases
 (see also `OBS package <https://build.opensuse.org/package/show/devel:languages:python/python-ldap>`_).
 

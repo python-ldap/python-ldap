@@ -2,7 +2,7 @@
 Demo for using ldap.resiter.ResultProcessor
 written by Michael Stroeder <michael@stroeder.com>
 
-See http://www.python-ldap.org for details.
+See https://www.python-ldap.org for details.
 """
 from __future__ import print_function
 

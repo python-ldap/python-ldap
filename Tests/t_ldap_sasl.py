@@ -2,7 +2,7 @@
 """
 Automatic tests for python-ldap's module ldap.sasl
 
-See http://www.python-ldap.org/ for details.
+See https://www.python-ldap.org/ for details.
 """
 import os
 import pwd
