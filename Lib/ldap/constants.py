@@ -366,7 +366,7 @@ CONSTANTS = (
 )
 
 
-def print_header():
+def print_header():  # pragma: no cover
     """Print the C header file to standard output"""
 
     print('/*')

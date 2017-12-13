@@ -434,7 +434,7 @@ class SlapdObject(object):
 
     # no cover to avoid spurious coverage changes
     def _cli_popen(self, ldapcommand, extra_args=None, ldap_uri=None,
-                   stdin_data=None):  # pragma: no-cover
+                   stdin_data=None):  # pragma: no cover
         args = [
             ldapcommand,
             '-H', ldap_uri or self.ldapi_uri,
