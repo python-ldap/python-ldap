@@ -73,7 +73,7 @@ PyObject* init_ldap_module(void)
 	LDAPinit_control(d);
 
     /* Marker for LDAPBytesWarning stack walking
-     * see SimpleLDAPObject._bytesify_input in ldapobject.py
+     * See _raise_byteswarning in ldapobject.py
      */
     if (PyModule_AddIntConstant(m, "_LDAP_WARN_SKIP_FRAME", 1) != 0) {
         return NULL;

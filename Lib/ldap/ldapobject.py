@@ -46,6 +46,26 @@ class LDAPBytesWarning(BytesWarning):
   """python-ldap bytes mode warning
   """
 
+def _raise_byteswarning(message):
+    """Raise LDAPBytesWarning
+    """
+
+    # Call stacks that raise the warning tend to be complicated, so
+    # getting a useful stacklevel is tricky.
+    # We walk stack frames, ignoring functions in uninteresting files,
+    # based on the _LDAP_WARN_SKIP_FRAME marker in globals().
+    stacklevel = 2
+    try:
+        getframe = sys._getframe
+    except AttributeError:
+        pass
+    else:
+        frame = sys._getframe(stacklevel)
+        while frame and frame.f_globals.get('_LDAP_WARN_SKIP_FRAME'):
+            stacklevel += 1
+            frame = frame.f_back
+    warnings.warn(message, LDAPBytesWarning, stacklevel=stacklevel+1)
+
 
 class NO_UNIQUE_ENTRY(ldap.NO_SUCH_OBJECT):
   """
@@ -90,13 +110,10 @@ class SimpleLDAPObject:
     # By default, raise a TypeError when receiving invalid args
     self.bytes_mode_hardfail = True
     if bytes_mode is None and PY2:
-      warnings.warn(
+      _raise_byteswarning(
         "Under Python 2, python-ldap uses bytes by default. "
         "This will be removed in Python 3 (no bytes for DN/RDN/field names). "
-        "Please call initialize(..., bytes_mode=False) explicitly.",
-        LDAPBytesWarning,
-        stacklevel=2,
-      )
+        "Please call initialize(..., bytes_mode=False) explicitly.")
       bytes_mode = True
       # Disable hard failure when running in backwards compatibility mode.
       self.bytes_mode_hardfail = False
@@ -129,28 +146,10 @@ class SimpleLDAPObject:
         if self.bytes_mode_hardfail:
           raise TypeError("All provided fields *must* be bytes when bytes mode is on; got %r" % (value,))
         else:
-          # Raise LDAPBytesWarning.
-          # Call stacks with _bytesify_input tend to be complicated, so
-          # getting a useful stacklevel is tricky.
-          # We walk stack frames, ignoring all functions in this file
-          # and in the _ldap extension, based on a marker in globals().
-          stacklevel = 0
-          try:
-            getframe = sys._getframe
-          except AttributeError:
-            pass
-          else:
-            frame = sys._getframe(stacklevel)
-            # walk up the stacks until we leave the file
-            while frame and frame.f_globals.get('_LDAP_WARN_SKIP_FRAME'):
-                stacklevel += 1
-                frame = frame.f_back
-          warnings.warn(
-            "Received non-bytes value %r with default (disabled) bytes mode; please choose an explicit "
-            "option for bytes_mode on your LDAP connection" % (value,),
-            LDAPBytesWarning,
-            stacklevel=stacklevel+1,
-          )
+          _raise_byteswarning(
+            "Received non-bytes value %r with default (disabled) bytes mode; "
+            "please choose an explicit "
+            "option for bytes_mode on your LDAP connection" % (value,))
           return value.encode('utf-8')
     else:
       if not isinstance(value, text_type):
