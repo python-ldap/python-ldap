@@ -72,6 +72,13 @@ PyObject* init_ldap_module(void)
 	LDAPinit_functions(d);
 	LDAPinit_control(d);
 
+    /* Marker for LDAPBytesWarning stack walking
+     * See _raise_byteswarning in ldapobject.py
+     */
+    if (PyModule_AddIntConstant(m, "_LDAP_WARN_SKIP_FRAME", 1) != 0) {
+        return NULL;
+    }
+
 	/* Check for errors */
 	if (PyErr_Occurred())
 		Py_FatalError("can't initialize module _ldap");
