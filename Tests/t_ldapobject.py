@@ -23,7 +23,7 @@ import unittest
 import warnings
 import pickle
 import warnings
-from slapdtest import SlapdTestCase, requires_sasl
+from slapdtest import SlapdTestCase, requires_sasl, requires_tls
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
@@ -417,6 +417,20 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
 
         self._check_byteswarning(
             w[0], u"Under Python 2, python-ldap uses bytes by default.")
+
+    @requires_tls()
+    def test_multiple_starttls(self):
+        # Test for openldap does not re-register nss shutdown callbacks
+        # after nss_Shutdown is called
+        # https://github.com/python-ldap/python-ldap/issues/60
+        # https://bugzilla.redhat.com/show_bug.cgi?id=1520990
+        for _ in range(10):
+            l = self.ldap_object_class(self.server.ldap_uri)
+            l.set_option(ldap.OPT_X_TLS_CACERTFILE, self.server.cafile)
+            l.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+            l.start_tls_s()
+            l.simple_bind_s(self.server.root_dn, self.server.root_pw)
+            self.assertEqual(l.whoami_s(), 'dn:' + self.server.root_dn)
 
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
