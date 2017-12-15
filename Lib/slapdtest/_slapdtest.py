@@ -14,13 +14,18 @@ import subprocess
 import logging
 import atexit
 from logging.handlers import SysLogHandler
+import sys
 import unittest
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
-from ldap.compat import quote_plus
+if sys.version_info[0] < 3:
+    from urllib import quote_plus
+else:
+    from urllib.parse import quote_plus
+
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
