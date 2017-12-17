@@ -32,7 +32,7 @@ from ldap.compat import reraise
 
 from ldap import LDAPError
 
-PY2 = bool(sys.version_info[0] <= 2)
+PY2 = sys.version_info[0] <= 2
 if PY2:
   text_type = unicode
 else:
