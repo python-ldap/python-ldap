@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 
 import os
 import socket
+import sys
 import time
 import subprocess
 import logging
@@ -109,6 +110,46 @@ def requires_ldapi():
         return identity
 
 
+def _which(cmd):
+    """Specialized which command based on shutil.which() from Python 3.6.
+
+    * simplified
+    * always adds /sbin directories to path
+    """
+
+    def _access_check(fn):
+        return (os.path.exists(fn) and os.access(fn, os.F_OK | os.X_OK)
+                and not os.path.isdir(fn))
+
+    # Path with directory part skips PATH lookup.
+    if os.path.dirname(cmd):
+        if _access_check(cmd):
+            return cmd
+        return None
+
+    path = os.environ.get("PATH", os.defpath).split(os.pathsep)
+
+    if sys.platform == 'win32':
+        if os.curdir not in path:
+            path.insert(0, os.curdir)
+        # include path extension (.exe)
+        pathext = os.environ.get("PATHEXT", "").split(os.pathsep)
+        files = [cmd + ext for ext in pathext]
+    else:
+        # always include sbin for slapd binary
+        for sbin in ['/usr/local/sbin', '/sbin', '/usr/sbin']:
+            if sbin not in path:
+                path.append(sbin)
+        files = [cmd]
+
+    for directory in path:
+        for name in files:
+            name = os.path.join(directory, name)
+            if _access_check(name):
+                return name
+    return None
+
+
 def combined_logger(
         log_name,
         log_level=logging.WARN,
@@ -172,8 +213,6 @@ class SlapdObject(object):
     )
 
     TMPDIR = os.environ.get('TMP', os.getcwd())
-    SBINDIR = os.environ.get('SBIN', '/usr/sbin')
-    BINDIR = os.environ.get('BIN', '/usr/bin')
     if 'SCHEMA' in os.environ:
         SCHEMADIR = os.environ['SCHEMA']
     elif os.path.isdir("/etc/openldap/schema"):
@@ -182,12 +221,14 @@ class SlapdObject(object):
         SCHEMADIR = "/etc/ldap/schema"
     else:
         SCHEMADIR = None
-    PATH_LDAPADD = os.path.join(BINDIR, 'ldapadd')
-    PATH_LDAPDELETE = os.path.join(BINDIR, 'ldapdelete')
-    PATH_LDAPMODIFY = os.path.join(BINDIR, 'ldapmodify')
-    PATH_LDAPWHOAMI = os.path.join(BINDIR, 'ldapwhoami')
-    PATH_SLAPD = os.environ.get('SLAPD', os.path.join(SBINDIR, 'slapd'))
-    PATH_SLAPTEST = os.path.join(SBINDIR, 'slaptest')
+    # _check_requirements turns paths into absolute paths
+    PATH_LDAPADD = 'ldapadd'
+    PATH_LDAPDELETE = 'ldapdelete'
+    PATH_LDAPMODIFY = 'ldapmodify'
+    PATH_LDAPWHOAMI = 'ldapwhoami'
+    # The following two binaries are usually in /usr/sbin.
+    PATH_SLAPD = os.environ.get('SLAPD', 'slapd')
+    PATH_SLAPTEST = 'slaptest'
 
     # time in secs to wait before trying to access slapd via LDAP (again)
     _start_sleep = 1.5
@@ -223,13 +264,19 @@ class SlapdObject(object):
         self.clientkey = os.path.join(HERE, 'certs/client.key')
 
     def _check_requirements(self):
-        binaries = [
-            self.PATH_LDAPADD, self.PATH_LDAPMODIFY, self.PATH_LDAPWHOAMI,
-            self.PATH_SLAPD, self.PATH_SLAPTEST
+        names = [
+            "PATH_LDAPADD", "PATH_LDAPMODIFY", "PATH_LDAPDELETE",
+            "PATH_LDAPWHOAMI", "PATH_SLAPD", "PATH_SLAPTEST",
         ]
-        for binary in binaries:
-            if not os.path.isfile(binary):
-                raise ValueError('Binary {} is missing.'.format(binary))
+        for name in names:
+            value = getattr(self, name)
+            binary = _which(value)
+            if binary is None:
+                raise ValueError(
+                    "Command '{}' not found in PATH".format(value)
+                )
+            else:
+                setattr(self, name, binary)
         if self.SCHEMADIR is None:
             raise ValueError('SCHEMADIR is None, ldap schemas are missing.')
 
@@ -359,7 +406,7 @@ class SlapdObject(object):
             self.PATH_SLAPD,
             '-f', self._slapd_conf,
             '-F', self.testrundir,
-            '-h', '%s' % ' '.join(urls),
+            '-h', ' '.join(urls),
         ]
         if self._log.isEnabledFor(logging.DEBUG):
             slapd_args.extend(['-d', '-1'])
