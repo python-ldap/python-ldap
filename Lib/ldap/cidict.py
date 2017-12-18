@@ -44,12 +44,6 @@ class cidict(IterableUserDict):
   def __contains__(self,key):
     return IterableUserDict.__contains__(self, key.lower())
 
-  def get(self,key,failobj=None):
-    try:
-      return self[key]
-    except KeyError:
-      return failobj
-
   def keys(self):
     return self._keys.values()
 
