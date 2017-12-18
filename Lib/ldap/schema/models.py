@@ -679,12 +679,6 @@ class Entry(IterableUserDict):
     k = self._at2key(nameoroid)
     return k in self.data
 
-  def get(self,nameoroid,failobj):
-    try:
-      return self[nameoroid]
-    except KeyError:
-      return failobj
-
   def keys(self):
     return self._keytuple2attrtype.values()
 
