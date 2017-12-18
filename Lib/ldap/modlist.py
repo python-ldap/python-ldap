@@ -73,7 +73,6 @@ def modifyModlist(
       replace_attr_value = len(old_value)!=len(new_value)
       if not replace_attr_value:
         if attrtype_lower in case_ignore_attr_types:
-          norm_func = str.lower
           old_value_set = set(map(str.lower,old_value))
           new_value_set = set(map(str.lower,new_value))
         else:
