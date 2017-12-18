@@ -99,7 +99,7 @@ class SyncReplClient(ReconnectLDAPObject, SyncreplConsumer):
             if refreshDeletes is False:
                 deletedEntries = [
                     uuid
-                    for uuid in self.__data.keys()
+                    for uuid in self.__data
                     if uuid not in self.__presentUUIDs and uuid != 'ldap_cookie'
                 ]
                 self.syncrepl_delete( deletedEntries )

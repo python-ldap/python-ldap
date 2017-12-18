@@ -16,7 +16,7 @@ __all__ = [
   'LDAPUrlExtension','LDAPUrlExtensions','LDAPUrl'
 ]
 
-from ldap.compat import UserDict, quote, unquote
+from ldap.compat import IterableUserDict, quote, unquote
 
 LDAP_SCOPE_BASE = 0
 LDAP_SCOPE_ONELEVEL = 1
@@ -130,14 +130,14 @@ class LDAPUrlExtension(object):
     return not self.__eq__(other)
 
 
-class LDAPUrlExtensions(UserDict):
+class LDAPUrlExtensions(IterableUserDict):
   """
   Models a collection of LDAP URL extensions as
   dictionary type
   """
 
   def __init__(self,default=None):
-    UserDict.__init__(self)
+    IterableUserDict.__init__(self)
     for k,v in (default or {}).items():
       self[k]=v
 
@@ -152,10 +152,7 @@ class LDAPUrlExtensions(UserDict):
     self.data[name] = value
 
   def values(self):
-    return [
-      self[k]
-      for k in self.keys()
-    ]
+    return [self[k] for k in self]
 
   def __str__(self):
     return ','.join(map(str,self.values()))
@@ -313,7 +310,7 @@ class LDAPUrl(object):
         Dictionary containing a mapping from class attributes
         to default values
     """
-    for k in defaults.keys():
+    for k in defaults:
       if getattr(self,k) is None:
         setattr(self,k,defaults[k])
 
@@ -429,4 +426,3 @@ class LDAPUrl(object):
           pass
     else:
       del self.__dict__[name]
-

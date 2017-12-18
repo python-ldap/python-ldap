@@ -655,7 +655,7 @@ class Entry(IterableUserDict):
       return t
 
   def update(self,dict):
-    for key in dict.keys():
+    for key in dict:
       self[key] = dict[key]
 
   def __contains__(self,nameoroid):
@@ -679,14 +679,14 @@ class Entry(IterableUserDict):
     k = self._at2key(nameoroid)
     return k in self.data
 
+  def __iter__(self):
+    return iter(self.keys())
+
   def keys(self):
     return self._keytuple2attrtype.values()
 
   def items(self):
-    return [
-      (k,self[k])
-      for k in self.keys()
-    ]
+    return [(k,self[k]) for k in self]
 
   def attribute_types(
     self,attr_type_filter=None,raise_keyerror=1
