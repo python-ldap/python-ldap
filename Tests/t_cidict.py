@@ -4,12 +4,20 @@ Automatic tests for python-ldap's module ldap.cidict
 
 See https://www.python-ldap.org/ for details.
 """
+from __future__ import unicode_literals
 
-# from Python's standard lib
+import sys
 import unittest
+import warnings
 
 # from python-ldap
 import ldap, ldap.cidict
+
+
+if sys.version_info[0] <= 2:
+    text_type = unicode
+else:
+    text_type = str
 
 
 class TestCidict(unittest.TestCase):
@@ -41,8 +49,29 @@ class TestCidict(unittest.TestCase):
         self.assertEqual("AbCDef" in cix._keys, False)
         self.assertEqual("abcdef" in cix, False)
         self.assertEqual("AbCDef" in cix, False)
-        self.assertEqual(cix.has_key("abcdef"), False)
-        self.assertEqual(cix.has_key("AbCDef"), False)
+        with warnings.catch_warnings(record=True) as w:
+            warnings.resetwarnings()
+            warnings.simplefilter("always")
+            self.assertEqual(cix.has_key("abcdef"), False)
+        self.assertEqual(len(w), 1)
+        msg = w[-1]
+        self.assertIs(msg.category, DeprecationWarning)
+        self.assertEqual(
+            text_type(msg.message),
+            "cidict.has_key() is deprecated and will be removed in a future version of "
+            "python-ldap. Use the 'in' operator instead."
+        )
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.assertEqual(cix.has_key("AbCDef"), False)
+        self.assertEqual(len(w), 1)
+        msg = w[-1]
+        self.assertIs(msg.category, DeprecationWarning)
+        self.assertEqual(
+            text_type(msg.message),
+            "cidict.has_key() is deprecated and will be removed in a future version of "
+            "python-ldap. Use the 'in' operator instead."
+        )
 
 
 if __name__ == '__main__':

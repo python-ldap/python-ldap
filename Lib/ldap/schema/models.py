@@ -676,6 +676,12 @@ class Entry(IterableUserDict):
     del self._keytuple2attrtype[k]
 
   def has_key(self,nameoroid):
+    warnings.warn(
+      "%s.has_key() is deprecated and will be removed in a future version of "
+      "python-ldap. Use the 'in' operator instead." % self.__class__.__name__,
+      category=DeprecationWarning,
+      stacklevel=2,
+    )
     k = self._at2key(nameoroid)
     return k in self.data
 

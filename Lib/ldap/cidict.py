@@ -5,6 +5,7 @@ names of variable case.
 
 See https://www.python-ldap.org/ for details.
 """
+import warnings
 
 from ldap import __version__
 
@@ -39,6 +40,12 @@ class cidict(IterableUserDict):
       self[key] = dict[key]
 
   def has_key(self,key):
+    warnings.warn(
+      "%s.has_key() is deprecated and will be removed in a future version of "
+      "python-ldap. Use the 'in' operator instead." % self.__class__.__name__,
+      category=DeprecationWarning,
+      stacklevel=2,
+    )
     return key in self
 
   def __contains__(self,key):
