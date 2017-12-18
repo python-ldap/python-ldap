@@ -8,4 +8,5 @@ See https://www.python-ldap.org/ for details.
 __version__ = '3.0.0b2'
 
 from slapdtest._slapdtest import SlapdObject, SlapdTestCase, SysLogHandler
-from slapdtest._slapdtest import skip_unless_ci, requires_sasl, requires_tls
+from slapdtest._slapdtest import requires_ldapi, requires_sasl, requires_tls
+from slapdtest._slapdtest import skip_unless_ci

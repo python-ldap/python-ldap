@@ -16,7 +16,7 @@ import ldif
 from ldap.ldapobject import SimpleLDAPObject
 import ldap.schema
 from ldap.schema.models import ObjectClass
-from slapdtest import SlapdTestCase
+from slapdtest import SlapdTestCase, requires_ldapi
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -88,6 +88,7 @@ class TestSubschemaUrlfetchSlapd(SlapdTestCase):
         dn, schema = ldap.schema.urlfetch(self.server.ldap_uri)
         self.assertSlapdSchema(dn, schema)
 
+    @requires_ldapi()
     def test_urlfetch_ldapi(self):
         dn, schema = ldap.schema.urlfetch(self.server.ldapi_uri)
         self.assertSlapdSchema(dn, schema)

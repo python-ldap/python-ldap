@@ -56,6 +56,12 @@ authz-regexp
 
 LOCALHOST = '127.0.0.1'
 
+CI_DISABLED = set(os.environ.get('CI_DISABLED', '').split(':'))
+if 'LDAPI' in CI_DISABLED:
+    HAVE_LDAPI = False
+else:
+    HAVE_LDAPI = hasattr(socket, 'AF_UNIX')
+
 
 def identity(test_item):
     """Identity decorator
@@ -69,7 +75,7 @@ def skip_unless_ci(reason, feature=None):
     """
     if not os.environ.get('CI', False):
         return unittest.skip(reason)
-    elif feature in os.environ.get('CI_DISABLED', '').split(':'):
+    elif feature in CI_DISABLED:
         return unittest.skip(reason)
     else:
         # Don't skip on Travis
@@ -91,6 +97,14 @@ def requires_sasl():
     if not ldap.SASL_AVAIL:
         return skip_unless_ci(
             "test needs ldap.SASL_AVAIL", feature='SASL')
+    else:
+        return identity
+
+
+def requires_ldapi():
+    if not HAVE_LDAPI:
+        return skip_unless_ci(
+            "test needs ldapi support (AF_UNIX)", feature='LDAPI')
     else:
         return identity
 
@@ -149,8 +163,6 @@ class SlapdObject(object):
     root_dn = 'cn=%s,%s' % (root_cn, suffix)
     root_pw = 'password'
     slapd_loglevel = 'stats stats2'
-    # use SASL/EXTERNAL via LDAPI when invoking OpenLDAP CLI tools
-    cli_sasl_external = True
     local_host = '127.0.0.1'
     testrunsubdirs = (
         'schema',
@@ -192,8 +204,17 @@ class SlapdObject(object):
         self._slapd_conf = os.path.join(self.testrundir, 'slapd.conf')
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
         self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
-        ldapi_path = os.path.join(self.testrundir, 'ldapi')
-        self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
+        if HAVE_LDAPI:
+            ldapi_path = os.path.join(self.testrundir, 'ldapi')
+            self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
+            self.default_ldap_uri = self.ldapi_uri
+            # use SASL/EXTERNAL via LDAPI when invoking OpenLDAP CLI tools
+            self.cli_sasl_external = True
+        else:
+            self.ldapi_uri = None
+            self.default_ldap_uri = self.ldap_uri
+            # Use simple bind via LDAP uri
+            self.cli_sasl_external = False
         # TLS certs
         self.cafile = os.path.join(HERE, 'certs/ca.pem')
         self.servercert = os.path.join(HERE, 'certs/server.pem')
@@ -331,11 +352,14 @@ class SlapdObject(object):
         """
         Spawns/forks the slapd process
         """
+        urls = [self.ldap_uri]
+        if self.ldapi_uri:
+            urls.append(self.ldapi_uri)
         slapd_args = [
             self.PATH_SLAPD,
             '-f', self._slapd_conf,
             '-F', self.testrundir,
-            '-h', '%s' % ' '.join((self.ldap_uri, self.ldapi_uri)),
+            '-h', '%s' % ' '.join(urls),
         ]
         if self._log.isEnabledFor(logging.DEBUG):
             slapd_args.extend(['-d', '-1'])
@@ -346,18 +370,21 @@ class SlapdObject(object):
         # Waits until the LDAP server socket is open, or slapd crashed
         # no cover to avoid spurious coverage changes, see
         # https://github.com/python-ldap/python-ldap/issues/127
-        while 1:  # pragma: no cover
+        for _ in range(10):  # pragma: no cover
             if self._proc.poll() is not None:
                 self._stopped()
                 raise RuntimeError("slapd exited before opening port")
             time.sleep(self._start_sleep)
             try:
-                self._log.debug("slapd connection check to %s", self.ldapi_uri)
+                self._log.debug(
+                    "slapd connection check to %s", self.default_ldap_uri
+                )
                 self.ldapwhoami()
             except RuntimeError:
                 pass
             else:
                 return
+        raise RuntimeError("slapd did not start properly")
 
     def start(self):
         """
@@ -435,9 +462,11 @@ class SlapdObject(object):
     # no cover to avoid spurious coverage changes
     def _cli_popen(self, ldapcommand, extra_args=None, ldap_uri=None,
                    stdin_data=None):  # pragma: no cover
+        if ldap_uri is None:
+            ldap_uri = self.default_ldap_uri
         args = [
             ldapcommand,
-            '-H', ldap_uri or self.ldapi_uri,
+            '-H', ldap_uri,
         ] + self._cli_auth_args() + (extra_args or [])
         self._log.debug('Run command: %r', ' '.join(args))
         proc = subprocess.Popen(

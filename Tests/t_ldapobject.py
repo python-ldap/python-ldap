@@ -22,8 +22,8 @@ import os
 import unittest
 import warnings
 import pickle
-import warnings
-from slapdtest import SlapdTestCase, requires_sasl, requires_tls
+from slapdtest import SlapdTestCase
+from slapdtest import requires_ldapi, requires_sasl, requires_tls
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
@@ -303,6 +303,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             self.fail("expected INVALID_CREDENTIALS, got %r" % r)
 
     @requires_sasl()
+    @requires_ldapi()
     def test006_sasl_extenal_bind_s(self):
         l = self.ldap_object_class(self.server.ldapi_uri)
         l.sasl_external_bind_s()
@@ -441,6 +442,7 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
     ldap_object_class = ReconnectLDAPObject
 
     @requires_sasl()
+    @requires_ldapi()
     def test101_reconnect_sasl_external(self):
         l = self.ldap_object_class(self.server.ldapi_uri)
         l.sasl_external_bind_s()
@@ -450,7 +452,7 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
         self.assertEqual(l.whoami_s(), authz_id)
 
     def test102_reconnect_simple_bind(self):
-        l = self.ldap_object_class(self.server.ldapi_uri)
+        l = self.ldap_object_class(self.server.ldap_uri)
         bind_dn = 'cn=user1,'+self.server.suffix
         l.simple_bind_s(bind_dn, 'user1_pw')
         self.assertEqual(l.whoami_s(), 'dn:'+bind_dn)
@@ -458,7 +460,7 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
         self.assertEqual(l.whoami_s(), 'dn:'+bind_dn)
 
     def test103_reconnect_get_state(self):
-        l1 = self.ldap_object_class(self.server.ldapi_uri)
+        l1 = self.ldap_object_class(self.server.ldap_uri)
         bind_dn = 'cn=user1,'+self.server.suffix
         l1.simple_bind_s(bind_dn, 'user1_pw')
         self.assertEqual(l1.whoami_s(), 'dn:'+bind_dn)
@@ -477,7 +479,7 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
                 str('_start_tls'): 0,
                 str('_trace_level'): 0,
                 str('_trace_stack_limit'): 5,
-                str('_uri'): self.server.ldapi_uri,
+                str('_uri'): self.server.ldap_uri,
                 str('bytes_mode'): l1.bytes_mode,
                 str('bytes_mode_hardfail'): l1.bytes_mode_hardfail,
                 str('timeout'): -1,
@@ -485,7 +487,7 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
         )
 
     def test104_reconnect_restore(self):
-        l1 = self.ldap_object_class(self.server.ldapi_uri)
+        l1 = self.ldap_object_class(self.server.ldap_uri)
         bind_dn = 'cn=user1,'+self.server.suffix
         l1.simple_bind_s(bind_dn, 'user1_pw')
         self.assertEqual(l1.whoami_s(), 'dn:'+bind_dn)
