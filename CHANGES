@@ -1,4 +1,30 @@
 ----------------------------------------------------------------
+Released 3.0.0b3 2017-12-20
+
+Changes since 3.0.0b2:
+
+The functions `ldap.open()`, `ldap.init()`, `ldif.CreateLDIF()`
+and `ldif.ParseLDIF()`, which were deprecated for over a decade,
+are scheduled for removal in python-ldap 3.1.
+
+Infrastructure:
+* Require setuptools to build
+* Start running automatic tests on PyPy
+
+Lib/
+* When raising LDAPBytesWarning, give helpful code locations
+* Use modern Python idioms in several places
+* Avoid reimplementing UserDict.get() in cidict and models.Entry
+
+Doc/
+* Use https links
+
+Test/
+* Add reproducer for openldap's NSS shutdown/restart issue
+* Make testing on non-Linux platforms easier
+
+
+----------------------------------------------------------------
 Released 3.0.0b2 2017-12-11
 
 Changes since 3.0.0b1:
