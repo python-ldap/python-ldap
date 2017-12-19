@@ -21,7 +21,7 @@ import unittest
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
-from ldap.compat import quote_plus
+from ldap.compat import quote_plus, which
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -109,46 +109,14 @@ def requires_ldapi():
     else:
         return identity
 
-
-def _which(cmd):
-    """Specialized which command based on shutil.which() from Python 3.6.
-
-    * simplified
-    * always adds /sbin directories to path
-    """
-
-    def _access_check(fn):
-        return (os.path.exists(fn) and os.access(fn, os.F_OK | os.X_OK)
-                and not os.path.isdir(fn))
-
-    # Path with directory part skips PATH lookup.
-    if os.path.dirname(cmd):
-        if _access_check(cmd):
-            return cmd
-        return None
-
-    path = os.environ.get("PATH", os.defpath).split(os.pathsep)
-
-    if sys.platform == 'win32':
-        if os.curdir not in path:
-            path.insert(0, os.curdir)
-        # include path extension (.exe)
-        pathext = os.environ.get("PATHEXT", "").split(os.pathsep)
-        files = [cmd + ext for ext in pathext]
-    else:
-        # always include sbin for slapd binary
-        for sbin in ['/usr/local/sbin', '/sbin', '/usr/sbin']:
-            if sbin not in path:
-                path.append(sbin)
-        files = [cmd]
-
-    for directory in path:
-        for name in files:
-            name = os.path.join(directory, name)
-            if _access_check(name):
-                return name
-    return None
-
+def _add_sbin(path):
+    """Add /sbin and related directories to a command search path"""
+    directories = path.split(os.pathsep)
+    if sys.platform != 'win32':
+        for sbin in '/usr/local/sbin', '/sbin', '/usr/sbin':
+            if sbin not in directories:
+                directories.append(sbin)
+    return os.pathsep.join(directories)
 
 def combined_logger(
         log_name,
@@ -221,14 +189,9 @@ class SlapdObject(object):
         SCHEMADIR = "/etc/ldap/schema"
     else:
         SCHEMADIR = None
-    # _check_requirements turns paths into absolute paths
-    PATH_LDAPADD = 'ldapadd'
-    PATH_LDAPDELETE = 'ldapdelete'
-    PATH_LDAPMODIFY = 'ldapmodify'
-    PATH_LDAPWHOAMI = 'ldapwhoami'
-    # The following two binaries are usually in /usr/sbin.
-    PATH_SLAPD = os.environ.get('SLAPD', 'slapd')
-    PATH_SLAPTEST = 'slaptest'
+
+    BIN_PATH = os.environ.get('BIN', os.environ.get('PATH', os.defpath))
+    SBIN_PATH = os.environ.get('SBIN', _add_sbin(BIN_PATH))
 
     # time in secs to wait before trying to access slapd via LDAP (again)
     _start_sleep = 1.5
@@ -256,6 +219,12 @@ class SlapdObject(object):
             self.default_ldap_uri = self.ldap_uri
             # Use simple bind via LDAP uri
             self.cli_sasl_external = False
+
+        self._find_commands()
+
+        if self.SCHEMADIR is None:
+            raise ValueError('SCHEMADIR is None, ldap schemas are missing.')
+
         # TLS certs
         self.cafile = os.path.join(HERE, 'certs/ca.pem')
         self.servercert = os.path.join(HERE, 'certs/server.pem')
@@ -263,22 +232,31 @@ class SlapdObject(object):
         self.clientcert = os.path.join(HERE, 'certs/client.pem')
         self.clientkey = os.path.join(HERE, 'certs/client.key')
 
-    def _check_requirements(self):
-        names = [
-            "PATH_LDAPADD", "PATH_LDAPMODIFY", "PATH_LDAPDELETE",
-            "PATH_LDAPWHOAMI", "PATH_SLAPD", "PATH_SLAPTEST",
-        ]
-        for name in names:
-            value = getattr(self, name)
-            binary = _which(value)
-            if binary is None:
-                raise ValueError(
-                    "Command '{}' not found in PATH".format(value)
-                )
-            else:
-                setattr(self, name, binary)
-        if self.SCHEMADIR is None:
-            raise ValueError('SCHEMADIR is None, ldap schemas are missing.')
+    def _find_commands(self):
+        self.PATH_LDAPADD = self._find_command('ldapadd')
+        self.PATH_LDAPDELETE = self._find_command('ldapdelete')
+        self.PATH_LDAPMODIFY = self._find_command('ldapmodify')
+        self.PATH_LDAPWHOAMI = self._find_command('ldapwhoami')
+
+        self.PATH_SLAPD = os.environ.get('SLAPD', None)
+        if not self.PATH_SLAPD:
+            self.PATH_SLAPD = self._find_command('slapd', in_sbin=True)
+        self.PATH_SLAPTEST = self._find_command('slaptest', in_sbin=True)
+
+    def _find_command(self, cmd, in_sbin=False):
+        if in_sbin:
+            path = self.SBIN_PATH
+            var_name = 'SBIN'
+        else:
+            path = self.BIN_PATH
+            var_name = 'BIN'
+        command = which(cmd, path=path)
+        if command is None:
+            raise ValueError(
+                "Command '{}' not found. Set the {} environment variable to "
+                "override slapdtest's search path.".format(value, var_name)
+            )
+        return command
 
     def setup_rundir(self):
         """
@@ -439,7 +417,6 @@ class SlapdObject(object):
         """
 
         if self._proc is None:
-            self._check_requirements()
             # prepare directory structure
             atexit.register(self.stop)
             self._cleanup_rundir()
