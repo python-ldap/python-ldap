@@ -348,9 +348,9 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertIs(msg.category, ldap.LDAPBytesWarning)
         self.assertEqual(
             text_type(msg.message),
-            "Received non-bytes value u'%s' with default (disabled) bytes "
+            "Received non-bytes value for 'base' with default (disabled) bytes "
             "mode; please choose an explicit option for bytes_mode on your "
-            "LDAP connection" % self.server.suffix
+            "LDAP connection"
         )
 
     @contextlib.contextmanager
@@ -394,10 +394,10 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertEqual(len(w), 2, w)
 
         self._check_byteswarning(
-            w[0], u"Received non-bytes value u'(cn=Foo*)'")
+            w[0], u"Received non-bytes value for 'filterstr'")
 
         self._check_byteswarning(
-            w[1], u"Received non-bytes value u'*'")
+            w[1], u"Received non-bytes value for 'attrlist'")
 
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_byteswarning_level_search(self):
