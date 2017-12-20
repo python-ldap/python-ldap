@@ -5,7 +5,6 @@ Automatic tests for python-ldap's module ldap.sasl
 See https://www.python-ldap.org/ for details.
 """
 import os
-import pwd
 import socket
 import unittest
 
@@ -14,7 +13,8 @@ os.environ['LDAPNOINIT'] = '1'
 
 from ldap.ldapobject import SimpleLDAPObject
 import ldap.sasl
-from slapdtest import SlapdTestCase, requires_sasl, requires_tls
+from slapdtest import SlapdTestCase
+from slapdtest import requires_ldapi, requires_sasl, requires_tls
 
 
 LDIF = """
@@ -60,7 +60,7 @@ class TestSasl(SlapdTestCase):
         )
         cls.server.ldapadd(ldif)
 
-    @unittest.skipUnless(hasattr(socket, 'AF_UNIX'), "needs Unix socket")
+    @requires_ldapi()
     def test_external_ldapi(self):
         # EXTERNAL authentication with LDAPI (AF_UNIX)
         ldap_conn = self.ldap_object_class(self.server.ldapi_uri)

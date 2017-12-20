@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 
 import os
 import socket
+import sys
 import time
 import subprocess
 import logging
@@ -20,7 +21,7 @@ import unittest
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
-from ldap.compat import quote_plus
+from ldap.compat import quote_plus, which
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -56,6 +57,12 @@ authz-regexp
 
 LOCALHOST = '127.0.0.1'
 
+CI_DISABLED = set(os.environ.get('CI_DISABLED', '').split(':'))
+if 'LDAPI' in CI_DISABLED:
+    HAVE_LDAPI = False
+else:
+    HAVE_LDAPI = hasattr(socket, 'AF_UNIX')
+
 
 def identity(test_item):
     """Identity decorator
@@ -69,7 +76,7 @@ def skip_unless_ci(reason, feature=None):
     """
     if not os.environ.get('CI', False):
         return unittest.skip(reason)
-    elif feature in os.environ.get('CI_DISABLED', '').split(':'):
+    elif feature in CI_DISABLED:
         return unittest.skip(reason)
     else:
         # Don't skip on Travis
@@ -94,6 +101,22 @@ def requires_sasl():
     else:
         return identity
 
+
+def requires_ldapi():
+    if not HAVE_LDAPI:
+        return skip_unless_ci(
+            "test needs ldapi support (AF_UNIX)", feature='LDAPI')
+    else:
+        return identity
+
+def _add_sbin(path):
+    """Add /sbin and related directories to a command search path"""
+    directories = path.split(os.pathsep)
+    if sys.platform != 'win32':
+        for sbin in '/usr/local/sbin', '/sbin', '/usr/sbin':
+            if sbin not in directories:
+                directories.append(sbin)
+    return os.pathsep.join(directories)
 
 def combined_logger(
         log_name,
@@ -149,8 +172,6 @@ class SlapdObject(object):
     root_dn = 'cn=%s,%s' % (root_cn, suffix)
     root_pw = 'password'
     slapd_loglevel = 'stats stats2'
-    # use SASL/EXTERNAL via LDAPI when invoking OpenLDAP CLI tools
-    cli_sasl_external = True
     local_host = '127.0.0.1'
     testrunsubdirs = (
         'schema',
@@ -160,8 +181,6 @@ class SlapdObject(object):
     )
 
     TMPDIR = os.environ.get('TMP', os.getcwd())
-    SBINDIR = os.environ.get('SBIN', '/usr/sbin')
-    BINDIR = os.environ.get('BIN', '/usr/bin')
     if 'SCHEMA' in os.environ:
         SCHEMADIR = os.environ['SCHEMA']
     elif os.path.isdir("/etc/openldap/schema"):
@@ -170,12 +189,9 @@ class SlapdObject(object):
         SCHEMADIR = "/etc/ldap/schema"
     else:
         SCHEMADIR = None
-    PATH_LDAPADD = os.path.join(BINDIR, 'ldapadd')
-    PATH_LDAPDELETE = os.path.join(BINDIR, 'ldapdelete')
-    PATH_LDAPMODIFY = os.path.join(BINDIR, 'ldapmodify')
-    PATH_LDAPWHOAMI = os.path.join(BINDIR, 'ldapwhoami')
-    PATH_SLAPD = os.environ.get('SLAPD', os.path.join(SBINDIR, 'slapd'))
-    PATH_SLAPTEST = os.path.join(SBINDIR, 'slaptest')
+
+    BIN_PATH = os.environ.get('BIN', os.environ.get('PATH', os.defpath))
+    SBIN_PATH = os.environ.get('SBIN', _add_sbin(BIN_PATH))
 
     # time in secs to wait before trying to access slapd via LDAP (again)
     _start_sleep = 1.5
@@ -192,8 +208,23 @@ class SlapdObject(object):
         self._slapd_conf = os.path.join(self.testrundir, 'slapd.conf')
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
         self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
-        ldapi_path = os.path.join(self.testrundir, 'ldapi')
-        self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
+        if HAVE_LDAPI:
+            ldapi_path = os.path.join(self.testrundir, 'ldapi')
+            self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
+            self.default_ldap_uri = self.ldapi_uri
+            # use SASL/EXTERNAL via LDAPI when invoking OpenLDAP CLI tools
+            self.cli_sasl_external = True
+        else:
+            self.ldapi_uri = None
+            self.default_ldap_uri = self.ldap_uri
+            # Use simple bind via LDAP uri
+            self.cli_sasl_external = False
+
+        self._find_commands()
+
+        if self.SCHEMADIR is None:
+            raise ValueError('SCHEMADIR is None, ldap schemas are missing.')
+
         # TLS certs
         self.cafile = os.path.join(HERE, 'certs/ca.pem')
         self.servercert = os.path.join(HERE, 'certs/server.pem')
@@ -201,16 +232,31 @@ class SlapdObject(object):
         self.clientcert = os.path.join(HERE, 'certs/client.pem')
         self.clientkey = os.path.join(HERE, 'certs/client.key')
 
-    def _check_requirements(self):
-        binaries = [
-            self.PATH_LDAPADD, self.PATH_LDAPMODIFY, self.PATH_LDAPWHOAMI,
-            self.PATH_SLAPD, self.PATH_SLAPTEST
-        ]
-        for binary in binaries:
-            if not os.path.isfile(binary):
-                raise ValueError('Binary {} is missing.'.format(binary))
-        if self.SCHEMADIR is None:
-            raise ValueError('SCHEMADIR is None, ldap schemas are missing.')
+    def _find_commands(self):
+        self.PATH_LDAPADD = self._find_command('ldapadd')
+        self.PATH_LDAPDELETE = self._find_command('ldapdelete')
+        self.PATH_LDAPMODIFY = self._find_command('ldapmodify')
+        self.PATH_LDAPWHOAMI = self._find_command('ldapwhoami')
+
+        self.PATH_SLAPD = os.environ.get('SLAPD', None)
+        if not self.PATH_SLAPD:
+            self.PATH_SLAPD = self._find_command('slapd', in_sbin=True)
+        self.PATH_SLAPTEST = self._find_command('slaptest', in_sbin=True)
+
+    def _find_command(self, cmd, in_sbin=False):
+        if in_sbin:
+            path = self.SBIN_PATH
+            var_name = 'SBIN'
+        else:
+            path = self.BIN_PATH
+            var_name = 'BIN'
+        command = which(cmd, path=path)
+        if command is None:
+            raise ValueError(
+                "Command '{}' not found. Set the {} environment variable to "
+                "override slapdtest's search path.".format(value, var_name)
+            )
+        return command
 
     def setup_rundir(self):
         """
@@ -331,11 +377,14 @@ class SlapdObject(object):
         """
         Spawns/forks the slapd process
         """
+        urls = [self.ldap_uri]
+        if self.ldapi_uri:
+            urls.append(self.ldapi_uri)
         slapd_args = [
             self.PATH_SLAPD,
             '-f', self._slapd_conf,
             '-F', self.testrundir,
-            '-h', '%s' % ' '.join((self.ldap_uri, self.ldapi_uri)),
+            '-h', ' '.join(urls),
         ]
         if self._log.isEnabledFor(logging.DEBUG):
             slapd_args.extend(['-d', '-1'])
@@ -346,18 +395,21 @@ class SlapdObject(object):
         # Waits until the LDAP server socket is open, or slapd crashed
         # no cover to avoid spurious coverage changes, see
         # https://github.com/python-ldap/python-ldap/issues/127
-        while 1:  # pragma: no cover
+        for _ in range(10):  # pragma: no cover
             if self._proc.poll() is not None:
                 self._stopped()
                 raise RuntimeError("slapd exited before opening port")
             time.sleep(self._start_sleep)
             try:
-                self._log.debug("slapd connection check to %s", self.ldapi_uri)
+                self._log.debug(
+                    "slapd connection check to %s", self.default_ldap_uri
+                )
                 self.ldapwhoami()
             except RuntimeError:
                 pass
             else:
                 return
+        raise RuntimeError("slapd did not start properly")
 
     def start(self):
         """
@@ -365,7 +417,6 @@ class SlapdObject(object):
         """
 
         if self._proc is None:
-            self._check_requirements()
             # prepare directory structure
             atexit.register(self.stop)
             self._cleanup_rundir()
@@ -435,9 +486,11 @@ class SlapdObject(object):
     # no cover to avoid spurious coverage changes
     def _cli_popen(self, ldapcommand, extra_args=None, ldap_uri=None,
                    stdin_data=None):  # pragma: no cover
+        if ldap_uri is None:
+            ldap_uri = self.default_ldap_uri
         args = [
             ldapcommand,
-            '-H', ldap_uri or self.ldapi_uri,
+            '-H', ldap_uri,
         ] + self._cli_auth_args() + (extra_args or [])
         self._log.debug('Run command: %r', ' '.join(args))
         proc = subprocess.Popen(
