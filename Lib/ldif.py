@@ -577,8 +577,10 @@ class LDIFParser:
 
 class LDIFRecordList(LDIFParser):
   """
-  Collect all records of LDIF input into a single list.
-  of 2-tuples (dn,entry). It can be a memory hog!
+  Collect all records of a LDIF file. It can be a memory hog!
+
+  Records are stored in :attr:`.all_records` as a single list
+  of 2-tuples (dn, entry), after calling :meth:`.parse`.
   """
 
   def __init__(
@@ -586,20 +588,15 @@ class LDIFRecordList(LDIFParser):
     input_file,
     ignored_attr_types=None,max_entries=0,process_url_schemes=None
   ):
-    """
-    See LDIFParser.__init__()
-
-    Additional Parameters:
-    all_records
-        List instance for storing parsed records
-    """
     LDIFParser.__init__(self,input_file,ignored_attr_types,max_entries,process_url_schemes)
+
+    #: List storing parsed records.
     self.all_records = []
     self.all_modify_changes = []
 
   def handle(self,dn,entry):
     """
-    Append single record to dictionary of all records.
+    Append a single record to the list of all records (:attr:`.all_records`).
     """
     self.all_records.append((dn,entry))
 
