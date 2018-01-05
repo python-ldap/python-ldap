@@ -1068,7 +1068,10 @@ and wait for and return with the server's result, or with
    or :py:meth:`search_ext_s()` (client-side search limit). If non-zero
    not more than *sizelimit* results are returned by the server.
 
+   .. versionchanged:: 3.0
 
+      ``filterstr=None`` is equal to ``filterstr='(objectClass=*)'``.
+   
 
 .. py:method:: LDAPObject.start_tls_s() -> None
 
