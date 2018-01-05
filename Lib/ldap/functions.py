@@ -138,8 +138,7 @@ def escape_str(escape_func,s,*args):
   Applies escape_func() to all items of `args' and returns a string based
   on format string `s'.
   """
-  escape_args = map(escape_func,args)
-  return s % tuple(escape_args)
+  return s % tuple(escape_func(v) for v in args)
 
 
 def strf_secs(secs):

@@ -108,7 +108,7 @@ class DereferenceControl(LDAPControl):
     for deref_res in decodedValue:
       deref_attr,deref_val,deref_vals = deref_res[0],deref_res[1],deref_res[2]
       partial_attrs_dict = {
-        str(tv[0]): map(str,tv[1])
+        str(tv[0]): [str(v) for v in tv[1]]
         for tv in deref_vals or []
       }
       try:

@@ -11,7 +11,7 @@ import ldap
 
 def addModlist(entry,ignore_attr_types=None):
   """Build modify list for call of method LDAPObject.add()"""
-  ignore_attr_types = set(map(str.lower,ignore_attr_types or []))
+  ignore_attr_types = {v.lower() for v in ignore_attr_types or []}
   modlist = []
   for attrtype in entry.keys():
     if attrtype.lower() in ignore_attr_types:
@@ -46,8 +46,8 @@ def modifyModlist(
       List of attribute type names for which comparison will be made
       case-insensitive
   """
-  ignore_attr_types = set(map(str.lower,ignore_attr_types or []))
-  case_ignore_attr_types = set(map(str.lower,case_ignore_attr_types or []))
+  ignore_attr_types = {v.lower() for v in ignore_attr_types or []}
+  case_ignore_attr_types = {v.lower() for v in case_ignore_attr_types or []}
   modlist = []
   attrtype_lower_map = {}
   for a in old_entry.keys():
@@ -73,8 +73,8 @@ def modifyModlist(
       replace_attr_value = len(old_value)!=len(new_value)
       if not replace_attr_value:
         if attrtype_lower in case_ignore_attr_types:
-          old_value_set = set(map(str.lower,old_value))
-          new_value_set = set(map(str.lower,new_value))
+          old_value_set = {v.lower() for v in old_value}
+          new_value_set = {v.lower() for v in new_value}
         else:
           old_value_set = set(old_value)
           new_value_set = set(new_value)

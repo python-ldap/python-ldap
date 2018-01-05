@@ -158,7 +158,7 @@ class LDAPUrlExtensions(UserDict):
     ]
 
   def __str__(self):
-    return ','.join(map(str,self.values()))
+    return ','.join(str(v) for v in self.values())
 
   def __repr__(self):
     return '<%s.%s instance at %s: %s>' % (
