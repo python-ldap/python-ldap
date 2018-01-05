@@ -795,7 +795,12 @@ class SimpleLDAPObject:
     """
     if PY2:
         base = self._bytesify_input('base', base)
-        filterstr = self._bytesify_input('filterstr', filterstr)
+        # workaround for default argument,
+        # see https://github.com/python-ldap/python-ldap/issues/147
+        if self.bytes_mode and filterstr == '(objectClass=*)':
+          filterstr = b'(objectClass=*)'
+        else:
+          filterstr = self._bytesify_input('filterstr', filterstr)
         if attrlist is not None:
             attrlist = tuple(self._bytesify_input('attrlist', a)
                              for a in attrlist)
@@ -885,7 +890,7 @@ class SimpleLDAPObject:
       invalue = RequestControlTuples(invalue)
     return self._ldap_call(self._l.set_option,option,invalue)
 
-  def search_subschemasubentry_s(self,dn=''):
+  def search_subschemasubentry_s(self,dn=None):
     """
     Returns the distinguished name of the sub schema sub entry
     for a part of a DIT specified by dn.
@@ -895,9 +900,17 @@ class SimpleLDAPObject:
 
     Returns: None or text/bytes depending on bytes_mode.
     """
+    if self.bytes_mode:
+      empty_dn = b''
+      attrname = b'subschemaSubentry'
+    else:
+      empty_dn = u''
+      attrname = u'subschemaSubentry'
+    if dn is None:
+      dn = empty_dn
     try:
       r = self.search_s(
-        dn,ldap.SCOPE_BASE,'(objectClass=*)',['subschemaSubentry']
+        dn,ldap.SCOPE_BASE,'(objectClass=*)',[attrname]
       )
     except (ldap.NO_SUCH_OBJECT,ldap.NO_SUCH_ATTRIBUTE,ldap.INSUFFICIENT_ACCESS):
       r = []
@@ -906,11 +919,11 @@ class SimpleLDAPObject:
     try:
       if r:
         e = ldap.cidict.cidict(r[0][1])
-        search_subschemasubentry_dn = e.get('subschemaSubentry',[None])[0]
+        search_subschemasubentry_dn = e.get(attrname,[None])[0]
         if search_subschemasubentry_dn is None:
           if dn:
             # Try to find sub schema sub entry in root DSE
-            return self.search_subschemasubentry_s(dn='')
+            return self.search_subschemasubentry_s(dn=empty_dn)
           else:
             # If dn was already root DSE we can return here
             return None
@@ -945,11 +958,19 @@ class SimpleLDAPObject:
     """
     Returns the sub schema sub entry's data
     """
+    if self.bytes_mode:
+      filterstr = b'(objectClass=subschema)'
+      if attrs is None:
+        attrs = [attr.encode('utf-8') for attr in SCHEMA_ATTRS]
+    else:
+      filterstr = u'(objectClass=subschema)'
+      if attrs is None:
+        attrs = SCHEMA_ATTRS
     try:
       subschemasubentry = self.read_s(
         subschemasubentry_dn,
-        filterstr='(objectClass=subschema)',
-        attrlist=attrs or SCHEMA_ATTRS
+        filterstr=filterstr,
+        attrlist=attrs
       )
     except ldap.NO_SUCH_OBJECT:
       return None
@@ -964,7 +985,7 @@ class SimpleLDAPObject:
       base,
       scope,
       filterstr,
-      attrlist=attrlist or ['*'],
+      attrlist=attrlist,
       attrsonly=attrsonly,
       serverctrls=serverctrls,
       clientctrls=clientctrls,
@@ -979,10 +1000,16 @@ class SimpleLDAPObject:
     """
     convenience wrapper around read_s() for reading rootDSE
     """
+    if self.bytes_mode:
+      base = b''
+      attrlist = attrlist or [b'*', b'+']
+    else:
+      base = u''
+      attrlist = attrlist or [u'*', u'+']
     ldap_rootdse = self.read_s(
-      '',
+      base,
       filterstr=filterstr,
-      attrlist=attrlist or ['*', '+'],
+      attrlist=attrlist,
     )
     return ldap_rootdse  # read_rootdse_s()
 
@@ -991,9 +1018,13 @@ class SimpleLDAPObject:
     returns all attribute values of namingContexts in rootDSE
     if namingContexts is not present (not readable) then empty list is returned
     """
+    if self.bytes_mode:
+      name = b'namingContexts'
+    else:
+      name = u'namingContexts'
     return self.read_rootdse_s(
-      attrlist=['namingContexts']
-    ).get('namingContexts', [])
+      attrlist=[name]
+    ).get(name, [])
 
 
 class ReconnectLDAPObject(SimpleLDAPObject):

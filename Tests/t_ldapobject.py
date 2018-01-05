@@ -162,7 +162,6 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
                 self.assertEqual(type(value), bytes)
 
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
-    @unittest.expectedFailure
     def test_bytesmode_search_defaults(self):
         l = self._get_bytes_ldapobject()
         base = 'cn=Foo1,' + self.server.suffix
@@ -335,7 +334,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
 
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_search_subschema_have_bytes(self):
-        l = self._get_bytes_ldapobject(explicit=False)
+        l = self._get_bytes_ldapobject()
         dn = l.search_subschemasubentry_s()
         self.assertIsInstance(dn, bytes)
         self.assertEqual(dn, b"cn=Subschema")
@@ -526,7 +525,6 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         )
 
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
-    @unittest.expectedFailure
     def test_dse_bytes(self):
         l = self._get_bytes_ldapobject()
         dse = l.read_rootdse_s()
