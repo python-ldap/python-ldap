@@ -214,3 +214,6 @@ If you are tasked with releasing python-ldap, remember to:
 * Release the ``sdist`` on PyPI.
 * Announce the release on the mailing list.
   Mention the Git hash.
+* Add the release's log from ``CHANGES`` on the `GitHub release page`_.
+
+.. _GitHub release page: https://github.com/python-ldap/python-ldap/releases
