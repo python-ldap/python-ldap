@@ -162,6 +162,30 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
                 self.assertEqual(type(value), bytes)
 
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    @unittest.expectedFailure
+    def test_bytesmode_search_defaults(self):
+        l = self._get_bytes_ldapobject()
+        base = 'cn=Foo1,' + self.server.suffix
+        kwargs = dict(
+            base=base.encode('utf-8'),
+            scope=ldap.SCOPE_SUBTREE,
+            # filterstr=b'(objectClass=*)'
+        )
+        expected = [
+            (
+                base,
+                {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}
+            ),
+        ]
+
+        result = l.search_s(**kwargs)
+        self.assertEqual(result, expected)
+        result = l.search_st(**kwargs)
+        self.assertEqual(result, expected)
+        result = l.search_ext_s(**kwargs)
+        self.assertEqual(result, expected)
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_unset_bytesmode_search_warns_bytes(self):
         l = self._get_bytes_ldapobject(explicit=False)
         base = self.server.suffix
@@ -263,11 +287,51 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             [('cn=Foo4,ou=Container,'+self.server.suffix, {'cn': [b'Foo4']})]
         )
 
+    def test_find_unique_entry(self):
+        result = self._ldap_conn.find_unique_entry(
+            self.server.suffix,
+            ldap.SCOPE_SUBTREE,
+            '(cn=Foo4)',
+            ['cn'],
+        )
+        self.assertEqual(
+            result,
+            ('cn=Foo4,ou=Container,'+self.server.suffix, {'cn': [b'Foo4']})
+        )
+        with self.assertRaises(ldap.SIZELIMIT_EXCEEDED):
+            # > 2 entries returned
+            self._ldap_conn.find_unique_entry(
+                self.server.suffix,
+                ldap.SCOPE_ONELEVEL,
+                '(cn=Foo*)',
+                ['*'],
+            )
+        with self.assertRaises(ldap.NO_UNIQUE_ENTRY):
+            # 0 entries returned
+            self._ldap_conn.find_unique_entry(
+                self.server.suffix,
+                ldap.SCOPE_ONELEVEL,
+                '(cn=Bar*)',
+                ['*'],
+            )
+
     def test_search_subschema(self):
         l = self._ldap_conn
         dn = l.search_subschemasubentry_s()
         self.assertIsInstance(dn, text_type)
         self.assertEqual(dn, "cn=Subschema")
+        subschema = l.read_subschemasubentry_s(dn)
+        self.assertIsInstance(subschema, dict)
+        self.assertEqual(
+            sorted(subschema),
+            [
+                u'attributeTypes',
+                u'ldapSyntaxes',
+                u'matchingRuleUse',
+                u'matchingRules',
+                u'objectClasses'
+            ]
+        )
 
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_search_subschema_have_bytes(self):
@@ -275,6 +339,18 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         dn = l.search_subschemasubentry_s()
         self.assertIsInstance(dn, bytes)
         self.assertEqual(dn, b"cn=Subschema")
+        subschema = l.read_subschemasubentry_s(dn)
+        self.assertIsInstance(subschema, dict)
+        self.assertEqual(
+            sorted(subschema),
+            [
+                b'attributeTypes',
+                b'ldapSyntaxes',
+                b'matchingRuleUse',
+                b'matchingRules',
+                b'objectClasses'
+            ]
+        )
 
     def test004_errno107(self):
         l = self.ldap_object_class('ldap://127.0.0.1:42')
@@ -432,6 +508,34 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             l.start_tls_s()
             l.simple_bind_s(self.server.root_dn, self.server.root_pw)
             self.assertEqual(l.whoami_s(), 'dn:' + self.server.root_dn)
+
+    def test_dse(self):
+        dse = self._ldap_conn.read_rootdse_s()
+        self.assertIsInstance(dse, dict)
+        self.assertEqual(dse[u'supportedLDAPVersion'], [b'3'])
+        self.assertEqual(
+            sorted(dse),
+            [u'configContext', u'entryDN', u'namingContexts', u'objectClass',
+             u'structuralObjectClass', u'subschemaSubentry',
+             u'supportedControl', u'supportedExtension', u'supportedFeatures',
+             u'supportedLDAPVersion', u'supportedSASLMechanisms']
+        )
+        self.assertEqual(
+            self._ldap_conn.get_naming_contexts(),
+            [self.server.suffix.encode('utf-8')]
+        )
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    @unittest.expectedFailure
+    def test_dse_bytes(self):
+        l = self._get_bytes_ldapobject()
+        dse = l.read_rootdse_s()
+        self.assertIsInstance(dse, dict)
+        self.assertEqual(dse[u'supportedLDAPVersion'], [b'3'])
+        self.assertEqual(
+            l.get_naming_contexts(),
+            [self.server.suffix.encode('utf-8')]
+        )
 
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
