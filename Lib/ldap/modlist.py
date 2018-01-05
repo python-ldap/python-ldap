@@ -13,7 +13,7 @@ def addModlist(entry,ignore_attr_types=None):
   """Build modify list for call of method LDAPObject.add()"""
   ignore_attr_types = {v.lower() for v in ignore_attr_types or []}
   modlist = []
-  for attrtype in entry.keys():
+  for attrtype in entry:
     if attrtype.lower() in ignore_attr_types:
       # This attribute type is ignored
       continue
@@ -50,9 +50,9 @@ def modifyModlist(
   case_ignore_attr_types = {v.lower() for v in case_ignore_attr_types or []}
   modlist = []
   attrtype_lower_map = {}
-  for a in old_entry.keys():
+  for a in old_entry:
     attrtype_lower_map[a.lower()]=a
-  for attrtype in new_entry.keys():
+  for attrtype in new_entry:
     attrtype_lower = attrtype.lower()
     if attrtype_lower in ignore_attr_types:
       # This attribute type is ignored
@@ -88,7 +88,7 @@ def modifyModlist(
   if not ignore_oldexistent:
     # Remove all attributes of old_entry which are not present
     # in new_entry at all
-    for a in attrtype_lower_map.keys():
+    for a in attrtype_lower_map:
       if a in ignore_attr_types:
         # This attribute type is ignored
         continue

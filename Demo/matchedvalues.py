@@ -35,7 +35,7 @@ from ldap.controls import MatchedValuesControl
 def print_result(search_result):
     for n in range(len(search_result)):
         print("dn: %s" % search_result[n][0])
-        for attr in search_result[n][1].keys():
+        for attr in search_result[n][1]:
             for i in range(len(search_result[n][1][attr])):
                 print("%s: %s" % (attr, search_result[n][1][attr][i]))
         print
@@ -61,4 +61,3 @@ print_result(res)
 res = ld.search_ext_s(base, scope, filter, attrlist = ['mail'], serverctrls = [mv])
 print("Matched values control: %s" % control_filter)
 print_result(res)
-
