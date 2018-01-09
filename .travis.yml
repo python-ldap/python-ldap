@@ -18,10 +18,6 @@ matrix:
       env:
         - TOXENV=py27
         - WITH_GCOV=1
-    - python: 3.3
-      env:
-        - TOXENV=py33
-        - WITH_GCOV=1
     - python: 3.4
       env:
         - TOXENV=py34
