@@ -499,7 +499,7 @@ l_ldap_simple_bind( LDAPObject* self, PyObject* args )
     LDAPControl** client_ldcs = NULL;
     struct berval cred;
 
-    if (!PyArg_ParseTuple( args, "ss#|OO", &who, &cred.bv_val, &cred_len, &serverctrls, &clientctrls )) return NULL;
+    if (!PyArg_ParseTuple( args, "zz#|OO", &who, &cred.bv_val, &cred_len, &serverctrls, &clientctrls )) return NULL;
     cred.bv_len = (ber_len_t) cred_len;
 
     if (not_valid(self)) return NULL;

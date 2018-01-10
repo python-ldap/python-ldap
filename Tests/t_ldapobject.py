@@ -401,6 +401,14 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             cls.__mro__
         )
 
+    def test_simple_bind_noarg(self):
+        l = self.ldap_object_class(self.server.ldap_uri)
+        l.simple_bind_s()
+        self.assertEqual(l.whoami_s(), u'')
+        l = self.ldap_object_class(self.server.ldap_uri)
+        l.simple_bind_s(None, None)
+        self.assertEqual(l.whoami_s(), u'')
+
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_ldapbyteswarning(self):
         self.assertIsSubclass(ldap.LDAPBytesWarning, BytesWarning)
