@@ -33,7 +33,8 @@
    match-leak-kinds: definite
    fun:malloc
    fun:PL_strdup
-   fun:tlsm_init
+   ...
+   fun:ldap_set_option
    ...
 }
 
