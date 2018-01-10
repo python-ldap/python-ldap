@@ -4,7 +4,7 @@ ldapurl - handling of LDAP URLs as described in RFC 4516
 See https://www.python-ldap.org/ for details.
 """
 
-__version__ = '3.0.0b3'
+__version__ = '3.0.0b4'
 
 __all__ = [
   # constants
