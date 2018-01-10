@@ -9,8 +9,8 @@ from setuptools import setup, Extension
 
 if sys.version_info[0] == 2 and sys.version_info[1] < 7:
     raise RuntimeError('This software requires Python 2.7 or 3.x.')
-if sys.version_info[0] >= 3 and sys.version_info < (3, 3):
-    raise RuntimeError('The C API from Python 3.3+ is required.')
+if sys.version_info[0] >= 3 and sys.version_info < (3, 4):
+    raise RuntimeError('The C API from Python 3.4+ is required.')
 
 if sys.version_info[0] >= 3:
     from configparser import ConfigParser
@@ -91,7 +91,6 @@ setup(
     'Programming Language :: Python :: 2',
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
@@ -168,6 +167,6 @@ setup(
     'pyasn1_modules >= 0.1.5',
   ],
   zip_safe=False,
-  python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
+  python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
   test_suite = 'Tests',
 )
