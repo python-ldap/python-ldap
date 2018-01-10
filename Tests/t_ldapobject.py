@@ -520,12 +520,15 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         dse = self._ldap_conn.read_rootdse_s()
         self.assertIsInstance(dse, dict)
         self.assertEqual(dse[u'supportedLDAPVersion'], [b'3'])
+        keys = set(dse)
+        # SASL info may be missing in restricted build environments
+        keys.discard(u'supportedSASLMechanisms')
         self.assertEqual(
-            sorted(dse),
-            [u'configContext', u'entryDN', u'namingContexts', u'objectClass',
+            keys,
+            {u'configContext', u'entryDN', u'namingContexts', u'objectClass',
              u'structuralObjectClass', u'subschemaSubentry',
              u'supportedControl', u'supportedExtension', u'supportedFeatures',
-             u'supportedLDAPVersion', u'supportedSASLMechanisms']
+             u'supportedLDAPVersion'}
         )
         self.assertEqual(
             self._ldap_conn.get_naming_contexts(),
