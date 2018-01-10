@@ -127,7 +127,7 @@ class ObjectClass(SchemaElement):
     This list of strings contains NAMEs or OIDs of object classes
     this object class is derived from
   """
-  schema_attribute = 'objectClasses'
+  schema_attribute = u'objectClasses'
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),
@@ -225,7 +225,7 @@ class AttributeType(SchemaElement):
     This list of strings contains NAMEs or OIDs of attribute types
     this attribute type is derived from
   """
-  schema_attribute = 'attributeTypes'
+  schema_attribute = u'attributeTypes'
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),
@@ -319,7 +319,7 @@ class LDAPSyntax(SchemaElement):
     Integer flag (0 or 1) indicating whether the attribute type is marked
     as not human-readable (X-NOT-HUMAN-READABLE)
   """
-  schema_attribute = 'ldapSyntaxes'
+  schema_attribute = u'ldapSyntaxes'
   token_defaults = {
     'DESC':(None,),
     'X-NOT-HUMAN-READABLE':(None,),
@@ -367,7 +367,7 @@ class MatchingRule(SchemaElement):
   syntax
     String contains OID of the LDAP syntax this matching rule is usable with
   """
-  schema_attribute = 'matchingRules'
+  schema_attribute = u'matchingRules'
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),
@@ -413,7 +413,7 @@ class MatchingRuleUse(SchemaElement):
     This list of strings contains NAMEs or OIDs of attribute types
     for which this matching rule is used
   """
-  schema_attribute = 'matchingRuleUse'
+  schema_attribute = u'matchingRuleUse'
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),
@@ -470,7 +470,7 @@ class DITContentRule(SchemaElement):
     This list of strings contains NAMEs or OIDs of attributes which
     may not be present in an entry of the object class
   """
-  schema_attribute = 'dITContentRules'
+  schema_attribute = u'dITContentRules'
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),
@@ -527,7 +527,7 @@ class DITStructureRule(SchemaElement):
     List of strings with NAMEs or OIDs of allowed structural object classes
     of superior entries in the DIT
   """
-  schema_attribute = 'dITStructureRules'
+  schema_attribute = u'dITStructureRules'
 
   token_defaults = {
     'NAME':(()),
@@ -591,7 +591,7 @@ class NameForm(SchemaElement):
     This list of strings contains NAMEs or OIDs of additional attributes
     an RDN may contain
   """
-  schema_attribute = 'nameForms'
+  schema_attribute = u'nameForms'
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),

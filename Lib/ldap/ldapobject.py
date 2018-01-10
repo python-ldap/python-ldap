@@ -748,7 +748,7 @@ class SimpleLDAPObject:
         resp_data = self._bytesify_results(resp_data, with_ctrls=add_ctrls)
     return resp_type, resp_data, resp_msgid, decoded_resp_ctrls, resp_name, resp_value
 
-  def search_ext(self,base,scope,filterstr='(objectClass=*)',attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1,sizelimit=0):
+  def search_ext(self,base,scope,filterstr=None,attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1,sizelimit=0):
     """
     search(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0]]]) -> int
     search_s(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0]]])
@@ -793,12 +793,24 @@ class SimpleLDAPObject:
         The amount of search results retrieved can be limited with the
         sizelimit parameter if non-zero.
     """
+
     if PY2:
         base = self._bytesify_input('base', base)
-        filterstr = self._bytesify_input('filterstr', filterstr)
+        if filterstr is None:
+          # workaround for default argument,
+          # see https://github.com/python-ldap/python-ldap/issues/147
+          if self.bytes_mode:
+            filterstr = b'(objectClass=*)'
+          else:
+            filterstr = u'(objectClass=*)'
+        else:
+          filterstr = self._bytesify_input('filterstr', filterstr)
         if attrlist is not None:
             attrlist = tuple(self._bytesify_input('attrlist', a)
                              for a in attrlist)
+    else:
+      if filterstr is None:
+        filterstr = '(objectClass=*)'
     return self._ldap_call(
       self._l.search_ext,
       base,scope,filterstr,
@@ -808,17 +820,17 @@ class SimpleLDAPObject:
       timeout,sizelimit,
     )
 
-  def search_ext_s(self,base,scope,filterstr='(objectClass=*)',attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1,sizelimit=0):
+  def search_ext_s(self,base,scope,filterstr=None,attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1,sizelimit=0):
     msgid = self.search_ext(base,scope,filterstr,attrlist,attrsonly,serverctrls,clientctrls,timeout,sizelimit)
     return self.result(msgid,all=1,timeout=timeout)[1]
 
-  def search(self,base,scope,filterstr='(objectClass=*)',attrlist=None,attrsonly=0):
+  def search(self,base,scope,filterstr=None,attrlist=None,attrsonly=0):
     return self.search_ext(base,scope,filterstr,attrlist,attrsonly,None,None)
 
-  def search_s(self,base,scope,filterstr='(objectClass=*)',attrlist=None,attrsonly=0):
+  def search_s(self,base,scope,filterstr=None,attrlist=None,attrsonly=0):
     return self.search_ext_s(base,scope,filterstr,attrlist,attrsonly,None,None,timeout=self.timeout)
 
-  def search_st(self,base,scope,filterstr='(objectClass=*)',attrlist=None,attrsonly=0,timeout=-1):
+  def search_st(self,base,scope,filterstr=None,attrlist=None,attrsonly=0,timeout=-1):
     return self.search_ext_s(base,scope,filterstr,attrlist,attrsonly,None,None,timeout)
 
   def start_tls_s(self):
@@ -885,7 +897,7 @@ class SimpleLDAPObject:
       invalue = RequestControlTuples(invalue)
     return self._ldap_call(self._l.set_option,option,invalue)
 
-  def search_subschemasubentry_s(self,dn=''):
+  def search_subschemasubentry_s(self,dn=None):
     """
     Returns the distinguished name of the sub schema sub entry
     for a part of a DIT specified by dn.
@@ -895,9 +907,17 @@ class SimpleLDAPObject:
 
     Returns: None or text/bytes depending on bytes_mode.
     """
+    if self.bytes_mode:
+      empty_dn = b''
+      attrname = b'subschemaSubentry'
+    else:
+      empty_dn = u''
+      attrname = u'subschemaSubentry'
+    if dn is None:
+      dn = empty_dn
     try:
       r = self.search_s(
-        dn,ldap.SCOPE_BASE,'(objectClass=*)',['subschemaSubentry']
+        dn,ldap.SCOPE_BASE,None,[attrname]
       )
     except (ldap.NO_SUCH_OBJECT,ldap.NO_SUCH_ATTRIBUTE,ldap.INSUFFICIENT_ACCESS):
       r = []
@@ -906,11 +926,11 @@ class SimpleLDAPObject:
     try:
       if r:
         e = ldap.cidict.cidict(r[0][1])
-        search_subschemasubentry_dn = e.get('subschemaSubentry',[None])[0]
+        search_subschemasubentry_dn = e.get(attrname,[None])[0]
         if search_subschemasubentry_dn is None:
           if dn:
             # Try to find sub schema sub entry in root DSE
-            return self.search_subschemasubentry_s(dn='')
+            return self.search_subschemasubentry_s(dn=empty_dn)
           else:
             # If dn was already root DSE we can return here
             return None
@@ -930,7 +950,7 @@ class SimpleLDAPObject:
     r = self.search_ext_s(
       dn,
       ldap.SCOPE_BASE,
-      filterstr or '(objectClass=*)',
+      filterstr,
       attrlist=attrlist,
       serverctrls=serverctrls,
       clientctrls=clientctrls,
@@ -945,18 +965,26 @@ class SimpleLDAPObject:
     """
     Returns the sub schema sub entry's data
     """
+    if self.bytes_mode:
+      filterstr = b'(objectClass=subschema)'
+      if attrs is None:
+        attrs = [attr.encode('utf-8') for attr in SCHEMA_ATTRS]
+    else:
+      filterstr = u'(objectClass=subschema)'
+      if attrs is None:
+        attrs = SCHEMA_ATTRS
     try:
       subschemasubentry = self.read_s(
         subschemasubentry_dn,
-        filterstr='(objectClass=subschema)',
-        attrlist=attrs or SCHEMA_ATTRS
+        filterstr=filterstr,
+        attrlist=attrs
       )
     except ldap.NO_SUCH_OBJECT:
       return None
     else:
       return subschemasubentry
 
-  def find_unique_entry(self,base,scope=ldap.SCOPE_SUBTREE,filterstr='(objectClass=*)',attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1):
+  def find_unique_entry(self,base,scope=ldap.SCOPE_SUBTREE,filterstr=None,attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1):
     """
     Returns a unique entry, raises exception if not unique
     """
@@ -964,7 +992,7 @@ class SimpleLDAPObject:
       base,
       scope,
       filterstr,
-      attrlist=attrlist or ['*'],
+      attrlist=attrlist,
       attrsonly=attrsonly,
       serverctrls=serverctrls,
       clientctrls=clientctrls,
@@ -975,14 +1003,20 @@ class SimpleLDAPObject:
       raise NO_UNIQUE_ENTRY('No or non-unique search result for %s' % (repr(filterstr)))
     return r[0]
 
-  def read_rootdse_s(self, filterstr='(objectClass=*)', attrlist=None):
+  def read_rootdse_s(self, filterstr=None, attrlist=None):
     """
     convenience wrapper around read_s() for reading rootDSE
     """
+    if self.bytes_mode:
+      base = b''
+      attrlist = attrlist or [b'*', b'+']
+    else:
+      base = u''
+      attrlist = attrlist or [u'*', u'+']
     ldap_rootdse = self.read_s(
-      '',
+      base,
       filterstr=filterstr,
-      attrlist=attrlist or ['*', '+'],
+      attrlist=attrlist,
     )
     return ldap_rootdse  # read_rootdse_s()
 
@@ -991,9 +1025,13 @@ class SimpleLDAPObject:
     returns all attribute values of namingContexts in rootDSE
     if namingContexts is not present (not readable) then empty list is returned
     """
+    if self.bytes_mode:
+      name = b'namingContexts'
+    else:
+      name = u'namingContexts'
     return self.read_rootdse_s(
-      attrlist=['namingContexts']
-    ).get('namingContexts', [])
+      attrlist=[name]
+    ).get(name, [])
 
 
 class ReconnectLDAPObject(SimpleLDAPObject):
