@@ -1018,7 +1018,7 @@ and wait for and return with the server's result, or with
    .. versionchanged:: 3.0
 
       :meth:`~LDAPObject.simple_bind` and :meth:`~LDAPObject.simple_bind_s`
-      now accept `None` for who and cred, too.
+      now accept ``None`` for *who* and *cred*, too.
 
 
 .. py:method:: LDAPObject.search(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0]]]) ->int
