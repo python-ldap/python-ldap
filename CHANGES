@@ -1,4 +1,22 @@
 ----------------------------------------------------------------
+Released 3.0.0b4 2018-01-10
+
+Changes since 3.0.0b3:
+
+Removed support for Python 3.3, which reached its end-of-life 2017-09-29.
+
+Lib/
+* Make default argument values work under bytes_mode
+* Update use of map() to use list/set comprehensions instead
+
+Test/
+* Refactor syncrepl tests to run with bytes_mode
+
+Doc/
+* Document all_records attribute of LDIFRecordList
+
+
+----------------------------------------------------------------
 Released 3.0.0b3 2017-12-20
 
 Changes since 3.0.0b2:
