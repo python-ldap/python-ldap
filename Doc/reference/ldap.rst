@@ -1000,9 +1000,9 @@ and wait for and return with the server's result, or with
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
 
 
-.. py:method:: LDAPObject.simple_bind([who='' [, cred='' [, serverctrls=None [, clientctrls=None]]]]) -> int
+.. py:method:: LDAPObject.simple_bind([who=None [, cred=None [, serverctrls=None [, clientctrls=None]]]]) -> int
 
-.. py:method:: LDAPObject.simple_bind_s([who='' [, cred='' [, serverctrls=None [, clientctrls=None]]]]) -> None
+.. py:method:: LDAPObject.simple_bind_s([who=None [, cred=None [, serverctrls=None [, clientctrls=None]]]]) -> None
 
    After an LDAP object is created, and before any other operations can be
    attempted over the connection, a bind operation must be performed.
@@ -1014,6 +1014,11 @@ and wait for and return with the server's result, or with
    be :py:const:`AUTH_SIMPLE`.
 
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
+
+   .. versionchanged:: 3.0
+
+      :meth:`~LDAPObject.simple_bind` and :meth:`~LDAPObject.simple_bind_s`
+      now accept ``None`` for *who* and *cred*, too.
 
 
 .. py:method:: LDAPObject.search(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0]]]) ->int

@@ -406,7 +406,7 @@ class SimpleLDAPObject:
   def add_s(self,dn,modlist):
     return self.add_ext_s(dn,modlist,None,None)
 
-  def simple_bind(self,who='',cred='',serverctrls=None,clientctrls=None):
+  def simple_bind(self,who=None,cred=None,serverctrls=None,clientctrls=None):
     """
     simple_bind([who='' [,cred='']]) -> int
     """
@@ -415,7 +415,7 @@ class SimpleLDAPObject:
         cred = self._bytesify_input('cred', cred)
     return self._ldap_call(self._l.simple_bind,who,cred,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
-  def simple_bind_s(self,who='',cred='',serverctrls=None,clientctrls=None):
+  def simple_bind_s(self,who=None,cred=None,serverctrls=None,clientctrls=None):
     """
     simple_bind_s([who='' [,cred='']]) -> 4-tuple
     """
@@ -1107,7 +1107,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
       func(self,*args,**kwargs)
     else:
       # Send explicit anon simple bind request to provoke ldap.SERVER_DOWN in method reconnect()
-      SimpleLDAPObject.simple_bind_s(self,'','')
+      SimpleLDAPObject.simple_bind_s(self, None, None)
 
   def _restore_options(self):
     """Restore all recorded options"""
