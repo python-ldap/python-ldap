@@ -132,8 +132,7 @@ class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
     search, it can't be used for anything else.
     """
 
-    def __init__(self, uri, dn, password, storage=None, filterstr=None,
-                 **kwargs):
+    def __init__(self, uri, dn, password, storage=None, **kwargs):
         """
         Set up our object by creating a search client, connecting, and binding.
         """
@@ -152,7 +151,6 @@ class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
         self.data['cookie'] = None
         self.present = []
         self.refresh_done = False
-        self.filterstr = filterstr
 
         SimpleLDAPObject.__init__(self, uri, **kwargs)
         self.simple_bind_s(dn, password)
@@ -175,7 +173,6 @@ class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
             search_base,
             ldap.SCOPE_SUBTREE,
             mode=search_mode,
-            filterstr=self.filterstr
         )
 
     def cancel(self):
@@ -431,7 +428,6 @@ class TestSyncrepl(BaseSyncreplTests, SlapdTestCase):
             self.server.ldap_uri,
             self.server.root_dn,
             self.server.root_pw,
-            filterstr=u'(objectClass=*)',
             bytes_mode=False
         )
         self.suffix = self.server.suffix
@@ -445,7 +441,6 @@ class TestSyncreplBytesMode(BaseSyncreplTests, SlapdTestCase):
             self.server.ldap_uri,
             self.server.root_dn.encode('utf-8'),
             self.server.root_pw.encode('utf-8'),
-            filterstr=b'(objectClass=*)',
             bytes_mode=True
         )
         self.suffix = self.server.suffix.encode('utf-8')
