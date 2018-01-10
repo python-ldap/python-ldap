@@ -1070,7 +1070,7 @@ and wait for and return with the server's result, or with
 
    .. versionchanged:: 3.0
 
-      ``filterstr=None`` is equal to ``filterstr='(objectClass=*)'``.
+      ``filterstr=None`` is equivalent to ``filterstr='(objectClass=*)'``.
    
 
 .. py:method:: LDAPObject.start_tls_s() -> None
