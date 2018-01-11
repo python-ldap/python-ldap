@@ -104,12 +104,45 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         base = self.server.suffix
         l = self._ldap_conn
 
-        with self.assertRaises(TypeError):
-            l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
-        with self.assertRaises(TypeError):
-            l.search_s(base, ldap.SCOPE_SUBTREE, b'(cn=Foo*)', ['*'])
-        with self.assertRaises(TypeError):
-            l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
+        with self.assertRaises(TypeError) as e:
+            l.search_s(
+                base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*']
+            )
+        if PY2:
+            self.assertIn(
+                u"base='dc=slapd-test,dc=python-ldap,dc=org'",
+                text_type(e.exception)
+            )
+        elif sys.version_info >= (3, 5, 0):
+            # Python 3.4.x does not include 'search_ext()' in message
+            self.assertEqual(
+                "search_ext() argument 1 must be str, not bytes",
+                text_type(e.exception)
+            )
+
+        with self.assertRaises(TypeError) as e:
+            l.search_s(
+                base, ldap.SCOPE_SUBTREE, b'(cn=Foo*)', ['*']
+            )
+        if PY2:
+            self.assertIn(u"filterstr='(cn=Foo*)'", text_type(e.exception))
+        elif sys.version_info >= (3, 5, 0):
+            self.assertEqual(
+                "search_ext() argument 3 must be str, not bytes",
+                text_type(e.exception)
+            )
+
+        with self.assertRaises(TypeError) as e:
+            l.search_s(
+                base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*']
+            )
+        if PY2:
+            self.assertIn(u"attrlist='*'", text_type(e.exception))
+        elif sys.version_info >= (3, 5, 0):
+            self.assertEqual(
+                ('attrs_from_List(): expected string in list', b'*'),
+                e.exception.args
+            )
 
     def test_search_keys_are_text(self):
         base = self.server.suffix

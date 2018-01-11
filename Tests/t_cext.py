@@ -785,10 +785,16 @@ class TestLdapCExtension(SlapdTestCase):
         # last two args are serverctrls, clientctrls
         with self.assertRaises(TypeError) as e:
             func(*(args + (object, None) + post))
-        self.assertEqual(e.exception.args, ('expected a list', object))
+        self.assertEqual(
+            e.exception.args,
+            ('LDAPControls_from_object(): expected a list', object)
+        )
         with self.assertRaises(TypeError) as e:
             func(*(args + (None, object) + post))
-        self.assertEqual(e.exception.args, ('expected a list', object))
+        self.assertEqual(
+            e.exception.args,
+            ('LDAPControls_from_object(): expected a list', object)
+        )
 
     def test_invalid_controls(self):
         l = self._open_conn()
