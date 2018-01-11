@@ -852,8 +852,8 @@ class SimpleLDAPObject:
 
     def search_ext(
         self,
-        base: str,
-        scope: int,
+        base: str | None = None,
+        scope: int = ldap.SCOPE_SUBTREE,
         filterstr: str | None = None,
         attrlist: list[str] | None = None,
         attrsonly: int = 0,
@@ -863,11 +863,11 @@ class SimpleLDAPObject:
         sizelimit: int = 0,
     ) -> int:
         """
-        search(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0]]]) -> int
-        search_s(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0]]])
-        search_st(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,timeout=-1]]]])
-        search_ext(base,scope,[,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,serverctrls=None [,clientctrls=None [,timeout=-1 [,sizelimit=0]]]]]]])
-        search_ext_s(base,scope,[,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,serverctrls=None [,clientctrls=None [,timeout=-1 [,sizelimit=0]]]]]]])
+        search([base=None, [scope=ldap.SCOPE_SUBTREE, [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0]]]]]) -> int
+        search_s([base=None, [scope=ldap.SCOPE_SUBTREE, [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0]]]]])
+        search_st([base=None, [scope=ldap.SCOPE_SUBTREE, [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,timeout=-1]]]]]])
+        search_ext([base=None, [scope=ldap.SCOPE_SUBTREE, [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,serverctrls=None [,clientctrls=None [,timeout=-1 [,sizelimit=0]]]]]]]]])
+        search_ext_s([base=None, [scope=ldap.SCOPE_SUBTREE, [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,serverctrls=None [,clientctrls=None [,timeout=-1 [,sizelimit=0]]]]]]]]])
 
             Perform an LDAP search operation, with base as the DN of
             the entry at which to start the search, scope being one of
@@ -923,8 +923,8 @@ class SimpleLDAPObject:
 
     def search_ext_s(
         self,
-        base: str,
-        scope: int,
+        base: str | None = None,
+        scope: int = ldap.SCOPE_SUBTREE,
         filterstr: str | None = None,
         attrlist: list[str] | None = None,
         attrsonly: int = 0,
@@ -940,8 +940,8 @@ class SimpleLDAPObject:
 
     def search(
         self,
-        base: str,
-        scope: int,
+        base: str | None = None,
+        scope: int = ldap.SCOPE_SUBTREE,
         filterstr: str | None = None,
         attrlist: list[str] | None = None,
         attrsonly: int = 0,
@@ -950,8 +950,8 @@ class SimpleLDAPObject:
 
     def search_s(
         self,
-        base: str,
-        scope: int,
+        base: str | None = None,
+        scope: int = ldap.SCOPE_SUBTREE,
         filterstr: str | None = None,
         attrlist: list[str] | None = None,
         attrsonly: int = 0,
@@ -960,8 +960,8 @@ class SimpleLDAPObject:
 
     def search_st(
         self,
-        base: str,
-        scope: int,
+        base: str | None = None,
+        scope: int = ldap.SCOPE_SUBTREE,
         filterstr: str | None = None,
         attrlist: list[str] | None = None,
         attrsonly: int = 0,
@@ -1132,7 +1132,7 @@ class SimpleLDAPObject:
 
     def find_unique_entry(
         self,
-        base: str,
+        base: str | None = None,
         scope: int = ldap.SCOPE_SUBTREE,
         filterstr: str | None = None,
         attrlist: list[str] | None = None,

@@ -1212,7 +1212,7 @@ l_ldap_search_ext(LDAPObject *self, PyObject *args)
     int msgid;
     int ldaperror;
 
-    if (!PyArg_ParseTuple(args, "sis|OiOOdi:search_ext", &base, &scope, &filter, &attrlist, &attrsonly,
+    if (!PyArg_ParseTuple(args, "zis|OiOOdi:search_ext", &base, &scope, &filter, &attrlist, &attrsonly,
                           &serverctrls, &clientctrls, &timeout, &sizelimit))
         return NULL;
     if (not_valid(self))
