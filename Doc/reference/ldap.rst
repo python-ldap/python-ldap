@@ -29,7 +29,7 @@ Functions
 
 This module defines the following functions:
 
-.. py:function:: initialize(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=None, [fileno=None]]]]) -> LDAPObject object
+.. py:function:: initialize(uri=None [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=None, [fileno=None]]]]) -> LDAPObject object
 
    Initializes a new connection object for accessing the given LDAP server,
    and return an :class:`~ldap.ldapobject.LDAPObject` used to perform operations
@@ -1290,21 +1290,25 @@ and wait for and return with the server's result, or with
       :meth:`~LDAPObject.simple_bind` and :meth:`~LDAPObject.simple_bind_s`
       now accept ``None`` for *who* and *cred*, too.
 
-.. py:method:: LDAPObject.search(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0]]]) ->int
+.. py:method:: LDAPObject.search(base=None, scope=ldap.SCOPE_SUBTREE, filterstr='(objectClass=*)', attrlist=None, attrsonly=0) ->int
 
-.. py:method:: LDAPObject.search_s(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0]]]) ->list|None
+.. py:method:: LDAPObject.search_s(base=None, scope=ldap.SCOPE_SUBTREE, filterstr='(objectClass=*)', attrlist=None, attrsonly=0) ->list|None
 
-.. py:method:: LDAPObject.search_st(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0 [, timeout=-1]]]]) -> list|None
+.. py:method:: LDAPObject.search_st(base=None, scope=ldap.SCOPE_SUBTREE, filterstr='(objectClass=*)', attrlist=None, attrsonly=0, timeout=-1) -> list|None
 
-.. py:method:: LDAPObject.search_ext(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0 [, serverctrls=None [, clientctrls=None [, timeout=-1 [, sizelimit=0]]]]]]]) -> int
+.. py:method:: LDAPObject.search_ext(base=None, scope=ldap.SCOPE_SUBTREE, filterstr='(objectClass=*)', attrlist=None, attrsonly=0, serverctrls=None, clientctrls=None, timeout=-1, sizelimit=0) -> int
 
-.. py:method:: LDAPObject.search_ext_s(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0 [, serverctrls=None [, clientctrls=None [, timeout=-1 [, sizelimit=0]]]]]]]) -> list|None
+.. py:method:: LDAPObject.search_ext_s(base,, scope=ldap.SCOPE_SUBTREE, filterstr='(objectClass=*)', attrlist=None, attrsonly=0, serverctrls=None, clientctrls=None, timeout=-1, sizelimit=0) -> list|None
 
    Perform an LDAP search operation, with *base* as the DN of the entry
    at which to start the search, *scope* being one of
    :py:const:`SCOPE_BASE` (to search the object itself),
    :py:const:`SCOPE_ONELEVEL` (to search the object's immediate children), or
    :py:const:`SCOPE_SUBTREE` (to search the object and all its descendants).
+
+   If *base* argument is :py:const:`None`, the search base is taken from
+   connection's :py:const:`OPT_DEFBASE` option or `ldap.conf`/`.ldaprc`
+   equivalent.
 
    The *filterstr* argument is a string representation of the filter to apply in
    the search.

@@ -65,9 +65,9 @@ class AsyncSearchHandler:
 
   def startSearch(
     self,
-    searchRoot: str,
-    searchScope: int,
-    filterStr: str,
+    searchRoot: str | None = None,
+    searchScope: int = ldap.SCOPE_SUBTREE,
+    filterStr: str | None = None,
     attrList: list[str] | None = None,
     attrsOnly: int = 0,
     timeout: int = -1,
