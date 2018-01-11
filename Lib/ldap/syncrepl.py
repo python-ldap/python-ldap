@@ -12,7 +12,7 @@ from uuid import UUID
 from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import constraint, namedtype, namedval, tag, univ
 
-from ldap import RES_INTERMEDIATE, RES_SEARCH_ENTRY, RES_SEARCH_RESULT
+from ldap import RES_INTERMEDIATE, RES_SEARCH_ENTRY, RES_SEARCH_RESULT, SCOPE_SUBTREE
 from ldap._types import LDAPEntryDict
 from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
 from ldap.ldapobject import SimpleLDAPObject
@@ -387,8 +387,8 @@ class SyncreplConsumer(_Base):
 
     def syncrepl_search(
         self,
-        base: str,
-        scope: int,
+        base: str | None = None,
+        scope: int = SCOPE_SUBTREE,
         mode: str = 'refreshOnly',
         cookie: str | bytes | None = None,
         reloadHint: bool = False,
