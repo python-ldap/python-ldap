@@ -51,7 +51,7 @@ class SearchNoOpMixIn:
   for easily using the no-op search control.
   """
 
-  def noop_search_st(self,base,scope=ldap.SCOPE_SUBTREE,filterstr='(objectClass=*)',timeout=-1):
+  def noop_search_st(self,base=None,scope=ldap.SCOPE_SUBTREE,filterstr='(objectClass=*)',timeout=-1):
     try:
       msg_id = self.search_ext(
         base,

@@ -117,7 +117,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         elif sys.version_info >= (3, 5, 0):
             # Python 3.4.x does not include 'search_ext()' in message
             self.assertEqual(
-                "search_ext() argument 1 must be str, not bytes",
+                "search_ext() argument 1 must be str or None, not bytes",
                 text_type(e.exception)
             )
 
