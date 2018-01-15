@@ -242,7 +242,7 @@ encode_rfc2696(PyObject *self, PyObject *args)
     BerElement *ber = 0;
     struct berval cookie, *ctrl_val;
     Py_ssize_t cookie_len;
-    unsigned long size;
+    int size = 0; /* ber_int_t is int */
     ber_tag_t tag;
 
     if (!PyArg_ParseTuple(args, "is#:encode_page_control", &size,
@@ -300,7 +300,7 @@ decode_rfc2696(PyObject *self, PyObject *args)
     struct berval ldctl_value;
     ber_tag_t tag;
     struct berval *cookiep;
-    unsigned long count = 0;
+    int count = 0;  /* ber_int_t is int */
     Py_ssize_t ldctl_value_len;
 
     if (!PyArg_ParseTuple(args, "s#:decode_page_control",
@@ -320,7 +320,7 @@ decode_rfc2696(PyObject *self, PyObject *args)
         goto endlbl;
     }
 
-    res = Py_BuildValue("(kO&)", count, LDAPberval_to_object, cookiep);
+    res = Py_BuildValue("(iO&)", count, LDAPberval_to_object, cookiep);
     ber_bvfree(cookiep);
 
  endlbl:
