@@ -43,37 +43,47 @@ Encoding/decoding to other formats – text, images, etc. – is left to the cal
 The bytes mode
 --------------
 
-The behavior of python-ldap 3.0 in Python 2 is influenced by a ``bytes_mode``
-argument to :func:`ldap.initialize`.
-The argument can take these values:
+In Python 3, text values are represented as ``str``, the Unicode text type.
 
-``bytes_mode=True``: backwards-compatible
+In Python 2, the behavior of python-ldap 3.0 is influenced by a ``bytes_mode``
+argument to :func:`ldap.initialize`:
 
-    Text values returned from python-ldap are always bytes (``str``).
-    Text values supplied to python-ldap may be either bytes or Unicode.
-    The encoding for bytes is always assumed to be UTF-8.
+``bytes_mode=True`` (backwards compatible):
+    Text values are represented as bytes (``str``) encoded using UTF-8.
 
-    Not available in Python 3.
+``bytes_mode=False`` (future compatible):
+    Text values are represented as ``unicode``.
 
-``bytes_mode=False``: strictly future-compatible
-
-    Text values must be represented as ``unicode``.
-    An error is raised if python-ldap receives a text value as bytes (``str``).
-
-Unspecified: relaxed mode with warnings
-
-    Causes a warning on Python 2.
-
-    Text values returned from python-ldap are always ``unicode``.
-    Text values supplied to python-ldap should be ``unicode``;
-    warnings are emitted when they are not.
-
-    The warnings are of type :class:`~ldap.LDAPBytesWarning`, which
-    is a subclass of :class:`BytesWarning` designed to be easily
-    :ref:`filtered out <filter-bytes-warning>` if needed.
+If not given explicitly, python-ldap will default to ``bytes_mode=True``,
+but if an ``unicode`` value supplied to it, if will warn and use that value.
 
 Backwards-compatible behavior is not scheduled for removal until Python 2
 itself reaches end of life.
+
+
+Errors, warnings, and automatic encoding
+----------------------------------------
+
+While the type of values *returned* from python-ldap is always given by
+``bytes_mode``, the behavior for “wrong-type” values *passed in* can be
+controlled by the ``bytes_strictness`` argument to :func:`ldap.initialize`:
+
+``bytes_strictness='error'`` (default if ``bytes_mode`` is specified):
+  A ``TypeError`` is raised.
+
+``bytes_strictness='warn'`` (default when ``bytes_mode`` is not given explicitly):
+  A warning is raised, and the value is encoded/decoded
+  using the UTF-8 encoding.
+
+  The warnings are of type :class:`~ldap.LDAPBytesWarning`, which
+  is a subclass of :class:`BytesWarning` designed to be easily
+  :ref:`filtered out <filter-bytes-warning>` if needed.
+
+``bytes_strictness='silent'``:
+  The value is automatically encoded/decoded using the UTF-8 encoding.
+
+When setting ``bytes_strictness``, an explicit value for ``bytes_mode`` needs
+to be given as well.
 
 
 Porting recommendations

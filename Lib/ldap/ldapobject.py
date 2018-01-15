@@ -93,7 +93,8 @@ class SimpleLDAPObject:
 
   def __init__(
     self,uri,
-    trace_level=0,trace_file=None,trace_stack_limit=5,bytes_mode=None
+    trace_level=0,trace_file=None,trace_stack_limit=5,bytes_mode=None,
+    bytes_strictness=None,
   ):
     self._trace_level = trace_level
     self._trace_file = trace_file or sys.stdout
@@ -107,20 +108,26 @@ class SimpleLDAPObject:
     # Bytes mode
     # ----------
 
-    # By default, raise a TypeError when receiving invalid args
-    self.bytes_mode_hardfail = True
-    if bytes_mode is None and PY2:
-      _raise_byteswarning(
-        "Under Python 2, python-ldap uses bytes by default. "
-        "This will be removed in Python 3 (no bytes for DN/RDN/field names). "
-        "Please call initialize(..., bytes_mode=False) explicitly.")
-      bytes_mode = True
-      # Disable hard failure when running in backwards compatibility mode.
-      self.bytes_mode_hardfail = False
-    elif bytes_mode and not PY2:
-      raise ValueError("bytes_mode is *not* supported under Python 3.")
-    # On by default on Py2, off on Py3.
+    if PY2:
+        if bytes_mode is None:
+            bytes_mode = True
+            if bytes_strictness is None:
+                _raise_byteswarning(
+                  "Under Python 2, python-ldap uses bytes by default. "
+                  "This will be removed in Python 3 (no bytes for "
+                  "DN/RDN/field names). "
+                  "Please call initialize(..., bytes_mode=False) explicitly.")
+                bytes_strictness = 'warn'
+        else:
+            if bytes_strictness is None:
+                bytes_strictness = 'error'
+    else:
+        if bytes_mode:
+            raise ValueError("bytes_mode is *not* supported under Python 3.")
+        bytes_mode = False
+        bytes_strictness = 'error'
     self.bytes_mode = bytes_mode
+    self.bytes_strictness = bytes_strictness
 
   def _bytesify_input(self, arg_name, value):
     """Adapt a value following bytes_mode in Python 2.
@@ -130,38 +137,46 @@ class SimpleLDAPObject:
     With bytes_mode ON, takes bytes or None and returns bytes or None.
     With bytes_mode OFF, takes unicode or None and returns bytes or None.
 
-    This function should be applied on all text inputs (distinguished names
-    and attribute names in modlists) to convert them to the bytes expected
-    by the C bindings.
+    For the wrong argument type (unicode or bytes, respectively),
+    behavior depends on the bytes_strictness setting.
+    In all cases, bytes or None are returned (or an exception is raised).
     """
     if not PY2:
       return value
-
     if value is None:
       return value
+
     elif self.bytes_mode:
       if isinstance(value, bytes):
         return value
+      elif self.bytes_strictness == 'silent':
+        pass
+      elif self.bytes_strictness == 'warn':
+        _raise_byteswarning(
+            "Received non-bytes value for '{}' in bytes mode; "
+            "please choose an explicit "
+            "option for bytes_mode on your LDAP connection".format(arg_name))
       else:
-        if self.bytes_mode_hardfail:
           raise TypeError(
             "All provided fields *must* be bytes when bytes mode is on; "
             "got type '{}' for '{}'.".format(type(value).__name__, arg_name)
           )
-        else:
-          _raise_byteswarning(
-            "Received non-bytes value for '{}' with default (disabled) bytes mode; "
-            "please choose an explicit "
-            "option for bytes_mode on your LDAP connection".format(arg_name))
-          return value.encode('utf-8')
+      return value.encode('utf-8')
     else:
-      if not isinstance(value, text_type):
+      if isinstance(value, unicode):
+        return value.encode('utf-8')
+      elif self.bytes_strictness == 'silent':
+        pass
+      elif self.bytes_strictness == 'warn':
+        _raise_byteswarning(
+            "Received non-text value for '{}' with bytes_mode off and "
+            "bytes_strictness='warn'".format(arg_name))
+      else:
         raise TypeError(
           "All provided fields *must* be text when bytes mode is off; "
           "got type '{}' for '{}'.".format(type(value).__name__, arg_name)
         )
-      assert not isinstance(value, bytes)
-      return value.encode('utf-8')
+      return value
 
   def _bytesify_modlist(self, arg_name, modlist, with_opcode):
     """Adapt a modlist according to bytes_mode.
@@ -1064,7 +1079,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
   def __init__(
     self,uri,
     trace_level=0,trace_file=None,trace_stack_limit=5,bytes_mode=None,
-    retry_max=1,retry_delay=60.0
+    bytes_strictness=None, retry_max=1, retry_delay=60.0
   ):
     """
     Parameters like SimpleLDAPObject.__init__() with these
@@ -1078,7 +1093,9 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self._uri = uri
     self._options = []
     self._last_bind = None
-    SimpleLDAPObject.__init__(self,uri,trace_level,trace_file,trace_stack_limit,bytes_mode)
+    SimpleLDAPObject.__init__(self, uri, trace_level, trace_file,
+                              trace_stack_limit, bytes_mode,
+                              bytes_strictness=bytes_strictness)
     self._reconnect_lock = ldap.LDAPLock(desc='reconnect lock within %s' % (repr(self)))
     self._retry_max = retry_max
     self._retry_delay = retry_delay
@@ -1097,6 +1114,11 @@ class ReconnectLDAPObject(SimpleLDAPObject):
 
   def __setstate__(self,d):
     """set up the object from pickled data"""
+    hardfail = d.get('bytes_mode_hardfail')
+    if hardfail:
+        d.setdefault('bytes_strictness', 'error')
+    else:
+        d.setdefault('bytes_strictness', 'warn')
     self.__dict__.update(d)
     self._last_bind = getattr(SimpleLDAPObject, self._last_bind[0]), self._last_bind[1], self._last_bind[2]
     self._ldap_object_lock = self._ldap_lock()

@@ -29,7 +29,7 @@ Functions
 
 This module defines the following functions:
 
-.. py:function:: initialize(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=None, [bytes_mode=None]]]]) -> LDAPObject object
+.. py:function:: initialize(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=None, [bytes_mode=None, [bytes_strictness=None]]]]]) -> LDAPObject object
 
    Initializes a new connection object for accessing the given LDAP server,
    and return an LDAP object (see :ref:`ldap-objects`) used to perform operations
@@ -53,7 +53,8 @@ This module defines the following functions:
    *trace_file* specifies a file-like object as target of the debug log and
    *trace_stack_limit* specifies the stack limit of tracebacks in debug log.
 
-   The *bytes_mode* argument specifies text/bytes behavior under Python 2.
+   The *bytes_mode* and *bytes_strictness* arguments specify text/bytes
+   behavior under Python 2.
    See :ref:`text-bytes` for a complete documentation.
 
    Possible values for *trace_level* are
