@@ -827,9 +827,27 @@ class TestLdapCExtension(SlapdTestCase):
         l.start_tls_s()
 
     @requires_tls()
+    def test_tls_require_cert(self):
+        # libldap defaults to secure cert validation
+        # see libraries/libldap/init.c
+        #     gopts->ldo_tls_require_cert = LDAP_OPT_X_TLS_DEMAND;
+
+        self.assertEqual(
+            _ldap.get_option(_ldap.OPT_X_TLS_REQUIRE_CERT),
+            _ldap.OPT_X_TLS_DEMAND
+        )
+        l = self._open_conn(bind=False)
+        self.assertEqual(
+            l.get_option(_ldap.OPT_X_TLS_REQUIRE_CERT),
+            _ldap.OPT_X_TLS_DEMAND
+        )
+
+    @requires_tls()
     def test_tls_ext_noca(self):
         l = self._open_conn(bind=False)
         l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
+        # fails because libldap defaults to secure cert validation but
+        # the test CA is not installed as trust anchor.
         with self.assertRaises(_ldap.CONNECT_ERROR) as e:
             l.start_tls_s()
         # known resaons:
