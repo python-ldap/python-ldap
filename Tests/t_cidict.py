@@ -5,11 +5,13 @@ Automatic tests for python-ldap's module ldap.cidict
 See https://www.python-ldap.org/ for details.
 """
 
-# from Python's standard lib
+import os
 import unittest
 
-# from python-ldap
-import ldap, ldap.cidict
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
+import ldap
+import ldap.cidict
 
 
 class TestCidict(unittest.TestCase):

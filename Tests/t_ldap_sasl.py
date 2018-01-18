@@ -5,7 +5,6 @@ Automatic tests for python-ldap's module ldap.sasl
 See https://www.python-ldap.org/ for details.
 """
 import os
-import socket
 import unittest
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap

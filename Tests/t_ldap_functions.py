@@ -5,10 +5,12 @@ Automatic tests for python-ldap's module ldap.functions
 See https://www.python-ldap.org/ for details.
 """
 
-# from Python's standard lib
+import os
 import unittest
 
-# from python-ldap
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
+
 import ldap
 from ldap.dn import escape_dn_chars
 from ldap.filter import escape_filter_chars

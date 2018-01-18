@@ -7,7 +7,12 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import unicode_literals
 
+import os
 import unittest
+
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
+
 from ldap.compat import quote
 
 import ldapurl

@@ -5,7 +5,11 @@ Automatic tests for python-ldap's module ldap.schema.tokenizer
 See https://www.python-ldap.org/ for details.
 """
 
+import os
 import unittest
+
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
 
 import ldap.schema
 

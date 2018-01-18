@@ -4,12 +4,14 @@ import unittest
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
+from slapdtest import SlapdTestCase, requires_tls
+
 import ldap
 from ldap.controls import RequestControlTuples
 from ldap.controls.pagedresults import SimplePagedResultsControl
 from ldap.controls.openldap import SearchNoOpControl
 from ldap.ldapobject import SimpleLDAPObject
-from slapdtest import SlapdTestCase, requires_tls
+
 
 SENTINEL = object()
 

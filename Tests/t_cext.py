@@ -10,13 +10,12 @@ from __future__ import unicode_literals
 import os
 import unittest
 
-from slapdtest import SlapdTestCase, requires_tls
-
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
 # import the plain C wrapper module
 import _ldap
+from slapdtest import SlapdTestCase, requires_tls
 
 
 class TestLdapCExtension(SlapdTestCase):

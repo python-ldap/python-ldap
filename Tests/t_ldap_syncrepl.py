@@ -16,14 +16,14 @@ if sys.version_info[0] <= 2:
 else:
     PY2 = False
 
-from slapdtest import SlapdObject, SlapdTestCase
-
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
 from ldap.ldapobject import SimpleLDAPObject
 from ldap.syncrepl import SyncreplConsumer
+
+from slapdtest import SlapdObject, SlapdTestCase
 
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_PROVIDER_TEMPLATE = r"""

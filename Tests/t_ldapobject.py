@@ -22,14 +22,16 @@ import os
 import unittest
 import warnings
 import pickle
-from slapdtest import SlapdTestCase
-from slapdtest import requires_ldapi, requires_sasl, requires_tls
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
 from ldap.ldapobject import SimpleLDAPObject, ReconnectLDAPObject
+
+from slapdtest import SlapdTestCase
+from slapdtest import requires_ldapi, requires_sasl, requires_tls
+
 
 LDIF_TEMPLATE = """dn: %(suffix)s
 objectClass: dcObject

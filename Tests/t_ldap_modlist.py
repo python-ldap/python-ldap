@@ -5,11 +5,15 @@ Automatic tests for python-ldap's module ldap.modlist
 See https://www.python-ldap.org/ for details.
 """
 
+import os
 import unittest
 
-import ldap
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
 
+import ldap
 from ldap.modlist import addModlist,modifyModlist
+
 
 class TestModlist(unittest.TestCase):
 

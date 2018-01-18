@@ -7,16 +7,18 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import unicode_literals
 
-# from Python's standard lib
-import unittest
+import os
 import textwrap
+import unittest
 
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
 
-# from python-ldap
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
+
 import ldif
 
 

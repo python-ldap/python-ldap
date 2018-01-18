@@ -8,9 +8,11 @@ See https://www.python-ldap.org/ for details.
 from __future__ import unicode_literals
 
 # from Python's standard lib
+import os
 import unittest
 
-# from python-ldap
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
 import ldap.dn
 
 

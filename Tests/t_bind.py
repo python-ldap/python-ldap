@@ -9,9 +9,15 @@ else:
     PY2 = False
     text_type = str
 
-import ldap, unittest
-from slapdtest import SlapdTestCase
+import os
+import unittest
+
+# Switch off processing .ldaprc or ldap.conf before importing _ldap
+os.environ['LDAPNOINIT'] = '1'
+
+import ldap
 from ldap.ldapobject import LDAPObject
+from slapdtest import SlapdTestCase
 
 
 class TestBinds(SlapdTestCase):
