@@ -72,11 +72,11 @@ Tuple_to_LDAPControl( PyObject* tup )
     Py_ssize_t len;
 
     if (!PyTuple_Check(tup)) {
-      LDAPerror_TypeError("expected a tuple", tup);
+      LDAPerror_TypeError("Tuple_to_LDAPControl(): expected a tuple", tup);
       return NULL;
     }
 
-    if (!PyArg_ParseTuple( tup, "sbO", &oid, &iscritical, &bytes ))
+    if (!PyArg_ParseTuple( tup, "sbO:Tuple_to_LDAPControl", &oid, &iscritical, &bytes ))
         return NULL;
   
     lc = PyMem_NEW(LDAPControl, 1);
@@ -106,7 +106,7 @@ Tuple_to_LDAPControl( PyObject* tup )
         berbytes.bv_val = PyBytes_AsString(bytes);
     }
     else {
-        LDAPerror_TypeError("expected bytes", bytes);
+        LDAPerror_TypeError("Tuple_to_LDAPControl(): expected bytes", bytes);
         LDAPControl_DEL(lc);
         return NULL;
     }
@@ -128,7 +128,7 @@ LDAPControls_from_object(PyObject* list, LDAPControl ***controls_ret)
     PyObject* item;
   
     if (!PySequence_Check(list)) {
-        LDAPerror_TypeError("expected a list", list);
+        LDAPerror_TypeError("LDAPControls_from_object(): expected a list", list);
         return 0;
     }
 
