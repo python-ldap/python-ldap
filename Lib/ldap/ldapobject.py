@@ -146,7 +146,7 @@ class SimpleLDAPObject:
         if self.bytes_mode_hardfail:
           raise TypeError(
             "All provided fields *must* be bytes when bytes mode is on; "
-            "got {}={!r}".format(arg_name, value)
+            "got type '{}' for '{}'.".format(type(value).__name__, arg_name)
           )
         else:
           _raise_byteswarning(
@@ -158,7 +158,7 @@ class SimpleLDAPObject:
       if not isinstance(value, text_type):
         raise TypeError(
           "All provided fields *must* be text when bytes mode is off; "
-          "got {}={!r}".format(arg_name, value)
+          "got type '{}' for '{}'.".format(type(value).__name__, arg_name)
         )
       assert not isinstance(value, bytes)
       return value.encode('utf-8')

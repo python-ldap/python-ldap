@@ -110,8 +110,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             )
         if PY2:
             self.assertIn(
-                u"base='dc=slapd-test,dc=python-ldap,dc=org'",
-                text_type(e.exception)
+                u"got type 'str' for 'base'", text_type(e.exception)
             )
         elif sys.version_info >= (3, 5, 0):
             # Python 3.4.x does not include 'search_ext()' in message
@@ -125,7 +124,9 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
                 base, ldap.SCOPE_SUBTREE, b'(cn=Foo*)', ['*']
             )
         if PY2:
-            self.assertIn(u"filterstr='(cn=Foo*)'", text_type(e.exception))
+            self.assertIn(
+                u"got type 'str' for 'filterstr'", text_type(e.exception)
+            )
         elif sys.version_info >= (3, 5, 0):
             self.assertEqual(
                 "search_ext() argument 3 must be str, not bytes",
@@ -137,7 +138,9 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
                 base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*']
             )
         if PY2:
-            self.assertIn(u"attrlist='*'", text_type(e.exception))
+            self.assertIn(
+                u"got type 'str' for 'attrlist'", text_type(e.exception)
+            )
         elif sys.version_info >= (3, 5, 0):
             self.assertEqual(
                 ('attrs_from_List(): expected string in list', b'*'),
