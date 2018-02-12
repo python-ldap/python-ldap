@@ -65,8 +65,9 @@ Errors, warnings, and automatic encoding
 ----------------------------------------
 
 While the type of values *returned* from python-ldap is always given by
-``bytes_mode``, the behavior for “wrong-type” values *passed in* can be
-controlled by the ``bytes_strictness`` argument to :func:`ldap.initialize`:
+``bytes_mode``, for Python 2 the behavior for “wrong-type” values *passed in*
+can be controlled by the ``bytes_strictness`` argument to
+:func:`ldap.initialize`:
 
 ``bytes_strictness='error'`` (default if ``bytes_mode`` is specified):
   A ``TypeError`` is raised.
@@ -81,6 +82,9 @@ controlled by the ``bytes_strictness`` argument to :func:`ldap.initialize`:
 
 ``bytes_strictness='silent'``:
   The value is automatically encoded/decoded using the UTF-8 encoding.
+
+On Python 3, ``bytes_strictness`` is ignored and a ``TypeError`` is always
+raised.
 
 When setting ``bytes_strictness``, an explicit value for ``bytes_mode`` needs
 to be given as well.
