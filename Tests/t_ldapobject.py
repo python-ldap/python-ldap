@@ -162,9 +162,9 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             for value in values:
                 self.assertEqual(type(value), bytes)
 
-    def _get_bytes_ldapobject(self, explicit=True):
+    def _get_bytes_ldapobject(self, explicit=True, **kwargs):
         if explicit:
-            kwargs = {'bytes_mode': True}
+            kwargs.setdefault('bytes_mode', True)
         else:
             kwargs = {}
         return self._open_ldap_conn(
@@ -230,6 +230,68 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
         l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, b'(cn=Foo*)', ['*'])
         l.search_s(base, ldap.SCOPE_SUBTREE, b'(cn=Foo*)', [b'*'])
+
+    def _search_wrong_type(self, bytes_mode, strictness):
+        if bytes_mode:
+            l = self._get_bytes_ldapobject(bytes_strictness=strictness)
+        else:
+            l = self._open_ldap_conn(bytes_mode=False,
+                                     bytes_strictness=strictness)
+        base = 'cn=Foo1,' + self.server.suffix
+        if not bytes_mode:
+            base = base.encode('utf-8')
+        result = l.search_s(base, scope=ldap.SCOPE_SUBTREE)
+        return result[0][-1]['cn']
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_bytesmode_silent(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.resetwarnings()
+            warnings.simplefilter('always', ldap.LDAPBytesWarning)
+            self._search_wrong_type(bytes_mode=True, strictness='silent')
+        self.assertEqual(w, [])
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_bytesmode_warn(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.resetwarnings()
+            warnings.simplefilter('always', ldap.LDAPBytesWarning)
+            self._search_wrong_type(bytes_mode=True, strictness='warn')
+        self.assertEqual(len(w), 1)
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_bytesmode_error(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.resetwarnings()
+            warnings.simplefilter('always', ldap.LDAPBytesWarning)
+            with self.assertRaises(TypeError):
+                self._search_wrong_type(bytes_mode=True, strictness='error')
+        self.assertEqual(w, [])
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_textmode_silent(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.resetwarnings()
+            warnings.simplefilter('always', ldap.LDAPBytesWarning)
+            self._search_wrong_type(bytes_mode=True, strictness='silent')
+        self.assertEqual(w, [])
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_textmode_warn(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.resetwarnings()
+            warnings.simplefilter('always', ldap.LDAPBytesWarning)
+            self._search_wrong_type(bytes_mode=True, strictness='warn')
+        self.assertEqual(len(w), 1)
+
+    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
+    def test_textmode_error(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.resetwarnings()
+            warnings.simplefilter('always', ldap.LDAPBytesWarning)
+            with self.assertRaises(TypeError):
+                self._search_wrong_type(bytes_mode=True, strictness='error')
+        self.assertEqual(w, [])
 
     def test_search_accepts_unicode_dn(self):
         base = self.server.suffix
@@ -470,7 +532,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertIs(msg.category, ldap.LDAPBytesWarning)
         self.assertEqual(
             text_type(msg.message),
-            "Received non-bytes value for 'base' with default (disabled) bytes "
+            "Received non-bytes value for 'base' in bytes "
             "mode; please choose an explicit option for bytes_mode on your "
             "LDAP connection"
         )
@@ -632,7 +694,7 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
                 str('_trace_stack_limit'): 5,
                 str('_uri'): self.server.ldap_uri,
                 str('bytes_mode'): l1.bytes_mode,
-                str('bytes_mode_hardfail'): l1.bytes_mode_hardfail,
+                str('bytes_strictness'): l1.bytes_strictness,
                 str('timeout'): -1,
             },
         )

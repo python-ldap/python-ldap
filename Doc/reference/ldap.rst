@@ -29,7 +29,7 @@ Functions
 
 This module defines the following functions:
 
-.. py:function:: initialize(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=None, [bytes_mode=None]]]]) -> LDAPObject object
+.. py:function:: initialize(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=None, [bytes_mode=None, [bytes_strictness=None]]]]]) -> LDAPObject object
 
    Initializes a new connection object for accessing the given LDAP server,
    and return an LDAP object (see :ref:`ldap-objects`) used to perform operations
@@ -53,7 +53,8 @@ This module defines the following functions:
    *trace_file* specifies a file-like object as target of the debug log and
    *trace_stack_limit* specifies the stack limit of tracebacks in debug log.
 
-   The *bytes_mode* argument specifies text/bytes behavior under Python 2.
+   The *bytes_mode* and *bytes_strictness* arguments specify text/bytes
+   behavior under Python 2.
    See :ref:`text-bytes` for a complete documentation.
 
    Possible values for *trace_level* are
@@ -696,6 +697,9 @@ and wait for and return with the server's result, or with
 
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
 
+   The *dn* argument, and mod_type (second item) of *modlist* are text strings;
+   see :ref:`bytes_mode`.
+
 
 .. py:method:: LDAPObject.bind(who, cred, method) -> int
 
@@ -737,6 +741,8 @@ and wait for and return with the server's result, or with
 
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
 
+   The *dn* and *attr* arguments are text strings; see :ref:`bytes_mode`.
+
    .. note::
 
       A design fault in the LDAP API prevents *value*
@@ -756,6 +762,8 @@ and wait for and return with the server's result, or with
    from a subsequent call to :py:meth:`result()`.
 
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
+
+   The *dn* argument is text string; see :ref:`bytes_mode`.
 
 
 .. py:method:: LDAPObject.extop(extreq[,serverctrls=None[,clientctrls=None]]]) -> int
@@ -810,6 +818,9 @@ and wait for and return with the server's result, or with
    You might want to look into sub-module :py:mod:`ldap.modlist` for
    generating *modlist*.
 
+   The *dn* argument, and mod_type (second item) of *modlist* are text strings;
+   see :ref:`bytes_mode`.
+
 
 .. py:method:: LDAPObject.modrdn(dn, newrdn [, delold=1]) -> int
 
@@ -825,6 +836,8 @@ and wait for and return with the server's result, or with
 
    This operation is emulated by :py:meth:`rename()` and :py:meth:`rename_s()` methods
    since the modrdn2* routines in the C library are deprecated.
+
+   The *dn* and *newrdn* arguments are text strings; see :ref:`bytes_mode`.
 
 
 .. py:method:: LDAPObject.passwd(user, oldpw, newpw [, serverctrls=None [, clientctrls=None]]) -> int
@@ -843,6 +856,8 @@ and wait for and return with the server's result, or with
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
 
    The asynchronous version returns the initiated message id.
+
+   The *user*, *oldpw* and *newpw* arguments are text strings; see :ref:`bytes_mode`.
 
    .. seealso::
 
@@ -864,6 +879,8 @@ and wait for and return with the server's result, or with
    whether the old RDN should be kept as an attribute of the entry or not.
 
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
+
+   The *dn* and *newdn* arguments are text strings; see :ref:`bytes_mode`.
 
 
 .. py:method:: LDAPObject.result([msgid=RES_ANY [, all=1 [, timeout=None]]]) -> 2-tuple
@@ -1015,11 +1032,12 @@ and wait for and return with the server's result, or with
 
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
 
+   The *who* and *cred* arguments are text strings; see :ref:`bytes_mode`.
+
    .. versionchanged:: 3.0
 
       :meth:`~LDAPObject.simple_bind` and :meth:`~LDAPObject.simple_bind_s`
       now accept ``None`` for *who* and *cred*, too.
-
 
 .. py:method:: LDAPObject.search(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0]]]) ->int
 
@@ -1072,6 +1090,9 @@ and wait for and return with the server's result, or with
    *sizelimit* parameter when using :py:meth:`search_ext()`
    or :py:meth:`search_ext_s()` (client-side search limit). If non-zero
    not more than *sizelimit* results are returned by the server.
+
+   The *base* and *filterstr* arguments, and *attrlist* contents,
+   are text strings; see :ref:`bytes_mode`.
 
    .. versionchanged:: 3.0
 
