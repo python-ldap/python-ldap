@@ -1,4 +1,37 @@
 ----------------------------------------------------------------
+Released 3.0.0 2018-03-12
+
+Notable changes since 2.4.45 (please see detailed logs below):
+* Python 3 support and bytes_mode
+  see: https://python-ldap.readthedocs.io/en/latest/bytes_mode.html
+* The module `ldap.async` is renamed to `ldap.asyncsearch`
+* New dependencies: pyasn1, pyasn1_modules
+* Dropped support for Python 2.6 and 3.3
+
+
+Changes since 3.0.0b4:
+
+Lib/
+* Add bytes_strictness to allow configuring behavior on bytes/text mismatch
+
+Modules/
+* Add argument name to bytes mode TypeError
+* Use correct integer types for BER encode/decode (fix for big endian machines)
+
+Test/
+* Set $LDAPNOINIT in all tests
+* Add test for secure TLS default
+* Ignore SASL methods in DSE test (fix for restricted environments)
+* Remove filterstr workaround from syncrepl test
+* Explicitly set TLS_REQUIRE_CERT option to TLS_HARD in test_tls_ext_noca
+
+Doc/
+* Link to bytes mode from text-string arguments in the ldap module
+
+Infrastructure:
+* Include lber in list of libraries in setup.cfg
+
+----------------------------------------------------------------
 Released 3.0.0b4 2018-01-10
 
 Changes since 3.0.0b3:

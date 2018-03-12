@@ -6,7 +6,7 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import unicode_literals
 
-__version__ = '3.0.0b4'
+__version__ = '3.0.0'
 
 __all__ = [
   # constants
