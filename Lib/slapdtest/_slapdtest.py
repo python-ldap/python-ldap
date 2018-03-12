@@ -254,7 +254,7 @@ class SlapdObject(object):
         if command is None:
             raise ValueError(
                 "Command '{}' not found. Set the {} environment variable to "
-                "override slapdtest's search path.".format(value, var_name)
+                "override slapdtest's search path.".format(cmd, var_name)
             )
         return command
 
