@@ -67,28 +67,6 @@ This module defines the following functions:
 
       :rfc:`4516` - Lightweight Directory Access Protocol (LDAP): Uniform Resource Locator
 
-.. py:function:: open(host [, port=PORT]) -> LDAPObject object
-
-   Opens a new connection with an LDAP server, and return an LDAP object  (see
-   :ref:`ldap-objects`) used to perform operations on that server.  *host* is a
-   string containing solely the host name. *port* is an integer specifying the
-   port where the LDAP server is  listening (default is 389).
-
-   .. deprecated:: 3.0
-
-      ``ldap.open()`` is deprecated. It will be removed in version 3.1. Use
-      :func:`ldap.initialize()` with a URI like ``'ldap://<hostname>:<port>'``
-      instead.
-
-.. py:function:: init(host [, port=PORT]) -> LDAPObject object
-
-   Alias of :func:`ldap.open()`.
-
-   .. deprecated:: 3.0
-
-      ``ldap.init()`` is deprecated. It will be removed in version 3.1. Use
-      :func:`ldap.initialize()` with a URI like ``'ldap://<hostname>:<port>'``
-      instead.
 
 .. py:function:: get_option(option) -> int|string
 
@@ -99,6 +77,10 @@ This module defines the following functions:
 
    This function sets the value of the global option specified by *option* to
    *invalue*.
+
+.. versionchanged:: 3.1
+
+   The deprecated functions ``ldap.init()`` and ``ldap.open()`` were removed.
 
 
 .. _ldap-constants:

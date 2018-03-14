@@ -85,36 +85,6 @@ def initialize(uri,trace_level=0,trace_file=sys.stdout,trace_stack_limit=None, b
   return LDAPObject(uri,trace_level,trace_file,trace_stack_limit,bytes_mode)
 
 
-def open(host,port=389,trace_level=0,trace_file=sys.stdout,trace_stack_limit=None,bytes_mode=None):
-  """
-  Return LDAPObject instance by opening LDAP connection to
-  specified LDAP host
-
-  Parameters:
-  host
-        LDAP host and port, e.g. localhost
-  port
-        integer specifying the port number to use, e.g. 389
-  trace_level
-        If non-zero a trace output of LDAP calls is generated.
-  trace_file
-        File object where to write the trace output to.
-        Default is to use stdout.
-  bytes_mode
-        Whether to enable "bytes_mode" for backwards compatibility under Py2.
-  """
-  import warnings
-  warnings.warn(
-    'ldap.open() is deprecated. Use ldap.initialize() instead. It will be '
-    'removed in python-ldap 3.1.',
-    category=DeprecationWarning,
-    stacklevel=2,
-  )
-  return initialize('ldap://%s:%d' % (host,port),trace_level,trace_file,trace_stack_limit,bytes_mode)
-
-init = open
-
-
 def get_option(option):
   """
   get_option(name) -> value
