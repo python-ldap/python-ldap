@@ -62,6 +62,16 @@ class TestCidict(unittest.TestCase):
                 strlist_func(["a"], ["b"])
             self.assertEqual(len(w), 1)
 
+    def test_cidict_data(self):
+        """test the deprecated data atrtribute"""
+        d = ldap.cidict.cidict({'A': 1, 'B': 2})
+        with warnings.catch_warnings(record=True) as w:
+            warnings.resetwarnings()
+            warnings.simplefilter('always', DeprecationWarning)
+            data = d.data
+        assert data == {'a': 1, 'b': 2}
+        self.assertEqual(len(w), 1)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -58,6 +58,17 @@ class cidict(MutableMapping):
         """Compatibility with python-ldap 2.x"""
         return key in self
 
+    @property
+    def data(self):
+        """Compatibility with older IterableUserDict-based implementation"""
+        warnings.warn(
+            'ldap.cidict.cidict.data is an internal attribute; it may be ' +
+            'removed at any time',
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._data
+
 
 def strlist_minus(a,b):
   """
