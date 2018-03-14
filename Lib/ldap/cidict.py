@@ -44,6 +44,9 @@ class cidict(IterableUserDict):
   def __contains__(self,key):
     return IterableUserDict.__contains__(self, key.lower())
 
+  def __iter__(self):
+    return iter(self.keys())
+
   def keys(self):
     return self._keys.values()
 
