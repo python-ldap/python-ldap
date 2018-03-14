@@ -54,8 +54,8 @@ dealloc(LDAPObject *self)
  * utility functions
  */
 
-/* 
- * check to see if the LDAPObject is valid, 
+/*
+ * check to see if the LDAPObject is valid,
  * ie has been opened, and not closed. An exception is set if not valid.
  */
 
@@ -89,8 +89,8 @@ LDAPMod_DEL(LDAPMod *lm)
     PyMem_DEL(lm);
 }
 
-/* 
- * convert a tuple of the form (int,str,[str,...]) 
+/*
+ * convert a tuple of the form (int,str,[str,...])
  * or (str, [str,...]) if no_op is true, into an LDAPMod structure.
  * See ldap_modify(3) for details.
  *
@@ -208,8 +208,8 @@ LDAPMods_DEL(LDAPMod **lms)
     PyMem_DEL(lms);
 }
 
-/* 
- * convert a list of tuples into a LDAPMod*[] array structure 
+/*
+ * convert a list of tuples into a LDAPMod*[] array structure
  * NOTE: list of tuples must live longer than the LDAPMods
  */
 
@@ -589,7 +589,7 @@ l_ldap_simple_bind(LDAPObject *self, PyObject *args)
      auth modules ("mechanisms"), or try
 
        ldapsearch   -b "" -s base -LLL -x  supportedSASLMechanisms
-     
+
      (perhaps with an additional -h and -p argument for ldap host and
      port). The latter will show you which SASL mechanisms are known
      to the LDAP server. If you do not want to set up Kerberos, you
@@ -645,7 +645,7 @@ interaction(unsigned flags, sasl_interact_t *interact, PyObject *SASLObject)
     return LDAP_SUCCESS;
 }
 
-/* 
+/*
   This function will be called by ldap_sasl_interactive_bind(). The
   "*in" is an array of sasl_interact_t's (see sasl.h for a
   reference). The last interact in the array has an interact->id of
@@ -748,12 +748,12 @@ l_ldap_sasl_interactive_bind_s(LDAPObject *self, PyObject *args)
 
     static unsigned sasl_flags = LDAP_SASL_QUIET;
 
-    /* 
+    /*
      * In Python 2.3+, a "I" format argument indicates that we're either converting
      * the Python object into a long or an unsigned int. In versions prior to that,
      * it will always convert to a long. Since the sasl_flags variable is an
      * unsigned int, we need to use the "I" flag if we're running Python 2.3+ and a
-     * "i" otherwise. 
+     * "i" otherwise.
      */
 #if (PY_MAJOR_VERSION == 2) && (PY_MINOR_VERSION < 3)
     if (!PyArg_ParseTuple

@@ -94,4 +94,3 @@ with :mod:`ldif` module, skip some entries and write the result to stdout. ::
 
    parser = MyLDIF(open("input.ldif", 'rb'), sys.stdout)
    parser.parse()
-

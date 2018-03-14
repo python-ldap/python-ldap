@@ -5,7 +5,7 @@ import ldap,ldap.async
 class DeleteLeafs(ldap.async.AsyncSearchHandler):
   """
   Class for deleting entries which are results of a search.
-  
+
   DNs of Non-leaf entries are collected in DeleteLeafs.nonLeafEntries.
   """
   _entryResultTypes = ldap.async._entryResultTypes

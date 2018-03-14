@@ -15,8 +15,8 @@ defines = WIN32
 library_dirs = C:/msys/1.0/home/mcicogni/openldap-mingw-build-4/openldap-2.2.18/libraries/libldap_r/.libs C:/msys/1.0/home/mcicogni/openldap-mingw-build-4/openldap-2.2.18/libraries/liblber/.libs C:\msys\1.0\home\mcicogni\openldap-mingw-build-4\openssl-0.9.7e
 include_dirs = C:/msys/1.0/home/mcicogni/openldap-mingw-build-4/openldap-2.2.18/include
 
-extra_compile_args = 
-extra_objects = 
+extra_compile_args =
+extra_objects =
 
 libs = ldap_r lber ssl crypto ws2_32 gdi32
 

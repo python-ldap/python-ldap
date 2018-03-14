@@ -71,7 +71,7 @@ setup(
   from Python programs. Mainly it wraps the OpenLDAP 2.x libs for that purpose.
   Additionally the package contains modules for other LDAP-related stuff
   (e.g. processing LDIF, LDAPURLs, LDAPv3 schema, LDAPv3 extended operations
-  and controls, etc.). 
+  and controls, etc.).
   """,
   author = 'python-ldap project',
   author_email = 'python-ldap@python.org',
