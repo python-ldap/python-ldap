@@ -102,6 +102,17 @@ Specify a different one using, for example::
 
 Notable targets are:
 
+``make autoformat``
+    Automatically re-formats C and Python code to conform to Python style
+    guides (`PEP 7`_ and `PEP 8`_).
+    Note that no backups are made – please commit any other changes before
+    using this target.
+
+    Requires the ``indent`` program and the ``autopep8`` Python module.
+
+.. _PEP 7: https://www.python.org/dev/peps/pep-0007/
+.. _PEP 8: https://www.python.org/dev/peps/pep-0008/
+
 ``make lcov lcov-open``
     Generate and view test coverage for C code.
     Requires LCOV_.
