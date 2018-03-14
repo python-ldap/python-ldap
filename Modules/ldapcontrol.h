@@ -7,8 +7,8 @@
 #include "ldap.h"
 
 void LDAPinit_control(PyObject *d);
-void LDAPControl_List_DEL( LDAPControl** );
-int  LDAPControls_from_object(PyObject *, LDAPControl ***);
-PyObject* LDAPControls_to_List(LDAPControl **ldcs);
+void LDAPControl_List_DEL(LDAPControl **);
+int LDAPControls_from_object(PyObject *, LDAPControl ***);
+PyObject *LDAPControls_to_List(LDAPControl **ldcs);
 
 #endif /* __h_ldapcontrol */

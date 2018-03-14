@@ -1,8 +1,8 @@
 /* common utility macros
  * See https://www.python-ldap.org/ for details. */
 
-#ifndef __h_common 
-#define __h_common 
+#ifndef __h_common
+#define __h_common
 
 #define PY_SSIZE_T_CLEAN
 
@@ -24,9 +24,10 @@
 #define streq( a, b ) \
 	( (*(a)==*(b)) && 0==strcmp(a,b) )
 
-extern PyObject* LDAPerror_TypeError(const char *, PyObject *);
+extern PyObject *LDAPerror_TypeError(const char *, PyObject *);
 
-void LDAPadd_methods( PyObject*d, PyMethodDef*methods );
+void LDAPadd_methods(PyObject *d, PyMethodDef *methods);
+
 #define PyNone_Check(o) ((o) == Py_None)
 
 /* Py2/3 compatibility */
@@ -36,4 +37,3 @@ void LDAPadd_methods( PyObject*d, PyMethodDef*methods );
 #endif
 
 #endif /* __h_common_ */
-

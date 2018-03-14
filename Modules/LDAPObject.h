@@ -1,7 +1,7 @@
 /* See https://www.python-ldap.org/ for details. */
 
-#ifndef __h_LDAPObject 
-#define __h_LDAPObject 
+#ifndef __h_LDAPObject
+#define __h_LDAPObject
 
 #include "common.h"
 
@@ -12,22 +12,22 @@
 #endif
 
 #if PYTHON_API_VERSION < 1007
-typedef PyObject*	_threadstate;
+typedef PyObject *_threadstate;
 #else
-typedef PyThreadState*	_threadstate;
+typedef PyThreadState *_threadstate;
 #endif
 
 typedef struct {
-        PyObject_HEAD
-	LDAP* ldap;
-	_threadstate	_save; /* for thread saving on referrals */
-	int valid;
+    PyObject_HEAD LDAP *ldap;
+    _threadstate _save;         /* for thread saving on referrals */
+    int valid;
 } LDAPObject;
 
 extern PyTypeObject LDAP_Type;
+
 #define LDAPObject_Check(v)     (Py_TYPE(v) == &LDAP_Type)
 
-extern LDAPObject *newLDAPObject( LDAP* );
+extern LDAPObject *newLDAPObject(LDAP *);
 
 /* macros to allow thread saving in the context of an LDAP connection */
 
@@ -48,4 +48,3 @@ extern LDAPObject *newLDAPObject( LDAP* );
 	}
 
 #endif /* __h_LDAPObject */
-

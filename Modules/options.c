@@ -7,9 +7,10 @@
 #include "options.h"
 
 void
-set_timeval_from_double( struct timeval *tv, double d ) {
-	tv->tv_usec = (long) ( fmod(d, 1.0) * 1000000.0 );
-	tv->tv_sec = (long) floor(d);
+set_timeval_from_double(struct timeval *tv, double d)
+{
+    tv->tv_usec = (long)(fmod(d, 1.0) * 1000000.0);
+    tv->tv_sec = (long)floor(d);
 }
 
 /**
@@ -23,7 +24,7 @@ option_error(int res, const char *fn)
         PyErr_SetString(PyExc_ValueError, "option error");
     else if (res == LDAP_PARAM_ERROR)
         PyErr_SetString(PyExc_ValueError, "parameter error");
-    else if (res == LDAP_NO_MEMORY) 
+    else if (res == LDAP_NO_MEMORY)
         PyErr_NoMemory();
     else
         PyErr_Format(PyExc_SystemError, "error %d from %s", res, fn);
@@ -48,15 +49,15 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
 
     ld = self ? self->ldap : NULL;
 
-    switch(option) {
+    switch (option) {
     case LDAP_OPT_API_INFO:
     case LDAP_OPT_API_FEATURE_INFO:
 #ifdef HAVE_SASL
     case LDAP_OPT_X_SASL_SSF:
 #endif
-	    /* Read-only options */
-	    PyErr_SetString(PyExc_ValueError, "read-only option");
-	    return 0;
+        /* Read-only options */
+        PyErr_SetString(PyExc_ValueError, "read-only option");
+        return 0;
     case LDAP_OPT_REFERRALS:
     case LDAP_OPT_RESTART:
 #ifdef LDAP_OPT_X_SASL_NOCANON
@@ -65,9 +66,9 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
 #ifdef LDAP_OPT_CONNECT_ASYNC
     case LDAP_OPT_CONNECT_ASYNC:
 #endif
-	    /* Truth-value options */
-	    ptr = PyObject_IsTrue(value) ? LDAP_OPT_ON : LDAP_OPT_OFF;
-	    break;
+        /* Truth-value options */
+        ptr = PyObject_IsTrue(value) ? LDAP_OPT_ON : LDAP_OPT_OFF;
+        break;
 
     case LDAP_OPT_DEREF:
     case LDAP_OPT_SIZELIMIT:
@@ -102,11 +103,11 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
     case LDAP_OPT_X_KEEPALIVE_INTERVAL:
 #endif
 
-	    /* integer value options */
-	    if (!PyArg_Parse(value, "i:set_option", &intval))
-		return 0;
-	    ptr = &intval;
-	    break;
+        /* integer value options */
+        if (!PyArg_Parse(value, "i:set_option", &intval))
+            return 0;
+        ptr = &intval;
+        break;
     case LDAP_OPT_HOST_NAME:
     case LDAP_OPT_URI:
 #ifdef LDAP_OPT_DEFBASE
@@ -129,69 +130,71 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
 #ifdef HAVE_SASL
     case LDAP_OPT_X_SASL_SECPROPS:
 #endif
-	    /* String valued options */
-	    if (!PyArg_Parse(value, "s:set_option", &strval))
-		return 0;
-	    ptr = strval;
-	    break;
+        /* String valued options */
+        if (!PyArg_Parse(value, "s:set_option", &strval))
+            return 0;
+        ptr = strval;
+        break;
     case LDAP_OPT_TIMEOUT:
     case LDAP_OPT_NETWORK_TIMEOUT:
         /* Float valued timeval options */
         if (value == Py_None) {
             /* None is mapped to infinity timeout */
             doubleval = -1;
-        } else {
+        }
+        else {
             /* 'd' handles int/long */
             if (!PyArg_Parse(value, "d:set_option", &doubleval)) {
                 if (PyErr_ExceptionMatches(PyExc_TypeError)) {
                     /* TypeError: mention either float or None is expected */
                     PyErr_Clear();
-                    PyErr_Format(
-                        PyExc_TypeError,
-                        "A float or None is expected for timeout, got %.100s",
-                        Py_TYPE(value)->tp_name
-                    );
+                    PyErr_Format(PyExc_TypeError,
+                                 "A float or None is expected for timeout, got %.100s",
+                                 Py_TYPE(value)->tp_name);
                 }
                 return 0;
             }
         }
 
         if (doubleval >= 0) {
-            set_timeval_from_double( &tv, doubleval );
+            set_timeval_from_double(&tv, doubleval);
             ptr = &tv;
-        } else if (doubleval == -1) {
+        }
+        else if (doubleval == -1) {
             /* -1 is infinity timeout */
             tv.tv_sec = -1;
             tv.tv_usec = 0;
             ptr = &tv;
-        } else {
-            PyErr_Format(
-                PyExc_ValueError,
-                "timeout must be >= 0 or -1/None for infinity, got %d",
-                option
-            );
+        }
+        else {
+            PyErr_Format(PyExc_ValueError,
+                         "timeout must be >= 0 or -1/None for infinity, got %d",
+                         option);
             return 0;
         }
         break;
 
     case LDAP_OPT_SERVER_CONTROLS:
     case LDAP_OPT_CLIENT_CONTROLS:
-            if (!LDAPControls_from_object(value, &controls))
-                return 0;
-            ptr = controls;
-            break;
+        if (!LDAPControls_from_object(value, &controls))
+            return 0;
+        ptr = controls;
+        break;
     default:
-	    PyErr_Format(PyExc_ValueError, "unknown option %d", option);
-	    return 0;
+        PyErr_Format(PyExc_ValueError, "unknown option %d", option);
+        return 0;
     }
-	
-    if (self) LDAP_BEGIN_ALLOW_THREADS(self);
-    res = ldap_set_option(ld, option, ptr);
-    if (self) LDAP_END_ALLOW_THREADS(self);
 
-    if ((option == LDAP_OPT_SERVER_CONTROLS) || (option == LDAP_OPT_CLIENT_CONTROLS))
+    if (self)
+        LDAP_BEGIN_ALLOW_THREADS(self);
+    res = ldap_set_option(ld, option, ptr);
+    if (self)
+        LDAP_END_ALLOW_THREADS(self);
+
+    if ((option == LDAP_OPT_SERVER_CONTROLS) ||
+        (option == LDAP_OPT_CLIENT_CONTROLS))
         LDAPControl_List_DEL(controls);
-    
+
     if (res != LDAP_OPT_SUCCESS) {
         option_error(res, "ldap_set_option");
         return 0;
@@ -215,41 +218,44 @@ LDAP_get_option(LDAPObject *self, int option)
 
     ld = self ? self->ldap : NULL;
 
-    switch(option) {
+    switch (option) {
     case LDAP_OPT_API_INFO:
-	    apiinfo.ldapai_info_version = LDAP_API_INFO_VERSION;
-	    if (self) LDAP_BEGIN_ALLOW_THREADS(self);
-	    res = ldap_get_option( ld, option, &apiinfo );
-	    if (self) LDAP_END_ALLOW_THREADS(self);
-	    if (res != LDAP_OPT_SUCCESS)
-		return option_error(res, "ldap_get_option");
-    
-	    /* put the extensions into tuple form */
-	    num_extensions = 0;
-	    while (apiinfo.ldapai_extensions[num_extensions])
-		num_extensions++;
-	    extensions = PyTuple_New(num_extensions);
-	    for (i = 0; i < num_extensions; i++)
-		PyTuple_SET_ITEM(extensions, i,
-		    PyUnicode_FromString(apiinfo.ldapai_extensions[i]));
+        apiinfo.ldapai_info_version = LDAP_API_INFO_VERSION;
+        if (self)
+            LDAP_BEGIN_ALLOW_THREADS(self);
+        res = ldap_get_option(ld, option, &apiinfo);
+        if (self)
+            LDAP_END_ALLOW_THREADS(self);
+        if (res != LDAP_OPT_SUCCESS)
+            return option_error(res, "ldap_get_option");
 
-	    /* return api info as a dictionary */
-	    v = Py_BuildValue("{s:i, s:i, s:i, s:s, s:i, s:O}",
-		    "info_version",     apiinfo.ldapai_info_version,
-		    "api_version",      apiinfo.ldapai_api_version,
-		    "protocol_version", apiinfo.ldapai_protocol_version,
-		    "vendor_name",      apiinfo.ldapai_vendor_name,
-		    "vendor_version",   apiinfo.ldapai_vendor_version,
-		    "extensions",       extensions);
+        /* put the extensions into tuple form */
+        num_extensions = 0;
+        while (apiinfo.ldapai_extensions[num_extensions])
+            num_extensions++;
+        extensions = PyTuple_New(num_extensions);
+        for (i = 0; i < num_extensions; i++)
+            PyTuple_SET_ITEM(extensions, i,
+                             PyUnicode_FromString(apiinfo.
+                                                  ldapai_extensions[i]));
 
-	    if (apiinfo.ldapai_vendor_name)
-		ldap_memfree(apiinfo.ldapai_vendor_name);
-	    for (i = 0; i < num_extensions; i++)
-		ldap_memfree(apiinfo.ldapai_extensions[i]);
-	    ldap_memfree(apiinfo.ldapai_extensions);
-	    Py_DECREF(extensions);
+        /* return api info as a dictionary */
+        v = Py_BuildValue("{s:i, s:i, s:i, s:s, s:i, s:O}",
+                          "info_version", apiinfo.ldapai_info_version,
+                          "api_version", apiinfo.ldapai_api_version,
+                          "protocol_version", apiinfo.ldapai_protocol_version,
+                          "vendor_name", apiinfo.ldapai_vendor_name,
+                          "vendor_version", apiinfo.ldapai_vendor_version,
+                          "extensions", extensions);
 
-	    return v;
+        if (apiinfo.ldapai_vendor_name)
+            ldap_memfree(apiinfo.ldapai_vendor_name);
+        for (i = 0; i < num_extensions; i++)
+            ldap_memfree(apiinfo.ldapai_extensions[i]);
+        ldap_memfree(apiinfo.ldapai_extensions);
+        Py_DECREF(extensions);
+
+        return v;
 
 #ifdef HAVE_SASL
     case LDAP_OPT_X_SASL_SSF:
@@ -292,13 +298,15 @@ LDAP_get_option(LDAPObject *self, int option)
 #ifdef LDAP_OPT_X_KEEPALIVE_INTERVAL
     case LDAP_OPT_X_KEEPALIVE_INTERVAL:
 #endif
-	    /* Integer-valued options */
-	    if (self) LDAP_BEGIN_ALLOW_THREADS(self);
-	    res = ldap_get_option(ld, option, &intval);
-	    if (self) LDAP_END_ALLOW_THREADS(self);
-	    if (res != LDAP_OPT_SUCCESS)
-		return option_error(res, "ldap_get_option");
-	    return PyInt_FromLong(intval);
+        /* Integer-valued options */
+        if (self)
+            LDAP_BEGIN_ALLOW_THREADS(self);
+        res = ldap_get_option(ld, option, &intval);
+        if (self)
+            LDAP_END_ALLOW_THREADS(self);
+        if (res != LDAP_OPT_SUCCESS)
+            return option_error(res, "ldap_get_option");
+        return PyInt_FromLong(intval);
 
     case LDAP_OPT_HOST_NAME:
     case LDAP_OPT_URI:
@@ -338,53 +346,59 @@ LDAP_get_option(LDAPObject *self, int option)
     case LDAP_OPT_X_SASL_USERNAME:
 #endif
 #endif
-	    /* String-valued options */
-	    if (self) LDAP_BEGIN_ALLOW_THREADS(self);
-	    res = ldap_get_option(ld, option, &strval);
-	    if (self) LDAP_END_ALLOW_THREADS(self);
-	    if (res != LDAP_OPT_SUCCESS)
-		return option_error(res, "ldap_get_option");
-	    if (strval == NULL) {
-		Py_INCREF(Py_None);
-		return Py_None;
-	    }
-	    v = PyUnicode_FromString(strval);
-	    ldap_memfree(strval);
-	    return v;
+        /* String-valued options */
+        if (self)
+            LDAP_BEGIN_ALLOW_THREADS(self);
+        res = ldap_get_option(ld, option, &strval);
+        if (self)
+            LDAP_END_ALLOW_THREADS(self);
+        if (res != LDAP_OPT_SUCCESS)
+            return option_error(res, "ldap_get_option");
+        if (strval == NULL) {
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+        v = PyUnicode_FromString(strval);
+        ldap_memfree(strval);
+        return v;
 
     case LDAP_OPT_TIMEOUT:
     case LDAP_OPT_NETWORK_TIMEOUT:
-	    /* Double-valued timeval options */
-	    if (self) LDAP_BEGIN_ALLOW_THREADS(self);
-	    res = ldap_get_option(ld, option, &tv);
-	    if (self) LDAP_END_ALLOW_THREADS(self);
-	    if (res != LDAP_OPT_SUCCESS)
-		return option_error(res, "ldap_get_option");
-	    if (tv == NULL) {
-		Py_INCREF(Py_None);
-		return Py_None;
-	    }
-	    v = PyFloat_FromDouble(
-              (double) tv->tv_sec + ( (double) tv->tv_usec / 1000000.0 )
+        /* Double-valued timeval options */
+        if (self)
+            LDAP_BEGIN_ALLOW_THREADS(self);
+        res = ldap_get_option(ld, option, &tv);
+        if (self)
+            LDAP_END_ALLOW_THREADS(self);
+        if (res != LDAP_OPT_SUCCESS)
+            return option_error(res, "ldap_get_option");
+        if (tv == NULL) {
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+        v = PyFloat_FromDouble((double)tv->tv_sec +
+                               ((double)tv->tv_usec / 1000000.0)
             );
-	    ldap_memfree(tv);
-	    return v;
+        ldap_memfree(tv);
+        return v;
 
     case LDAP_OPT_SERVER_CONTROLS:
     case LDAP_OPT_CLIENT_CONTROLS:
-	    if (self) LDAP_BEGIN_ALLOW_THREADS(self);
-	    res = ldap_get_option(ld, option, &lcs);
-	    if (self) LDAP_END_ALLOW_THREADS(self);
+        if (self)
+            LDAP_BEGIN_ALLOW_THREADS(self);
+        res = ldap_get_option(ld, option, &lcs);
+        if (self)
+            LDAP_END_ALLOW_THREADS(self);
 
-	    if (res != LDAP_OPT_SUCCESS)
-		return option_error(res, "ldap_get_option");
+        if (res != LDAP_OPT_SUCCESS)
+            return option_error(res, "ldap_get_option");
 
-            v = LDAPControls_to_List(lcs);
-            ldap_controls_free(lcs);
-            return v;
-            
+        v = LDAPControls_to_List(lcs);
+        ldap_controls_free(lcs);
+        return v;
+
     default:
-	    PyErr_Format(PyExc_ValueError, "unknown option %d", option);
-	    return NULL;
+        PyErr_Format(PyExc_ValueError, "unknown option %d", option);
+        return NULL;
     }
 }
