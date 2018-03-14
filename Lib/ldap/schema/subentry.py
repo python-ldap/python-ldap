@@ -136,8 +136,8 @@ class SubSchema:
     entry = {}
     # Collect the schema elements and store them in
     # entry's attributes
-    for se_class in self.sed.keys():
-      for se in self.sed[se_class].values():
+    for se_class, elements in self.sed.items():
+      for se in elements.values():
         se_str = str(se)
         try:
           entry[SCHEMA_ATTR_MAPPING[se_class]].append(se_str)
@@ -153,8 +153,7 @@ class SubSchema:
     avail_se = self.sed[schema_element_class]
     if schema_element_filters:
       result = []
-      for se_key in avail_se.keys():
-        se = avail_se[se_key]
+      for se_key, se in avail_se.items():
         for fk,fv in schema_element_filters:
           try:
             if getattr(se,fk) in fv:

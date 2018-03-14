@@ -35,8 +35,8 @@ class cidict(IterableUserDict):
     del self.data[lower_key]
 
   def update(self,dict):
-    for key in dict.keys():
-      self[key] = dict[key]
+    for key, value in dict.items():
+      self[key] = value
 
   def has_key(self,key):
     return key in self

@@ -313,9 +313,9 @@ class LDAPUrl(object):
         Dictionary containing a mapping from class attributes
         to default values
     """
-    for k in defaults.keys():
+    for k, value in defaults.items():
       if getattr(self,k) is None:
-        setattr(self,k,defaults[k])
+        setattr(self, k, value)
 
   def initializeUrl(self):
     """
