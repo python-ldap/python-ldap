@@ -690,7 +690,7 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
                 str('_retry_delay'): 60.0,
                 str('_retry_max'): 1,
                 str('_start_tls'): 0,
-                str('_trace_level'): 0,
+                str('_trace_level'): ldap._trace_level,
                 str('_trace_stack_limit'): 5,
                 str('_uri'): self.server.ldap_uri,
                 str('bytes_mode'): l1.bytes_mode,

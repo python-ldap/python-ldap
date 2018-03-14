@@ -46,6 +46,9 @@ matrix:
         - TOXENV=py3-nosasltls
         - WITH_GCOV=1
     - python: 3.6
+      env:
+        - TOXENV=py3-trace
+    - python: 3.6
       env: TOXENV=doc
   allow_failures:
      - env:
