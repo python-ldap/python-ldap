@@ -655,8 +655,8 @@ class Entry(IterableUserDict):
       return t
 
   def update(self,dict):
-    for key in dict.keys():
-      self[key] = dict[key]
+    for key, value in dict.values():
+      self[key] = value
 
   def __contains__(self,nameoroid):
     return self._at2key(nameoroid) in self.data
