@@ -80,12 +80,13 @@ valgrind: build $(PYTHON_SUPP)
 	fi
 
 # Code autoformatter
-.PHONY: indent
+.PHONY: autoformat indent autopep8
+autoformat: indent autopep8
+
 indent:
 	indent Modules/*.c Modules/*.h
 	rm -f Modules/*.c~ Modules/*.h~
 
-.PHONY: autopep8
 autopep8:
 	$(PYTHON) -m autopep8 -r -i -j0 $(AUTOPEP8_OPTS) \
 	    Demo Lib Tests setup.py
