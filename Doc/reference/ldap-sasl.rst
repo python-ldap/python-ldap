@@ -35,7 +35,7 @@ Classes
 
 .. autoclass:: ldap.sasl.sasl
    :members:
-   
+
    This class is used with :py:meth:`ldap.LDAPObject.sasl_interactive_bind_s()`.
 
 
@@ -82,4 +82,3 @@ and sends a SASL external bind request.
    ldap_conn.sasl_non_interactive_bind_s('EXTERNAL')
    # Find out the SASL Authorization Identity
    print ldap_conn.whoami_s()
-

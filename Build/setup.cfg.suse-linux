@@ -8,7 +8,7 @@
 library_dirs = /usr/lib/sasl2
 include_dirs = /usr/include/sasl
 
-extra_compile_args = 
+extra_compile_args =
 extra_objects =
 
 # Example for full-featured SuSE build:

@@ -93,8 +93,8 @@ class SyncReplClient(ReconnectLDAPObject, SyncreplConsumer):
         # If we have not been given any UUID values,
         # then we have recieved all the present controls...
         if uuids is None:
-            # We only do things if refreshDeletes is false as the syncrepl 
-            # extension will call syncrepl_delete instead when it detects a 
+            # We only do things if refreshDeletes is false as the syncrepl
+            # extension will call syncrepl_delete instead when it detects a
             # delete notice
             if refreshDeletes is False:
                 deletedEntries = [

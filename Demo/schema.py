@@ -47,7 +47,7 @@ try:
     attr_type_filter = [
       ('no_user_mod',[0]),
       ('usage',range(2)),
-    ]  
+    ]
   )
 except KeyError as e:
   print('***KeyError',str(e))

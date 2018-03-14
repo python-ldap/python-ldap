@@ -98,4 +98,3 @@ else:
 
   print('\n*** Attribute types tree ***\n')
   PrintSchemaTree(schema,ldap.schema.AttributeType,at_tree,'_',0)
-

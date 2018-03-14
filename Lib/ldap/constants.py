@@ -16,7 +16,7 @@ The information serves two purposes:
 from __future__ import print_function
 
 class Constant(object):
-    """Base class for a definition of an OpenLDAP constant 
+    """Base class for a definition of an OpenLDAP constant
     """
 
     def __init__(self, name, optional=False, requirements=(), doc=None):

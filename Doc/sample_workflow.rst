@@ -1,4 +1,3 @@
-
 .. _sample workflow:
 
 Sample workflow for python-ldap development

@@ -50,7 +50,7 @@ while 1:
 		# We're not interested in attributes at this stage, so
 		# we specify [] as the list of attribute names to retreive.
 		#
-		for name,attrs in l.search_s(dn, ldap.SCOPE_ONELEVEL, 
+		for name,attrs in l.search_s(dn, ldap.SCOPE_ONELEVEL,
 		    "objectclass=*", []):
 			#-- shorten resulting dns for output brevity
 			if name.startswith(dn+", "):
@@ -100,7 +100,7 @@ while 1:
 			print("  %-24s" % name)
 			for k,vals in attrs.items():
 			    for v in vals:
-				if len(v) > 200: 
+				if len(v) > 200:
 					v = `v[:200]` + \
 						("... (%d bytes)" % len(v))
 				else:
@@ -125,4 +125,3 @@ while 1:
 
     except:
 	print_exc()
-

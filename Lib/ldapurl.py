@@ -429,4 +429,3 @@ class LDAPUrl(object):
           pass
     else:
       del self.__dict__[name]
-
