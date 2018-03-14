@@ -16,7 +16,9 @@ __all__ = [
   'LDAPUrlExtension','LDAPUrlExtensions','LDAPUrl'
 ]
 
-from ldap.compat import UserDict, quote, unquote
+from collections import MutableMapping
+
+from ldap.compat import quote, unquote
 
 LDAP_SCOPE_BASE = 0
 LDAP_SCOPE_ONELEVEL = 1
@@ -130,58 +132,64 @@ class LDAPUrlExtension(object):
     return not self.__eq__(other)
 
 
-class LDAPUrlExtensions(UserDict):
-  """
-  Models a collection of LDAP URL extensions as
-  dictionary type
-  """
-
-  def __init__(self,default=None):
-    UserDict.__init__(self)
-    for k,v in (default or {}).items():
-      self[k]=v
-
-  def __setitem__(self,name,value):
+class LDAPUrlExtensions(MutableMapping):
     """
-    value
-        Either LDAPUrlExtension instance, (critical,exvalue)
-        or string'ed exvalue
+    Models a collection of LDAP URL extensions as
+    a mapping type
     """
-    assert isinstance(value,LDAPUrlExtension)
-    assert name==value.extype
-    self.data[name] = value
 
-  def values(self):
-    return [
-      self[k]
-      for k in self.keys()
-    ]
+    def __init__(self, default=None):
+        self._data = {}
+        if default is not None:
+            self.update(default)
 
-  def __str__(self):
-    return ','.join(str(v) for v in self.values())
+    def __setitem__(self, name, value):
+        """
+        value
+            Either LDAPUrlExtension instance, (critical,exvalue)
+            or string'ed exvalue
+        """
+        assert isinstance(value, LDAPUrlExtension)
+        assert name == value.extype
+        self._data[name] = value
 
-  def __repr__(self):
-    return '<%s.%s instance at %s: %s>' % (
-      self.__class__.__module__,
-      self.__class__.__name__,
-      hex(id(self)),
-      self.data
-    )
+    def __getitem__(self, name):
+        return self._data[name]
 
-  def __eq__(self,other):
-    assert isinstance(other,self.__class__),TypeError(
-      "other has to be instance of %s" % (self.__class__)
-    )
-    return self.data==other.data
+    def __delitem__(self, name):
+        del self._data[name]
 
-  def parse(self,extListStr):
-    for extension_str in extListStr.strip().split(','):
-      if extension_str:
-        e = LDAPUrlExtension(extension_str)
-        self[e.extype] = e
+    def __iter__(self):
+        return iter(self._data)
 
-  def unparse(self):
-    return ','.join([ v.unparse() for v in self.values() ])
+    def __len__(self):
+        return len(self._data)
+
+    def __str__(self):
+        return ','.join(str(v) for v in self.values())
+
+    def __repr__(self):
+        return '<%s.%s instance at %s: %s>' % (
+            self.__class__.__module__,
+            self.__class__.__name__,
+            hex(id(self)),
+            self._data
+        )
+
+    def __eq__(self,other):
+        assert isinstance(other, self.__class__), TypeError(
+            "other has to be instance of %s" % (self.__class__)
+            )
+        return self._data == other._data
+
+    def parse(self,extListStr):
+        for extension_str in extListStr.strip().split(','):
+            if extension_str:
+                e = LDAPUrlExtension(extension_str)
+                self[e.extype] = e
+
+    def unparse(self):
+        return ','.join(v.unparse() for v in self.values())
 
 
 class LDAPUrl(object):
