@@ -213,7 +213,7 @@ class SlapdObject(object):
             self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
             self.default_ldap_uri = self.ldapi_uri
             # use SASL/EXTERNAL via LDAPI when invoking OpenLDAP CLI tools
-            self.cli_sasl_external = True
+            self.cli_sasl_external = ldap.SASL_AVAIL
         else:
             self.ldapi_uri = None
             self.default_ldap_uri = self.ldap_uri
