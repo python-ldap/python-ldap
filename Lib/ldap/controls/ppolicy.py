@@ -11,13 +11,13 @@ __all__ = [
 ]
 
 # Imports from python-ldap 2.4+
-import ldap.controls
-from ldap.controls import RequestControl,ResponseControl,ValueLessRequestControl,KNOWN_RESPONSE_CONTROLS
+from ldap.controls import (
+  ResponseControl, ValueLessRequestControl, KNOWN_RESPONSE_CONTROLS
+)
 
 # Imports from pyasn1
 from pyasn1.type import tag,namedtype,namedval,univ,constraint
-from pyasn1.codec.ber import encoder,decoder
-from pyasn1_modules.rfc2251 import LDAPDN
+from pyasn1.codec.der import decoder
 
 
 class PasswordPolicyWarning(univ.Choice):
@@ -70,25 +70,22 @@ class PasswordPolicyControl(ValueLessRequestControl,ResponseControl):
 
   def decodeControlValue(self,encodedControlValue):
     ppolicyValue,_ = decoder.decode(encodedControlValue,asn1Spec=PasswordPolicyResponseValue())
+    self.timeBeforeExpiration = None
+    self.graceAuthNsRemaining = None
+    self.error = None
+
     warning = ppolicyValue.getComponentByName('warning')
-    if not warning.hasValue():
-      self.timeBeforeExpiration,self.graceAuthNsRemaining = None,None
-    else:
-      timeBeforeExpiration = warning.getComponentByName('timeBeforeExpiration')
-      if timeBeforeExpiration.hasValue():
-        self.timeBeforeExpiration = int(timeBeforeExpiration)
-      else:
-        self.timeBeforeExpiration = None
-      graceAuthNsRemaining = warning.getComponentByName('graceAuthNsRemaining')
-      if graceAuthNsRemaining.hasValue():
-        self.graceAuthNsRemaining = int(graceAuthNsRemaining)
-      else:
-        self.graceAuthNsRemaining = None
+    if warning.hasValue():
+      if 'timeBeforeExpiration' in warning:
+        self.timeBeforeExpiration = int(
+          warning.getComponentByName('timeBeforeExpiration'))
+      if 'graceAuthNsRemaining' in warning:
+        self.graceAuthNsRemaining = int(
+          warning.getComponentByName('graceAuthNsRemaining'))
+
     error = ppolicyValue.getComponentByName('error')
     if error.hasValue():
       self.error = int(error)
-    else:
-      self.error = None
 
 
 KNOWN_RESPONSE_CONTROLS[PasswordPolicyControl.controlType] = PasswordPolicyControl
