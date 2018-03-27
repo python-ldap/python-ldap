@@ -144,10 +144,12 @@ class LDAPUrlExtensions(MutableMapping):
             self.update(default)
 
     def __setitem__(self, name, value):
-        """
+        """Store an extension
+
+        name
+            string
         value
-            Either LDAPUrlExtension instance, (critical,exvalue)
-            or string'ed exvalue
+            LDAPUrlExtension instance, whose extype nust match `name`
         """
         if not isinstance(value, LDAPUrlExtension):
             raise TypeError("value must be LDAPUrlExtension, not "
