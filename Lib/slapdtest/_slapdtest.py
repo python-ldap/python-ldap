@@ -29,7 +29,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 SLAPD_CONF_TEMPLATE = r"""
 serverID %(serverid)s
 moduleload back_%(database)s
-include "%(schema_prefix)s/core.schema"
+%(include_directives)s
 loglevel %(loglevel)s
 allow bind_v2
 
@@ -316,9 +316,17 @@ class SlapdObject(object):
         for generating specific static configuration files you have to
         override this method
         """
+        include_directives = '\n'.join(
+            'include "{schema_prefix}/{schema_file}"'.format(
+                schema_prefix=self._schema_prefix,
+                schema_file=schema_file,
+            )
+            for schema_file in self.openldap_schema_files
+        )
         config_dict = {
             'serverid': hex(self.server_id),
             'schema_prefix':self._schema_prefix,
+            'include_directives': include_directives,
             'loglevel': self.slapd_loglevel,
             'database': self.database,
             'directory': self._db_directory,
