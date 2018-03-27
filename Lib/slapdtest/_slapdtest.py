@@ -169,7 +169,6 @@ class SlapdObject(object):
     database = 'mdb'
     suffix = 'dc=slapd-test,dc=python-ldap,dc=org'
     root_cn = 'Manager'
-    root_dn = 'cn=%s,%s' % (root_cn, suffix)
     root_pw = 'password'
     slapd_loglevel = 'stats stats2'
     local_host = '127.0.0.1'
@@ -231,6 +230,10 @@ class SlapdObject(object):
         self.serverkey = os.path.join(HERE, 'certs/server.key')
         self.clientcert = os.path.join(HERE, 'certs/client.pem')
         self.clientkey = os.path.join(HERE, 'certs/client.key')
+
+    @property
+    def root_dn(self):
+        return 'cn={self.root_cn},{self.suffix}'.format(self=self)
 
     def _find_commands(self):
         self.PATH_LDAPADD = self._find_command('ldapadd')
