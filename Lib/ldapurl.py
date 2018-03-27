@@ -149,8 +149,13 @@ class LDAPUrlExtensions(MutableMapping):
             Either LDAPUrlExtension instance, (critical,exvalue)
             or string'ed exvalue
         """
-        assert isinstance(value, LDAPUrlExtension)
-        assert name == value.extype
+        if not isinstance(value, LDAPUrlExtension):
+            raise TypeError("value must be LDAPUrlExtension, not "
+                            + type(value).__name__)
+        if name != value.extype:
+            raise ValueError(
+                "key {!r} does not match extension type {!r}".format(
+                    name, value.extype))
         self._data[name] = value
 
     def __getitem__(self, name):
@@ -177,9 +182,8 @@ class LDAPUrlExtensions(MutableMapping):
         )
 
     def __eq__(self,other):
-        assert isinstance(other, self.__class__), TypeError(
-            "other has to be instance of %s" % (self.__class__)
-            )
+        if not isinstance(other, self.__class__):
+            return NotImplemented
         return self._data == other._data
 
     def parse(self,extListStr):
@@ -374,17 +378,23 @@ class LDAPUrl(object):
     hrefTarget
         string added as link target attribute
     """
-    assert type(urlPrefix)==StringType, "urlPrefix must be StringType"
+    if not isinstance(urlPrefix, str):
+        raise TypeError("urlPrefix must be str, not "
+                        + type(urlPrefix).__name__)
     if hrefText is None:
-      hrefText = self.unparse()
-    assert type(hrefText)==StringType, "hrefText must be StringType"
+        hrefText = self.unparse()
+    if not isinstance(hrefText, str):
+        raise TypeError("hrefText must be str, not "
+                        + type(hrefText).__name__)
     if hrefTarget is None:
-      target = ''
+        target = ''
     else:
-      assert type(hrefTarget)==StringType, "hrefTarget must be StringType"
-      target = ' target="%s"' % hrefTarget
+        if not isinstance(hrefTarget, str):
+            raise TypeError("hrefTarget must be str, not "
+                            + type(hrefTarget).__name__)
+        target = ' target="%s"' % hrefTarget
     return '<a%s href="%s%s">%s</a>' % (
-      target,urlPrefix,self.unparse(),hrefText
+        target, urlPrefix, self.unparse(), hrefText
     )
 
   def __str__(self):
