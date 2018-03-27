@@ -15,6 +15,7 @@ class cidict(MutableMapping):
     """
     Case-insensitive but case-respecting dictionary.
     """
+    __slots__ = ('_keys', '_data')
 
     def __init__(self, default=None):
         self._keys = {}

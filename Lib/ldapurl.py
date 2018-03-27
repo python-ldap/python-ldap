@@ -137,6 +137,7 @@ class LDAPUrlExtensions(MutableMapping):
     Models a collection of LDAP URL extensions as
     a mapping type
     """
+    __slots__ = ('_data', )
 
     def __init__(self, default=None):
         self._data = {}
