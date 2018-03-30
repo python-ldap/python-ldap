@@ -8,6 +8,8 @@ import ldap
 
 from ldap import __version__
 
+import ldif
+
 SEARCH_RESULT_TYPES = {
   ldap.RES_SEARCH_ENTRY,
   ldap.RES_SEARCH_RESULT,
@@ -269,7 +271,6 @@ class LDIFWriter(FileWriter):
   """
 
   def __init__(self,l,writer_obj,headerStr='',footerStr=''):
-    import ldif
     if isinstance(writer_obj,ldif.LDIFWriter):
       self._ldif_writer = writer_obj
     else:

@@ -4,9 +4,16 @@ ldap.schema.subentry -  subschema subentry handling
 See https://www.python-ldap.org/ for details.
 """
 
+import copy
+
 import ldap.cidict,ldap.schema
 
+from ldap.compat import urlopen
 from ldap.schema.models import *
+
+import ldapurl
+import ldif
+
 
 SCHEMA_CLASS_MAPPING = ldap.cidict.cidict()
 SCHEMA_ATTR_MAPPING = {}
@@ -256,7 +263,6 @@ class SubSchema:
     Get a schema element by name or OID with all class attributes
     set including inherited class attributes
     """
-    import copy
     inherited = inherited or []
     se = copy.copy(self.sed[se_class].get(self.getoid(se_class,nameoroid)))
     if se and hasattr(se,'sup'):
@@ -452,7 +458,6 @@ def urlfetch(uri,trace_level=0):
   """
   uri = uri.strip()
   if uri.startswith(('ldap:', 'ldaps:', 'ldapi:')):
-    import ldapurl
     ldap_url = ldapurl.LDAPUrl(uri)
 
     l=ldap.initialize(ldap_url.initializeUrl(),trace_level)
@@ -472,8 +477,6 @@ def urlfetch(uri,trace_level=0):
     l.unbind_s()
     del l
   else:
-    import ldif
-    from ldap.compat import urlopen
     ldif_file = urlopen(uri)
     ldif_parser = ldif.LDIFRecordList(ldif_file,max_entries=1)
     ldif_parser.parse()
