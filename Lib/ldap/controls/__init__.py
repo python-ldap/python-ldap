@@ -17,10 +17,7 @@ assert _ldap.__version__==__version__, \
 
 import ldap
 
-try:
-  from pyasn1.error import PyAsn1Error
-except ImportError:
-  PyAsn1Error = None
+from pyasn1.error import PyAsn1Error
 
 
 __all__ = [
