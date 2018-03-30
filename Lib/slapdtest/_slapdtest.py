@@ -164,6 +164,10 @@ class SlapdObject(object):
 
     When a reference to an instance of this class is lost, the slapd
     server is shut down.
+
+    An instance can be used as a context manager. When exiting the context
+    manager, the slapd server is shut down and the temporary data store is
+    removed.
     """
     slapd_conf_template = SLAPD_CONF_TEMPLATE
     database = 'mdb'
@@ -552,6 +556,13 @@ class SlapdObject(object):
             extra_args.append('-r')
         extra_args.append(dn)
         self._cli_popen(self.PATH_LDAPDELETE, extra_args=extra_args)
+
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.stop()
 
 
 class SlapdTestCase(unittest.TestCase):
