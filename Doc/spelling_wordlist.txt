@@ -83,6 +83,7 @@ LDIFWriter
 libldap
 libs
 Libs
+macOS
 modlist
 modrdn
 msgid
