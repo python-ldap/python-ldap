@@ -940,7 +940,16 @@ and wait for and return with the server's result, or with
 .. py:method:: LDAPObject.result3([msgid=RES_ANY [, all=1 [, timeout=None]]]) -> 4-tuple
 
    This method behaves almost exactly like :py:meth:`result2()`. But it
-   returns an extra item in the tuple, the decoded server controls.
+   returns an extra item in the tuple, the decoded server controls
+   (:py:class:`list`).
+   Each control is in the form of
+   ``(control_oid: str, criticality: int, control_value: bytes)`` in Python 3.
+
+   ``control_value`` is a raw byte array directly returned from
+   the LDAP C API.
+   You can use the :py:mod:`ldap.controls` module or
+   the :py:mod:`pyasn1` library to convert them into interpretable formats.
+
 
 .. py:method:: LDAPObject.result4([msgid=RES_ANY [, all=1 [, timeout=None [, add_ctrls=0 [, add_intermediates=0 [, add_extop=0 [, resp_ctrl_classes=None]]]]]]]) -> 6-tuple
 
@@ -1049,17 +1058,28 @@ and wait for and return with the server's result, or with
    where *dn* is a string containing the DN (distinguished name) of the
    entry, and *attrs* is a dictionary containing the attributes associated
    with the entry. The keys of *attrs* are strings, and the associated
-   values are lists of strings.
+   values are lists of :py:class:`bytes` in Python 3 and :py:class:`str` in Python 2.
 
    The DN in *dn* is automatically extracted using the underlying libldap
    function :c:func:`ldap_get_dn()`, which may raise an exception if the
    DN is malformed.
 
-   If *attrsonly* is non-zero, the values of *attrs* will be meaningless
+   Referral entries are appended to the returned list as the last
+   elements if :py:data:`ldap.OPT_REFERRALS` is set to :py:const:`0`.
+   These value is of the form ``(None, reference_list)``,
+   where ``reference_list`` is a list of referrals returned from the server.
+
+   The above descriptions on returned value formats is not correct if you
+   get results with :py:meth:`result4()` with a non-zero *add_ctrls* flag,
+   which returns response controls as the additional 2nd elements of
+   each tuple in the returned list.
+
+   If *attrsonly* is non-zero, the value parts of the *attrs* dictionaries will be meaningless
    (they are not transmitted in the result).
 
    The retrieved attributes can be limited with the *attrlist* parameter.
-   If *attrlist* is :py:const:`None`, all the attributes of each entry are returned.
+   If *attrlist* is :py:const:`None`, all the user attributes of
+   each entry are returned (same as :py:const:`["*"]`).
 
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
 

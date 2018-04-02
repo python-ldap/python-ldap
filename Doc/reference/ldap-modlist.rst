@@ -19,6 +19,15 @@ The :mod:`ldap.modlist` module defines the following functions:
    names which shall be ignored completely. Attributes of these types will not appear
    in the result at all.
 
+   The value parts of the *entry* dictionary must be any of a list of
+   :py:class:`bytes` objects, a :py:class:`bytes` object, or :py:const:`None` (in Python 3).
+   The :py:class:`bytes` object is treated as a list which contains
+   single :py:class:`bytes` object.
+   These :py:class:`bytes` data are passed to the C interface without
+   any conversion.
+   :py:const:`None` means :c:data:`NULL` in C (no values).
+
+
 
 .. function:: modifyModlist( old_entry, new_entry [, ignore_attr_types=[] [, ignore_oldexistent=0 [, case_ignore_attr_types=None]]]) -> list
 
