@@ -168,6 +168,10 @@ class SlapdObject(object):
     An instance can be used as a context manager. When exiting the context
     manager, the slapd server is shut down and the temporary data store is
     removed.
+
+    .. versionchanged:: 3.1
+
+        Added context manager functionality
     """
     slapd_conf_template = SLAPD_CONF_TEMPLATE
     database = 'mdb'
