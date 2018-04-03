@@ -114,7 +114,7 @@ telling Lib/ldap.py and Lib/ldap/schema.py are not found::
 
 .. _install-macosx:
 
-**Q**: What's the correct way to install on Mac OS X?
+**Q**: What's the correct way to install on macOS?
 
   **A**::
 

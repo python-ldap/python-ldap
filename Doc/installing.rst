@@ -73,8 +73,8 @@ Unofficial packages for Windows are available on
 The CVS repository of FreeBSD contains the package
 `py-ldap <https://svnweb.freebsd.org/ports/head/net/py-ldap/>`_
 
-Mac OS X
---------
+macOS
+-----
 
 You can install directly with pip::
 
