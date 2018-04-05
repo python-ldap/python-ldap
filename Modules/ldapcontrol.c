@@ -339,6 +339,7 @@ encode_assertion_control(PyObject *self, PyObject *args)
     char *assertion_filterstr;
     struct berval ctrl_val;
     LDAP *ld = NULL;
+    PyThreadState *save;
 
     if (!PyArg_ParseTuple(args, "s:encode_assertion_control",
                           &assertion_filterstr)) {
@@ -348,21 +349,27 @@ encode_assertion_control(PyObject *self, PyObject *args)
     /* XXX: ldap_create() is a nasty and slow hack. It's creating a full blown
      * LDAP object just to encode assertion controls.
      */
-    Py_BEGIN_ALLOW_THREADS err = ldap_create(&ld);
-    Py_END_ALLOW_THREADS if (err != LDAP_SUCCESS)
+    save = PyEval_SaveThread();
+    err = ldap_create(&ld);
+    PyEval_RestoreThread(save);
+    if (err != LDAP_SUCCESS)
         return LDAPerror(ld, "ldap_create");
 
-    err =
-        ldap_create_assertion_control_value(ld, assertion_filterstr,
-                                            &ctrl_val);
+    err = ldap_create_assertion_control_value(ld, assertion_filterstr,
+                                              &ctrl_val);
 
     if (err != LDAP_SUCCESS) {
         LDAPerror(ld, "ldap_create_assertion_control_value");
-        Py_BEGIN_ALLOW_THREADS ldap_unbind_ext(ld, NULL, NULL);
-        Py_END_ALLOW_THREADS return NULL;
+        save = PyEval_SaveThread();
+        ldap_unbind_ext(ld, NULL, NULL);
+        PyEval_RestoreThread(save);
+        return NULL;
     }
-    Py_BEGIN_ALLOW_THREADS ldap_unbind_ext(ld, NULL, NULL);
-    Py_END_ALLOW_THREADS res = LDAPberval_to_object(&ctrl_val);
+    save = PyEval_SaveThread();
+    ldap_unbind_ext(ld, NULL, NULL);
+    PyEval_RestoreThread(save);
+    res = LDAPberval_to_object(&ctrl_val);
+
     if (ctrl_val.bv_val != NULL) {
         ber_memfree(ctrl_val.bv_val);
     }
