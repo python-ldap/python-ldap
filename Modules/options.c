@@ -185,11 +185,18 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
         return 0;
     }
 
-    if (self)
+    if (self) {
         LDAP_BEGIN_ALLOW_THREADS(self);
-    res = ldap_set_option(ld, option, ptr);
-    if (self)
+        res = ldap_set_option(ld, option, ptr);
         LDAP_END_ALLOW_THREADS(self);
+    }
+    else {
+        PyThreadState *save;
+
+        save = PyEval_SaveThread();
+        res = ldap_set_option(NULL, option, ptr);
+        PyEval_RestoreThread(save);
+    }
 
     if ((option == LDAP_OPT_SERVER_CONTROLS) ||
         (option == LDAP_OPT_CLIENT_CONTROLS))
@@ -203,6 +210,26 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
     return 1;
 }
 
+static int
+LDAP_int_get_option(LDAPObject *self, int option, void *value)
+{
+    int res;
+
+    if (self != NULL) {
+        LDAP_BEGIN_ALLOW_THREADS(self);
+        res = ldap_get_option(self->ldap, option, value);
+        LDAP_END_ALLOW_THREADS(self);
+    }
+    else {
+        PyThreadState *save;
+
+        save = PyEval_SaveThread();
+        res = ldap_get_option(NULL, option, value);
+        PyEval_RestoreThread(save);
+    }
+    return res;
+}
+
 PyObject *
 LDAP_get_option(LDAPObject *self, int option)
 {
@@ -214,18 +241,11 @@ LDAP_get_option(LDAPObject *self, int option)
     char *strval;
     PyObject *extensions, *v;
     Py_ssize_t i, num_extensions;
-    LDAP *ld;
-
-    ld = self ? self->ldap : NULL;
 
     switch (option) {
     case LDAP_OPT_API_INFO:
         apiinfo.ldapai_info_version = LDAP_API_INFO_VERSION;
-        if (self)
-            LDAP_BEGIN_ALLOW_THREADS(self);
-        res = ldap_get_option(ld, option, &apiinfo);
-        if (self)
-            LDAP_END_ALLOW_THREADS(self);
+        res = LDAP_int_get_option(self, option, &apiinfo);
         if (res != LDAP_OPT_SUCCESS)
             return option_error(res, "ldap_get_option");
 
@@ -236,8 +256,8 @@ LDAP_get_option(LDAPObject *self, int option)
         extensions = PyTuple_New(num_extensions);
         for (i = 0; i < num_extensions; i++)
             PyTuple_SET_ITEM(extensions, i,
-                             PyUnicode_FromString(apiinfo.
-                                                  ldapai_extensions[i]));
+                             PyUnicode_FromString(apiinfo.ldapai_extensions
+                                                  [i]));
 
         /* return api info as a dictionary */
         v = Py_BuildValue("{s:i, s:i, s:i, s:s, s:i, s:O}",
@@ -299,11 +319,7 @@ LDAP_get_option(LDAPObject *self, int option)
     case LDAP_OPT_X_KEEPALIVE_INTERVAL:
 #endif
         /* Integer-valued options */
-        if (self)
-            LDAP_BEGIN_ALLOW_THREADS(self);
-        res = ldap_get_option(ld, option, &intval);
-        if (self)
-            LDAP_END_ALLOW_THREADS(self);
+        res = LDAP_int_get_option(self, option, &intval);
         if (res != LDAP_OPT_SUCCESS)
             return option_error(res, "ldap_get_option");
         return PyInt_FromLong(intval);
@@ -347,11 +363,7 @@ LDAP_get_option(LDAPObject *self, int option)
 #endif
 #endif
         /* String-valued options */
-        if (self)
-            LDAP_BEGIN_ALLOW_THREADS(self);
-        res = ldap_get_option(ld, option, &strval);
-        if (self)
-            LDAP_END_ALLOW_THREADS(self);
+        res = LDAP_int_get_option(self, option, &strval);
         if (res != LDAP_OPT_SUCCESS)
             return option_error(res, "ldap_get_option");
         if (strval == NULL) {
@@ -365,11 +377,7 @@ LDAP_get_option(LDAPObject *self, int option)
     case LDAP_OPT_TIMEOUT:
     case LDAP_OPT_NETWORK_TIMEOUT:
         /* Double-valued timeval options */
-        if (self)
-            LDAP_BEGIN_ALLOW_THREADS(self);
-        res = ldap_get_option(ld, option, &tv);
-        if (self)
-            LDAP_END_ALLOW_THREADS(self);
+        res = LDAP_int_get_option(self, option, &tv);
         if (res != LDAP_OPT_SUCCESS)
             return option_error(res, "ldap_get_option");
         if (tv == NULL) {
@@ -384,12 +392,7 @@ LDAP_get_option(LDAPObject *self, int option)
 
     case LDAP_OPT_SERVER_CONTROLS:
     case LDAP_OPT_CLIENT_CONTROLS:
-        if (self)
-            LDAP_BEGIN_ALLOW_THREADS(self);
-        res = ldap_get_option(ld, option, &lcs);
-        if (self)
-            LDAP_END_ALLOW_THREADS(self);
-
+        res = LDAP_int_get_option(self, option, &lcs);
         if (res != LDAP_OPT_SUCCESS)
             return option_error(res, "ldap_get_option");
 

@@ -15,13 +15,18 @@ l_ldap_initialize(PyObject *unused, PyObject *args)
     char *uri;
     LDAP *ld = NULL;
     int ret;
+    PyThreadState *save;
 
     if (!PyArg_ParseTuple(args, "s:initialize", &uri))
         return NULL;
 
-    Py_BEGIN_ALLOW_THREADS ret = ldap_initialize(&ld, uri);
-    Py_END_ALLOW_THREADS if (ret != LDAP_SUCCESS)
+    save = PyEval_SaveThread();
+    ret = ldap_initialize(&ld, uri);
+    PyEval_RestoreThread(save);
+
+    if (ret != LDAP_SUCCESS)
         return LDAPerror(ld, "ldap_initialize");
+
     return (PyObject *)newLDAPObject(ld);
 }
 
@@ -75,9 +80,8 @@ l_ldap_str2dn(PyObject *unused, PyObject *args)
             tuple = Py_BuildValue("(O&O&i)",
                                   LDAPberval_to_unicode_object, &ava->la_attr,
                                   LDAPberval_to_unicode_object, &ava->la_value,
-                                  ava->
-                                  la_flags & ~(LDAP_AVA_FREE_ATTR |
-                                               LDAP_AVA_FREE_VALUE));
+                                  ava->la_flags & ~(LDAP_AVA_FREE_ATTR |
+                                                    LDAP_AVA_FREE_VALUE));
             if (!tuple) {
                 Py_DECREF(rdnlist);
                 goto failed;
