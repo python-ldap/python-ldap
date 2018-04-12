@@ -948,7 +948,7 @@ and wait for and return with the server's result, or with
    ``control_value`` is a raw byte array directly returned from
    the LDAP C API.
    You can use the :py:mod:`ldap.controls` module or
-   the :py:mod:`pyasn1` library to convert them into interpretable formats.
+   the :py:mod:`pyasn1` library to convert them into easy-to-understand formats.
 
 
 .. py:method:: LDAPObject.result4([msgid=RES_ANY [, all=1 [, timeout=None [, add_ctrls=0 [, add_intermediates=0 [, add_extop=0 [, resp_ctrl_classes=None]]]]]]]) -> 6-tuple
@@ -1071,7 +1071,7 @@ and wait for and return with the server's result, or with
 
    The above descriptions on returned value formats is not correct if you
    get results with :py:meth:`result4()` with a non-zero *add_ctrls* flag,
-   which returns response controls as the additional 2nd elements of
+   which returns response controls as the additional second elements of
    each tuple in the returned list.
 
    If *attrsonly* is non-zero, the value parts of the *attrs* dictionaries will be meaningless
