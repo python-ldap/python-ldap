@@ -143,7 +143,7 @@ keeps track of all reference increments and decrements. The leak plugin runs
 each test multiple times and checks if the reference count increases.
 
 .. _pytest: https://docs.pytest.org/en/latest/
-.. _pytest-leaks: https://pypi.python.org/pypi/pytest-leaks
+.. _pytest-leaks: https://pypi.org/project/pytest-leaks/
 
 Download and compile the *pydebug* build::
 

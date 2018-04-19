@@ -2,5 +2,5 @@ The sample modules/scripts herein require modules pyasn1 and pyasn1-modules.
 
 https://github.com/etingof/pyasn1
 
-https://pypi.python.org/pypi/pyasn1
-https://pypi.python.org/pypi/pyasn1-modules
+https://pypi.org/project/pyasn1/
+https://pypi.org/project/pyasn1-modules/

@@ -26,7 +26,7 @@ Usage
   **A1**. For earlier versions, there's `pyldap`_, an independent fork
   now merged into python-ldap.
 
-.. _pyldap: https://pypi.python.org/pypi/pyldap
+.. _pyldap: https://pypi.org/project/pyldap/
 
 
 **Q**: Does it work with Python 2.6? (1.5|2.0|2.1|2.2|2.3|2.4|2.5)?

@@ -15,7 +15,7 @@ For example::
 
     $ python -m pip install python-ldap
 
-.. _PyPI repository: https://pypi.python.org/pypi/python-ldap/
+.. _PyPI repository: https://pypi.org/project/python-ldap/
 .. _pip: https://pip.pypa.io/en/stable/
 
 For installing from PyPI, you will need the same :ref:`build prerequisites`
@@ -27,8 +27,8 @@ We do not currently provide pre-built packages (wheels).
 Furthermore, python-ldap requires the modules `pyasn1`_ and `pyasn1-modules`_.
 ``pip`` will install these automatically.
 
-.. _pyasn1: https://pypi.python.org/pypi/pyasn1
-.. _pyasn1-modules: https://pypi.python.org/pypi/pyasn1-modules
+.. _pyasn1: https://pypi.org/project/pyasn1/
+.. _pyasn1-modules: https://pypi.org/project/pyasn1-modules/
 
 
 Pre-built Binaries
