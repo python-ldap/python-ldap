@@ -49,6 +49,23 @@ class TestModlist(unittest.TestCase):
                 )
             )
 
+    def test_addModlist_does_not_accept_None(self):
+        entry = {
+            'attr1': None
+        }
+
+        with self.assertRaises(TypeError):
+            addModlist(entry)
+
+    @unittest.skip("the specification is not clear.")
+    def test_addModlist_does_not_accepts_bytes(self):
+        entry = {
+            'attr1': b"bytes"
+        }
+
+        with self.assertRaises(TypeError):
+            addModlist(entry)
+
     modifyModlist_tests = [
         (
             {
