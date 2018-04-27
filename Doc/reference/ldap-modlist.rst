@@ -20,12 +20,11 @@ The :mod:`ldap.modlist` module defines the following functions:
    in the result at all.
 
    The value parts of the *entry* dictionary must be any of a list of
-   :py:class:`bytes` objects, a :py:class:`bytes` object, or :py:const:`None` (in Python 3).
+   :py:class:`bytes` objects or a :py:class:`bytes` object (in Python 3).
    The :py:class:`bytes` object is treated as a list which contains
    single :py:class:`bytes` object.
    These :py:class:`bytes` data are passed to the C interface without
    any conversion.
-   :py:const:`None` means :c:data:`NULL` in C (no values).
 
 
 
