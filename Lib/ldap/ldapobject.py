@@ -260,7 +260,7 @@ class SimpleLDAPObject:
     else:
       # It's a list of referals
       # Example value:
-      # [u'ldap://DomainDnsZones.xxxx.root.local/DC=DomainDnsZones,DC=xxxx,DC=root,DC=local']
+      # ['ldap://DomainDnsZones.xxxx.root.local/DC=DomainDnsZones,DC=xxxx,DC=root,DC=local']
       return [self._maybe_rebytesify_text(referal) for referal in result_value]
 
   def _bytesify_results(self, results, with_ctrls=False):
@@ -823,7 +823,7 @@ class SimpleLDAPObject:
           if self.bytes_mode:
             filterstr = b'(objectClass=*)'
           else:
-            filterstr = u'(objectClass=*)'
+            filterstr = '(objectClass=*)'
         else:
           filterstr = self._bytesify_input('filterstr', filterstr)
         if attrlist is not None:
@@ -932,8 +932,8 @@ class SimpleLDAPObject:
       empty_dn = b''
       attrname = b'subschemaSubentry'
     else:
-      empty_dn = u''
-      attrname = u'subschemaSubentry'
+      empty_dn = ''
+      attrname = 'subschemaSubentry'
     if dn is None:
       dn = empty_dn
     try:
@@ -991,7 +991,7 @@ class SimpleLDAPObject:
       if attrs is None:
         attrs = [attr.encode('utf-8') for attr in SCHEMA_ATTRS]
     else:
-      filterstr = u'(objectClass=subschema)'
+      filterstr = '(objectClass=subschema)'
       if attrs is None:
         attrs = SCHEMA_ATTRS
     try:
@@ -1032,8 +1032,8 @@ class SimpleLDAPObject:
       base = b''
       attrlist = attrlist or [b'*', b'+']
     else:
-      base = u''
-      attrlist = attrlist or [u'*', u'+']
+      base = ''
+      attrlist = attrlist or ['*', '+']
     ldap_rootdse = self.read_s(
       base,
       filterstr=filterstr,
@@ -1049,7 +1049,7 @@ class SimpleLDAPObject:
     if self.bytes_mode:
       name = b'namingContexts'
     else:
-      name = u'namingContexts'
+      name = 'namingContexts'
     return self.read_rootdse_s(
       attrlist=[name]
     ).get(name, [])

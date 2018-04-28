@@ -112,7 +112,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             )
         if PY2:
             self.assertIn(
-                u"got type 'str' for 'base'", text_type(e.exception)
+                "got type 'str' for 'base'", text_type(e.exception)
             )
         elif sys.version_info >= (3, 5, 0):
             # Python 3.4.x does not include 'search_ext()' in message
@@ -127,7 +127,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             )
         if PY2:
             self.assertIn(
-                u"got type 'str' for 'filterstr'", text_type(e.exception)
+                "got type 'str' for 'filterstr'", text_type(e.exception)
             )
         elif sys.version_info >= (3, 5, 0):
             self.assertEqual(
@@ -141,7 +141,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             )
         if PY2:
             self.assertIn(
-                u"got type 'str' for 'attrlist'", text_type(e.exception)
+                "got type 'str' for 'attrlist'", text_type(e.exception)
             )
         elif sys.version_info >= (3, 5, 0):
             self.assertEqual(
@@ -424,11 +424,11 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertEqual(
             sorted(subschema),
             [
-                u'attributeTypes',
-                u'ldapSyntaxes',
-                u'matchingRuleUse',
-                u'matchingRules',
-                u'objectClasses'
+                'attributeTypes',
+                'ldapSyntaxes',
+                'matchingRuleUse',
+                'matchingRules',
+                'objectClasses'
             ]
         )
 
@@ -504,10 +504,10 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
     def test_simple_bind_noarg(self):
         l = self.ldap_object_class(self.server.ldap_uri)
         l.simple_bind_s()
-        self.assertEqual(l.whoami_s(), u'')
+        self.assertEqual(l.whoami_s(), '')
         l = self.ldap_object_class(self.server.ldap_uri)
         l.simple_bind_s(None, None)
-        self.assertEqual(l.whoami_s(), u'')
+        self.assertEqual(l.whoami_s(), '')
 
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_ldapbyteswarning(self):
@@ -578,10 +578,10 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertEqual(len(w), 2, w)
 
         self._check_byteswarning(
-            w[0], u"Received non-bytes value for 'filterstr'")
+            w[0], "Received non-bytes value for 'filterstr'")
 
         self._check_byteswarning(
-            w[1], u"Received non-bytes value for 'attrlist'")
+            w[1], "Received non-bytes value for 'attrlist'")
 
     @unittest.skipUnless(PY2, "no bytes_mode under Py3")
     def test_byteswarning_level_search(self):
@@ -600,7 +600,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertEqual(len(w), 1, w)
 
         self._check_byteswarning(
-            w[0], u"Under Python 2, python-ldap uses bytes by default.")
+            w[0], "Under Python 2, python-ldap uses bytes by default.")
 
     @requires_tls()
     def test_multiple_starttls(self):
@@ -619,16 +619,16 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
     def test_dse(self):
         dse = self._ldap_conn.read_rootdse_s()
         self.assertIsInstance(dse, dict)
-        self.assertEqual(dse[u'supportedLDAPVersion'], [b'3'])
+        self.assertEqual(dse['supportedLDAPVersion'], [b'3'])
         keys = set(dse)
         # SASL info may be missing in restricted build environments
-        keys.discard(u'supportedSASLMechanisms')
+        keys.discard('supportedSASLMechanisms')
         self.assertEqual(
             keys,
-            {u'configContext', u'entryDN', u'namingContexts', u'objectClass',
-             u'structuralObjectClass', u'subschemaSubentry',
-             u'supportedControl', u'supportedExtension', u'supportedFeatures',
-             u'supportedLDAPVersion'}
+            {'configContext', 'entryDN', 'namingContexts', 'objectClass',
+             'structuralObjectClass', 'subschemaSubentry',
+             'supportedControl', 'supportedExtension', 'supportedFeatures',
+             'supportedLDAPVersion'}
         )
         self.assertEqual(
             self._ldap_conn.get_naming_contexts(),
@@ -640,7 +640,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         l = self._get_bytes_ldapobject()
         dse = l.read_rootdse_s()
         self.assertIsInstance(dse, dict)
-        self.assertEqual(dse[u'supportedLDAPVersion'], [b'3'])
+        self.assertEqual(dse['supportedLDAPVersion'], [b'3'])
         self.assertEqual(
             l.get_naming_contexts(),
             [self.server.suffix.encode('utf-8')]
