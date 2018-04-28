@@ -183,10 +183,6 @@ class TestParseLDAPUrl(unittest.TestCase):
 
 
 class TestLDAPUrl(unittest.TestCase):
-
-    def assertNone(self, expr, msg=None):
-        self.assertFalse(expr is not None, msg or ("%r" % expr))
-
     def test_combo(self):
         u = MyLDAPUrl(
             "ldap://127.0.0.1:1234/dc=example,dc=com"
@@ -223,15 +219,15 @@ class TestLDAPUrl(unittest.TestCase):
 
     def test_parse_default_attrs(self):
         u = LDAPUrl("ldap://")
-        self.assertNone(u.attrs)
+        self.assertIsNone(u.attrs)
 
     def test_parse_default_scope(self):
         u = LDAPUrl("ldap://")
-        self.assertNone(u.scope)     # RFC4516 s3
+        self.assertIsNone(u.scope)     # RFC4516 s3
 
     def test_parse_default_filter(self):
         u = LDAPUrl("ldap://")
-        self.assertNone(u.filterstr) # RFC4516 s3
+        self.assertIsNone(u.filterstr) # RFC4516 s3
 
     def test_parse_default_extensions(self):
         u = LDAPUrl("ldap://")
@@ -285,9 +281,9 @@ class TestLDAPUrl(unittest.TestCase):
 
     def test_parse_attrs(self):
         u = LDAPUrl("ldap:///?")
-        self.assertEqual(u.attrs, None)
+        self.assertIsNone(u.attrs)
         u = LDAPUrl("ldap:///??")
-        self.assertEqual(u.attrs, None)
+        self.assertIsNone(u.attrs)
         u = LDAPUrl("ldap:///?*?")
         self.assertEqual(u.attrs, ['*'])
         u = LDAPUrl("ldap:///?*,*?")
@@ -303,9 +299,9 @@ class TestLDAPUrl(unittest.TestCase):
 
     def test_parse_scope_default(self):
         u = LDAPUrl("ldap:///??")
-        self.assertNone(u.scope) # on opposite to RFC4516 s3 for referral chasing
+        self.assertIsNone(u.scope) # on opposite to RFC4516 s3 for referral chasing
         u = LDAPUrl("ldap:///???")
-        self.assertNone(u.scope) # on opposite to RFC4516 s3 for referral chasing
+        self.assertIsNone(u.scope) # on opposite to RFC4516 s3 for referral chasing
 
     def test_parse_scope(self):
         u = LDAPUrl("ldap:///??sub")
@@ -355,8 +351,8 @@ class TestLDAPUrl(unittest.TestCase):
 
     def test_parse_extensions(self):
         u = LDAPUrl("ldap:///????")
-        self.assertNone(u.extensions)
-        self.assertNone(u.who)
+        self.assertIsNone(u.extensions)
+        self.assertIsNone(u.who)
         u = LDAPUrl("ldap:///????bindname=cn=root")
         self.assertEqual(len(u.extensions), 1)
         self.assertEqual(u.who, "cn=root")
@@ -380,7 +376,7 @@ class TestLDAPUrl(unittest.TestCase):
     def test_parse_extensions_novalue(self):
         u = LDAPUrl("ldap:///????bindname")
         self.assertEqual(len(u.extensions), 1)
-        self.assertNone(u.who)
+        self.assertIsNone(u.who)
 
     @unittest.expectedFailure
     def test_bad_urls(self):

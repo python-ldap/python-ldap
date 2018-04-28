@@ -99,12 +99,6 @@ class TestLdapCExtension(SlapdTestCase):
             self.assertEqual(type(msgid), type(0))
         return l
 
-    def assertNotNone(self, expr, msg=None):
-        self.assertFalse(expr is None, msg or repr(expr))
-
-    def assertNone(self, expr, msg=None):
-        self.assertFalse(expr is not None, msg or repr(expr))
-
     # Test for the existence of a whole bunch of constants
     # that the C module is supposed to export
     def test_constants(self):
@@ -128,88 +122,88 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(_ldap.RES_SEARCH_REFERENCE, 0x73) # v3
         self.assertEqual(_ldap.RES_EXTENDED, 0x78)         # v3
         #self.assertEqual(_ldap.RES_INTERMEDIATE, 0x79)     # v3
-        self.assertNotNone(_ldap.RES_ANY)
-        self.assertNotNone(_ldap.RES_UNSOLICITED)
+        self.assertIsNotNone(_ldap.RES_ANY)
+        self.assertIsNotNone(_ldap.RES_UNSOLICITED)
 
-        self.assertNotNone(_ldap.AUTH_NONE)
-        self.assertNotNone(_ldap.AUTH_SIMPLE)
+        self.assertIsNotNone(_ldap.AUTH_NONE)
+        self.assertIsNotNone(_ldap.AUTH_SIMPLE)
 
-        self.assertNotNone(_ldap.SCOPE_BASE)
-        self.assertNotNone(_ldap.SCOPE_ONELEVEL)
-        self.assertNotNone(_ldap.SCOPE_SUBTREE)
+        self.assertIsNotNone(_ldap.SCOPE_BASE)
+        self.assertIsNotNone(_ldap.SCOPE_ONELEVEL)
+        self.assertIsNotNone(_ldap.SCOPE_SUBTREE)
 
-        self.assertNotNone(_ldap.MOD_ADD)
-        self.assertNotNone(_ldap.MOD_DELETE)
-        self.assertNotNone(_ldap.MOD_REPLACE)
-        self.assertNotNone(_ldap.MOD_INCREMENT)
-        self.assertNotNone(_ldap.MOD_BVALUES)
+        self.assertIsNotNone(_ldap.MOD_ADD)
+        self.assertIsNotNone(_ldap.MOD_DELETE)
+        self.assertIsNotNone(_ldap.MOD_REPLACE)
+        self.assertIsNotNone(_ldap.MOD_INCREMENT)
+        self.assertIsNotNone(_ldap.MOD_BVALUES)
 
         # for result4()
-        self.assertNotNone(_ldap.MSG_ONE)
-        self.assertNotNone(_ldap.MSG_ALL)
-        self.assertNotNone(_ldap.MSG_RECEIVED)
+        self.assertIsNotNone(_ldap.MSG_ONE)
+        self.assertIsNotNone(_ldap.MSG_ALL)
+        self.assertIsNotNone(_ldap.MSG_RECEIVED)
 
         # for OPT_DEFEF
-        self.assertNotNone(_ldap.DEREF_NEVER)
-        self.assertNotNone(_ldap.DEREF_SEARCHING)
-        self.assertNotNone(_ldap.DEREF_FINDING)
-        self.assertNotNone(_ldap.DEREF_ALWAYS)
+        self.assertIsNotNone(_ldap.DEREF_NEVER)
+        self.assertIsNotNone(_ldap.DEREF_SEARCHING)
+        self.assertIsNotNone(_ldap.DEREF_FINDING)
+        self.assertIsNotNone(_ldap.DEREF_ALWAYS)
 
         # for OPT_SIZELIMIT, OPT_TIMELIMIT
-        self.assertNotNone(_ldap.NO_LIMIT)
+        self.assertIsNotNone(_ldap.NO_LIMIT)
 
         # standard options
-        self.assertNotNone(_ldap.OPT_API_INFO)
-        self.assertNotNone(_ldap.OPT_DEREF)
-        self.assertNotNone(_ldap.OPT_SIZELIMIT)
-        self.assertNotNone(_ldap.OPT_TIMELIMIT)
-        self.assertNotNone(_ldap.OPT_REFERRALS)
-        self.assertNotNone(_ldap.OPT_RESTART)
-        self.assertNotNone(_ldap.OPT_PROTOCOL_VERSION)
-        self.assertNotNone(_ldap.OPT_SERVER_CONTROLS)
-        self.assertNotNone(_ldap.OPT_CLIENT_CONTROLS)
-        self.assertNotNone(_ldap.OPT_API_FEATURE_INFO)
-        self.assertNotNone(_ldap.OPT_HOST_NAME)
-        self.assertNotNone(_ldap.OPT_ERROR_NUMBER)   # = OPT_RESULT_CODE
-        self.assertNotNone(_ldap.OPT_ERROR_STRING)   # = OPT_DIAGNOSITIC_MESSAGE
-        self.assertNotNone(_ldap.OPT_MATCHED_DN)
+        self.assertIsNotNone(_ldap.OPT_API_INFO)
+        self.assertIsNotNone(_ldap.OPT_DEREF)
+        self.assertIsNotNone(_ldap.OPT_SIZELIMIT)
+        self.assertIsNotNone(_ldap.OPT_TIMELIMIT)
+        self.assertIsNotNone(_ldap.OPT_REFERRALS)
+        self.assertIsNotNone(_ldap.OPT_RESTART)
+        self.assertIsNotNone(_ldap.OPT_PROTOCOL_VERSION)
+        self.assertIsNotNone(_ldap.OPT_SERVER_CONTROLS)
+        self.assertIsNotNone(_ldap.OPT_CLIENT_CONTROLS)
+        self.assertIsNotNone(_ldap.OPT_API_FEATURE_INFO)
+        self.assertIsNotNone(_ldap.OPT_HOST_NAME)
+        self.assertIsNotNone(_ldap.OPT_ERROR_NUMBER)   # = OPT_RESULT_CODE
+        self.assertIsNotNone(_ldap.OPT_ERROR_STRING)   # = OPT_DIAGNOSITIC_MESSAGE
+        self.assertIsNotNone(_ldap.OPT_MATCHED_DN)
 
         # OpenLDAP specific
-        self.assertNotNone(_ldap.OPT_DEBUG_LEVEL)
-        self.assertNotNone(_ldap.OPT_TIMEOUT)
-        self.assertNotNone(_ldap.OPT_REFHOPLIMIT)
-        self.assertNotNone(_ldap.OPT_NETWORK_TIMEOUT)
-        self.assertNotNone(_ldap.OPT_URI)
-        #self.assertNotNone(_ldap.OPT_REFERRAL_URLS)
-        #self.assertNotNone(_ldap.OPT_SOCKBUF)
-        #self.assertNotNone(_ldap.OPT_DEFBASE)
-        #self.assertNotNone(_ldap.OPT_CONNECT_ASYNC)
+        self.assertIsNotNone(_ldap.OPT_DEBUG_LEVEL)
+        self.assertIsNotNone(_ldap.OPT_TIMEOUT)
+        self.assertIsNotNone(_ldap.OPT_REFHOPLIMIT)
+        self.assertIsNotNone(_ldap.OPT_NETWORK_TIMEOUT)
+        self.assertIsNotNone(_ldap.OPT_URI)
+        #self.assertIsNotNone(_ldap.OPT_REFERRAL_URLS)
+        #self.assertIsNotNone(_ldap.OPT_SOCKBUF)
+        #self.assertIsNotNone(_ldap.OPT_DEFBASE)
+        #self.assertIsNotNone(_ldap.OPT_CONNECT_ASYNC)
 
         # str2dn()
-        self.assertNotNone(_ldap.DN_FORMAT_LDAP)
-        self.assertNotNone(_ldap.DN_FORMAT_LDAPV3)
-        self.assertNotNone(_ldap.DN_FORMAT_LDAPV2)
-        self.assertNotNone(_ldap.DN_FORMAT_DCE)
-        self.assertNotNone(_ldap.DN_FORMAT_UFN)
-        self.assertNotNone(_ldap.DN_FORMAT_AD_CANONICAL)
-        self.assertNotNone(_ldap.DN_FORMAT_MASK)
-        self.assertNotNone(_ldap.DN_PRETTY)
-        self.assertNotNone(_ldap.DN_SKIP)
-        self.assertNotNone(_ldap.DN_P_NOLEADTRAILSPACES)
-        self.assertNotNone(_ldap.DN_P_NOSPACEAFTERRDN)
-        self.assertNotNone(_ldap.DN_PEDANTIC)
-        self.assertNotNone(_ldap.AVA_NULL)
-        self.assertNotNone(_ldap.AVA_STRING)
-        self.assertNotNone(_ldap.AVA_BINARY)
-        self.assertNotNone(_ldap.AVA_NONPRINTABLE)
+        self.assertIsNotNone(_ldap.DN_FORMAT_LDAP)
+        self.assertIsNotNone(_ldap.DN_FORMAT_LDAPV3)
+        self.assertIsNotNone(_ldap.DN_FORMAT_LDAPV2)
+        self.assertIsNotNone(_ldap.DN_FORMAT_DCE)
+        self.assertIsNotNone(_ldap.DN_FORMAT_UFN)
+        self.assertIsNotNone(_ldap.DN_FORMAT_AD_CANONICAL)
+        self.assertIsNotNone(_ldap.DN_FORMAT_MASK)
+        self.assertIsNotNone(_ldap.DN_PRETTY)
+        self.assertIsNotNone(_ldap.DN_SKIP)
+        self.assertIsNotNone(_ldap.DN_P_NOLEADTRAILSPACES)
+        self.assertIsNotNone(_ldap.DN_P_NOSPACEAFTERRDN)
+        self.assertIsNotNone(_ldap.DN_PEDANTIC)
+        self.assertIsNotNone(_ldap.AVA_NULL)
+        self.assertIsNotNone(_ldap.AVA_STRING)
+        self.assertIsNotNone(_ldap.AVA_BINARY)
+        self.assertIsNotNone(_ldap.AVA_NONPRINTABLE)
 
         # these two constants are pointless? XXX
         self.assertEqual(_ldap.OPT_ON, 1)
         self.assertEqual(_ldap.OPT_OFF, 0)
 
         # these constants useless after ldap_url_parse() was dropped XXX
-        self.assertNotNone(_ldap.URL_ERR_BADSCOPE)
-        self.assertNotNone(_ldap.URL_ERR_MEM)
+        self.assertIsNotNone(_ldap.URL_ERR_BADSCOPE)
+        self.assertIsNotNone(_ldap.URL_ERR_MEM)
 
     def test_test_flags(self):
         # test flag, see slapdtest and tox.ini
@@ -263,7 +257,7 @@ class TestLdapCExtension(SlapdTestCase):
     def test_unbind(self):
         l = self._open_conn()
         m = l.unbind_ext()
-        self.assertNone(m)
+        self.assertIsNone(m)
         # Second attempt to unbind should yield an exception
         try:
             l.unbind_ext()
@@ -301,7 +295,7 @@ class TestLdapCExtension(SlapdTestCase):
         l = self._open_conn()
         m = l.search_ext(self.server.suffix, _ldap.SCOPE_SUBTREE, '(objectClass=*)')
         ret = l.abandon_ext(m)
-        self.assertNone(ret)
+        self.assertIsNone(ret)
         try:
             r = l.result4(m, _ldap.MSG_ALL, 0.3)  # (timeout /could/ be longer)
         except _ldap.TIMEOUT as e:
