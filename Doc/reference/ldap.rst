@@ -704,17 +704,16 @@ and wait for and return with the server's result, or with
 
 .. py:method:: LDAPObject.compare(dn, attr, value) -> int
 
-.. py:method:: LDAPObject.compare_s(dn, attr, value) -> tuple
+.. py:method:: LDAPObject.compare_s(dn, attr, value) -> bool
 
 .. py:method:: LDAPObject.compare_ext(dn, attr, value [, serverctrls=None [, clientctrls=None]]) -> int
 
-.. py:method:: LDAPObject.compare_ext_s(dn, attr, value [, serverctrls=None [, clientctrls=None]]) -> tuple
+.. py:method:: LDAPObject.compare_ext_s(dn, attr, value [, serverctrls=None [, clientctrls=None]]) -> bool
 
-   Perform an LDAP comparison between the attribute named *attr* of
-   entry *dn*, and the value *value*. The synchronous forms
-   returns :py:const:`0` for false, or :py:const:`1` for true.
-   The asynchronous forms returns the message ID of the initiated request,
-   and the result of the asynchronous compare can be obtained using
+   Perform an LDAP comparison between the attribute named *attr* of entry *dn*,
+   and the value *value*. The synchronous forms returns ``True`` or ``False``.
+   The asynchronous forms returns the message ID of the initiated request, and
+   the result of the asynchronous compare can be obtained using
    :py:meth:`result()`.
 
    Note that the asynchronous technique yields the answer

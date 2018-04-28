@@ -1,4 +1,11 @@
 ----------------------------------------------------------------
+UNRELEASED
+
+Lib/
+* LDAPObject.compare_s() and LDAPObject.compare_ext_s() now return a bool
+  instead of 1 or 0.
+
+----------------------------------------------------------------
 Released 3.0.0 2018-03-12
 
 Notable changes since 2.4.45 (please see detailed logs below):

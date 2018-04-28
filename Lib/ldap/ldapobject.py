@@ -495,14 +495,14 @@ class SimpleLDAPObject:
   def compare_ext(self,dn,attr,value,serverctrls=None,clientctrls=None):
     """
     compare_ext(dn, attr, value [,serverctrls=None[,clientctrls=None]]) -> int
-    compare_ext_s(dn, attr, value [,serverctrls=None[,clientctrls=None]]) -> int
+    compare_ext_s(dn, attr, value [,serverctrls=None[,clientctrls=None]]) -> bool
     compare(dn, attr, value) -> int
-    compare_s(dn, attr, value) -> int
-        Perform an LDAP comparison between the attribute named attr of
-        entry dn, and the value value. The synchronous form returns 0
-        for false, or 1 for true.  The asynchronous form returns the
-        message id of the initiates request, and the result of the
-        asynchronous compare can be obtained using result().
+    compare_s(dn, attr, value) -> bool
+        Perform an LDAP comparison between the attribute named attr of entry
+        dn, and the value value. The synchronous form returns True or False.
+        The asynchronous form returns the message id of the initiates request,
+        and the result of the asynchronous compare can be obtained using
+        result().
 
         Note that this latter technique yields the answer by raising
         the exception objects COMPARE_TRUE or COMPARE_FALSE.
@@ -520,9 +520,9 @@ class SimpleLDAPObject:
     try:
         ldap_res = self.result3(msgid,all=1,timeout=self.timeout)
     except ldap.COMPARE_TRUE:
-      return 1
+      return True
     except ldap.COMPARE_FALSE:
-      return 0
+      return False
     raise ldap.PROTOCOL_ERROR(
         'Compare operation returned wrong result: %r' % (ldap_res)
     )
