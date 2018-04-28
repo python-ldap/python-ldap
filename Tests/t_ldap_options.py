@@ -71,9 +71,9 @@ class BaseTestOptions(object):
         old = self.get_option(option)
         try:
             self.set_option(option, None)
-            self.assertEqual(self.get_option(option), None)
+            self.assertIsNone(self.get_option(option))
             self.set_option(option, -1)
-            self.assertEqual(self.get_option(option), None)
+            self.assertIsNone(self.get_option(option))
         finally:
             self.set_option(option, old)
 
@@ -168,16 +168,16 @@ class TestLDAPObjectOptions(BaseTestOptions, SlapdTestCase):
             self.assertEqual(self.get_option(option), 5)
 
             self.conn.network_timeout = -1
-            self.assertEqual(self.conn.network_timeout, None)
-            self.assertEqual(self.get_option(option), None)
+            self.assertIsNone(self.conn.network_timeout)
+            self.assertIsNone(self.get_option(option))
 
             self.conn.network_timeout = 10.5
             self.assertEqual(self.conn.network_timeout, 10.5)
             self.assertEqual(self.get_option(option), 10.5)
 
             self.conn.network_timeout = None
-            self.assertEqual(self.conn.network_timeout, None)
-            self.assertEqual(self.get_option(option), None)
+            self.assertIsNone(self.conn.network_timeout)
+            self.assertIsNone(self.get_option(option))
         finally:
             self.set_option(option, old)
 

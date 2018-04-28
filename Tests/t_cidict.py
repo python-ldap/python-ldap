@@ -30,7 +30,7 @@ class TestCidict(unittest.TestCase):
         cix = ldap.cidict.cidict(data)
         self.assertEqual(cix["ABCDEF"], 123)
         self.assertEqual(cix.get("ABCDEF", None), 123)
-        self.assertEqual(cix.get("not existent", None), None)
+        self.assertIsNone(cix.get("not existent", None))
         cix["xYZ"] = 987
         self.assertEqual(cix["XyZ"], 987)
         self.assertEqual(cix.get("xyz", None), 987)
