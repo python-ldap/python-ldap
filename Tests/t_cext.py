@@ -234,7 +234,7 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.simple_bind("", "")
         self.assertEqual(type(m), type(0))
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
-        self.assertTrue(result, _ldap.RES_BIND)
+        self.assertEqual(result, _ldap.RES_BIND)
         self.assertEqual(msgid, m)
         self.assertEqual(pmsg, [])
         self.assertEqual(ctrls, [])
@@ -629,7 +629,7 @@ class TestLdapCExtension(SlapdTestCase):
         # Anonymous bind
         m = l.simple_bind("", "")
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
-        self.assertTrue(result, _ldap.RES_BIND)
+        self.assertEqual(result, _ldap.RES_BIND)
         # check with Who Am I? extended operation
         r = l.whoami_s()
         self.assertEqual("", r)
