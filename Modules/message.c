@@ -99,7 +99,15 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
 
             /* Find which list to append to */
             if (PyDict_Contains(attrdict, pyattr)) {
+                /* Multiple attribute entries with same name. This code path
+                 * is rarely used and cannot be exhausted with OpenLDAP
+                 * tests. 389-DS sometimes triggeres it, see
+                 * https://github.com/python-ldap/python-ldap/issues/218
+                 */
                 valuelist = PyDict_GetItem(attrdict, pyattr);
+                /* Turn borrowed reference into owned reference */
+                if (valuelist != NULL)
+                    Py_INCREF(valuelist);
             }
             else {
                 valuelist = PyList_New(0);
