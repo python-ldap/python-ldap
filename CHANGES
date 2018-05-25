@@ -1,9 +1,59 @@
 ----------------------------------------------------------------
-UNRELEASED
+Released 3.1.0 2018-05-25
+
+This release brings two minor API changes:
+- Long-deprecated functions `ldap.open()` and `ldap.init()` are removed
+- `LDAPObject.compare_s()` and `compare_ext_s` return bool instead of 0 or 1
+
+All changes since 3.0.0:
 
 Lib/
+* Remove long deprecated functions ldap.open() and ldap.init()
 * LDAPObject.compare_s() and LDAPObject.compare_ext_s() now return a bool
   instead of 1 or 0.
+* Make iteration over cidict yield same values as keys()
+* Fail if pyasn1 is not installed
+* Fix parsing of PPolicyControl ASN.1 structure
+* Use items() when appropriate in dict iteration
+* Add support for tracing LDAP calls. Tracing can now be enabled with
+  the env var PYTHON_LDAP_TRACE_LEVEL and redirected to a file with
+  PYTHON_LDAP_TRACE_FILE.
+  (This is mainly intended for debugging and internal testing; the
+  configuration or output may change in future versions.)
+
+Modules/
+* Fix ref counting bug in LDAPmessage_to_python
+
+Doc/
+* Remove warning about unreleased version
+* Doc: Replace Mac OS X -> macOS
+
+Tests/
+* Add tests and coverage for tracing
+* Disable warnings-as-errors for Python 3.4
+* Fix assertTrue to assertEqual
+* Mark several test values as bytes
+
+Lib/slapdtest/
+* Fix error message for missing commands
+* Make SlapdObject a context manager
+* Disable SASL external when missing SASL support
+* Make SlapdObject.root_dn a property
+* In SlapdObject, build include directives dynamically
+* Move import statements to top level
+
+Code style:
+* Add Makefile rules for automatic formatting of C and Python code
+* Reformat and indent all C files
+* Trim white space throughout the project
+
+Infrastructure:
+* Add py3-trace tox environment to Travis CI config
+* Add new Pytest cache directory to gitignore
+
+General:
+* Update all pypi.python.org URLs to pypi.org
+
 
 ----------------------------------------------------------------
 Released 3.0.0 2018-03-12
