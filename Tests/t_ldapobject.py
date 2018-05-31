@@ -71,6 +71,10 @@ dn: cn=Foo4,ou=Container,%(suffix)s
 objectClass: organizationalRole
 cn: Foo4
 
+dn: cn=Ƒøø5,ou=Container,%(suffix)s
+objectClass: organizationalRole
+cn: Ƒøø5
+
 """
 
 
@@ -657,6 +661,16 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         l = self._ldap_conn
         result = l.compare_s('cn=Foo1,%s' % base, 'cn', 'Foo2')
         self.assertIs(result, False)
+
+    def test_compare_s_unicode(self):
+        base = self.server.suffix
+        l = self._ldap_conn
+        result = l.compare_s(
+            'cn=Ƒøø5,ou=Container,%s' % base,
+            'cn',
+            'Ƒøø5',
+        )
+        self.assertIs(result, True)
 
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):

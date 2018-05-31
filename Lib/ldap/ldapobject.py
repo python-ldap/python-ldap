@@ -513,6 +513,7 @@ class SimpleLDAPObject:
     if PY2:
         dn = self._bytesify_input('dn', dn)
         attr = self._bytesify_input('attr', attr)
+        value = self._bytesify_input('value', value)
     return self._ldap_call(self._l.compare_ext,dn,attr,value,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def compare_ext_s(self,dn,attr,value,serverctrls=None,clientctrls=None):
