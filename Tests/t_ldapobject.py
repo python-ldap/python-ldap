@@ -649,13 +649,13 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
     def test_compare_s_true(self):
         base = self.server.suffix
         l = self._ldap_conn
-        result = l.compare_s('cn=Foo1,%s' % base, 'cn', 'Foo1')
+        result = l.compare_s('cn=Foo1,%s' % base, 'cn', b'Foo1')
         self.assertIs(result, True)
 
     def test_compare_s_false(self):
         base = self.server.suffix
         l = self._ldap_conn
-        result = l.compare_s('cn=Foo1,%s' % base, 'cn', 'Foo2')
+        result = l.compare_s('cn=Foo1,%s' % base, 'cn', b'Foo2')
         self.assertIs(result, False)
 
 
