@@ -93,12 +93,11 @@ to be given as well.
 Porting recommendations
 -----------------------
 
-Since end of life of Python 2 is coming in a few years,
-projects are strongly urged to make their code compatible with Python 3.
-General instructions for this are provided `in Python documentation`_ and in
-the `Conservative porting guide`_.
+Since end of life of Python 2 is coming in a few years, projects are strongly
+urged to make their code compatible with Python 3. General instructions for
+this are provided :ref:`in Python documentation <pyporting-howto>` and in the
+`Conservative porting guide`_.
 
-.. _in Python documentation: https://docs.python.org/3/howto/pyporting.html
 .. _Conservative porting guide: https://portingguide.readthedocs.io/en/latest/
 
 

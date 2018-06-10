@@ -31,7 +31,10 @@ from ldap import __version__
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.intersphinx',
+]
 
 try:
     import sphinxcontrib.spelling
@@ -148,3 +151,5 @@ latex_documents = [('index', 'python-ldap.tex', 'python-ldap Documentation',
 
 # If false, no module index is generated.
 latex_use_modindex = True
+
+intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}

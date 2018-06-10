@@ -26,15 +26,14 @@ Clone the repository::
     $ git clone https://github.com/python-ldap/python-ldap
     $ cd python-ldap
 
-Create a `virtual environment`_ to ensure you in-development python-ldap won't
-affect the rest of your system::
+Create a :mod:`virtual environment <venv>` to ensure you in-development
+python-ldap won't affect the rest of your system::
 
     $ python3 -m venv __venv__
 
 (For Python 2, install `virtualenv`_ and use it instead of ``python3 -m venv``.)
 
 .. _git: https://git-scm.com/
-.. _virtual environment: https://docs.python.org/3/library/venv.html
 .. _virtualenv: https://virtualenv.pypa.io/en/stable/
 
 Activate the virtual environment::
