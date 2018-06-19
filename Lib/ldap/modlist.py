@@ -20,7 +20,7 @@ def addModlist(entry,ignore_attr_types=None):
     # Eliminate empty attr value strings in list
     attrvaluelist = [item for item in value if item is not None]
     if attrvaluelist:
-      modlist.append((attrtype, value))
+      modlist.append((attrtype, attrvaluelist))
   return modlist # addModlist()
 
 
