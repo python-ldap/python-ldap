@@ -121,9 +121,9 @@ Options
    :manpage:`ldap.conf(5)` and :manpage:`ldap_get_option(3)`
 
 
-For use with functions :py:func:set_option() and :py:func:get_option()
-and methods :py:method:LDAPObject.set_option() and :py:method:LDAPObject.get_option() the
-following option identifiers are defined as constants:
+For use with functions :py:func:`set_option` and :py:func:`get_option` and
+methods :py:meth:`LDAPObject.set_option` and :py:meth:`LDAPObject.get_option`
+the following option identifiers are defined as constants:
 
 .. py:data:: OPT_API_FEATURE_INFO
 
