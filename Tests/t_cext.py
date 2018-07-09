@@ -7,6 +7,7 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import unicode_literals
 
+import errno
 import os
 import unittest
 
@@ -731,15 +732,16 @@ class TestLdapCExtension(SlapdTestCase):
         if not self._require_attr(l, 'cancel'):         # FEATURE_CANCEL
             return
 
-    def test_errno107(self):
+    def test_enotconn(self):
         l = _ldap.initialize('ldap://127.0.0.1:42')
         try:
             m = l.simple_bind("", "")
             r = l.result4(m, _ldap.MSG_ALL, self.timeout)
         except _ldap.SERVER_DOWN as ldap_err:
-            errno = ldap_err.args[0]['errno']
-            if errno != 107:
-                self.fail("expected errno=107, got %d" % errno)
+            errno_val = ldap_err.args[0]['errno']
+            if errno_val != errno.ENOTCONN:
+                self.fail("expected errno=%d, got %d"
+                          % (errno.ENOTCONN, errno_val))
         else:
             self.fail("expected SERVER_DOWN, got %r" % r)
 

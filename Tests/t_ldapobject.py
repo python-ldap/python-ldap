@@ -16,6 +16,7 @@ else:
     PY2 = False
     text_type = str
 
+import errno
 import contextlib
 import linecache
 import os
@@ -451,18 +452,20 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             ]
         )
 
-    def test004_errno107(self):
+    def test004_enotconn(self):
         l = self.ldap_object_class('ldap://127.0.0.1:42')
         try:
             m = l.simple_bind_s("", "")
             r = l.result4(m, ldap.MSG_ALL, self.timeout)
         except ldap.SERVER_DOWN as ldap_err:
-            errno = ldap_err.args[0]['errno']
-            if errno != 107:
-                self.fail("expected errno=107, got %d" % errno)
+            errno_val = ldap_err.args[0]['errno']
+            if errno_val != errno.ENOTCONN:
+                self.fail("expected errno=%d, got %d"
+                          % (errno.ENOTCONN, errno_val))
             info = ldap_err.args[0]['info']
-            if info != os.strerror(107):
-                self.fail("expected info=%r, got %d" % (os.strerror(107), info))
+            expected_info = os.strerror(errno.ENOTCONN)
+            if info != expected_info:
+                self.fail("expected info=%r, got %d" % (expected_info, info))
         else:
             self.fail("expected SERVER_DOWN, got %r" % r)
 
