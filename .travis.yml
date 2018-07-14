@@ -39,6 +39,13 @@ matrix:
         - WITH_GCOV=1
       dist: xenial
       sudo: true
+    - python: 3.8-dev
+      env:
+        - TOXENV=py38
+        - CFLAGS_std="-std=c99"
+        - WITH_GCOV=1
+      dist: xenial
+      sudo: true
     - python: 2.7
       env:
         - TOXENV=py2-nosasltls
@@ -54,6 +61,10 @@ matrix:
       env: TOXENV=doc
   allow_failures:
      - env:
+        - TOXENV=py38
+        - CFLAGS_std="-std=c99"
+        - WITH_GCOV=1
+     - env:
         - TOXENV=pypy
 
 env:
@@ -61,7 +72,10 @@ env:
         # -Wno-int-in-bool-context: don't complain about PyMem_MALLOC()
         # -Werror: turn all warnings into fatal errors
         # -Werror=declaration-after-statement: strict ISO C90
-        - CFLAGS="-std=c90 -Wno-int-in-bool-context -Werror -Werror=declaration-after-statement"
+        - CFLAGS_warnings="-Wno-int-in-bool-context -Werror -Werror=declaration-after-statement"
+        # Keep C90 compatibility where possible.
+        # (Python 3.8+ headers use C99 features, so this needs to be overridable.)
+        - CFLAGS_std="-std=c90"
         # pass CFLAGS, CI (for Travis CI) and WITH_GCOV to tox tasks
         - TOX_TESTENV_PASSENV="CFLAGS CI WITH_GCOV"
 
@@ -69,7 +83,7 @@ install:
   - pip install "pip>=7.1.0"
   - pip install tox-travis tox codecov coverage
 
-script: tox
+script: CFLAGS="$CFLAGS_warnings $CFLAGS_std" tox
 
 after_success:
   # gather Python coverage
