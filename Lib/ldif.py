@@ -254,7 +254,8 @@ class LDIFParser:
     ignored_attr_types=None,
     max_entries=0,
     process_url_schemes=None,
-    line_sep='\n'
+    line_sep='\n',
+    strict=True
   ):
     """
     Parameters:
@@ -271,6 +272,8 @@ class LDIFParser:
         is ignored completely.
     line_sep
         String used as line separator
+    strict
+        If set to ``False``, recoverable parse errors will be ignored.
     """
     self._input_file = input_file
     # Detect whether the file is open in text or bytes mode.
@@ -279,6 +282,7 @@ class LDIFParser:
     self._process_url_schemes = list_dict([s.lower() for s in (process_url_schemes or [])])
     self._ignored_attr_types = list_dict([a.lower() for a in (ignored_attr_types or [])])
     self._last_line_sep = line_sep
+    self._strict = strict
     self.version = None
     # Initialize counters
     self.line_counter = 0
@@ -292,6 +296,10 @@ class LDIFParser:
       self._last_line = self._readline()
     except EOFError:
       self._last_line = ''
+
+  def _recoverable_error(self, msg):
+    if self._strict:
+      raise ValueError(msg)
 
   def handle(self,dn,entry):
     """
@@ -422,12 +430,12 @@ class LDIFParser:
           (not self._max_entries or self.records_read<self._max_entries):
       # Consume first line which must start with "dn: "
       if k!='dn':
-        raise ValueError('Line %d: First line of record does not start with "dn:": %s' % (self.line_counter,repr(k)))
+        self._recoverable_error('Line %d: First line of record does not start with "dn:": %s' % (self.line_counter,repr(k)))
       # Value of a 'dn' field *has* to be valid UTF-8
       # k is text, v is bytes.
       v = v.decode('utf-8')
       if not is_dn(v):
-        raise ValueError('Line %d: Not a valid string-representation for dn: %s.' % (self.line_counter,repr(v)))
+        self._recoverable_error('Line %d: Not a valid string-representation for dn: %s.' % (self.line_counter,repr(v)))
       dn = v
       entry = {}
       # Consume second line of record
@@ -483,12 +491,12 @@ class LDIFParser:
           (not self._max_entries or self.records_read<self._max_entries):
       # Consume first line which must start with "dn: "
       if k!='dn':
-        raise ValueError('Line %d: First line of record does not start with "dn:": %s' % (self.line_counter,repr(k)))
+        self._recoverable_error('Line %d: First line of record does not start with "dn:": %s' % (self.line_counter,repr(k)))
       # Value of a 'dn' field *has* to be valid UTF-8
       # k is text, v is bytes.
       v = v.decode('utf-8')
       if not is_dn(v):
-        raise ValueError('Line %d: Not a valid string-representation for dn: %s.' % (self.line_counter,repr(v)))
+        self._recoverable_error('Line %d: Not a valid string-representation for dn: %s.' % (self.line_counter,repr(v)))
       dn = v
       # Consume second line of record
       k,v = next_key_and_value()
@@ -512,7 +520,7 @@ class LDIFParser:
         # v is still bytes, spec says it should be valid utf-8; decode it.
         v = v.decode('utf-8')
         if not v in valid_changetype_dict:
-          raise ValueError('Invalid changetype: %s' % repr(v))
+          self._recoverable_error('Invalid changetype: %s' % repr(v))
         changetype = v
         k,v = next_key_and_value()
 
@@ -528,7 +536,7 @@ class LDIFParser:
             try:
               modop = MOD_OP_INTEGER[k]
             except KeyError:
-              raise ValueError('Line %d: Invalid mod-op string: %s' % (self.line_counter,repr(k)))
+              self._recoverable_error('Line %d: Invalid mod-op string: %s' % (self.line_counter,repr(k)))
             # we now have the attribute name to be modified
             # v is still bytes, spec says it should be valid utf-8; decode it.
             v = v.decode('utf-8')
@@ -586,9 +594,10 @@ class LDIFRecordList(LDIFParser):
   def __init__(
     self,
     input_file,
-    ignored_attr_types=None,max_entries=0,process_url_schemes=None
+    ignored_attr_types=None,max_entries=0,process_url_schemes=None,
+    strict=True
   ):
-    LDIFParser.__init__(self,input_file,ignored_attr_types,max_entries,process_url_schemes)
+    LDIFParser.__init__(self,input_file,ignored_attr_types,max_entries,process_url_schemes,strict=strict)
 
     #: List storing parsed records.
     self.all_records = []
@@ -619,12 +628,13 @@ class LDIFCopy(LDIFParser):
     self,
     input_file,output_file,
     ignored_attr_types=None,max_entries=0,process_url_schemes=None,
-    base64_attrs=None,cols=76,line_sep='\n'
+    base64_attrs=None,cols=76,line_sep='\n',
+    strict=True
   ):
     """
     See LDIFParser.__init__() and LDIFWriter.__init__()
     """
-    LDIFParser.__init__(self,input_file,ignored_attr_types,max_entries,process_url_schemes)
+    LDIFParser.__init__(self,input_file,ignored_attr_types,max_entries,process_url_schemes,strict=strict)
     self._output_ldif = LDIFWriter(output_file,base64_attrs,cols,line_sep)
 
   def handle(self,dn,entry):
