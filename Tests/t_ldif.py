@@ -32,6 +32,7 @@ class TestLDIFParser(unittest.TestCase):
             ldif_string,
             ignored_attr_types=None,
             max_entries=0,
+            strict=True,
         ):
         """
         Parse LDIF data in `ldif_string' into list of records
@@ -41,6 +42,7 @@ class TestLDIFParser(unittest.TestCase):
             ldif_file,
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
+            strict=strict,
         )
         parser_method = getattr(
             ldif_parser,
@@ -71,7 +73,8 @@ class TestLDIFParser(unittest.TestCase):
             ldif_string,
             records,
             ignored_attr_types=None,
-            max_entries=0
+            max_entries=0,
+            strict=True
     ):
         """
         Checks whether entry records in `ldif_string' gets correctly parsed
@@ -82,12 +85,14 @@ class TestLDIFParser(unittest.TestCase):
             ldif_string,
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
+            strict=strict,
         )
         generated_ldif = self._unparse_records(records)
         parsed_records2 = self._parse_records(
             generated_ldif,
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
+            strict=strict,
         )
         self.assertEqual(records, parsed_records)
         self.assertEqual(records, parsed_records2)
@@ -528,6 +533,29 @@ class TestEntryRecords(TestLDIFParser):
                     {'uid': [b'two']}
                 ),
             ],
+        )
+
+    def test_invalid_dn(self):
+        with self.assertRaises(ValueError):
+            self.check_records(
+                """
+                dn: some dn
+                mail: alicealison@example.com
+                """,
+                [],
+                strict=True,
+            )
+
+    def test_invalid_dn_not_strict(self):
+        self.check_records(
+            """
+            dn: some dn
+            mail: alicealison@example.com
+            """,
+            [
+                ('some dn', {'mail': [b'alicealison@example.com']})
+            ],
+            strict=False,
         )
 
 
