@@ -316,6 +316,7 @@ The module defines the following exceptions:
    is set to a truncated form of the name provided or alias dereferenced
    for the lowest entry (object or alias) that was matched.
 
+   The :py:const:`ctrls` field can be included to the dictionary, which is a list of response controls.
 
 .. py:exception:: ADMINLIMIT_EXCEEDED
 

@@ -1162,20 +1162,6 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
         LDAP_END_ALLOW_THREADS(self);
     }
 
-    if (result != LDAP_SUCCESS) {       /* result error */
-        char *e, err[1024];
-
-        if (result == LDAP_REFERRAL && refs && refs[0]) {
-            snprintf(err, sizeof(err), "Referral:\n%s", refs[0]);
-            e = err;
-        }
-        else
-            e = "ldap_parse_result";
-        ldap_msgfree(msg);
-        Py_XDECREF(valuestr);
-        return LDAPerror(self->ldap, e);
-    }
-
     if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
         int err = LDAP_NO_MEMORY;
 
@@ -1187,6 +1173,24 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
         return LDAPerror(self->ldap, "LDAPControls_to_List");
     }
     ldap_controls_free(serverctrls);
+
+    /* Always call Py_XDECREF(pyctrls) before returning after here */
+
+    if (result != LDAP_SUCCESS) {       /* result error */
+        char *e, err[1024];
+
+        if (result == LDAP_REFERRAL && refs && refs[0]) {
+            snprintf(err, sizeof(err), "Referral:\n%s", refs[0]);
+            e = err;
+        }
+        else
+            e = "ldap_parse_result";
+        ldap_msgfree(msg);
+        Py_XDECREF(valuestr);
+        retval = LDAPraise_exception(self->ldap, e, pyctrls);
+        Py_XDECREF(pyctrls);
+        return retval;
+    }
 
     pmsg =
         LDAPmessage_to_python(self->ldap, msg, add_ctrls, add_intermediates);

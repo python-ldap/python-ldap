@@ -48,7 +48,7 @@ LDAPerr(int errnum)
 
 /* Convert an LDAP error into an informative python exception */
 PyObject *
-LDAPerror(LDAP *l, char *msg)
+LDAPraise_exception(LDAP *l, char *msg, PyObject *pyctrls)
 {
     if (l == NULL) {
         PyErr_SetFromErrno(LDAPexception_class);
@@ -104,6 +104,11 @@ LDAPerror(LDAP *l, char *msg)
             ldap_memfree(matched);
         }
 
+        if (pyctrls != NULL) {
+            PyDict_SetItemString(info, "ctrls", pyctrls);
+            /* Py_XDECREF(pyctrls) must be called on caller side */
+        }
+
         if (errnum == LDAP_REFERRAL) {
             str = PyUnicode_FromString(msg);
             if (str)
@@ -124,6 +129,17 @@ LDAPerror(LDAP *l, char *msg)
         return NULL;
     }
 }
+
+
+/* Convert an LDAP error into an informative python exception.
+   This is the convenient function for the case where the exception
+   doesn't have to include any response controls. */
+PyObject *
+LDAPerror(LDAP *l, char *msg)
+{
+    return LDAPraise_exception(l, msg, NULL);
+}
+
 
 /* initialise the module constants */
 

@@ -28,9 +28,10 @@ import pickle
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
+import ldap.controls
+import ldap.controls.ppolicy
 from ldap.ldapobject import SimpleLDAPObject, ReconnectLDAPObject
-
-from slapdtest import SlapdTestCase
+from slapdtest import SlapdTestCase, PPolicyEnabledSlapdTestCase
 from slapdtest import requires_ldapi, requires_sasl, requires_tls
 
 
@@ -73,6 +74,72 @@ objectClass: organizationalRole
 cn: Foo4
 
 """
+
+
+class Test02_ResponseControl(PPolicyEnabledSlapdTestCase):
+    """
+    tests abount response controls sent by the server
+    """
+
+    ldap_object_class = SimpleLDAPObject
+
+    @classmethod
+    def setUpClass(cls):
+        super(Test02_ResponseControl, cls).setUpClass()
+        # insert some Foo* objects via ldapadd
+        cls.server.ldapadd(
+            LDIF_TEMPLATE % {
+                'suffix': cls.server.suffix,
+                'rootdn': cls.server.root_dn,
+                'rootcn': cls.server.root_cn,
+                'rootpw': cls.server.root_pw,
+                'dc': cls.server.suffix.split(',')[0][3:],
+            }
+        )
+
+        # Very strict pwdMaxFailure in order to easily test the cases where
+        # bind failure with response controls is needed
+        cls.server.ldapadd(
+            '''dn: {dn}
+objectClass: organizationalRole
+objectClass: pwdPolicy
+cn: default-ppolicy
+pwdAttribute: userPassword
+pwdLockout: TRUE
+pwdMaxFailure: 1
+pwdLockoutDuration: 60
+pwdFailureCountInterval: 3600'''.format(dn=cls.server.default_ppolicy_dn)
+            )
+
+    def test_response_controls_are_attached_to_exceptions(self):
+        base = self.server.suffix
+        cn = "test_response_controls_are_attached_to_exceptions"
+        user_dn = "cn={},{}".format(cn, base)
+        password = "user5_pw"
+
+        self.server.ldapadd(
+            '''dn: {dn}
+objectClass: applicationProcess
+objectClass: simpleSecurityObject
+cn: {cn}
+userPassword: {password}'''.format(cn=cn, dn=user_dn, password=password)
+        )
+
+        ldap_conn = self._make_ldap_object(bytes_mode=False)
+
+        # Firstly cause a bind failure to lock out the account
+        with self.assertRaises(ldap.INVALID_CREDENTIALS):
+            wrong_password = 'wrong' + password
+            ldap_conn.simple_bind_s(user_dn, wrong_password)
+
+        with self.assertRaises(ldap.INVALID_CREDENTIALS) as cm:
+            ldap_conn.simple_bind_s(
+                user_dn, password,
+                serverctrls=[ldap.controls.ppolicy.PasswordPolicyControl()])
+
+        controls = cm.exception.args[0]['ctrls']
+        pp = ldap.controls.DecodeControlTuples(controls)[0]
+        self.assertEqual(pp.error, 1)  # error == 1 means AccountLockout
 
 
 class Test00_SimpleLDAPObject(SlapdTestCase):

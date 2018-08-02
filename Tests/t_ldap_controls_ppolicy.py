@@ -9,6 +9,7 @@ from ldap.controls import ppolicy
 
 PP_GRACEAUTH = b'0\x84\x00\x00\x00\t\xa0\x84\x00\x00\x00\x03\x81\x01\x02'
 PP_TIMEBEFORE = b'0\x84\x00\x00\x00\t\xa0\x84\x00\x00\x00\x03\x80\x012'
+PP_ACCOUNT_LOCKOUT = b'0\x03\x81\x01\x01'
 
 
 class TestControlsPPolicy(unittest.TestCase):
@@ -27,6 +28,11 @@ class TestControlsPPolicy(unittest.TestCase):
         pp = ppolicy.PasswordPolicyControl()
         pp.decodeControlValue(PP_TIMEBEFORE)
         self.assertPPolicy(pp, timeBeforeExpiration=50)
+
+    def test_ppolicy_account_lockout(self):
+        pp = ppolicy.PasswordPolicyControl()
+        pp.decodeControlValue(PP_ACCOUNT_LOCKOUT)
+        self.assertPPolicy(pp, error=1)
 
 
 if __name__ == '__main__':

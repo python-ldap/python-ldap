@@ -12,6 +12,7 @@ extern PyObject *LDAPconstant(int);
 
 extern PyObject *LDAPexception_class;
 extern PyObject *LDAPerror(LDAP *, char *msg);
+extern PyObject *LDAPraise_exception(LDAP *, char *msg, PyObject *pyctrls);
 PyObject *LDAPerr(int errnum);
 
 #ifndef LDAP_CONTROL_PAGE_OID

@@ -27,7 +27,9 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_TEMPLATE = r"""
+
 serverID %(serverid)s
+%(moduleload_directives)s
 moduleload back_%(database)s
 %(include_directives)s
 loglevel %(loglevel)s
@@ -42,6 +44,8 @@ directory "%(directory)s"
 suffix "%(suffix)s"
 rootdn "%(rootdn)s"
 rootpw "%(rootpw)s"
+
+%(overlay_configurations)s
 
 TLSCACertificateFile "%(cafile)s"
 TLSCertificateFile "%(servercert)s"
@@ -187,6 +191,9 @@ class SlapdObject(object):
         'core.schema',
     )
 
+    modules = ()
+    overlays = ()
+
     TMPDIR = os.environ.get('TMP', os.getcwd())
     if 'SCHEMA' in os.environ:
         SCHEMADIR = os.environ['SCHEMA']
@@ -331,9 +338,22 @@ class SlapdObject(object):
             )
             for schema_file in self.openldap_schema_files
         )
+
+        moduleload_directives = '\n'.join(
+            "moduleload {module}".format(module=module)
+            for module in self.modules
+        )
+
+        overlay_configurations = '\n'.join(
+            "overlay {name}\n{configuration}".format(**overlay)
+            for overlay in self.overlays
+        )
+
         config_dict = {
             'serverid': hex(self.server_id),
             'schema_prefix':self._schema_prefix,
+            'moduleload_directives': moduleload_directives,
+            'overlay_configurations': overlay_configurations,
             'include_directives': include_directives,
             'loglevel': self.slapd_loglevel,
             'database': self.database,
@@ -582,10 +602,17 @@ class SlapdTestCase(unittest.TestCase):
         """
         return a LDAPObject instance after simple bind
         """
+        ldap_conn = self._make_ldap_object(**kwargs)
+        ldap_conn.simple_bind_s(who or self.server.root_dn, cred or self.server.root_pw)
+        return ldap_conn
+
+    def _make_ldap_object(self, **kwargs):
+        """
+        return an unbound LDAPObject instance with common ldap options.
+        """
         ldap_conn = self.ldap_object_class(self.server.ldap_uri, **kwargs)
         ldap_conn.protocol_version = 3
-        #ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
-        ldap_conn.simple_bind_s(who or self.server.root_dn, cred or self.server.root_pw)
+        # ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
         return ldap_conn
 
     @classmethod
@@ -596,3 +623,43 @@ class SlapdTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.server.stop()
+
+
+class PPolicyEnabledSlapdObject(SlapdObject):
+    """
+    A subclass of :py:class:`SlapdObject` with password policy enabled.
+    Note that this class has no actual password policy configuration entries.
+    It is the job of the users of this class to define
+    the default password policies on their own.
+    The dn of the default is :attr:`.default_ppolicy_dn` of this class.
+    """
+
+    openldap_schema_files = (
+        'core.schema', 'ppolicy.schema'
+    )
+    modules = (
+        'ppolicy',
+    )
+
+    default_ppolicy_dn = "cn=default-ppolicy,%(suffix)s" % {
+        'suffix': SlapdObject.suffix
+    }
+
+    overlays = (
+        {
+            'name': 'ppolicy',
+            'configuration': "\n".join([
+                'ppolicy_default "{}"'.format(default_ppolicy_dn),
+                # let slapd tell the clients that they are locked out
+                'ppolicy_use_lockout'])
+        },
+    )
+
+
+class PPolicyEnabledSlapdTestCase(SlapdTestCase):
+    """
+    A subclass of :py:class:`SlapdTestCase`, which uses
+    :py:class:`PPolicyEnabledSlapdObject` as the slapd controller.
+    """
+
+    server_class = PPolicyEnabledSlapdObject
