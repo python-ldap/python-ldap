@@ -9,7 +9,7 @@ from ldap import __version__
 import ldap
 
 
-def addModlist(entry,ignore_attr_types=None):
+def addModlist(entry, ignore_attr_types=None):
   """Build modify list for call of method LDAPObject.add()"""
   ignore_attr_types = {v.lower() for v in ignore_attr_types or []}
   modlist = []
@@ -17,11 +17,14 @@ def addModlist(entry,ignore_attr_types=None):
     if attrtype.lower() in ignore_attr_types:
       # This attribute type is ignored
       continue
-    # Eliminate empty attr value strings in list
-    attrvaluelist = [item for item in value if item is not None]
-    if attrvaluelist:
+    if isinstance(value, bytes):
       modlist.append((attrtype, value))
-  return modlist # addModlist()
+    else:
+      # Eliminate empty attr value strings in list
+      attrvaluelist = [item for item in value if item is not None]
+      if attrvaluelist:
+        modlist.append((attrtype, attrvaluelist))
+  return modlist  # addModlist()
 
 
 def modifyModlist(

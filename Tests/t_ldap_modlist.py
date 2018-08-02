@@ -35,6 +35,22 @@ class TestModlist(unittest.TestCase):
                 ('dummy3',[b'']),
             ]
         ),
+        (
+            {
+                'cn': [None, b'Michael Stroeder']
+            },
+            [
+                ('cn', [b'Michael Stroeder'])
+            ]
+        ),
+        (
+            {
+                'cn': b'Michael Stroeder'
+            },
+            [
+                ('cn', b'Michael Stroeder')
+            ]
+        )
     ]
 
     def test_addModlist(self):
