@@ -42,6 +42,14 @@ class TestModlist(unittest.TestCase):
             [
                 ('cn', [b'Michael Stroeder'])
             ]
+        ),
+        (
+            {
+                'cn': b'Michael Stroeder'
+            },
+            [
+                ('cn', b'Michael Stroeder')
+            ]
         )
     ]
 
