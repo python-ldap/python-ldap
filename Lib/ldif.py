@@ -150,7 +150,7 @@ class LDIFWriter:
     entry
         dictionary holding an entry
     """
-    for attr_type, values in sorted(entry.items()):
+    for attr_type, values in entry.items():
       for attr_value in values:
         self._unparseAttrTypeandValue(attr_type,attr_value)
 
