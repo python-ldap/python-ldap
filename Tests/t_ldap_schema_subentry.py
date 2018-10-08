@@ -61,7 +61,7 @@ class TestSubschemaUrlfetch(unittest.TestCase):
             str(obj),
             "( 2.5.6.9 NAME 'groupOfNames' SUP top STRUCTURAL MUST cn "
             "MAY ( member $ businessCategory $ seeAlso $ owner $ ou $ o "
-            "$ description ) )"
+            "$ description ) X-ORIGIN 'RFC 4519' )"
         )
 
 

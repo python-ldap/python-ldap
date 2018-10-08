@@ -137,7 +137,8 @@ class ObjectClass(SchemaElement):
     'AUXILIARY':None,
     'ABSTRACT':None,
     'MUST':(()),
-    'MAY':()
+    'MAY':(),
+    'X-ORIGIN':(None,)
   }
 
   def _set_attrs(self,l,d):
@@ -146,6 +147,7 @@ class ObjectClass(SchemaElement):
     self.desc = d['DESC'][0]
     self.must = d['MUST']
     self.may = d['MAY']
+    self.x_origin = d['X-ORIGIN'][0]
     # Default is STRUCTURAL, see RFC2552 or draft-ietf-ldapbis-syntaxes
     self.kind = 0
     if d['ABSTRACT']!=None:
@@ -168,6 +170,7 @@ class ObjectClass(SchemaElement):
     result.append({0:' STRUCTURAL',1:' ABSTRACT',2:' AUXILIARY'}[self.kind])
     result.append(self.key_list('MUST',self.must,sep=' $ '))
     result.append(self.key_list('MAY',self.may,sep=' $ '))
+    result.append(self.key_attr('X-ORIGIN',self.x_origin,quoted=1))
     return '( %s )' % ''.join(result)
 
 
