@@ -15,7 +15,7 @@ import ldap
 import ldif
 from ldap.ldapobject import SimpleLDAPObject
 import ldap.schema
-from ldap.schema.models import ObjectClass
+from ldap.schema.models import ObjectClass, AttributeType
 from slapdtest import SlapdTestCase, requires_ldapi
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -63,6 +63,22 @@ class TestSubschemaUrlfetch(unittest.TestCase):
             "MAY ( member $ businessCategory $ seeAlso $ owner $ ou $ o "
             "$ description ) X-ORIGIN 'RFC 4519' )"
         )
+
+
+class TestXOrigin(unittest.TestCase):
+    def get_attribute_type(self, oid):
+        openldap_uri = 'file://{}'.format(TEST_SUBSCHEMA_FILES[1])
+        dn, schema = ldap.schema.urlfetch(openldap_uri)
+        return schema.get_obj(AttributeType, oid)
+
+    def test_origin_none(self):
+        self.assertEqual(
+            self.get_attribute_type('2.5.4.0').x_origin, None)
+
+    def test_origin_string(self):
+        self.assertEqual(
+            self.get_attribute_type('1.3.6.1.4.1.3401.8.2.8').x_origin,
+            'Pretty Good Privacy (PGP)')
 
 
 class TestSubschemaUrlfetchSlapd(SlapdTestCase):
