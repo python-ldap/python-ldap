@@ -76,7 +76,9 @@ class NO_UNIQUE_ENTRY(ldap.NO_SUCH_OBJECT):
 
 class SimpleLDAPObject:
   """
-  Drop-in wrapper class around _ldap.LDAPObject
+    This basic class wraps all methods of the underlying C API object.
+
+    The arguments are same as for the :func:`~ldap.initialize()` function.
   """
 
   CLASSATTR_OPTION_MAPPING = {
@@ -1057,15 +1059,20 @@ class SimpleLDAPObject:
 
 class ReconnectLDAPObject(SimpleLDAPObject):
   """
-  In case of server failure (ldap.SERVER_DOWN) the implementations
-  of all synchronous operation methods (search_s() etc.) are doing
-  an automatic reconnect and rebind and will retry the very same
-  operation.
+    :py:class:`SimpleLDAPObject` subclass whose synchronous request methods
+    automatically reconnect and re-try in case of server failure
+    (:exc:`ldap.SERVER_DOWN`).
 
-  This is very handy for broken LDAP server implementations
-  (e.g. in Lotus Domino) which drop connections very often making
-  it impossible to have a long-lasting control flow in the
-  application.
+    The first arguments are same as for the :py:func:`~ldap.initialize()`
+    function.
+    For automatic reconnects it has additional arguments:
+
+    * retry_max: specifies the number of reconnect attempts before
+      re-raising the :py:exc:`ldap.SERVER_DOWN` exception.
+
+    * retry_delay: specifies the time in seconds between reconnect attempts.
+
+    This class also implements the pickle protocol.
   """
 
   __transient_attrs__ = {
