@@ -63,6 +63,8 @@ This module defines the following functions:
    :py:const:`2` for logging the method calls with arguments and the complete results and
    :py:const:`9` for also logging the traceback of method calls.
 
+   Additional keyword arguments are passed to :class:`LDAPObject`.
+
    .. seealso::
 
       :rfc:`4516` - Lightweight Directory Access Protocol (LDAP): Uniform Resource Locator

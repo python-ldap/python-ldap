@@ -65,7 +65,10 @@ def _ldap_function_call(lock,func,*args,**kwargs):
   return result
 
 
-def initialize(uri,trace_level=0,trace_file=sys.stdout,trace_stack_limit=None, bytes_mode=None):
+def initialize(
+    uri, trace_level=0, trace_file=sys.stdout, trace_stack_limit=None,
+    bytes_mode=None, **kwargs
+):
   """
   Return LDAPObject instance by opening LDAP connection to
   LDAP host specified by LDAP URL
@@ -81,8 +84,12 @@ def initialize(uri,trace_level=0,trace_file=sys.stdout,trace_stack_limit=None, b
         Default is to use stdout.
   bytes_mode
         Whether to enable :ref:`bytes_mode` for backwards compatibility under Py2.
+
+  Additional keyword arguments (such as ``bytes_strictness``) are
+  passed to ``LDAPObject``.
   """
-  return LDAPObject(uri,trace_level,trace_file,trace_stack_limit,bytes_mode)
+  return LDAPObject(
+      uri, trace_level, trace_file, trace_stack_limit, bytes_mode, **kwargs)
 
 
 def get_option(option):
