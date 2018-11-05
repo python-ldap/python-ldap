@@ -126,6 +126,9 @@ class ObjectClass(SchemaElement):
   sup
     This list of strings contains NAMEs or OIDs of object classes
     this object class is derived from
+  x-origin
+    This string contains the X-ORIGIN text which is typically used to indicate
+    the source of the associated schema element
   """
   schema_attribute = u'objectClasses'
   token_defaults = {
@@ -227,6 +230,9 @@ class AttributeType(SchemaElement):
   sup
     This list of strings contains NAMEs or OIDs of attribute types
     this attribute type is derived from
+  x-origin
+    This string contains the X-ORIGIN text which is typically used to indicate
+    the source of the associated schema element
   """
   schema_attribute = u'attributeTypes'
   token_defaults = {
