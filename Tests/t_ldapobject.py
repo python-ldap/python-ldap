@@ -160,9 +160,12 @@ userPassword: {password}'''.format(cn=cn, dn=user_dn, password=password)
         ldap_conn = self.ldap_object_class(self.server.ldap_uri)
 
         # Firstly cause a bind failure to lock out the account
-        with self.assertRaises(ldap.INVALID_CREDENTIALS):
+        with self.assertRaises(ldap.INVALID_CREDENTIALS) as cm:
             wrong_password = 'wrong' + password
             ldap_conn.simple_bind_s(user_dn, wrong_password)
+
+        empty_controls = cm.exception.args[0]['ctrls']
+        self.assertEqual(len(empty_controls), 0)
 
         with self.assertRaises(ldap.INVALID_CREDENTIALS) as cm:
             ldap_conn.simple_bind_s(
