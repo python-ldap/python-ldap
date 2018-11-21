@@ -9,7 +9,7 @@ __version__ = '3.1.0'
 
 from slapdtest._slapdtest import (
     SlapdObject, SlapdTestCase,
-    PPolicyEnabledSlapdObject, PPolicyEnabledSlapdTestCase,
+    PPolicyEnabledSlapdObject,
     SysLogHandler)
 from slapdtest._slapdtest import requires_ldapi, requires_sasl, requires_tls
 from slapdtest._slapdtest import skip_unless_ci

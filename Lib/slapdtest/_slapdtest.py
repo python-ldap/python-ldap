@@ -654,12 +654,3 @@ class PPolicyEnabledSlapdObject(SlapdObject):
                 'ppolicy_use_lockout'])
         },
     )
-
-
-class PPolicyEnabledSlapdTestCase(SlapdTestCase):
-    """
-    A subclass of :py:class:`SlapdTestCase`, which uses
-    :py:class:`PPolicyEnabledSlapdObject` as the slapd controller.
-    """
-
-    server_class = PPolicyEnabledSlapdObject

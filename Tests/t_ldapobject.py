@@ -31,7 +31,7 @@ import ldap
 import ldap.controls
 import ldap.controls.ppolicy
 from ldap.ldapobject import SimpleLDAPObject, ReconnectLDAPObject
-from slapdtest import SlapdTestCase, PPolicyEnabledSlapdTestCase
+from slapdtest import SlapdTestCase, PPolicyEnabledSlapdObject
 from slapdtest import requires_ldapi, requires_sasl, requires_tls
 
 
@@ -76,12 +76,13 @@ cn: Foo4
 """
 
 
-class Test02_ResponseControl(PPolicyEnabledSlapdTestCase):
+class Test02_ResponseControl(SlapdTestCase):
     """
     tests abount response controls sent by the server
     """
 
     ldap_object_class = SimpleLDAPObject
+    server_class = PPolicyEnabledSlapdObject
 
     @classmethod
     def setUpClass(cls):
