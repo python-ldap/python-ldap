@@ -106,7 +106,6 @@ LDAPraise_exception(LDAP *l, char *msg, PyObject *pyctrls)
 
         if (pyctrls != NULL) {
             PyDict_SetItemString(info, "ctrls", pyctrls);
-            /* Py_XDECREF(pyctrls) must be called on caller side */
         }
 
         if (errnum == LDAP_REFERRAL) {
