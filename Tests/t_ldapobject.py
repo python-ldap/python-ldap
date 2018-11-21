@@ -170,8 +170,11 @@ userPassword: {password}'''.format(cn=cn, dn=user_dn, password=password)
                 serverctrls=[ldap.controls.ppolicy.PasswordPolicyControl()])
 
         controls = cm.exception.args[0]['ctrls']
-        pp = ldap.controls.DecodeControlTuples(controls)[0]
-        self.assertEqual(pp.error, 1)  # error == 1 means AccountLockout
+        decoded_controls = ldap.controls.DecodeControlTuples(controls)
+        self.assertEqual(len(decoded_controls), 1)
+        pp = decoded_controls[0]
+        expected_error = ldap.controls.ppolicy.PasswordPolicyError('accountLocked')
+        self.assertEqual(pp.error, int(expected_error))
 
 
 class Test00_SimpleLDAPObject(SlapdTestCase):
