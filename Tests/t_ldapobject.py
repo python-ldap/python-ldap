@@ -157,7 +157,7 @@ cn: {cn}
 userPassword: {password}'''.format(cn=cn, dn=user_dn, password=password)
         )
 
-        ldap_conn = self._make_ldap_object(bytes_mode=False)
+        ldap_conn = self.ldap_object_class(self.server.ldap_uri)
 
         # Firstly cause a bind failure to lock out the account
         with self.assertRaises(ldap.INVALID_CREDENTIALS):

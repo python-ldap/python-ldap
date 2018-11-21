@@ -612,17 +612,10 @@ class SlapdTestCase(unittest.TestCase):
         """
         return a LDAPObject instance after simple bind
         """
-        ldap_conn = self._make_ldap_object(**kwargs)
-        ldap_conn.simple_bind_s(who or self.server.root_dn, cred or self.server.root_pw)
-        return ldap_conn
-
-    def _make_ldap_object(self, **kwargs):
-        """
-        return an unbound LDAPObject instance with common ldap options.
-        """
         ldap_conn = self.ldap_object_class(self.server.ldap_uri, **kwargs)
         ldap_conn.protocol_version = 3
-        # ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
+        #ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
+        ldap_conn.simple_bind_s(who or self.server.root_dn, cred or self.server.root_pw)
         return ldap_conn
 
     @classmethod
