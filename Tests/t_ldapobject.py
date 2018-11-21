@@ -31,7 +31,7 @@ import ldap
 import ldap.controls
 import ldap.controls.ppolicy
 from ldap.ldapobject import SimpleLDAPObject, ReconnectLDAPObject
-from slapdtest import SlapdTestCase, PPolicyEnabledSlapdObject
+from slapdtest import SlapdTestCase, SlapdObject
 from slapdtest import requires_ldapi, requires_sasl, requires_tls
 
 
@@ -74,6 +74,37 @@ objectClass: organizationalRole
 cn: Foo4
 
 """
+
+
+class PPolicyEnabledSlapdObject(SlapdObject):
+    """
+    A subclass of :py:class:`SlapdObject` with password policy enabled.
+    Note that this class has no actual password policy configuration entries.
+    It is the job of the users of this class to define
+    the default password policies on their own.
+    The dn of the default is :attr:`.default_ppolicy_dn` of this class.
+    """
+
+    openldap_schema_files = (
+        'core.schema', 'ppolicy.schema'
+    )
+    modules = (
+        'ppolicy',
+    )
+
+    default_ppolicy_dn = "cn=default-ppolicy,%(suffix)s" % {
+        'suffix': SlapdObject.suffix
+    }
+
+    overlays = (
+        {
+            'name': 'ppolicy',
+            'configuration': "\n".join([
+                'ppolicy_default "{}"'.format(default_ppolicy_dn),
+                # let slapd tell the clients that they are locked out
+                'ppolicy_use_lockout'])
+        },
+    )
 
 
 class Test02_ResponseControl(SlapdTestCase):
