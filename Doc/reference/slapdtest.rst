@@ -27,8 +27,3 @@ Classes
 .. autoclass:: slapdtest.SlapdTestCase
    :members:
 
-.. autoclass:: slapdtest.PPolicyEnabledSlapdObject
-   :members:
-
-.. autoclass:: slapdtest.PPolicyEnabledSlapdTestCase
-   :members:
