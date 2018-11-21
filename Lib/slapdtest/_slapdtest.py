@@ -191,7 +191,17 @@ class SlapdObject(object):
         'core.schema',
     )
 
+    #: List (or tuple) of OpenLDAP module names you want to activate.
+    #: Default is empty.
     modules = ()
+
+    #: List (or tuple) of OpenLDAP overlay settings you want to include.
+    #: Default is empty.
+    #: Each element is a dict of the form of::
+    #:
+    #:     {"name": overlay_name,
+    #:      "configuration": configuration_text}
+    #:
     overlays = ()
 
     TMPDIR = os.environ.get('TMP', os.getcwd())
