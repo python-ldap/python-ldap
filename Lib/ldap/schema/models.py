@@ -128,7 +128,7 @@ class ObjectClass(SchemaElement):
     this object class is derived from
   x-origin
     This string contains the X-ORIGIN text which is typically used to indicate
-    the source of the associated schema element
+    the source of the associated schema element. It can a list of strings
   """
   schema_attribute = u'objectClasses'
   token_defaults = {
@@ -141,7 +141,7 @@ class ObjectClass(SchemaElement):
     'ABSTRACT':None,
     'MUST':(()),
     'MAY':(),
-    'X-ORIGIN':(None,)
+    'X-ORIGIN':()
   }
 
   def _set_attrs(self,l,d):
@@ -150,7 +150,7 @@ class ObjectClass(SchemaElement):
     self.desc = d['DESC'][0]
     self.must = d['MUST']
     self.may = d['MAY']
-    self.x_origin = d['X-ORIGIN'][0]
+    self.x_origin = d['X-ORIGIN']
     # Default is STRUCTURAL, see RFC2552 or draft-ietf-ldapbis-syntaxes
     self.kind = 0
     if d['ABSTRACT']!=None:
@@ -173,7 +173,7 @@ class ObjectClass(SchemaElement):
     result.append({0:' STRUCTURAL',1:' ABSTRACT',2:' AUXILIARY'}[self.kind])
     result.append(self.key_list('MUST',self.must,sep=' $ '))
     result.append(self.key_list('MAY',self.may,sep=' $ '))
-    result.append(self.key_attr('X-ORIGIN',self.x_origin,quoted=1))
+    result.append(self.key_list('X-ORIGIN',self.x_origin,quoted=1))
     return '( %s )' % ''.join(result)
 
 
@@ -232,7 +232,7 @@ class AttributeType(SchemaElement):
     this attribute type is derived from
   x-origin
     This string contains the X-ORIGIN text which is typically used to indicate
-    the source of the associated schema element
+    the source of the associated schema element. It can a list of strings
   """
   schema_attribute = u'attributeTypes'
   token_defaults = {
@@ -248,7 +248,7 @@ class AttributeType(SchemaElement):
     'COLLECTIVE':None,
     'NO-USER-MODIFICATION':None,
     'USAGE':('userApplications',),
-    'X-ORIGIN':(None,),
+    'X-ORIGIN':(),
     'X-ORDERED':(None,),
   }
 
@@ -260,7 +260,7 @@ class AttributeType(SchemaElement):
     self.equality = d['EQUALITY'][0]
     self.ordering = d['ORDERING'][0]
     self.substr = d['SUBSTR'][0]
-    self.x_origin = d['X-ORIGIN'][0]
+    self.x_origin = d['X-ORIGIN']
     self.x_ordered = d['X-ORDERED'][0]
     try:
       syntax = d['SYNTAX'][0]
@@ -311,7 +311,7 @@ class AttributeType(SchemaElement):
         3:" USAGE dSAOperation",
       }[self.usage]
     )
-    result.append(self.key_attr('X-ORIGIN',self.x_origin,quoted=1))
+    result.append(self.key_list('X-ORIGIN',self.x_origin,quoted=1))
     result.append(self.key_attr('X-ORDERED',self.x_ordered,quoted=1))
     return '( %s )' % ''.join(result)
 

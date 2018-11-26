@@ -67,18 +67,24 @@ class TestSubschemaUrlfetch(unittest.TestCase):
 
 class TestXOrigin(unittest.TestCase):
     def get_attribute_type(self, oid):
-        openldap_uri = 'file://{}'.format(TEST_SUBSCHEMA_FILES[1])
+        openldap_uri = 'file://{}'.format(TEST_SUBSCHEMA_FILES[0])
         dn, schema = ldap.schema.urlfetch(openldap_uri)
         return schema.get_obj(AttributeType, oid)
 
     def test_origin_none(self):
         self.assertEqual(
-            self.get_attribute_type('2.5.4.0').x_origin, None)
+            self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1').x_origin,
+            ())
 
     def test_origin_string(self):
         self.assertEqual(
-            self.get_attribute_type('1.3.6.1.4.1.3401.8.2.8').x_origin,
-            'Pretty Good Privacy (PGP)')
+            self.get_attribute_type('2.16.840.1.113730.3.1.2091').x_origin,
+            ('Netscape',))
+
+    def test_origin_multi_valued(self):
+        self.assertEqual(
+            self.get_attribute_type('1.3.6.1.4.1.11.1.3.1.1.3').x_origin,
+            ('RFC4876', 'user defined'))
 
 
 class TestSubschemaUrlfetchSlapd(SlapdTestCase):
