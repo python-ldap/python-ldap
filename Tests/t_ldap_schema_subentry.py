@@ -142,6 +142,24 @@ class TestXOrigin(unittest.TestCase):
             ),
         )
 
+    def test_set_origin_str(self):
+        """Check that setting X-ORIGIN to a string makes entry unusable"""
+        attr = self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1')
+        attr.x_origin = 'Netscape'
+        self.assertRaises(AssertionError, str, attr)
+
+    def test_set_origin_list(self):
+        """Check that setting X-ORIGIN to a list makes entry unusable"""
+        attr = self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1')
+        attr.x_origin = []
+        self.assertRaises(AssertionError, str, attr)
+
+    def test_set_origin_tuple(self):
+        """Check that setting X-ORIGIN to a tuple works"""
+        attr = self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1')
+        attr.x_origin = ('user defined',)
+        self.assertIn(" X-ORIGIN 'user defined' ", str(attr))
+
 
 class TestSubschemaUrlfetchSlapd(SlapdTestCase):
     ldap_object_class = SimpleLDAPObject
