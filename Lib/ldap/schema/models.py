@@ -126,7 +126,7 @@ class ObjectClass(SchemaElement):
   sup
     This list of strings contains NAMEs or OIDs of object classes
     this object class is derived from
-  x-origin
+  x_origin
     This string contains the X-ORIGIN text which is typically used to indicate
     the source of the associated schema element. It can a list of strings
   """
@@ -230,7 +230,7 @@ class AttributeType(SchemaElement):
   sup
     This list of strings contains NAMEs or OIDs of attribute types
     this attribute type is derived from
-  x-origin
+  x_origin
     This string contains the X-ORIGIN text which is typically used to indicate
     the source of the associated schema element. It can a list of strings
   """
