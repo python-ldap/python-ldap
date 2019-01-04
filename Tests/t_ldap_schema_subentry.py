@@ -161,6 +161,82 @@ class TestXOrigin(unittest.TestCase):
         self.assertIn(" X-ORIGIN 'user defined' ", str(attr))
 
 
+class TestAttributes(unittest.TestCase):
+    def get_schema(self):
+        openldap_uri = 'file://{}'.format(TEST_SUBSCHEMA_FILES[0])
+        dn, schema = ldap.schema.urlfetch(openldap_uri)
+        return schema
+
+    def test_empty_attributetype_attrs(self):
+        """Check types and values of attributes of a minimal AttributeType"""
+        # (OID 2.999 is actually "/Example", for use in documentation)
+        attr = AttributeType('( 2.999 )')
+        self.assertEqual(attr.oid, '2.999')
+        self.assertEqual(attr.names, ())
+        self.assertEqual(attr.desc, None)
+        self.assertEqual(attr.obsolete, False)
+        self.assertEqual(attr.single_value, False)
+        self.assertEqual(attr.syntax, None)
+        self.assertEqual(attr.no_user_mod, False)
+        self.assertEqual(attr.equality, None)
+        self.assertEqual(attr.substr, None)
+        self.assertEqual(attr.ordering, None)
+        self.assertEqual(attr.usage, 0)
+        self.assertEqual(attr.sup, ())
+        self.assertEqual(attr.x_origin, ())
+
+    def test_empty_objectclass_attrs(self):
+        """Check types and values of attributes of a minimal ObjectClass"""
+        # (OID 2.999 is actually "/Example", for use in documentation)
+        cls = ObjectClass('( 2.999 )')
+        self.assertEqual(cls.oid, '2.999')
+        self.assertEqual(cls.names, ())
+        self.assertEqual(cls.desc, None)
+        self.assertEqual(cls.obsolete, False)
+        self.assertEqual(cls.must, ())
+        self.assertEqual(cls.may, ())
+        self.assertEqual(cls.kind, 0)
+        self.assertEqual(cls.sup, ('top',))
+        self.assertEqual(cls.x_origin, ())
+
+    def test_attributetype_attrs(self):
+        """Check types and values of an AttributeType object's attributes"""
+        schema = self.get_schema()
+        attr = schema.get_obj(AttributeType, '1.3.6.1.4.1.11.1.3.1.1.3')
+        expected_desc = (
+            'Maximum time an agent or service allows for a search to complete'
+        )
+        self.assertEqual(attr.oid, '1.3.6.1.4.1.11.1.3.1.1.3')
+        self.assertEqual(attr.names, ('searchTimeLimit',))
+        self.assertEqual(attr.desc, expected_desc)
+        self.assertEqual(attr.obsolete, False)
+        self.assertEqual(attr.single_value, True)
+        self.assertEqual(attr.syntax, '1.3.6.1.4.1.1466.115.121.1.27')
+        self.assertEqual(attr.no_user_mod, False)
+        self.assertEqual(attr.equality, 'integerMatch')
+        self.assertEqual(attr.ordering, 'integerOrderingMatch')
+        self.assertEqual(attr.sup, ())
+        self.assertEqual(attr.x_origin, ('RFC4876', 'user defined'))
+
+    def test_objectclass_attrs(self):
+        """Check types and values of an ObjectClass object's attributes"""
+        schema = self.get_schema()
+        cls = schema.get_obj(ObjectClass, '2.5.6.9')
+        expected_may = (
+            'member', 'businessCategory', 'seeAlso', 'owner', 'ou', 'o',
+            'description',
+        )
+        self.assertEqual(cls.oid, '2.5.6.9')
+        self.assertEqual(cls.names, ('groupOfNames',))
+        self.assertEqual(cls.desc, None)
+        self.assertEqual(cls.obsolete, False)
+        self.assertEqual(cls.must, ('cn',))
+        self.assertEqual(cls.may, expected_may)
+        self.assertEqual(cls.kind, 0)
+        self.assertEqual(cls.sup, ('top',))
+        self.assertEqual(cls.x_origin, ('RFC 4519',))
+
+
 class TestSubschemaUrlfetchSlapd(SlapdTestCase):
     ldap_object_class = SimpleLDAPObject
 
