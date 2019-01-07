@@ -349,7 +349,7 @@ class SyncreplConsumer:
     SyncreplConsumer - LDAP syncrepl consumer object.
     """
 
-    def syncrepl_search(self, base, scope, mode='refreshOnly', cookie=None, **search_args):
+    def syncrepl_search(self, base=None, scope=None, mode='refreshOnly', cookie=None, **search_args):
         """
         Starts syncrepl search operation.
 

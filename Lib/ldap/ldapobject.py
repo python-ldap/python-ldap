@@ -92,7 +92,7 @@ class SimpleLDAPObject:
   }
 
   def __init__(
-    self,uri,
+    self,uri=None,
     trace_level=0,trace_file=None,trace_stack_limit=5,bytes_mode=None,
     bytes_strictness=None,
   ):
@@ -769,13 +769,13 @@ class SimpleLDAPObject:
         resp_data = self._bytesify_results(resp_data, with_ctrls=add_ctrls)
     return resp_type, resp_data, resp_msgid, decoded_resp_ctrls, resp_name, resp_value
 
-  def search_ext(self,base,scope,filterstr=None,attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1,sizelimit=0):
+  def search_ext(self,base=None,scope=ldap.SCOPE_SUBTREE,filterstr=None,attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1,sizelimit=0):
     """
-    search(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0]]]) -> int
-    search_s(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0]]])
-    search_st(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,timeout=-1]]]])
-    search_ext(base,scope,[,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,serverctrls=None [,clientctrls=None [,timeout=-1 [,sizelimit=0]]]]]]])
-    search_ext_s(base,scope,[,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,serverctrls=None [,clientctrls=None [,timeout=-1 [,sizelimit=0]]]]]]])
+    search([base=None, [scope=ldap.SCOPE_SUBTREE, [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0]]]]]) -> int
+    search_s([base=None, [scope=ldap.SCOPE_SUBTREE, [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0]]]]])
+    search_st([base=None, [scope=ldap.SCOPE_SUBTREE, [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,timeout=-1]]]]]])
+    search_ext([base=None, [scope=ldap.SCOPE_SUBTREE, [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,serverctrls=None [,clientctrls=None [,timeout=-1 [,sizelimit=0]]]]]]]]])
+    search_ext_s([base=None, [scope=ldap.SCOPE_SUBTREE, [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,serverctrls=None [,clientctrls=None [,timeout=-1 [,sizelimit=0]]]]]]]]])
 
         Perform an LDAP search operation, with base as the DN of
         the entry at which to start the search, scope being one of
@@ -841,17 +841,17 @@ class SimpleLDAPObject:
       timeout,sizelimit,
     )
 
-  def search_ext_s(self,base,scope,filterstr=None,attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1,sizelimit=0):
+  def search_ext_s(self,base=None,scope=ldap.SCOPE_SUBTREE,filterstr=None,attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1,sizelimit=0):
     msgid = self.search_ext(base,scope,filterstr,attrlist,attrsonly,serverctrls,clientctrls,timeout,sizelimit)
     return self.result(msgid,all=1,timeout=timeout)[1]
 
-  def search(self,base,scope,filterstr=None,attrlist=None,attrsonly=0):
+  def search(self,base=None,scope=ldap.SCOPE_SUBTREE,filterstr=None,attrlist=None,attrsonly=0):
     return self.search_ext(base,scope,filterstr,attrlist,attrsonly,None,None)
 
-  def search_s(self,base,scope,filterstr=None,attrlist=None,attrsonly=0):
+  def search_s(self,base=None,scope=ldap.SCOPE_SUBTREE,filterstr=None,attrlist=None,attrsonly=0):
     return self.search_ext_s(base,scope,filterstr,attrlist,attrsonly,None,None,timeout=self.timeout)
 
-  def search_st(self,base,scope,filterstr=None,attrlist=None,attrsonly=0,timeout=-1):
+  def search_st(self,base=None,scope=ldap.SCOPE_SUBTREE,filterstr=None,attrlist=None,attrsonly=0,timeout=-1):
     return self.search_ext_s(base,scope,filterstr,attrlist,attrsonly,None,None,timeout)
 
   def start_tls_s(self):
@@ -962,7 +962,7 @@ class SimpleLDAPObject:
     except IndexError:
       return None
 
-  def read_s(self,dn,filterstr=None,attrlist=None,serverctrls=None,clientctrls=None,timeout=-1):
+  def read_s(self,dn=None,filterstr=None,attrlist=None,serverctrls=None,clientctrls=None,timeout=-1):
     """
     Reads and returns a single entry specified by `dn'.
 
@@ -1005,7 +1005,7 @@ class SimpleLDAPObject:
     else:
       return subschemasubentry
 
-  def find_unique_entry(self,base,scope=ldap.SCOPE_SUBTREE,filterstr=None,attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1):
+  def find_unique_entry(self,base=None,scope=ldap.SCOPE_SUBTREE,filterstr=None,attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1):
     """
     Returns a unique entry, raises exception if not unique
     """
@@ -1077,7 +1077,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
   }
 
   def __init__(
-    self,uri,
+    self,uri=None,
     trace_level=0,trace_file=None,trace_stack_limit=5,bytes_mode=None,
     bytes_strictness=None, retry_max=1, retry_delay=60.0
   ):

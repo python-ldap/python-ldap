@@ -16,7 +16,7 @@ l_ldap_initialize(PyObject *unused, PyObject *args)
     LDAP *ld = NULL;
     int ret;
 
-    if (!PyArg_ParseTuple(args, "s:initialize", &uri))
+    if (!PyArg_ParseTuple(args, "z:initialize", &uri))
         return NULL;
 
     Py_BEGIN_ALLOW_THREADS ret = ldap_initialize(&ld, uri);

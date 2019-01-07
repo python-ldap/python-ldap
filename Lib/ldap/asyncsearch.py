@@ -53,9 +53,9 @@ class AsyncSearchHandler:
 
   def startSearch(
     self,
-    searchRoot,
-    searchScope,
-    filterStr,
+    searchRoot=None,
+    searchScope=None,
+    filterStr=None,
     attrList=None,
     attrsOnly=0,
     timeout=-1,
