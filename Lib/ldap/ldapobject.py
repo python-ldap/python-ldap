@@ -76,9 +76,9 @@ class NO_UNIQUE_ENTRY(ldap.NO_SUCH_OBJECT):
 
 class SimpleLDAPObject:
   """
-    This basic class wraps all methods of the underlying C API object.
+  This basic class wraps all methods of the underlying C API object.
 
-    The arguments are same as for the :func:`~ldap.initialize()` function.
+  The arguments are same as for the :func:`~ldap.initialize()` function.
   """
 
   CLASSATTR_OPTION_MAPPING = {
@@ -1059,20 +1059,20 @@ class SimpleLDAPObject:
 
 class ReconnectLDAPObject(SimpleLDAPObject):
   """
-    :py:class:`SimpleLDAPObject` subclass whose synchronous request methods
-    automatically reconnect and re-try in case of server failure
-    (:exc:`ldap.SERVER_DOWN`).
+  :py:class:`SimpleLDAPObject` subclass whose synchronous request methods
+  automatically reconnect and re-try in case of server failure
+  (:exc:`ldap.SERVER_DOWN`).
 
-    The first arguments are same as for the :py:func:`~ldap.initialize()`
-    function.
-    For automatic reconnects it has additional arguments:
+  The first arguments are same as for the :py:func:`~ldap.initialize()`
+  function.
+  For automatic reconnects it has additional arguments:
 
-    * retry_max: specifies the number of reconnect attempts before
-      re-raising the :py:exc:`ldap.SERVER_DOWN` exception.
+  * retry_max: specifies the number of reconnect attempts before
+    re-raising the :py:exc:`ldap.SERVER_DOWN` exception.
 
-    * retry_delay: specifies the time in seconds between reconnect attempts.
+  * retry_delay: specifies the time in seconds between reconnect attempts.
 
-    This class also implements the pickle protocol.
+  This class also implements the pickle protocol.
   """
 
   __transient_attrs__ = {
