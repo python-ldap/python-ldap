@@ -50,7 +50,7 @@ def modifyModlist(
   case_ignore_attr_types = {v.lower() for v in case_ignore_attr_types or []}
   modlist = []
   attrtype_lower_map = {}
-  for a in old_entry.keys():
+  for a in old_entry:
     attrtype_lower_map[a.lower()]=a
   for attrtype, value in new_entry.items():
     attrtype_lower = attrtype.lower()

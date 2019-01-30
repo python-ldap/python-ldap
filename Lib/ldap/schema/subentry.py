@@ -23,7 +23,7 @@ for o in list(vars().values()):
     SCHEMA_CLASS_MAPPING[o.schema_attribute] = o
     SCHEMA_ATTR_MAPPING[o] = o.schema_attribute
 
-SCHEMA_ATTRS = SCHEMA_CLASS_MAPPING.keys()
+SCHEMA_ATTRS = list(SCHEMA_CLASS_MAPPING)
 
 
 class SubschemaError(ValueError):
@@ -122,7 +122,7 @@ class SubSchema:
         self.sed[se_class][se_id] = se_instance
 
         if hasattr(se_instance,'names'):
-          for name in ldap.cidict.cidict({}.fromkeys(se_instance.names)).keys():
+          for name in ldap.cidict.cidict({}.fromkeys(se_instance.names)):
             if check_uniqueness and name in self.name2oid[se_class]:
               self.non_unique_names[se_class][se_id] = None
               raise NameNotUnique(attr_value)
@@ -130,7 +130,7 @@ class SubSchema:
               self.name2oid[se_class][name] = se_id
 
     # Turn dict into list maybe more handy for applications
-    self.non_unique_oids = self.non_unique_oids.keys()
+    self.non_unique_oids = list(self.non_unique_oids)
 
     return # subSchema.__init__()
 
@@ -168,7 +168,7 @@ class SubSchema:
           except AttributeError:
             pass
     else:
-      result = avail_se.keys()
+      result = list(avail_se)
     return result
 
 
@@ -422,14 +422,14 @@ class SubSchema:
 
     # Remove all mandantory attribute types from
     # optional attribute type list
-    for a in list(r_may.keys()):
+    for a in list(r_may):
       if a in r_must:
         del r_may[a]
 
     # Apply attr_type_filter to results
     if attr_type_filter:
       for l in [r_must,r_may]:
-        for a in list(l.keys()):
+        for a in list(l):
           for afk,afv in attr_type_filter:
             try:
               schema_attr_type = self.sed[AttributeType][a]
