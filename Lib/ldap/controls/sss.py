@@ -12,6 +12,8 @@ __all__ = [
 ]
 
 
+import sys
+
 import ldap
 from ldap.ldapobject import LDAPObject
 from ldap.controls import (RequestControl, ResponseControl,
@@ -19,6 +21,10 @@ from ldap.controls import (RequestControl, ResponseControl,
 
 from pyasn1.type import univ, namedtype, tag, namedval, constraint
 from pyasn1.codec.ber import encoder, decoder
+
+PY2 = sys.version_info[0] <= 2
+if not PY2:
+  basestring = str
 
 
 #    SortKeyList ::= SEQUENCE OF SEQUENCE {
