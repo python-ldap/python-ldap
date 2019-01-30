@@ -579,7 +579,7 @@ Warnings
 LDAPObject classes
 ==================
 
-.. py:class:: LDAPObject
+.. py:class:: ldap.ldapobject.LDAPObject
 
    Instances of :py:class:`LDAPObject` are returned by :py:func:`initialize()`.
    The connection is automatically unbound
