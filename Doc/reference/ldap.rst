@@ -32,7 +32,7 @@ This module defines the following functions:
 .. py:function:: initialize(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=None, [bytes_mode=None, [bytes_strictness=None]]]]]) -> LDAPObject object
 
    Initializes a new connection object for accessing the given LDAP server,
-   and return an LDAP object (see :ref:`ldap-objects`) used to perform operations
+   and return an :class:`~ldap.ldapobject.LDAPObject` used to perform operations
    on that server.
 
    The *uri* parameter may be a comma- or whitespace-separated list of URIs
@@ -63,7 +63,10 @@ This module defines the following functions:
    :py:const:`2` for logging the method calls with arguments and the complete results and
    :py:const:`9` for also logging the traceback of method calls.
 
-   Additional keyword arguments are passed to :class:`LDAPObject`.
+   This function is a thin wrapper around instantiating
+   :class:`~ldap.ldapobject.LDAPObject`.
+   Any additional keyword arguments are passed to ``LDAPObject``.
+   It is also fine to instantiate a ``LDAPObject`` (or a subclass) directly.
 
    .. seealso::
 
@@ -585,8 +588,13 @@ LDAPObject classes
    The connection is automatically unbound
    and closed when the LDAP object is deleted.
 
-   Internally :py:class:`LDAPObject` is set to
-   :py:class:`~ldap.ldapobject.SimpleLDAPObject` by default.
+   :py:class:`LDAPObject` is an alias of
+   :py:class:`~ldap.ldapobject.SimpleLDAPObject`, the default connection class.
+   If you wish to use a different class, instantiate it directly instead of
+   calling :func:`initialize()`.
+
+   (It is also possible, but not recommended, to change the default by setting
+   ``ldap.ldapobject.LDAPObject`` to a different class.)
 
 .. autoclass:: ldap.ldapobject.SimpleLDAPObject
 
