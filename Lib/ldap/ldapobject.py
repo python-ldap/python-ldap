@@ -526,7 +526,7 @@ class SimpleLDAPObject:
     except ldap.COMPARE_FALSE:
       return False
     raise ldap.PROTOCOL_ERROR(
-        'Compare operation returned wrong result: %r' % (ldap_res)
+        'Compare operation returned wrong result: %r' % repr(ldap_res)
     )
 
   def compare(self,dn,attr,value):
