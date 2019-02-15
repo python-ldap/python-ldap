@@ -99,10 +99,8 @@ From a source repository::
 If you have more than one Python interpreter installed locally, you should
 use the same one you plan to use python-ldap with.
 
-Further instructions can be found in `Setuptools documentation`_.
-
-
-.. _Setuptools documentation: https://docs.python.org/3/distributing/index.html
+Further instructions can be found in :ref:`Setuptools documentation
+<distributing-index>`.
 
 
 .. _build prerequisites:
@@ -169,11 +167,10 @@ Packages for building and testing::
 setup.cfg
 =========
 
-The file setup.cfg allows to set some build and installation
-parameters for reflecting the local installation of required
-software packages. Only section ``[_ldap]`` is described here.
-More information about other sections can be found in
-`Setuptools documentation`_.
+The file setup.cfg allows to set some build and installation parameters for
+reflecting the local installation of required software packages. Only section
+``[_ldap]`` is described here. More information about other sections can be
+found in :ref:`Setuptools documentation <distributing-index>`.
 
 .. data:: library_dirs
 

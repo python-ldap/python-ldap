@@ -106,26 +106,32 @@ class ObjectClass(SchemaElement):
   oid
     OID assigned to the object class
   names
-    This list of strings contains all NAMEs of the object class
+    All NAMEs of the object class (tuple of strings)
   desc
-    This string contains description text (DESC) of the object class
+    Description text (DESC) of the object class (string, or None if missing)
   obsolete
     Integer flag (0 or 1) indicating whether the object class is marked
     as OBSOLETE in the schema
   must
-    This list of strings contains NAMEs or OIDs of all attributes
-    an entry of the object class must have
+    NAMEs or OIDs of all attributes an entry of the object class must have
+    (tuple of strings)
   may
-    This list of strings contains NAMEs or OIDs of additional attributes
-    an entry of the object class may have
+    NAMEs or OIDs of additional attributes an entry of the object class may
+    have (tuple of strings)
   kind
     Kind of an object class:
     0 = STRUCTURAL,
     1 = ABSTRACT,
     2 = AUXILIARY
   sup
-    This list of strings contains NAMEs or OIDs of object classes
-    this object class is derived from
+    NAMEs or OIDs of object classes this object class is derived from
+    (tuple of strings)
+  x_origin
+    Value of the X-ORIGIN extension flag (tuple of strings)
+
+    Although it's not official, X-ORIGIN is used in several LDAP server
+    implementations to indicate the source of the associated schema
+    element
   """
   schema_attribute = u'objectClasses'
   token_defaults = {
@@ -137,7 +143,8 @@ class ObjectClass(SchemaElement):
     'AUXILIARY':None,
     'ABSTRACT':None,
     'MUST':(()),
-    'MAY':()
+    'MAY':(),
+    'X-ORIGIN':()
   }
 
   def _set_attrs(self,l,d):
@@ -146,6 +153,7 @@ class ObjectClass(SchemaElement):
     self.desc = d['DESC'][0]
     self.must = d['MUST']
     self.may = d['MAY']
+    self.x_origin = d['X-ORIGIN']
     # Default is STRUCTURAL, see RFC2552 or draft-ietf-ldapbis-syntaxes
     self.kind = 0
     if d['ABSTRACT']!=None:
@@ -168,6 +176,7 @@ class ObjectClass(SchemaElement):
     result.append({0:' STRUCTURAL',1:' ABSTRACT',2:' AUXILIARY'}[self.kind])
     result.append(self.key_list('MUST',self.must,sep=' $ '))
     result.append(self.key_list('MAY',self.may,sep=' $ '))
+    result.append(self.key_list('X-ORIGIN',self.x_origin,quoted=1))
     return '( %s )' % ''.join(result)
 
 
@@ -190,11 +199,11 @@ class AttributeType(SchemaElement):
   Class attributes:
 
   oid
-    OID assigned to the attribute type
+    OID assigned to the attribute type (string)
   names
-    This list of strings contains all NAMEs of the attribute type
+    All NAMEs of the attribute type (tuple of strings)
   desc
-    This string contains description text (DESC) of the attribute type
+    Description text (DESC) of the attribute type (string, or None if missing)
   obsolete
     Integer flag (0 or 1) indicating whether the attribute type is marked
     as OBSOLETE in the schema
@@ -202,19 +211,19 @@ class AttributeType(SchemaElement):
     Integer flag (0 or 1) indicating whether the attribute must
     have only one value
   syntax
-    String contains OID of the LDAP syntax assigned to the attribute type
+    OID of the LDAP syntax assigned to the attribute type
   no_user_mod
     Integer flag (0 or 1) indicating whether the attribute is modifiable
     by a client application
   equality
-    String contains NAME or OID of the matching rule used for
-    checking whether attribute values are equal
+    NAME or OID of the matching rule used for checking whether attribute values
+    are equal (string, or None if missing)
   substr
-    String contains NAME or OID of the matching rule used for
-    checking whether an attribute value contains another value
+    NAME or OID of the matching rule used for checking whether an attribute
+    value contains another value (string, or None if missing)
   ordering
-    String contains NAME or OID of the matching rule used for
-    checking whether attribute values are lesser-equal than
+    NAME or OID of the matching rule used for checking whether attribute values
+    are lesser-equal than (string, or None if missing)
   usage
     USAGE of an attribute type:
     0 = userApplications
@@ -222,8 +231,14 @@ class AttributeType(SchemaElement):
     2 = distributedOperation,
     3 = dSAOperation
   sup
-    This list of strings contains NAMEs or OIDs of attribute types
-    this attribute type is derived from
+    NAMEs or OIDs of attribute types this attribute type is derived from
+    (tuple of strings)
+  x_origin
+    Value of the X-ORIGIN extension flag (tuple of strings).
+
+    Although it's not official, X-ORIGIN is used in several LDAP server
+    implementations to indicate the source of the associated schema
+    element
   """
   schema_attribute = u'attributeTypes'
   token_defaults = {
@@ -239,7 +254,7 @@ class AttributeType(SchemaElement):
     'COLLECTIVE':None,
     'NO-USER-MODIFICATION':None,
     'USAGE':('userApplications',),
-    'X-ORIGIN':(None,),
+    'X-ORIGIN':(),
     'X-ORDERED':(None,),
   }
 
@@ -251,7 +266,7 @@ class AttributeType(SchemaElement):
     self.equality = d['EQUALITY'][0]
     self.ordering = d['ORDERING'][0]
     self.substr = d['SUBSTR'][0]
-    self.x_origin = d['X-ORIGIN'][0]
+    self.x_origin = d['X-ORIGIN']
     self.x_ordered = d['X-ORDERED'][0]
     try:
       syntax = d['SYNTAX'][0]
@@ -302,7 +317,7 @@ class AttributeType(SchemaElement):
         3:" USAGE dSAOperation",
       }[self.usage]
     )
-    result.append(self.key_attr('X-ORIGIN',self.x_origin,quoted=1))
+    result.append(self.key_list('X-ORIGIN',self.x_origin,quoted=1))
     result.append(self.key_attr('X-ORDERED',self.x_ordered,quoted=1))
     return '( %s )' % ''.join(result)
 
@@ -314,7 +329,7 @@ class LDAPSyntax(SchemaElement):
   oid
     OID assigned to the LDAP syntax
   desc
-    This string contains description text (DESC) of the LDAP syntax
+    Description text (DESC) of the LDAP syntax (string, or None if missing)
   not_human_readable
     Integer flag (0 or 1) indicating whether the attribute type is marked
     as not human-readable (X-NOT-HUMAN-READABLE)
@@ -358,14 +373,15 @@ class MatchingRule(SchemaElement):
   oid
     OID assigned to the matching rule
   names
-    This list of strings contains all NAMEs of the matching rule
+    All NAMEs of the matching rule (tuple of strings)
   desc
-    This string contains description text (DESC) of the matching rule
+    Description text (DESC) of the matching rule
   obsolete
     Integer flag (0 or 1) indicating whether the matching rule is marked
     as OBSOLETE in the schema
   syntax
-    String contains OID of the LDAP syntax this matching rule is usable with
+    OID of the LDAP syntax this matching rule is usable with
+    (string, or None if missing)
   """
   schema_attribute = u'matchingRules'
   token_defaults = {
@@ -403,15 +419,15 @@ class MatchingRuleUse(SchemaElement):
   oid
     OID of the accompanying matching rule
   names
-    This list of strings contains all NAMEs of the matching rule
+    All NAMEs of the matching rule (tuple of strings)
   desc
-    This string contains description text (DESC) of the matching rule
+    Description text (DESC) of the matching rule (string, or None if missing)
   obsolete
     Integer flag (0 or 1) indicating whether the matching rule is marked
     as OBSOLETE in the schema
   applies
-    This list of strings contains NAMEs or OIDs of attribute types
-    for which this matching rule is used
+    NAMEs or OIDs of attribute types for which this matching rule is used
+    (tuple of strings)
   """
   schema_attribute = u'matchingRuleUse'
   token_defaults = {
@@ -449,26 +465,29 @@ class DITContentRule(SchemaElement):
   oid
     OID of the accompanying structural object class
   names
-    This list of strings contains all NAMEs of the DIT content rule
+    All NAMEs of the DIT content rule (tuple of strings)
   desc
-    This string contains description text (DESC) of the DIT content rule
+    Description text (DESC) of the DIT content rule
+    (string, or None if missing)
   obsolete
     Integer flag (0 or 1) indicating whether the DIT content rule is marked
     as OBSOLETE in the schema
   aux
-    This list of strings contains NAMEs or OIDs of all auxiliary
-    object classes usable in an entry of the object class
+    NAMEs or OIDs of all auxiliary object classes usable in an entry of the
+    object class (tuple of strings)
   must
-    This list of strings contains NAMEs or OIDs of all attributes
-    an entry of the object class must have which may extend the
-    list of required attributes of the object classes of an entry
+    NAMEs or OIDs of all attributes an entry of the object class must
+    have, which may extend the list of required attributes of the object
+    classes of an entry.
+    (tuple of strings)
   may
-    This list of strings contains NAMEs or OIDs of additional attributes
-    an entry of the object class may have which may extend the
-    list of optional attributes of the object classes of an entry
+    NAMEs or OIDs of additional attributes an entry of the object class may
+    have. which may extend the list of optional attributes of the object
+    classes of an entry.
+    (tuple of strings)
   nots
-    This list of strings contains NAMEs or OIDs of attributes which
-    may not be present in an entry of the object class
+    NAMEs or OIDs of attributes which may not be present in an entry of the
+    object class. (tuple of strings)
   """
   schema_attribute = u'dITContentRules'
   token_defaults = {
@@ -515,17 +534,18 @@ class DITStructureRule(SchemaElement):
   ruleid
     rule ID of the DIT structure rule (only locally unique)
   names
-    This list of strings contains all NAMEs of the DIT structure rule
+    All NAMEs of the DIT structure rule (tuple of strings)
   desc
-    This string contains description text (DESC) of the DIT structure rule
+    Description text (DESC) of the DIT structure rule
+    (string, or None if missing)
   obsolete
     Integer flag (0 or 1) indicating whether the DIT content rule is marked
     as OBSOLETE in the schema
   form
-    List of strings with NAMEs or OIDs of associated name forms
+    NAMEs or OIDs of associated name forms (tuple of strings)
   sup
-    List of strings with NAMEs or OIDs of allowed structural object classes
-    of superior entries in the DIT
+    NAMEs or OIDs of allowed structural object classes
+    of superior entries in the DIT (tuple of strings)
   """
   schema_attribute = u'dITStructureRules'
 
@@ -573,23 +593,22 @@ class NameForm(SchemaElement):
   oid
     OID of the name form
   names
-    This list of strings contains all NAMEs of the name form
+    All NAMEs of the name form (tuple of strings)
   desc
-    This string contains description text (DESC) of the name form
+    Description text (DESC) of the name form (string, or None if missing)
   obsolete
     Integer flag (0 or 1) indicating whether the name form is marked
     as OBSOLETE in the schema
   form
-    List of strings with NAMEs or OIDs of associated name forms
+    NAMEs or OIDs of associated name forms (tuple of strings)
   oc
-    String with NAME or OID of structural object classes this name form
-    is usable with
+    NAME or OID of structural object classes this name form
+    is usable with (string)
   must
-    This list of strings contains NAMEs or OIDs of all attributes
-    an RDN must contain
+    NAMEs or OIDs of all attributes an RDN must contain (tuple of strings)
   may
-    This list of strings contains NAMEs or OIDs of additional attributes
-    an RDN may contain
+    NAMEs or OIDs of additional attributes an RDN may contain
+    (tuple of strings)
   """
   schema_attribute = u'nameForms'
   token_defaults = {
