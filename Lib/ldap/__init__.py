@@ -23,6 +23,13 @@ if __debug__:
     _trace_file = open(_trace_file, 'a')
     atexit.register(_trace_file.close)
   _trace_stack_limit = None
+else:
+  # Any use of the _trace attributes should be guarded by `if __debug__`,
+  # so they should not be needed here.
+  # But, providing different API for debug mode is unnecessarily fragile.
+  _trace_level = 0
+  _trace_file = sys.stderr
+  _trace_stack_limit = None
 
 import _ldap
 assert _ldap.__version__==__version__, \
