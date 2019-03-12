@@ -1,4 +1,27 @@
 ----------------------------------------------------------------
+Released 3.2.0 2019-03-13
+
+Lib/
+* Add support for X-ORIGIN in ldap.schema's ObjectClass
+* Make initialize() pass extra keyword arguments to LDAPObject
+* ldap.controls.sss: use str instead of basestring on Python 3
+* Provide ldap._trace_* atributes in non-debug mode
+
+Doc/
+* Fix ReST syntax for links to set_option and get_option
+
+Tests/
+* Use intersphinx to link to Python documentation
+* Correct type of some attribute values to bytes
+* Use system-specific ENOTCONN value
+
+Infrastructure:
+* Add testing and document support for Python 3.7
+* Add Python 3.8-dev to Tox and CI configuration
+* Add Doc/requirements.txt for building on Read the Docs
+
+
+----------------------------------------------------------------
 Released 3.1.0 2018-05-25
 
 This release brings two minor API changes:
