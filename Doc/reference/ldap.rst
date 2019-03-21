@@ -699,7 +699,9 @@ and wait for and return with the server's result, or with
    and the value *value*. The synchronous forms returns ``True`` or ``False``.
    The asynchronous forms returns the message ID of the initiated request, and
    the result of the asynchronous compare can be obtained using
-   :py:meth:`result()`.
+   :py:meth:`result()`. The operation can fail with an exception, e.g.
+   :py:exc:`ldap.NO_SUCH_OBJECT` when *dn* does not exist or
+   :py:exc:`ldap.UNDEFINED_TYPE` for an invalid attribute.
 
    Note that the asynchronous technique yields the answer
    by raising the exception objects :py:exc:`ldap.COMPARE_TRUE` or
