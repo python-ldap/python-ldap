@@ -7,6 +7,7 @@ Compatibility:
 - Tested with Python 2.0+
 """
 
+import _ldap
 from ldap import __version__
 
 from ldap.functions import strf_secs
@@ -89,3 +90,8 @@ def time_span_filter(
         until_timestr=strf_secs(until_timestamp),
     )
     # end of time_span_filter()
+
+
+def is_filter(ldap_filter: str):
+    """Returns True if `ldap_filter' can be parsed as a valid LDAP filter, otherwise False is returned."""
+    return _ldap.is_filter(ldap_filter)
