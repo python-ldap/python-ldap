@@ -120,3 +120,10 @@ def is_dn(s,flags=0):
     return False
   else:
     return True
+
+
+def compare_dn(a, b):
+    """
+    Compares two distinguished names and return True if they are equal.
+    """
+    return [sorted((x.lower(), y, z) for x, y, z in rdn) for rdn in ldap.dn.str2dn(a)] == [sorted((x.lower(), y, z) for x, y, z in rdn) for rdn in ldap.dn.str2dn(b)]
