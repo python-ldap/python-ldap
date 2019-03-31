@@ -126,4 +126,27 @@ def compare_dn(a, b):
     """
     Compares two distinguished names and return True if they are equal.
     """
-    return [sorted((x.lower(), y, z) for x, y, z in rdn) for rdn in ldap.dn.str2dn(a)] == [sorted((x.lower(), y, z) for x, y, z in rdn) for rdn in ldap.dn.str2dn(b)]
+    case_insensitive_attributes = [attr.lower() for attr in compare_dn.case_insensitive_attributes]
+
+    def normalize(attr, value):
+        if attr.lower() in case_insensitive_attributes:
+            value = value.lower()
+        return value
+    return [sorted((x.lower(), normalize(x, y), z) for x, y, z in rdn) for rdn in ldap.dn.str2dn(a)] == [sorted((x.lower(), normalize(x, y), z) for x, y, z in rdn) for rdn in ldap.dn.str2dn(b)]
+
+
+compare_dn.case_insensitive_attributes = []
+
+
+def initialize_case_insensitive_attributes(lo):
+    """
+    Compares two distinguished names with respect to their attribute case sensitivy matching rule and return True if they are equal.
+    """
+    from ldap.schema import (SubSchema, ObjectClass, AttributeType)
+    subschema = SubSchema(lo.read_subschemasubentry_s(lo.search_subschemasubentry_s()), 0)
+    attrs = set()
+    for oid in subschema.listall(AttributeType):
+        attr = subschema.get_obj(AttributeType, oid)
+        if attr.equality and attr.equality.startswith('caseIgnore'):
+            attrs |= set(attr.names)
+    compare_dn.case_insensitive_attributes.extend(attrs)
