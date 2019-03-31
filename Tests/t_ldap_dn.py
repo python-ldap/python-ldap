@@ -244,6 +244,19 @@ class TestDN(unittest.TestCase):
             ['cn=äöüÄÖÜß']
         )
 
+    def test_compare_dn(self):
+        self.assertEqual(ldap.dn.compare_dn('foo=1', 'foo=1'), True)
+        self.assertEqual(ldap.dn.compare_dn('foo=1', 'foo=2'), False)
+        self.assertEqual(ldap.dn.compare_dn('Foo=1', 'foo=1'), True)
+        self.assertEqual(ldap.dn.compare_dn('Foo=1', 'foo=2'), False)
+        self.assertEqual(ldap.dn.compare_dn('foo=1,bar=2', 'foo=1,bar=2'), True)
+        self.assertEqual(ldap.dn.compare_dn('bar=2,foo=1', 'foo=1,bar=2'), False)
+        self.assertEqual(ldap.dn.compare_dn('foo=1+bar=2', 'foo=1+bar=2'), True)
+        self.assertEqual(ldap.dn.compare_dn('bar=2+foo=1', 'foo=1+bar=2'), True)
+        self.assertEqual(ldap.dn.compare_dn('bar=2+Foo=1', 'foo=1+Bar=2'), True)
+        self.assertEqual(ldap.dn.compare_dn('foo=\\31', 'foo=1'), True)
+        #self.assertEqual(ldap.dn.compare_dn('uid=Foo', 'uid=foo'), True)
+
 
 if __name__ == '__main__':
     unittest.main()
