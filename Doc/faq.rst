@@ -45,10 +45,10 @@ That used to work, but after an upgrade it does not work anymore. Why?
     providing the full functionality.
 
 **Q**: My script bound to MS Active Directory but a a search operation results
-in the exception :exc:`ldap.OPERATIONS_ERROR` with the diagnostic messages text
-“In order to perform this operation a successful bind must be
-completed on the connection.”
-What's happening here?
+in the exception :exc:`ldap.OPERATIONS_ERROR` with the diagnostic message text
+*“In order to perform this operation a successful bind must be completed on the
+connection.”* Alternatively, a Samba 4 AD returns the diagnostic message
+*"Operation unavailable without authentication"*. What's happening here?
 
     **A**: When searching from the domain level, MS AD returns referrals (search continuations)
     for some objects to indicate to the client where to look for these objects.
