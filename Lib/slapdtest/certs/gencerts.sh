@@ -29,7 +29,7 @@ openssl ca -selfsign \
     -in $CATMPDIR/ca.csr \
     -out $CAOUTDIR/ca.pem \
     -extensions ca_ext \
-    -days 3563 \
+    -days 356300 \
     -batch
 
 # server cert
