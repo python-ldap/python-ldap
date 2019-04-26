@@ -256,7 +256,7 @@ class LDAPUrl(object):
     if not isLDAPUrl(ldap_url):
       raise ValueError('Value %s for ldap_url does not seem to be a LDAP URL.' % (repr(ldap_url)))
     scheme,rest = ldap_url.split('://',1)
-    self.urlscheme = scheme.strip()
+    self.urlscheme = scheme.strip().lower()
     if not self.urlscheme in ['ldap','ldaps','ldapi']:
       raise ValueError('LDAP URL contains unsupported URL scheme %s.' % (self.urlscheme))
     slash_pos = rest.find('/')
