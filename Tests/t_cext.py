@@ -381,30 +381,36 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(type(m), type(0))
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_ADD)
+
         # try a false compare
         m = l.compare_ext(dn, "userPassword", "bad_string")
-        try:
+        with self.assertRaises(_ldap.COMPARE_FALSE) as e:
             r = l.result4(m, _ldap.MSG_ALL, self.timeout)
-        except _ldap.COMPARE_FALSE:
-            pass
-        else:
-            self.fail("expected COMPARE_FALSE, got %r" % r)
+
+        self.assertEqual(e.exception.args[0]['msgid'], m)
+        self.assertEqual(e.exception.args[0]['msgtype'], _ldap.RES_COMPARE)
+        self.assertEqual(e.exception.args[0]['result'], 5)
+        self.assertFalse(e.exception.args[0]['ctrls'])
+
         # try a true compare
         m = l.compare_ext(dn, "userPassword", "the_password")
-        try:
+        with self.assertRaises(_ldap.COMPARE_TRUE) as e:
             r = l.result4(m, _ldap.MSG_ALL, self.timeout)
-        except _ldap.COMPARE_TRUE:
-            pass
-        else:
-            self.fail("expected COMPARE_TRUE, got %r" % r)
+
+        self.assertEqual(e.exception.args[0]['msgid'], m)
+        self.assertEqual(e.exception.args[0]['msgtype'], _ldap.RES_COMPARE)
+        self.assertEqual(e.exception.args[0]['result'], 6)
+        self.assertFalse(e.exception.args[0]['ctrls'])
+
         # try a compare on bad attribute
         m = l.compare_ext(dn, "badAttribute", "ignoreme")
-        try:
+        with self.assertRaises(_ldap.error) as e:
             r = l.result4(m, _ldap.MSG_ALL, self.timeout)
-        except _ldap.error:
-            pass
-        else:
-            self.fail("expected LDAPError, got %r" % r)
+
+        self.assertEqual(e.exception.args[0]['msgid'], m)
+        self.assertEqual(e.exception.args[0]['msgtype'], _ldap.RES_COMPARE)
+        self.assertEqual(e.exception.args[0]['result'], 17)
+        self.assertFalse(e.exception.args[0]['ctrls'])
 
     def test_delete_no_such_object(self):
         """
