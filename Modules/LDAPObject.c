@@ -1172,9 +1172,8 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
         else
             e = "ldap_parse_result";
         ldap_controls_free(serverctrls);
-        ldap_msgfree(msg);
         Py_XDECREF(valuestr);
-        return LDAPerror(self->ldap, e);
+        return LDAPraise_for_message(self->ldap, e, msg);
     }
 
     if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
