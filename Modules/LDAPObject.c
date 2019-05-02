@@ -1081,7 +1081,7 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
     struct timeval *tvp;
     int res_type;
     LDAPMessage *msg = NULL;
-    PyObject *result_str, *retval, *pmsg, *pyctrls = 0;
+    PyObject *retval, *pmsg, *pyctrls = 0;
     int res_msgid = 0;
     char *retoid = 0;
     PyObject *valuestr = NULL;
@@ -1193,27 +1193,19 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
     pmsg =
         LDAPmessage_to_python(self->ldap, msg, add_ctrls, add_intermediates);
 
-    if (res_type == 0) {
-        result_str = Py_None;
-        Py_INCREF(Py_None);
-    }
-    else {
-        result_str = PyInt_FromLong(res_type);
-    }
-
     if (pmsg == NULL) {
         retval = NULL;
     }
     else {
         /* s handles NULL, but O does not */
         if (add_extop) {
-            retval = Py_BuildValue("(OOiOsO)", result_str, pmsg, res_msgid,
+            retval = Py_BuildValue("(iOiOsO)", res_type, pmsg, res_msgid,
                                    pyctrls, retoid,
                                    valuestr ? valuestr : Py_None);
         }
         else {
             retval =
-                Py_BuildValue("(OOiO)", result_str, pmsg, res_msgid, pyctrls);
+                Py_BuildValue("(iOiO)", res_type, pmsg, res_msgid, pyctrls);
         }
 
         if (pmsg != Py_None) {
@@ -1222,7 +1214,6 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
     }
     Py_XDECREF(valuestr);
     Py_XDECREF(pyctrls);
-    Py_DECREF(result_str);
     return retval;
 }
 
