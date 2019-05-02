@@ -1171,6 +1171,7 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
         }
         else
             e = "ldap_parse_result";
+        ldap_controls_free(serverctrls);
         ldap_msgfree(msg);
         Py_XDECREF(valuestr);
         return LDAPerror(self->ldap, e);
@@ -1182,6 +1183,7 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
         LDAP_BEGIN_ALLOW_THREADS(self);
         ldap_set_option(self->ldap, LDAP_OPT_ERROR_NUMBER, &err);
         LDAP_END_ALLOW_THREADS(self);
+        ldap_controls_free(serverctrls);
         ldap_msgfree(msg);
         Py_XDECREF(valuestr);
         return LDAPerror(self->ldap, "LDAPControls_to_List");
