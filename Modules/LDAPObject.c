@@ -1086,7 +1086,6 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
     char *retoid = 0;
     PyObject *valuestr = NULL;
     int result = LDAP_SUCCESS;
-    char **refs = NULL;
     LDAPControl **serverctrls = 0;
 
     if (!PyArg_ParseTuple
@@ -1157,23 +1156,15 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
         }
 
         LDAP_BEGIN_ALLOW_THREADS(self);
-        rc = ldap_parse_result(self->ldap, msg, &result, NULL, NULL, &refs,
+        rc = ldap_parse_result(self->ldap, msg, &result, NULL, NULL, NULL,
                                &serverctrls, 0);
         LDAP_END_ALLOW_THREADS(self);
     }
 
     if (result != LDAP_SUCCESS) {       /* result error */
-        char *e, err[1024];
-
-        if (result == LDAP_REFERRAL && refs && refs[0]) {
-            snprintf(err, sizeof(err), "Referral:\n%s", refs[0]);
-            e = err;
-        }
-        else
-            e = "ldap_parse_result";
         ldap_controls_free(serverctrls);
         Py_XDECREF(valuestr);
-        return LDAPraise_for_message(self->ldap, e, msg);
+        return LDAPraise_for_message(self->ldap, "ldap_parse_result", msg);
     }
 
     if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
