@@ -110,7 +110,6 @@ class TestSplitTokens(unittest.TestCase):
         """
         self._run_failure_tests(TESTCASES_BROKEN_OID)
 
-    @unittest.expectedFailure
     def test_escaped_quotes(self):
         """
         run test cases specified in constant TESTCASES_ESCAPED_QUOTES

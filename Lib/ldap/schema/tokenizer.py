@@ -13,11 +13,15 @@ TOKENS_FINDALL = re.compile(
     r"|"              # or
     r"([^'$()\s]+)"   # string of length >= 1 without '$() or whitespace
     r"|"              # or
-    r"('.*?'(?!\w))"  # any string or empty string surrounded by single quotes
-                      # except if right quote is succeeded by alphanumeric char
+    r"('(?:[^'\\]|\\\\|\\.)*?'(?!\w))"
+                      # any string or empty string surrounded by unescaped
+                      # single quotes except if right quote is succeeded by
+                      # alphanumeric char
     r"|"              # or
     r"([^\s]+?)",     # residue, all non-whitespace strings
 ).findall
+
+UNESCAPE_PATTERN = re.compile(r"\\(.)")
 
 
 def split_tokens(s):
@@ -30,7 +34,7 @@ def split_tokens(s):
         if unquoted:
             parts.append(unquoted)
         elif quoted:
-            parts.append(quoted[1:-1])
+            parts.append(UNESCAPE_PATTERN.sub(r'\1', quoted[1:-1]))
         elif opar:
             parens += 1
             parts.append(opar)
