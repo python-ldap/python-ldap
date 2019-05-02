@@ -252,7 +252,6 @@ class SlapdObject(object):
         self.PATH_SLAPD = os.environ.get('SLAPD', None)
         if not self.PATH_SLAPD:
             self.PATH_SLAPD = self._find_command('slapd', in_sbin=True)
-        self.PATH_SLAPTEST = self._find_command('slaptest', in_sbin=True)
 
     def _find_command(self, cmd, in_sbin=False):
         if in_sbin:
@@ -378,7 +377,8 @@ class SlapdObject(object):
     def _test_config(self):
         self._log.debug('testing config %s', self._slapd_conf)
         popen_list = [
-            self.PATH_SLAPTEST,
+            self.PATH_SLAPD,
+            '-Ttest',
             "-f", self._slapd_conf,
             '-u',
         ]
