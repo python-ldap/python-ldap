@@ -736,6 +736,23 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
         l2 = pickle.loads(l1_state)
         self.assertEqual(l2.whoami_s(), 'dn:'+bind_dn)
 
+    def test105_reconnect_restore(self):
+        l1 = self.ldap_object_class(self.server.ldap_uri, retry_max=2, retry_delay=1)
+        bind_dn = 'cn=user1,'+self.server.suffix
+        l1.simple_bind_s(bind_dn, 'user1_pw')
+        self.assertEqual(l1.whoami_s(), 'dn:'+bind_dn)
+        self.server._proc.terminate()
+        self.server.wait()
+        try:
+            l1.whoami_s()
+        except ldap.SERVER_DOWN:
+            pass
+        else:
+            self.assertEqual(True, False)
+        finally:
+            self.server._start_slapd()
+        self.assertEqual(l1.whoami_s(), 'dn:'+bind_dn)
+
 
 if __name__ == '__main__':
     unittest.main()
