@@ -54,11 +54,10 @@ class DummyLock:
 
 try:
   # Check if Python installation was build with thread support
-  import thread
+  import threading
 except ImportError:
   LDAPLockBaseClass = DummyLock
 else:
-  import threading
   LDAPLockBaseClass = threading.Lock
 
 
