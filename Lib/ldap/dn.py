@@ -29,10 +29,10 @@ def escape_dn_chars(s):
     s = s.replace(';' ,'\\;')
     s = s.replace('=' ,'\\=')
     s = s.replace('\000' ,'\\\000')
-    if s[0]=='#' or s[0]==' ':
-      s = ''.join(('\\',s))
     if s[-1]==' ':
       s = ''.join((s[:-1],'\\ '))
+    if s[0]=='#' or s[0]==' ':
+      s = ''.join(('\\',s))
   return s
 
 
