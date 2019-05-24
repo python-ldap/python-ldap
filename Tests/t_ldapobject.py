@@ -661,6 +661,18 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         result = l.compare_s('cn=Foo1,%s' % base, 'cn', b'Foo2')
         self.assertIs(result, False)
 
+    def test_compare_s_notfound(self):
+        base = self.server.suffix
+        l = self._ldap_conn
+        with self.assertRaises(ldap.NO_SUCH_OBJECT):
+            result = l.compare_s('cn=invalid,%s' % base, 'cn', b'Foo2')
+
+    def test_compare_s_invalidattr(self):
+        base = self.server.suffix
+        l = self._ldap_conn
+        with self.assertRaises(ldap.UNDEFINED_TYPE):
+            result = l.compare_s('cn=Foo1,%s' % base, 'invalidattr', b'invalid')
+
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
     """
