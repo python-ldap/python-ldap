@@ -32,6 +32,22 @@ from ldap.compat import reraise
 
 from ldap import LDAPError
 
+from errno import EINTR
+
+def _retry_if_interrupted(func, *args, **kwargs):
+  """Call func, retrying if it raises an LDAPError with errno == EINTR.
+  """
+
+  while True:
+    try:
+      return func(*args, **kwargs)
+    except LDAPError as e:
+      try:
+        if e.args[0]['errno'] != EINTR:
+          raise
+      except (AttributeError, IndexError, KeyError):
+        raise e
+
 PY2 = sys.version_info[0] <= 2
 if PY2:
   text_type = unicode
@@ -312,7 +328,7 @@ class SimpleLDAPObject:
     diagnostic_message_success = None
     try:
       try:
-        result = func(*args,**kwargs)
+        result = _retry_if_interrupted(func, *args, **kwargs)
         if __debug__ and self._trace_level>=2:
           if func.__name__!="unbind_ext":
             diagnostic_message_success = self._l.get_option(ldap.OPT_DIAGNOSTIC_MESSAGE)
