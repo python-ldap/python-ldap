@@ -65,3 +65,4 @@ class ExtendedResponse:
 
 # Import sub-modules
 from ldap.extop.dds import *
+from ldap.extop.passwd import PasswordModifyResponse
