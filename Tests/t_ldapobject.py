@@ -711,7 +711,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             l.passwd_s(dn, "bogus", "ignored")
 
         # have the server generate a new random pw
-        respoid, respvalue = l.passwd_s(dn, "initial", None)
+        respoid, respvalue = l.passwd_s(dn, "initial", None, extract_newpw=True)
         self.assertEqual(respoid, None)
 
         password = respvalue.genPasswd
