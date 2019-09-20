@@ -111,7 +111,7 @@ def explode_rdn(rdn, notypes=False, flags=0):
 
 def is_dn(s,flags=0):
   """
-  Returns True if `s' can be parsed by ldap.dn.str2dn() like as a
+  Returns True if `s' can be parsed by ldap.dn.str2dn() as a
   distinguished host_name (DN), otherwise False is returned.
   """
   try:
