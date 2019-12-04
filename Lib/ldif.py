@@ -125,7 +125,7 @@ class LDIFWriter:
     of special chars or because attr_type is in self._base64_attrs
     """
     if isinstance(attr_value, str):
-      attr_value = str.encode(attr_value,'ascii')
+      attr_value = str.encode(attr_value,'utf-8')
     return attr_type.lower() in self._base64_attrs or \
            not safe_string_re.search(attr_value) is None
 
