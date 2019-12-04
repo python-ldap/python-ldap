@@ -124,6 +124,8 @@ class LDIFWriter:
     returns 1 if attr_value has to be base-64 encoded because
     of special chars or because attr_type is in self._base64_attrs
     """
+    if isinstance(attr_value, str):
+      attr_value = str.encode(attr_value,'ascii')
     return attr_type.lower() in self._base64_attrs or \
            not safe_string_re.search(attr_value) is None
 
@@ -142,7 +144,9 @@ class LDIFWriter:
       encoded = encoded.replace('\n','')
       self._unfold_lines(':: '.join([attr_type, encoded]))
     else:
-      self._unfold_lines(': '.join([attr_type, attr_value.decode('ascii')]))
+      if isinstance(attr_value, bytes):
+        attr_value = attr_value.decode('ascii')
+      self._unfold_lines(': '.join([attr_type, attr_value]))
     return # _unparseAttrTypeandValue()
 
   def _unparseEntryRecord(self,entry):
