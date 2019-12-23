@@ -5,6 +5,7 @@ See https://www.python-ldap.org/ for details.
 """
 
 import sys,os
+import platform
 from setuptools import setup, Extension
 
 if sys.version_info[0] == 2 and sys.version_info[1] < 7:
@@ -56,6 +57,10 @@ if os.environ.get('WITH_GCOV'):
   )
   LDAP_CLASS.extra_link_args.append('-pg')
   LDAP_CLASS.libs.append('gcov')
+
+# in case of FreeBSD
+if platform.system() == 'FreeBSD':
+  LDAP_CLASS.include_dirs.append('/usr/local/include')
 
 #-- Let distutils/setuptools do the rest
 name = 'python-ldap'
