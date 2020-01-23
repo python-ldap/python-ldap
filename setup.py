@@ -64,6 +64,7 @@ setup(
   #-- Package description
   name = name,
   license=pkginfo.__license__,
+  license_files=['LICENSE'],
   version=pkginfo.__version__,
   description = 'Python modules for implementing LDAP clients',
   long_description = """python-ldap:
