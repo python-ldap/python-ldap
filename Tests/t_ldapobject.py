@@ -614,7 +614,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         for _ in range(10):
             l = self.ldap_object_class(self.server.ldap_uri)
             l.set_option(ldap.OPT_X_TLS_CACERTFILE, self.server.cafile)
-            l.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+            l.set_option(ldap.OPT_X_TLS_NEWCTX, 1)
             l.start_tls_s()
             l.simple_bind_s(self.server.root_dn, self.server.root_pw)
             self.assertEqual(l.whoami_s(), 'dn:' + self.server.root_dn)

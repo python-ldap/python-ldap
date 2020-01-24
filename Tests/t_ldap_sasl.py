@@ -82,7 +82,7 @@ class TestSasl(SlapdTestCase):
         ldap_conn.set_option(ldap.OPT_X_TLS_CERTFILE, self.server.clientcert)
         ldap_conn.set_option(ldap.OPT_X_TLS_KEYFILE, self.server.clientkey)
         ldap_conn.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_HARD)
-        ldap_conn.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+        ldap_conn.set_option(ldap.OPT_X_TLS_NEWCTX, 1)
         ldap_conn.start_tls_s()
 
         auth = ldap.sasl.external()

@@ -825,7 +825,7 @@ class TestLdapCExtension(SlapdTestCase):
         l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
         l.set_option(_ldap.OPT_X_TLS_CACERTFILE, self.server.cafile)
         # re-create TLS context
-        l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
+        l.set_option(_ldap.OPT_X_TLS_NEWCTX, 1)
         l.start_tls_s()
 
     @requires_tls()
@@ -871,7 +871,7 @@ class TestLdapCExtension(SlapdTestCase):
         l.set_option(_ldap.OPT_X_TLS_CERTFILE, self.server.clientcert)
         l.set_option(_ldap.OPT_X_TLS_KEYFILE, self.server.clientkey)
         l.set_option(_ldap.OPT_X_TLS_REQUIRE_CERT, _ldap.OPT_X_TLS_HARD)
-        l.set_option(_ldap.OPT_X_TLS_NEWCTX, 0)
+        l.set_option(_ldap.OPT_X_TLS_NEWCTX, 1)
         l.start_tls_s()
 
     @requires_tls()

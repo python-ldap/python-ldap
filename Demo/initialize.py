@@ -40,7 +40,7 @@ l.set_option(ldap.OPT_X_TLS_REQUIRE_CERT,ldap.OPT_X_TLS_DEMAND)
 # Set path name of file containing all trusted CA certificates
 l.set_option(ldap.OPT_X_TLS_CACERTFILE,CACERTFILE)
 # Force libldap to create a new SSL context (must be last TLS option!)
-l.set_option(ldap.OPT_X_TLS_NEWCTX,0)
+l.set_option(ldap.OPT_X_TLS_NEWCTX, 1)
 
 # Now try StartTLS extended operation
 l.start_tls_s()
@@ -70,7 +70,7 @@ l.set_option(ldap.OPT_X_TLS_REQUIRE_CERT,ldap.OPT_X_TLS_DEMAND)
 # Set path name of file containing all trusted CA certificates
 l.set_option(ldap.OPT_X_TLS_CACERTFILE,CACERTFILE)
 # Force libldap to create a new SSL context (must be last TLS option!)
-l.set_option(ldap.OPT_X_TLS_NEWCTX,0)
+l.set_option(ldap.OPT_X_TLS_NEWCTX, 1)
 
 # Try an explicit anon bind to provoke failure
 l.simple_bind_s('','')
