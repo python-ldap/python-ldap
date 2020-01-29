@@ -1166,14 +1166,18 @@ class ReconnectLDAPObject(SimpleLDAPObject):
             counter_text,uri
           ))
         try:
-          # Do the connect
-          self._l = ldap.functions._ldap_function_call(ldap._ldap_module_lock,_ldap.initialize,uri)
-          self._restore_options()
-          # StartTLS extended operation in case this was called before
-          if self._start_tls:
-            SimpleLDAPObject.start_tls_s(self)
-          # Repeat last simple or SASL bind
-          self._apply_last_bind()
+          try:
+            # Do the connect
+            self._l = ldap.functions._ldap_function_call(ldap._ldap_module_lock,_ldap.initialize,uri)
+            self._restore_options()
+            # StartTLS extended operation in case this was called before
+            if self._start_tls:
+              SimpleLDAPObject.start_tls_s(self)
+            # Repeat last simple or SASL bind
+            self._apply_last_bind()
+          except ldap.LDAPError:
+            SimpleLDAPObject.unbind_s(self)
+            raise
         except (ldap.SERVER_DOWN,ldap.TIMEOUT):
           if __debug__ and self._trace_level>=1:
             self._trace_file.write('*** %s reconnect to %s failed\n' % (
@@ -1185,7 +1189,6 @@ class ReconnectLDAPObject(SimpleLDAPObject):
           if __debug__ and self._trace_level>=1:
             self._trace_file.write('=> delay %s...\n' % (retry_delay))
           time.sleep(retry_delay)
-          SimpleLDAPObject.unbind_s(self)
         else:
           if __debug__ and self._trace_level>=1:
             self._trace_file.write('*** %s reconnect to %s successful => repeat last operation\n' % (
