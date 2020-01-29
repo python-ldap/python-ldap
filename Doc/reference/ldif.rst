@@ -61,11 +61,11 @@ Example
 The following example demonstrates how to write LDIF output
 of an LDAP entry with :mod:`ldif` module.
 
->>> import sys,ldif
->>> entry={'objectClass':['top','person'],'cn':['Michael Stroeder'],'sn':['Stroeder']}
+>>> import sys, ldif
+>>> entry={'objectClass': [b'top', b'person'], 'cn': [b'Michael Stroeder'], 'sn': [b'Stroeder']}
 >>> dn='cn=Michael Stroeder,ou=Test'
 >>> ldif_writer=ldif.LDIFWriter(sys.stdout)
->>> ldif_writer.unparse(dn,entry)
+>>> ldif_writer.unparse(dn, entry)
 dn: cn=Michael Stroeder,ou=Test
 cn: Michael Stroeder
 objectClass: top
