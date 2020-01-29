@@ -39,9 +39,16 @@ matrix:
         - WITH_GCOV=1
       dist: xenial
       sudo: true
-    - python: 3.8-dev
+    - python: 3.8
       env:
         - TOXENV=py38
+        - CFLAGS_std="-std=c99"
+        - WITH_GCOV=1
+      dist: xenial
+      sudo: true
+    - python: 3.9-dev
+      env:
+        - TOXENV=py39
         - CFLAGS_std="-std=c99"
         - WITH_GCOV=1
       dist: xenial
@@ -61,7 +68,7 @@ matrix:
       env: TOXENV=doc
   allow_failures:
      - env:
-        - TOXENV=py38
+        - TOXENV=py39
         - CFLAGS_std="-std=c99"
         - WITH_GCOV=1
      - env:

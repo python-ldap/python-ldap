@@ -95,6 +95,7 @@ setup(
     'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
     # Note: when updating Python versions, also change .travis.yml and tox.ini
 
     'Topic :: Database',
