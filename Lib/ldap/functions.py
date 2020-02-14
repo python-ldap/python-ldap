@@ -29,6 +29,8 @@ if __debug__:
 
 # See _raise_byteswarning in ldapobject.py
 _LDAP_WARN_SKIP_FRAME = True
+BYTES_MODE_MODERN = False
+BYTES_MODE_LEGACY = True
 
 
 def _ldap_function_call(lock,func,*args,**kwargs):

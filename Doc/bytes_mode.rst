@@ -48,14 +48,15 @@ In Python 3, text values are represented as ``str``, the Unicode text type.
 In Python 2, the behavior of python-ldap 3.0 is influenced by a ``bytes_mode``
 argument to :func:`ldap.initialize`:
 
-``bytes_mode=True`` (backwards compatible):
+``bytes_mode=ldap.BYTES_MODE_LEGACY`` (backwards compatible):
     Text values are represented as bytes (``str``) encoded using UTF-8.
 
-``bytes_mode=False`` (future compatible):
+``bytes_mode=ldap.BYTES_MODE_MODERN`` (future compatible):
     Text values are represented as ``unicode``.
 
-If not given explicitly, python-ldap will default to ``bytes_mode=True``,
-but if an ``unicode`` value supplied to it, it will warn and use that value.
+If not given explicitly, python-ldap will default to
+``bytes_mode=ldap.BYTES_MODE_LGACY``, but if an ``unicode`` value is
+supplied to it, it will warn and use that value.
 
 Backwards-compatible behavior is not scheduled for removal until Python 2
 itself reaches end of life.
@@ -102,7 +103,7 @@ this are provided :ref:`in Python documentation <pyporting-howto>` and in the
 
 
 When porting from python-ldap 2.x, users are advised to update their code
-to set ``bytes_mode=False``, and fix any resulting failures.
+to set ``bytes_mode=ldap.BYTES_MODE_MODERN``, and fix any resulting failures.
 
 The typical usage is as follows.
 Note that only the result's *values* are of the ``bytes`` type:
@@ -110,7 +111,7 @@ Note that only the result's *values* are of the ``bytes`` type:
 .. code-block:: pycon
 
     >>> import ldap
-    >>> con = ldap.initialize('ldap://localhost:389', bytes_mode=False)
+    >>> con = ldap.initialize('ldap://localhost:389', bytes_mode=ldap.BYTES_MODE_MODERN)
     >>> con.simple_bind_s(u'login', u'secret_password')
     >>> results = con.search_s(u'ou=people,dc=example,dc=org', ldap.SCOPE_SUBTREE, u"(cn=Raphaël)")
     >>> results

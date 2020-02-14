@@ -117,8 +117,9 @@ class SimpleLDAPObject:
                 _raise_byteswarning(
                   "Under Python 2, python-ldap uses bytes by default. "
                   "This will be removed in Python 3 (no bytes for "
-                  "DN/RDN/field names). "
-                  "Please call initialize(..., bytes_mode=False) explicitly.")
+                  "DN/RDN/field names). Please call "
+                  "initialize(..., bytes_mode=ldap.BYTES_MODE_MODERN) "
+                  "explicitly.")
                 bytes_strictness = 'warn'
         else:
             if bytes_strictness is None:
