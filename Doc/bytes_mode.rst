@@ -55,7 +55,7 @@ argument to :func:`ldap.initialize`:
     Text values are represented as ``unicode``.
 
 If not given explicitly, python-ldap will default to ``bytes_mode=True``,
-but if an ``unicode`` value supplied to it, it will warn and use that value.
+but if an ``unicode`` value is supplied to it, it will warn and use that value.
 
 Backwards-compatible behavior is not scheduled for removal until Python 2
 itself reaches end of life.
