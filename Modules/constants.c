@@ -198,7 +198,7 @@ LDAPerror(LDAP *l, char *msg)
 int
 LDAPinit_constants(PyObject *m)
 {
-    PyObject *exc;
+    PyObject *exc, *nobj;
 
     /* simple constants */
 
@@ -228,6 +228,10 @@ LDAPinit_constants(PyObject *m)
 #define add_err(n) do {  \
     exc = PyErr_NewException("ldap." #n, LDAPexception_class, NULL);  \
     if (exc == NULL) return -1;  \
+    nobj = PyLong_FromLong(LDAP_##n); \
+    if (nobj == NULL) return -1; \
+    if (PyObject_SetAttrString(exc, "errnum", nobj) != 0) return -1; \
+    Py_DECREF(nobj); \
     errobjects[LDAP_##n+LDAP_ERROR_OFFSET] = exc;  \
     if (PyModule_AddObject(m, #n, exc) != 0) return -1;  \
     Py_INCREF(exc);  \
