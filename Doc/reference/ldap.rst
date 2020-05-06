@@ -458,10 +458,6 @@ The module defines the following exceptions:
 
 .. py:exception:: NO_MEMORY
 
-.. py:exception:: NO_OBJECT_CLASS_MODS
-
-   Object class modifications are not allowed.
-
 .. py:exception:: NO_RESULTS_RETURNED
 
 .. py:exception:: NO_SUCH_ATTRIBUTE
