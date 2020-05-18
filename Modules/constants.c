@@ -49,7 +49,7 @@ LDAPerr(int errnum)
 
 /* Convert an LDAP error into an informative python exception */
 PyObject *
-LDAPraise_for_message(LDAP *l, char *msg, LDAPMessage *m)
+LDAPraise_for_message(LDAP *l, LDAPMessage *m)
 {
     if (l == NULL) {
         PyErr_SetFromErrno(LDAPexception_class);
@@ -170,10 +170,8 @@ LDAPraise_for_message(LDAP *l, char *msg, LDAPMessage *m)
             PyDict_SetItemString(info, "info", str);
             Py_XDECREF(str);
         }
-        else if (msg != NULL || (error != NULL && *error != '\0')) {
-            msg = msg ? msg : error;
-
-            str = PyUnicode_FromString(msg);
+        else if (error != NULL && *error != '\0') {
+            str = PyUnicode_FromString(error);
             if (str)
                 PyDict_SetItemString(info, "info", str);
             Py_XDECREF(str);
@@ -188,9 +186,9 @@ LDAPraise_for_message(LDAP *l, char *msg, LDAPMessage *m)
 }
 
 PyObject *
-LDAPerror(LDAP *l, char *msg)
+LDAPerror(LDAP *l)
 {
-    return LDAPraise_for_message(l, msg, NULL);
+    return LDAPraise_for_message(l, NULL);
 }
 
 /* initialise the module constants */

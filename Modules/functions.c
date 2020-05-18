@@ -25,7 +25,7 @@ l_ldap_initialize(PyObject *unused, PyObject *args)
     PyEval_RestoreThread(save);
 
     if (ret != LDAP_SUCCESS)
-        return LDAPerror(ld, "ldap_initialize");
+        return LDAPerror(ld);
 
     return (PyObject *)newLDAPObject(ld);
 }
