@@ -465,7 +465,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             info = ldap_err.args[0]['info']
             expected_info = os.strerror(errno.ENOTCONN)
             if info != expected_info:
-                self.fail("expected info=%r, got %d" % (expected_info, info))
+                self.fail("expected info=%r, got %r" % (expected_info, info))
         else:
             self.fail("expected SERVER_DOWN, got %r" % r)
 
