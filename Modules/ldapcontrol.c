@@ -82,6 +82,7 @@ Tuple_to_LDAPControl(PyObject *tup)
         return NULL;
 
     lc = PyMem_NEW(LDAPControl, 1);
+
     if (lc == NULL) {
         PyErr_NoMemory();
         return NULL;
@@ -91,6 +92,7 @@ Tuple_to_LDAPControl(PyObject *tup)
 
     len = strlen(oid);
     lc->ldctl_oid = PyMem_NEW(char, len + 1);
+
     if (lc->ldctl_oid == NULL) {
         PyErr_NoMemory();
         LDAPControl_DEL(lc);
@@ -137,6 +139,7 @@ LDAPControls_from_object(PyObject *list, LDAPControl ***controls_ret)
 
     len = PySequence_Length(list);
     ldcs = PyMem_NEW(LDAPControl *, len + 1);
+
     if (ldcs == NULL) {
         PyErr_NoMemory();
         return 0;

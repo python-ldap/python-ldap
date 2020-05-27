@@ -126,6 +126,7 @@ Tuple_to_LDAPMod(PyObject *tup, int no_op)
     }
 
     lm = PyMem_NEW(LDAPMod, 1);
+
     if (lm == NULL)
         goto nomem;
 
@@ -236,6 +237,7 @@ List_to_LDAPMods(PyObject *list, int no_op)
     }
 
     lms = PyMem_NEW(LDAPMod *, len + 1);
+
     if (lms == NULL)
         goto nomem;
 
