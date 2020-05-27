@@ -15,9 +15,9 @@ def PrintSchemaTree(schema,se_class,se_tree,se_oid,level):
   """ASCII text output for console"""
   se_obj = schema.get_obj(se_class,se_oid)
   if se_obj!=None:
-    print('|    '*(level-1)+'+---'*(level>0), \)
-          ', '.join(se_obj.names), \
-          '(%s)' % se_obj.oid
+    print('|    '*(level-1)+'+---'*(level>0),
+          ', '.join(se_obj.names),
+          '(%s)' % se_obj.oid)
   for sub_se_oid in se_tree[se_oid]:
     print('|    '*(level+1))
     PrintSchemaTree(schema,se_class,se_tree,sub_se_oid,level+1)
