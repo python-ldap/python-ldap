@@ -149,7 +149,9 @@ Packages for building and testing::
        libldap2-dev libsasl2-dev slapd ldap-utils tox \
        lcov valgrind
        
-*Note:* Replace ``python-tox`` with ``tox`` in Debian Buster.
+.. note::
+   
+   On older releases ``tox`` was called ``python-tox``.
 
 Fedora
 ------
