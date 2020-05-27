@@ -146,7 +146,7 @@ Debian
 Packages for building and testing::
 
    # apt-get install build-essential python3-dev python2.7-dev \
-       libldap2-dev libsasl2-dev slapd ldap-utils python-tox \
+       libldap2-dev libsasl2-dev slapd ldap-utils tox \
        lcov valgrind
        
 *Note:* Replace ``python-tox`` with ``tox`` in Debian Buster.
