@@ -68,10 +68,6 @@ matrix:
       env: TOXENV=doc
   allow_failures:
      - env:
-        - TOXENV=py39
-        - CFLAGS_std="-std=c99"
-        - WITH_GCOV=1
-     - env:
         - TOXENV=pypy
 
 env:

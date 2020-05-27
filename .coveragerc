@@ -1,9 +1,10 @@
 [run]
 branch = True
 source =
-    Lib/
-omit =
-    Lib/slapdtest.py
+   ldap
+   ldif
+   ldapurl
+   slapdtest
 
 [paths]
 source =
