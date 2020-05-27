@@ -38,9 +38,9 @@ for id_attr in ('uidNumber','gidNumber'):
   except ldap.SIZELIMIT_EXCEEDED:
     pass
   # print result
-  print 'Highest value of %s' % (id_attr)
+  print('Highest value of %s' % (id_attr))
   if ldap_result:
     dn,entry = ldap_result[0]
-    print '->',entry[id_attr]
+    print('->',entry[id_attr])
   else:
-    print 'not found'
+    print('not found')
