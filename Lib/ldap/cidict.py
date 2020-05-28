@@ -5,6 +5,7 @@ names of variable case.
 
 See https://www.python-ldap.org/ for details.
 """
+import warnings
 
 from ldap import __version__
 
@@ -62,6 +63,11 @@ def strlist_minus(a,b):
   Return list of all items in a which are not in b (a - b).
   a,b are supposed to be lists of case-insensitive strings.
   """
+  warnings.warn(
+    "strlist functions are deprecated and will be removed in 3.4",
+    category=DeprecationWarning,
+    stacklevel=2,
+  )
   temp = cidict()
   for elt in b:
     temp[elt] = elt
@@ -77,6 +83,11 @@ def strlist_intersection(a,b):
   """
   Return intersection of two lists of case-insensitive strings a,b.
   """
+  warnings.warn(
+    "strlist functions are deprecated and will be removed in 3.4",
+    category=DeprecationWarning,
+    stacklevel=2,
+  )
   temp = cidict()
   for elt in a:
     temp[elt] = elt
@@ -92,6 +103,11 @@ def strlist_union(a,b):
   """
   Return union of two lists of case-insensitive strings a,b.
   """
+  warnings.warn(
+    "strlist functions are deprecated and will be removed in 3.4",
+    category=DeprecationWarning,
+    stacklevel=2,
+  )
   temp = cidict()
   for elt in a:
     temp[elt] = elt
