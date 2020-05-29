@@ -1365,14 +1365,16 @@ l_ldap_start_tls_s(LDAPObject *self, PyObject *args)
 /* ldap_set_option */
 
 static PyObject *
-l_ldap_set_option(PyObject *self, PyObject *args)
+l_ldap_set_option(LDAPObject *self, PyObject *args)
 {
     PyObject *value;
     int option;
 
     if (!PyArg_ParseTuple(args, "iO:set_option", &option, &value))
         return NULL;
-    if (!LDAP_set_option((LDAPObject *)self, option, value))
+    if (not_valid(self))
+        return NULL;
+    if (!LDAP_set_option(self, option, value))
         return NULL;
     Py_INCREF(Py_None);
     return Py_None;
@@ -1381,13 +1383,15 @@ l_ldap_set_option(PyObject *self, PyObject *args)
 /* ldap_get_option */
 
 static PyObject *
-l_ldap_get_option(PyObject *self, PyObject *args)
+l_ldap_get_option(LDAPObject *self, PyObject *args)
 {
     int option;
 
     if (!PyArg_ParseTuple(args, "i:get_option", &option))
         return NULL;
-    return LDAP_get_option((LDAPObject *)self, option);
+    if (not_valid(self))
+        return NULL;
+    return LDAP_get_option(self, option);
 }
 
 /* ldap_passwd */
