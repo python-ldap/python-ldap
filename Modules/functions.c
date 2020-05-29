@@ -30,6 +30,75 @@ l_ldap_initialize(PyObject *unused, PyObject *args)
     return (PyObject *)newLDAPObject(ld);
 }
 
+#ifdef HAVE_LDAP_INIT_FD
+
+/* initialize_fd(fileno, url)
+ *
+ * ldap_init_fd() is not a private API but it's not in a public header either
+ * SSSD has been using the function for a while, so it's probably OK.
+ */
+
+#ifndef LDAP_PROTO_TCP
+#define LDAP_PROTO_TCP 1
+#define LDAP_PROTO_UDP 2
+#define LDAP_PROTO_IPC 3
+#endif
+
+extern int
+  ldap_init_fd(ber_socket_t fd, int proto, LDAP_CONST char *url, LDAP **ldp);
+
+static PyObject *
+l_ldap_initialize_fd(PyObject *unused, PyObject *args)
+{
+    char *url;
+    LDAP *ld = NULL;
+    int ret;
+    int fd;
+    int proto = -1;
+    LDAPURLDesc *lud = NULL;
+
+    PyThreadState *save;
+
+    if (!PyArg_ParseTuple(args, "is:initialize_fd", &fd, &url))
+        return NULL;
+
+    /* Get LDAP protocol from scheme */
+    ret = ldap_url_parse(url, &lud);
+    if (ret != LDAP_SUCCESS)
+        return LDAPerr(ret);
+
+    if (strcmp(lud->lud_scheme, "ldap") == 0) {
+        proto = LDAP_PROTO_TCP;
+    }
+    else if (strcmp(lud->lud_scheme, "ldaps") == 0) {
+        proto = LDAP_PROTO_TCP;
+    }
+    else if (strcmp(lud->lud_scheme, "ldapi") == 0) {
+        proto = LDAP_PROTO_IPC;
+    }
+#ifdef LDAP_CONNECTIONLESS
+    else if (strcmp(lud->lud_scheme, "cldap") == 0) {
+        proto = LDAP_PROTO_UDP;
+    }
+#endif
+    else {
+        ldap_free_urldesc(lud);
+        PyErr_SetString(PyExc_ValueError, "unsupported URL scheme");
+	return NULL;
+    }
+    ldap_free_urldesc(lud);
+
+    save = PyEval_SaveThread();
+    ret = ldap_init_fd((ber_socket_t) fd, proto, url, &ld);
+    PyEval_RestoreThread(save);
+
+    if (ret != LDAP_SUCCESS)
+        return LDAPerror(ld);
+
+    return (PyObject *)newLDAPObject(ld);
+}
+#endif /* HAVE_LDAP_INIT_FD */
+
 /* ldap_str2dn */
 
 static PyObject *
@@ -137,6 +206,9 @@ l_ldap_get_option(PyObject *self, PyObject *args)
 
 static PyMethodDef methods[] = {
     {"initialize", (PyCFunction)l_ldap_initialize, METH_VARARGS},
+#ifdef HAVE_LDAP_INIT_FD
+    {"initialize_fd", (PyCFunction)l_ldap_initialize_fd, METH_VARARGS},
+#endif
     {"str2dn", (PyCFunction)l_ldap_str2dn, METH_VARARGS},
     {"set_option", (PyCFunction)l_ldap_set_option, METH_VARARGS},
     {"get_option", (PyCFunction)l_ldap_get_option, METH_VARARGS},

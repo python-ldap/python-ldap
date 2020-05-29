@@ -7,8 +7,10 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import unicode_literals
 
+import contextlib
 import errno
 import os
+import socket
 import unittest
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -92,13 +94,34 @@ class TestLdapCExtension(SlapdTestCase):
         """
         l = _ldap.initialize(self.server.ldap_uri)
         if bind:
-            # Perform a simple bind
-            l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
-            m = l.simple_bind(self.server.root_dn, self.server.root_pw)
-            result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ONE, self.timeout)
-            self.assertEqual(result, _ldap.RES_BIND)
-            self.assertEqual(type(msgid), type(0))
+            self._bind_conn(l)
         return l
+
+    @contextlib.contextmanager
+    def _open_conn_fd(self, bind=True):
+        sock = socket.create_connection(
+            (self.server.hostname, self.server.port)
+        )
+        try:
+            l = _ldap.initialize_fd(sock.fileno(), self.server.ldap_uri)
+            if bind:
+                self._bind_conn(l)
+            yield sock, l
+        finally:
+            try:
+                sock.close()
+            except OSError:
+                # already closed
+                pass
+
+    def _bind_conn(self, l):
+        # Perform a simple bind
+        l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
+        m = l.simple_bind(self.server.root_dn, self.server.root_pw)
+        result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ONE, self.timeout)
+        self.assertEqual(result, _ldap.RES_BIND)
+        self.assertEqual(type(msgid), type(0))
+
 
     # Test for the existence of a whole bunch of constants
     # that the C module is supposed to export
@@ -223,6 +246,30 @@ class TestLdapCExtension(SlapdTestCase):
 
     def test_simple_bind(self):
         l = self._open_conn()
+
+    def test_simple_bind_fileno(self):
+        with self._open_conn_fd() as (sock, l):
+            self.assertEqual(l.whoami_s(), "dn:" + self.server.root_dn)
+
+    def test_simple_bind_fileno_invalid(self):
+        with open(os.devnull) as f:
+            l = _ldap.initialize_fd(f.fileno(), self.server.ldap_uri)
+            with self.assertRaises(_ldap.SERVER_DOWN):
+                self._bind_conn(l)
+
+    def test_simple_bind_fileno_closed(self):
+        with self._open_conn_fd() as (sock, l):
+            self.assertEqual(l.whoami_s(), "dn:" + self.server.root_dn)
+            sock.close()
+            with self.assertRaises(_ldap.SERVER_DOWN):
+                l.whoami_s()
+
+    def test_simple_bind_fileno_rebind(self):
+        with self._open_conn_fd() as (sock, l):
+            self.assertEqual(l.whoami_s(), "dn:" + self.server.root_dn)
+            l.unbind_ext()
+            with self.assertRaises(_ldap.LDAPError):
+                self._bind_conn(l)
 
     def test_simple_anonymous_bind(self):
         l = self._open_conn(bind=False)
