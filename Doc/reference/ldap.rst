@@ -29,7 +29,7 @@ Functions
 
 This module defines the following functions:
 
-.. py:function:: initialize(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=None, [bytes_mode=None, [bytes_strictness=None]]]]]) -> LDAPObject object
+.. py:function:: initialize(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=None, [bytes_mode=None, [bytes_strictness=None, [fileno=None]]]]]]) -> LDAPObject object
 
    Initializes a new connection object for accessing the given LDAP server,
    and return an :class:`~ldap.ldapobject.LDAPObject` used to perform operations
@@ -39,6 +39,16 @@ This module defines the following functions:
    containing only the schema, the host, and the port fields. Note that
    when using multiple URIs you cannot determine to which URI your client
    gets connected.
+
+   If *fileno* parameter is given then the file descriptor will be used to
+   connect to an LDAP server. The *fileno* must either be a socket file
+   descriptor as :class:`int` or a file-like object with a *fileno()* method
+   that returns a socket file descriptor. The socket file descriptor must
+   already be connected. :class:`~ldap.ldapobject.LDAPObject` does not take
+   ownership of the file descriptor. It must be kept open during operations
+   and explicitly closed after the :class:`~ldap.ldapobject.LDAPObject` is
+   unbound. The internal connection type is determined from the URI, ``TCP``
+   for ``ldap://`` / ``ldaps://``, ``IPC`` (``AF_UNIX``) for ``ldapi://``.
 
    Note that internally the OpenLDAP function
    `ldap_initialize(3) <https://www.openldap.org/software/man.cgi?query=ldap_init&sektion=3>`_
@@ -71,6 +81,10 @@ This module defines the following functions:
    .. seealso::
 
       :rfc:`4516` - Lightweight Directory Access Protocol (LDAP): Uniform Resource Locator
+
+   .. versionadded:: 3.3
+
+      The *fileno* argument was added.
 
 
 .. py:function:: get_option(option) -> int|string

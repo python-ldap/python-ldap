@@ -96,14 +96,21 @@ class SimpleLDAPObject:
   def __init__(
     self,uri,
     trace_level=0,trace_file=None,trace_stack_limit=5,bytes_mode=None,
-    bytes_strictness=None,
+    bytes_strictness=None, fileno=None
   ):
     self._trace_level = trace_level or ldap._trace_level
     self._trace_file = trace_file or ldap._trace_file
     self._trace_stack_limit = trace_stack_limit
     self._uri = uri
     self._ldap_object_lock = self._ldap_lock('opcall')
-    self._l = ldap.functions._ldap_function_call(ldap._ldap_module_lock,_ldap.initialize,uri)
+    if fileno is not None:
+      if hasattr(fileno, "fileno"):
+        fileno = fileno.fileno()
+      self._l = ldap.functions._ldap_function_call(
+        ldap._ldap_module_lock, _ldap.initialize_fd, fileno, uri
+      )
+    else:
+      self._l = ldap.functions._ldap_function_call(ldap._ldap_module_lock,_ldap.initialize,uri)
     self.timeout = -1
     self.protocol_version = ldap.VERSION3
 
@@ -1086,7 +1093,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
   def __init__(
     self,uri,
     trace_level=0,trace_file=None,trace_stack_limit=5,bytes_mode=None,
-    bytes_strictness=None, retry_max=1, retry_delay=60.0
+    bytes_strictness=None, retry_max=1, retry_delay=60.0, fileno=None
   ):
     """
     Parameters like SimpleLDAPObject.__init__() with these
@@ -1102,7 +1109,8 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self._last_bind = None
     SimpleLDAPObject.__init__(self, uri, trace_level, trace_file,
                               trace_stack_limit, bytes_mode,
-                              bytes_strictness=bytes_strictness)
+                              bytes_strictness=bytes_strictness,
+                              fileno=fileno)
     self._reconnect_lock = ldap.LDAPLock(desc='reconnect lock within %s' % (repr(self)))
     self._retry_max = retry_max
     self._retry_delay = retry_delay

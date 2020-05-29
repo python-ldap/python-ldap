@@ -179,7 +179,7 @@ class SlapdObject(object):
     root_cn = 'Manager'
     root_pw = 'password'
     slapd_loglevel = 'stats stats2'
-    local_host = '127.0.0.1'
+    local_host = LOCALHOST
     testrunsubdirs = (
         'schema',
     )
@@ -214,7 +214,7 @@ class SlapdObject(object):
         self._schema_prefix = os.path.join(self.testrundir, 'schema')
         self._slapd_conf = os.path.join(self.testrundir, 'slapd.conf')
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
-        self.ldap_uri = "ldap://%s:%d/" % (LOCALHOST, self._port)
+        self.ldap_uri = "ldap://%s:%d/" % (self.local_host, self._port)
         if HAVE_LDAPI:
             ldapi_path = os.path.join(self.testrundir, 'ldapi')
             self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
@@ -242,6 +242,14 @@ class SlapdObject(object):
     @property
     def root_dn(self):
         return 'cn={self.root_cn},{self.suffix}'.format(self=self)
+
+    @property
+    def hostname(self):
+        return self.local_host
+
+    @property
+    def port(self):
+        return self._port
 
     def _find_commands(self):
         self.PATH_LDAPADD = self._find_command('ldapadd')

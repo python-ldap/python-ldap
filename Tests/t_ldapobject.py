@@ -20,6 +20,7 @@ import errno
 import contextlib
 import linecache
 import os
+import socket
 import unittest
 import warnings
 import pickle
@@ -102,6 +103,9 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         except AttributeError:
             # open local LDAP connection
             self._ldap_conn = self._open_ldap_conn(bytes_mode=False)
+
+    def tearDown(self):
+        del self._ldap_conn
 
     def test_reject_bytes_base(self):
         base = self.server.suffix
@@ -752,6 +756,29 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
         finally:
             self.server._start_slapd()
         self.assertEqual(l1.whoami_s(), 'dn:'+bind_dn)
+
+
+class Test03_SimpleLDAPObjectWithFileno(Test00_SimpleLDAPObject):
+    def _get_bytes_ldapobject(self, explicit=True, **kwargs):
+        raise unittest.SkipTest("Test opens two sockets")
+
+    def _search_wrong_type(self, bytes_mode, strictness):
+        raise unittest.SkipTest("Test opens two sockets")
+
+    def _open_ldap_conn(self, who=None, cred=None, **kwargs):
+        if hasattr(self, '_sock'):
+            raise RuntimeError("socket already connected")
+        self._sock = socket.create_connection(
+            (self.server.hostname, self.server.port)
+        )
+        return super(Test03_SimpleLDAPObjectWithFileno, self)._open_ldap_conn(
+            who=who, cred=cred, fileno=self._sock.fileno(), **kwargs
+        )
+
+    def tearDown(self):
+        self._sock.close()
+        del self._sock
+        super(Test03_SimpleLDAPObjectWithFileno, self).tearDown()
 
 
 if __name__ == '__main__':
