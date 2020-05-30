@@ -213,10 +213,6 @@ add_int(OPT_X_TLS_DEMAND);
 add_int(OPT_X_TLS_ALLOW);
 add_int(OPT_X_TLS_TRY);
 
-#if defined(LDAP_OPT_X_TLS_PEERCERT)
-add_int(OPT_X_TLS_PEERCERT);
-#endif
-
 #if defined(LDAP_OPT_X_TLS_VERSION)
 add_int(OPT_X_TLS_VERSION);
 #endif

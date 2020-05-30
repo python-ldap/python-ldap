@@ -12,6 +12,11 @@ AUTOPEP8_OPTS=--aggressive
 .PHONY: all
 all:
 
+Modules/constants_generated.h: Lib/ldap/constants.py
+	$(PYTHON) $^ > $@
+	indent Modules/constants_generated.h
+	rm -f Modules/constants_generated.h~
+
 .PHONY: clean
 clean:
 	rm -rf build dist *.egg-info .tox MANIFEST
