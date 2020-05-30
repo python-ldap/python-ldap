@@ -223,6 +223,8 @@ TLS options
 
 .. py:data:: OPT_X_TLS
 
+.. py:data:: OPT_X_TLS_NEWCTX
+
 .. py:data:: OPT_X_TLS_ALLOW
 
 .. py:data:: OPT_X_TLS_CACERTDIR
@@ -248,6 +250,12 @@ TLS options
 .. py:data:: OPT_X_TLS_REQUIRE_CERT
 
 .. py:data:: OPT_X_TLS_TRY
+
+.. note::
+
+   OpenLDAP supports several TLS/SSL libraries. OpenSSL is the most common
+   backend. Some options may not be available when libldap uses NSS, GnuTLS,
+   or Apple's Secure Transport backend.
 
 .. _ldap-keepalive-options:
 
