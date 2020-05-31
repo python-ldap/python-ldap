@@ -418,6 +418,62 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             l.simple_bind_s(self.server.root_dn, self.server.root_pw)
             self.assertEqual(l.whoami_s(), 'dn:' + self.server.root_dn)
 
+    def assert_option_equal(self, conn, option, value):
+        self.assertEqual(conn.get_option(option), value)
+
+    @requires_tls()
+    def test_set_tls_options_ldap(self):
+        # just any directory will do
+        certdir = os.path.dirname(__file__)
+        conn = self.ldap_object_class(self.server.ldap_uri)
+        conn.set_tls_options(
+            cacertfile=self.server.cafile,
+            # just any directory
+            cacertdir=certdir,
+            require_cert=ldap.OPT_X_TLS_DEMAND,
+            protocol_min=0x303,
+            # libldap on Travis CI doesn't like cipher_suite
+            # cipher_suite="ALL",
+            certfile=self.server.clientcert,
+            keyfile=self.server.clientkey,
+            # libldap on TravisCI doesn't like CRL options
+            # crlfile=None,
+            # crlcheck=ldap.OPT_X_TLS_CRL_PEER,
+            start_tls=False
+        )
+        self.assert_option_equal(
+            conn, ldap.OPT_X_TLS_CACERTFILE, self.server.cafile
+        )
+        self.assert_option_equal(
+            conn, ldap.OPT_X_TLS_CACERTDIR, certdir
+        )
+        self.assert_option_equal(
+            conn, ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND
+        )
+        # cipher_suite depends on OpenSSL version and system settings
+        self.assert_option_equal(
+            conn, ldap.OPT_X_TLS_PROTOCOL_MIN, 0x303
+        )
+        self.assert_option_equal(
+            conn, ldap.OPT_X_TLS_CERTFILE, self.server.clientcert
+        )
+        self.assert_option_equal(
+            conn, ldap.OPT_X_TLS_KEYFILE, self.server.clientkey,
+        )
+        # self.assert_option_equal(
+        #     conn, ldap.OPT_X_TLS_CRLFILE, crlfile
+        # )
+        # self.assert_option_equal(
+        #     conn, ldap.OPT_X_TLS_CRLCHECK, ldap.OPT_X_TLS_CRL_PEER
+        # )
+
+        # run again, this time with default start_tls.
+        conn.set_tls_options()
+        # second call should fail
+        with self.assertRaises(ValueError) as e:
+            conn.set_tls_options()
+        self.assertIn("TLS connection already established", str(e.exception))
+
     def test_dse(self):
         dse = self._ldap_conn.read_rootdse_s()
         self.assertIsInstance(dse, dict)

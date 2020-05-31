@@ -253,6 +253,9 @@ SASL options
 TLS options
 :::::::::::
 
+The method :py:meth:`LDAPObject.set_tls_options` provides a high-level API
+to configure TLS options.
+
 .. warning::
 
    libldap does not materialize all TLS settings immediately. You must use
@@ -1338,6 +1341,51 @@ Connection-specific LDAP options
    This method sets the value of the LDAPObject option
    specified by *option* to *invalue*.
 
+
+.. py:method:: LDAPObject.set_tls_options(cacertfile=None, cacertdir=None, require_cert=None, protocol_min=None, cipher_suite=None, certfile=None, keyfile=None, crlfile=None, crlcheck=None, start_tls=True) -> None
+
+   The method provides a high-level API to set TLS related options. It
+   avoids most common pitfalls and some catches errors early, e.g.
+   missing :py:const:`OPT_X_TLS_NEWCTX`. The method is available for OpenSSL
+   and GnuTLS backends. It raises :py:exc:`ValueError` for unsupported
+   backends, when libldap does not have TLS support, or TLS layer is already
+   installed.
+
+   *cacertfile* is a path to a PEM bundle file containing root CA certs.
+   Raises :py:exc:`OSError` when file is not found.
+
+   *cacertdir* is a path to a directory that contains hashed CA cert files.
+   Raises :py:exc:`OSError` when the directory does not exist.
+
+   *require_cert* set the cert validation strategy. Value must be one of
+   :py:const:`OPT_X_TLS_NEVER`, :py:const:`OPT_X_TLS_DEMAND`,
+   or :py:const:`OPT_X_TLS_HARD`. Hard and demand have the same meaning.
+   Raises :py:exc:`ValueError` for unsupported values.
+
+   *protocol_min* sets the minimum TLS protocol version. Value must one of
+   ``0x303`` (TLS 1.2) or ``0x304`` (TLS 1.3). Raises :py:exc:`ValueError`
+   for unsupported values.
+
+   *cipher_suite* cipher suite string, see OpenSSL documentation for more
+   details.
+
+   *certfile* and *keyfile* set paths to certificate and key for client
+   cert authentication. Raises :py:exc:`ValueError` when only one option
+   is given and :py:exc:`OSError` when any file does not exist.
+
+   *crlfile* is path to a CRL file. Raises :py:exc:`OSError` when file is
+   not found.
+
+   *crlcheck* sets the CRL verification strategy. Value must be one of
+   :py:const:`OPT_X_TLS_CRL_NONE`, :py:const:`OPT_X_TLS_CRL_PEER`, or
+   :py:const:`OPT_X_TLS_CRL_ALL`. Raises :py:exc:`ValueError` for unsupported
+   values.
+
+   When *start_tls* is set then :py:meth:`LDAPObject.start_tls_s` is
+   automatically called for ``ldap://`` URIs. The argument is ignored
+   for ``ldaps://`` URIs.
+
+   .. versionadded:: 3.3
 
 Object attributes
 -----------------

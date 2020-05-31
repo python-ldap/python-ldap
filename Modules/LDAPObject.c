@@ -1360,6 +1360,15 @@ l_ldap_start_tls_s(LDAPObject *self, PyObject *args)
     return Py_None;
 }
 
+static PyObject *
+l_ldap_tls_inplace(LDAPObject *self)
+{
+    if (not_valid(self))
+        return NULL;
+
+    return PyBool_FromLong(ldap_tls_inplace(self->ldap));
+}
+
 #endif
 
 /* ldap_set_option */
@@ -1525,6 +1534,7 @@ static PyMethodDef methods[] = {
     {"search_ext", (PyCFunction)l_ldap_search_ext, METH_VARARGS},
 #ifdef HAVE_TLS
     {"start_tls_s", (PyCFunction)l_ldap_start_tls_s, METH_VARARGS},
+    {"tls_inplace", (PyCFunction)l_ldap_tls_inplace, METH_NOARGS},
 #endif
     {"whoami_s", (PyCFunction)l_ldap_whoami_s, METH_VARARGS},
     {"passwd", (PyCFunction)l_ldap_passwd, METH_VARARGS},
