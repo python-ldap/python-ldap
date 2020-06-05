@@ -39,6 +39,7 @@ defresult
 dereferenced
 dereferencing
 desc
+dev
 directoryOperation
 distinguished
 distributedOperation
@@ -145,6 +146,7 @@ UDP
 Umich
 unparsing
 unsigend
+urandom
 uri
 urlPrefix
 urlscheme
