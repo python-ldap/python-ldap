@@ -7,6 +7,7 @@ See https://www.python-ldap.org/ for details.
 
 import os
 import unittest
+import warnings
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
@@ -47,6 +48,19 @@ class TestCidict(unittest.TestCase):
         self.assertEqual("AbCDef" in cix, False)
         self.assertEqual(cix.has_key("abcdef"), False)
         self.assertEqual(cix.has_key("AbCDef"), False)
+
+    def test_strlist_deprecated(self):
+        strlist_funcs = [
+            ldap.cidict.strlist_intersection,
+            ldap.cidict.strlist_minus,
+            ldap.cidict.strlist_union
+        ]
+        for strlist_func in strlist_funcs:
+            with warnings.catch_warnings(record=True) as w:
+                warnings.resetwarnings()
+                warnings.simplefilter("always", DeprecationWarning)
+                strlist_func(["a"], ["b"])
+            self.assertEqual(len(w), 1)
 
 
 if __name__ == '__main__':
