@@ -335,7 +335,7 @@ attrs_from_List(PyObject *attrlist, char ***attrsp)
              * internal values that must be treated like const char. Python
              * 3.7 actually returns a const char.
              */
-            attrs[i] = (char *)PyMem_NEW(char *, strlen + 1);
+            attrs[i] = (char *)PyMem_NEW(char, strlen + 1);
 
             if (attrs[i] == NULL)
                 goto nomem;
