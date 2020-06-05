@@ -321,6 +321,9 @@ The module defines the following exceptions:
    is set to a truncated form of the name provided or alias dereferenced
    for the lowest entry (object or alias) that was matched.
 
+   Most exceptions from protocol results also carry the :py:attr:`errnum`
+   attribute.
+
 
 .. py:exception:: ADMINLIMIT_EXCEEDED
 

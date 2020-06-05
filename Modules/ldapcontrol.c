@@ -353,13 +353,13 @@ encode_assertion_control(PyObject *self, PyObject *args)
     err = ldap_create(&ld);
     PyEval_RestoreThread(save);
     if (err != LDAP_SUCCESS)
-        return LDAPerror(ld, "ldap_create");
+        return LDAPerror(ld);
 
     err = ldap_create_assertion_control_value(ld, assertion_filterstr,
                                               &ctrl_val);
 
     if (err != LDAP_SUCCESS) {
-        LDAPerror(ld, "ldap_create_assertion_control_value");
+        LDAPerror(ld);
         save = PyEval_SaveThread();
         ldap_unbind_ext(ld, NULL, NULL);
         PyEval_RestoreThread(save);
