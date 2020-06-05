@@ -10,6 +10,7 @@ if sys.version_info[0] < 3:
     from urllib import unquote as urllib_unquote
     from urllib import urlopen
     from urlparse import urlparse
+    from collections import MutableMapping
 
     def unquote(uri):
         """Specialized unquote that uses UTF-8 for parsing."""
@@ -33,6 +34,7 @@ else:
     IterableUserDict = UserDict
     from urllib.parse import quote, quote_plus, unquote, urlparse
     from urllib.request import urlopen
+    from collections.abc import MutableMapping
 
     def reraise(exc_type, exc_value, exc_traceback):
         """Re-raise an exception given information from sys.exc_info()

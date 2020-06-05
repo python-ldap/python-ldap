@@ -5,9 +5,9 @@ names of variable case.
 
 See https://www.python-ldap.org/ for details.
 """
-from collections import MutableMapping
 import warnings
 
+from ldap.compat import MutableMapping
 from ldap import __version__
 
 
