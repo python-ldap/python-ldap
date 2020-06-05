@@ -1,3 +1,54 @@
+Released 3.3.0 2020-06-18
+
+Highlights:
+* ``LDAPError`` now contains additional fields, such as ctrls, result, msgid
+* ``passwd_s`` can now extract the newly generated password
+* LDAP connections can now be made from a file descriptor
+
+This release is tested on Python 3.8, and the beta of Python 3.9.
+
+The following undocumented functions are deprecated and scheduled for removal:
+- ``ldap.cidict.strlist_intersection``
+- ``ldap.cidict.strlist_minus``
+- ``ldap.cidict.strlist_union``
+
+Modules/
+* Ensure ReconnectLDAPObject is not left in an inconsistent state after
+  a reconnection timeout
+* Syncrepl now correctly parses SyncInfoMessage when the message is a syncIdSet
+* Release GIL around global get/set option call
+* Do not leak serverctrls in result functions
+* Don't overallocate memory in attrs_from_List()
+* Fix thread support check for Python 3
+* With OpenLDAP 2.4.48, use the new header openldap.h
+
+Lib/
+* Fix some edge cases regarding quoting in the schema tokenizer
+* Fix escaping a single space in ldap.escape_dn_chars
+* Fix string formatting in ldap.compare_ext_s
+* Prefer iterating dict instead of calling dict.keys()
+
+Doc/
+* Clarify the relationship between initialize() and LDAPObject()
+* Improve documentation of TLS options
+* Update FAQ to include Samba AD-DC error message
+  "Operation unavailable without authentication"
+* Fix several incorrect examples and demos
+  (but note that these are not yet tested)
+* Update Debian installation instructions for Debian Buster
+* Typo fixes in docs and docstrings
+
+Test/
+* Test and document error cases in ldap.compare_s
+* Test if reconnection is done after connection loss
+* Make test certificates valid for the far future
+* Use slapd -Tt instead of slaptest
+
+Infrastructure:
+* Mark the LICENCE file as a license for setuptools
+* Use "unittest discover" rather than "setup.py test" to run tests
+
+
 ----------------------------------------------------------------
 Released 3.2.0 2019-03-13
 
