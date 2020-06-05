@@ -329,13 +329,12 @@ The module defines the following exceptions:
    is set to a truncated form of the name provided or alias dereferenced
    for the lowest entry (object or alias) that was matched.
 
-   For use in asynchronous operations an optional field :py:const:`msg_id` is
-   also set in the dictionary in cases where the exception can be associated
-   with a request. This can be used in asynchronous code where
-   :py:meth:`result()` returns an exception that is effectively the result of a
-   previously started asynchronous operation. For example, this is the case for
-   asynchronous (:py:meth:`compare()`), where the boolean result is always
-   raised as an exception (:py:exc:`COMPARE_TRUE` or :py:exc:`COMPARE_FALSE`).
+   The field :py:const:`msgid` is set in the dictionary where the
+   exception can be associated with an asynchronous request.
+   This can be used in asynchronous code where :py:meth:`result()` raises the
+   result of an operation as an exception. For example, this is the case for
+   :py:meth:`compare()`, always raises the boolean result as an exception
+   (:py:exc:`COMPARE_TRUE` or :py:exc:`COMPARE_FALSE`).
 
    Most exceptions from protocol results also carry the :py:attr:`errnum`
    attribute.
