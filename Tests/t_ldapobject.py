@@ -673,6 +673,20 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         with self.assertRaises(ldap.UNDEFINED_TYPE):
             result = l.compare_s('cn=Foo1,%s' % base, 'invalidattr', b'invalid')
 
+    def test_compare_true_exception_contains_message_id(self):
+        base = self.server.suffix
+        l = self._ldap_conn
+        msgid = l.compare('cn=Foo1,%s' % base, 'cn', b'Foo1')
+        with self.assertRaises(ldap.COMPARE_TRUE) as cm:
+            l.result()
+        self.assertEqual(cm.exception.args[0]["msgid"], msgid)
+
+    def test_async_search_no_such_object_exception_contains_message_id(self):
+        msgid = self._ldap_conn.search("CN=XXX", ldap.SCOPE_SUBTREE)
+        with self.assertRaises(ldap.NO_SUCH_OBJECT) as cm:
+            self._ldap_conn.result()
+        self.assertEqual(cm.exception.args[0]["msgid"], msgid)
+
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
     """
