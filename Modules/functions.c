@@ -84,7 +84,7 @@ l_ldap_initialize_fd(PyObject *unused, PyObject *args)
     else {
         ldap_free_urldesc(lud);
         PyErr_SetString(PyExc_ValueError, "unsupported URL scheme");
-	return NULL;
+        return NULL;
     }
     ldap_free_urldesc(lud);
 
