@@ -687,6 +687,45 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             self._ldap_conn.result()
         self.assertEqual(cm.exception.args[0]["msgid"], msgid)
 
+    def test_passwd_s(self):
+        l = self._ldap_conn
+
+        # first, create a user to change password on
+        dn = "cn=PasswordTest," + self.server.suffix
+        result, pmsg, msgid, ctrls = l.add_ext_s(
+            dn,
+            [
+                ('objectClass', b'person'),
+                ('sn', b'PasswordTest'),
+                ('cn', b'PasswordTest'),
+                ('userPassword', b'initial'),
+            ]
+        )
+        self.assertEqual(result, ldap.RES_ADD)
+        self.assertIsInstance(msgid, int)
+        self.assertEqual(pmsg, [])
+        self.assertEqual(ctrls, [])
+
+        # try changing password with a wrong old-pw
+        with self.assertRaises(ldap.UNWILLING_TO_PERFORM):
+            l.passwd_s(dn, "bogus", "ignored")
+
+        # have the server generate a new random pw
+        respoid, respvalue = l.passwd_s(dn, "initial", None, extract_newpw=True)
+        self.assertEqual(respoid, None)
+
+        password = respvalue.genPasswd
+        self.assertIsInstance(password, bytes)
+        if PY2:
+            password = password.decode('utf-8')
+
+        # try changing password back
+        respoid, respvalue = l.passwd_s(dn, password, "initial")
+        self.assertEqual(respoid, None)
+        self.assertEqual(respvalue, None)
+
+        l.delete_s(dn)
+
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
     """

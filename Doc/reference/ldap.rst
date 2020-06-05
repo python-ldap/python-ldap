@@ -963,7 +963,7 @@ and wait for and return with the server's result, or with
 
 .. py:method:: LDAPObject.passwd(user, oldpw, newpw [, serverctrls=None [, clientctrls=None]]) -> int
 
-.. py:method:: LDAPObject.passwd_s(user, oldpw, newpw [, serverctrls=None [, clientctrls=None]]) -> None
+.. py:method:: LDAPObject.passwd_s(user, oldpw, newpw [, serverctrls=None [, clientctrls=None] [, extract_newpw=False]]]) -> (respoid, respvalue)
 
    Perform a ``LDAP Password Modify Extended Operation`` operation
    on the entry specified by *user*.
@@ -974,6 +974,13 @@ and wait for and return with the server's result, or with
    of the specified *user* which is sometimes used when a user changes
    his own password.
 
+   *respoid* is always :py:const:`None`. *respvalue* is also
+   :py:const:`None` unless *newpw* was :py:const:`None`. This requests that
+   the server generate a new random password. If *extract_newpw* is
+   :py:const:`True`, this password is a bytes object available through
+   ``respvalue.genPasswd``, otherwise *respvalue* is the raw ASN.1 response
+   (this is deprecated and only for backwards compatibility).
+
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
 
    The asynchronous version returns the initiated message id.
@@ -983,6 +990,7 @@ and wait for and return with the server's result, or with
    .. seealso::
 
       :rfc:`3062` - LDAP Password Modify Extended Operation
+      :py:mod:`ldap.extop.passwd`
 
 
 

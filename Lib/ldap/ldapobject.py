@@ -27,7 +27,7 @@ import warnings
 
 from ldap.schema import SCHEMA_ATTRS
 from ldap.controls import LDAPControl,DecodeControlTuples,RequestControlTuples
-from ldap.extop import ExtendedRequest,ExtendedResponse
+from ldap.extop import ExtendedRequest,ExtendedResponse,PasswordModifyResponse
 from ldap.compat import reraise
 
 from ldap import LDAPError
@@ -656,9 +656,16 @@ class SimpleLDAPObject:
         newpw = self._bytesify_input('newpw', newpw)
     return self._ldap_call(self._l.passwd,user,oldpw,newpw,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
-  def passwd_s(self,user,oldpw,newpw,serverctrls=None,clientctrls=None):
-    msgid = self.passwd(user,oldpw,newpw,serverctrls,clientctrls)
-    return self.extop_result(msgid,all=1,timeout=self.timeout)
+  def passwd_s(self, user, oldpw, newpw, serverctrls=None, clientctrls=None, extract_newpw=False):
+    msgid = self.passwd(user, oldpw, newpw, serverctrls, clientctrls)
+    respoid, respvalue = self.extop_result(msgid, all=1, timeout=self.timeout)
+
+    if respoid != PasswordModifyResponse.responseName:
+      raise ldap.PROTOCOL_ERROR("Unexpected OID %s in extended response!" % respoid)
+    if extract_newpw and respvalue:
+      respvalue = PasswordModifyResponse(PasswordModifyResponse.responseName, respvalue)
+
+    return respoid, respvalue
 
   def rename(self,dn,newrdn,newsuperior=None,delold=1,serverctrls=None,clientctrls=None):
     """
