@@ -7,55 +7,68 @@ See https://www.python-ldap.org/ for details.
 """
 import warnings
 
+from ldap.compat import MutableMapping
 from ldap import __version__
 
-from ldap.compat import IterableUserDict
 
+class cidict(MutableMapping):
+    """
+    Case-insensitive but case-respecting dictionary.
+    """
+    __slots__ = ('_keys', '_data')
 
-class cidict(IterableUserDict):
-  """
-  Case-insensitive but case-respecting dictionary.
-  """
+    def __init__(self, default=None):
+        self._keys = {}
+        self._data = {}
+        if default:
+            self.update(default)
 
-  def __init__(self,default=None):
-    self._keys = {}
-    IterableUserDict.__init__(self,{})
-    self.update(default or {})
+    # MutableMapping abstract methods
 
-  def __getitem__(self,key):
-    return self.data[key.lower()]
+    def __getitem__(self, key):
+        return self._data[key.lower()]
 
-  def __setitem__(self,key,value):
-    lower_key = key.lower()
-    self._keys[lower_key] = key
-    self.data[lower_key] = value
+    def __setitem__(self, key, value):
+        lower_key = key.lower()
+        self._keys[lower_key] = key
+        self._data[lower_key] = value
 
-  def __delitem__(self,key):
-    lower_key = key.lower()
-    del self._keys[lower_key]
-    del self.data[lower_key]
+    def __delitem__(self, key):
+        lower_key = key.lower()
+        del self._keys[lower_key]
+        del self._data[lower_key]
 
-  def update(self,dict):
-    for key, value in dict.items():
-      self[key] = value
+    def __iter__(self):
+        return iter(self._keys.values())
 
-  def has_key(self,key):
-    return key in self
+    def __len__(self):
+        return len(self._keys)
 
-  def __contains__(self,key):
-    return IterableUserDict.__contains__(self, key.lower())
+    # Specializations for performance
 
-  def __iter__(self):
-    return iter(self.keys())
+    def __contains__(self, key):
+        return key.lower() in self._keys
 
-  def keys(self):
-    return self._keys.values()
+    def clear(self):
+        self._keys.clear()
+        self._data.clear()
 
-  def items(self):
-    result = []
-    for k in self._keys.values():
-      result.append((k,self[k]))
-    return result
+    # Backwards compatibility
+
+    def has_key(self, key):
+        """Compatibility with python-ldap 2.x"""
+        return key in self
+
+    @property
+    def data(self):
+        """Compatibility with older IterableUserDict-based implementation"""
+        warnings.warn(
+            'ldap.cidict.cidict.data is an internal attribute; it may be ' +
+            'removed at any time',
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._data
 
 
 def strlist_minus(a,b):
