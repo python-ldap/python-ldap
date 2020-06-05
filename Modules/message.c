@@ -273,20 +273,35 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
 
                 valuestr = LDAPberval_to_object(retdata);
                 ber_bvfree(retdata);
-                pyoid = PyUnicode_FromString(retoid);
-                ldap_memfree(retoid);
-                if (pyoid == NULL) {
+                if (valuestr == NULL) {
+                    ldap_memfree(retoid);
                     Py_DECREF(result);
                     ldap_msgfree(m);
                     return NULL;
                 }
-                valtuple = Py_BuildValue("(OOO)", pyoid,
-                                         valuestr ? valuestr : Py_None,
-                                         pyctrls);
-                Py_DECREF(pyoid);
-                Py_DECREF(valuestr);
-                Py_XDECREF(pyctrls);
-                PyList_Append(result, valtuple);
+
+                pyoid = PyUnicode_FromString(retoid);
+                ldap_memfree(retoid);
+                if (pyoid == NULL) {
+                    Py_DECREF(valuestr);
+                    Py_DECREF(result);
+                    ldap_msgfree(m);
+                    return NULL;
+                }
+
+                valtuple = Py_BuildValue("(NNN)", pyoid, valuestr, pyctrls);
+                if (valtuple == NULL) {
+                    Py_DECREF(result);
+                    ldap_msgfree(m);
+                    return NULL;
+                }
+
+                if (PyList_Append(result, valtuple) == -1) {
+                    Py_DECREF(valtuple);
+                    Py_DECREF(result);
+                    ldap_msgfree(m);
+                    return NULL;
+                }
                 Py_DECREF(valtuple);
             }
         }
