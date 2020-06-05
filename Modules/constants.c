@@ -64,9 +64,7 @@ LDAPraise_for_message(LDAP *l, LDAPMessage *m)
         PyObject *pyerrno;
         PyObject *pyresult;
         PyObject *pyctrls = NULL;
-        char *matched = NULL,
-             *error = NULL,
-             **refs = NULL;
+        char *matched = NULL, *error = NULL, **refs = NULL;
         LDAPControl **serverctrls = NULL;
 
         /* at first save errno for later use before it gets overwritten by another call */
