@@ -85,14 +85,6 @@ env:
 install:
   - pip install "pip>=7.1.0"
   - pip install tox-travis tox codecov
-  # Coverage 5.0+ has issues similar to:
-  #   https://github.com/nedbat/coveragepy/issues/915
-  - pip install "coverage<5.0"
 
 script: CFLAGS="$CFLAGS_warnings $CFLAGS_std" tox
 
-after_success:
-  # gather Python coverage
-  - python -m coverage combine
-  # send Python and GCOV coverage
-  - codecov
