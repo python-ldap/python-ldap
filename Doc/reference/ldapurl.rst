@@ -65,6 +65,11 @@ A :py:class:`LDAPUrl` object represents a complete LDAP URL.
 .. autoclass:: ldapurl.LDAPUrl
    :members:
 
+   .. versionchanged:: 3.3.0
+
+      The urlscheme is now case insensitive and always converted to lower
+      case. ``LDAP://localhost`` is equivalent to ``ldap://localhost``.
+
 
 LDAP URL extensions
 ^^^^^^^^^^^^^^^^^^^
