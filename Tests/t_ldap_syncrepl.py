@@ -10,6 +10,7 @@ import os
 import shelve
 import sys
 import unittest
+import binascii
 
 if sys.version_info[0] <= 2:
     PY2 = True
@@ -21,7 +22,7 @@ os.environ['LDAPNOINIT'] = '1'
 
 import ldap
 from ldap.ldapobject import SimpleLDAPObject
-from ldap.syncrepl import SyncreplConsumer
+from ldap.syncrepl import SyncreplConsumer, SyncInfoMessage
 
 from slapdtest import SlapdObject, SlapdTestCase
 
@@ -444,6 +445,40 @@ class TestSyncreplBytesMode(BaseSyncreplTests, SlapdTestCase):
             bytes_mode=True
         )
         self.suffix = self.server.suffix.encode('utf-8')
+
+class DecodeSyncreplProtoTests(unittest.TestCase):
+    """
+    Tests of the ASN.1 decoder for tricky cases or past issues to ensure that
+    syncrepl messages are handled correctly.
+    """
+
+    def test_syncidset_message(self):
+        """
+        A syncrepl server may send a sync info message, with a syncIdSet
+        of uuids to delete. A regression was found in the original
+        sync info message implementation due to how the choice was
+        evaluated, because refreshPresent and refreshDelete were both
+        able to be fully expressed as defaults, causing the parser
+        to mistakenly catch a syncIdSet as a refreshPresent/refereshDelete.
+
+        This tests that a syncIdSet request is properly decoded.
+
+        reference: https://tools.ietf.org/html/rfc4533#section-2.5
+        """
+
+        # This is a dump of a syncidset message from wireshark + 389-ds
+        msg = """
+        a36b04526c6461706b64632e6578616d706c652e636f6d3a333839303123636e
+        3d6469726563746f7279206d616e616765723a64633d6578616d706c652c6463
+        3d636f6d3a286f626a656374436c6173733d2a2923330101ff311204108dc446
+        01a93611ea8aaff248c5fa5780
+        """.replace(' ', '').replace('\n', '')
+
+        msgraw = binascii.unhexlify(msg)
+        sim = SyncInfoMessage(msgraw)
+        self.assertEqual(sim.refreshDelete, None)
+        self.assertEqual(sim.refreshPresent, None)
+        self.assertNotEqual(sim.syncIdSet, None)
 
 
 if __name__ == '__main__':
