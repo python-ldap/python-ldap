@@ -478,7 +478,14 @@ class DecodeSyncreplProtoTests(unittest.TestCase):
         sim = SyncInfoMessage(msgraw)
         self.assertEqual(sim.refreshDelete, None)
         self.assertEqual(sim.refreshPresent, None)
-        self.assertNotEqual(sim.syncIdSet, None)
+        self.assertEqual(sim.newcookie, None)
+        self.assertEqual(sim.syncIdSet,
+            {
+                'cookie': 'ldapkdc.example.com:38901#cn=directory manager:dc=example,dc=com:(objectClass=*)#3',
+                'syncUUIDs': ['8dc44601-a936-11ea-8aaf-f248c5fa5780'],
+                'refreshDeletes': True
+            }
+        )
 
 
 if __name__ == '__main__':
