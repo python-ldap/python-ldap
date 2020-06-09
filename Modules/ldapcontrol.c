@@ -6,8 +6,6 @@
 #include "berval.h"
 #include "constants.h"
 
-#include "lber.h"
-
 /* Prints to stdout the contents of an array of LDAPControl objects */
 
 /* XXX: This is a debugging tool, and the printf generates some warnings

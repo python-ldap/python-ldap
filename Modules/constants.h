@@ -4,8 +4,6 @@
 #define __h_constants_
 
 #include "common.h"
-#include "lber.h"
-#include "ldap.h"
 
 extern int LDAPinit_constants(PyObject *m);
 extern PyObject *LDAPconstant(int);
