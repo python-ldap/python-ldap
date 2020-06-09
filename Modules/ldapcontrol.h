@@ -4,7 +4,6 @@
 #define __h_ldapcontrol
 
 #include "common.h"
-#include "ldap.h"
 
 void LDAPinit_control(PyObject *d);
 void LDAPControl_List_DEL(LDAPControl **);

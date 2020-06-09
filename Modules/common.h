@@ -12,6 +12,33 @@
 #include "config.h"
 #endif
 
+#include <lber.h>
+#include <ldap.h>
+#include <ldap_features.h>
+
+#if LDAP_API_VERSION < 2040
+#error Current python-ldap requires OpenLDAP 2.4.x
+#endif
+
+#if LDAP_VENDOR_VERSION >= 20448
+  /* openldap.h with ldap_init_fd() was introduced in 2.4.48
+   * see https://bugs.openldap.org/show_bug.cgi?id=8671
+   */
+#include <openldap.h>
+#ifndef HAVE_LDAP_INIT_FD
+#define HAVE_LDAP_INIT_FD
+#endif
+#else
+  /* ldap_init_fd() has been around for a very long time
+   * SSSD has been defining the function for a while, so it's probably OK.
+   */
+#define LDAP_PROTO_TCP 1
+#define LDAP_PROTO_UDP 2
+#define LDAP_PROTO_IPC 3
+extern int ldap_init_fd(ber_socket_t fd, int proto, LDAP_CONST char *url,
+                        LDAP **ldp);
+#endif
+
 #if defined(MS_WINDOWS)
 #include <winsock.h>
 #else /* unix */

@@ -32,20 +32,7 @@ l_ldap_initialize(PyObject *unused, PyObject *args)
 
 #ifdef HAVE_LDAP_INIT_FD
 
-/* initialize_fd(fileno, url)
- *
- * ldap_init_fd() is not a private API but it's not in a public header either
- * SSSD has been using the function for a while, so it's probably OK.
- */
-
-#ifndef LDAP_PROTO_TCP
-#define LDAP_PROTO_TCP 1
-#define LDAP_PROTO_UDP 2
-#define LDAP_PROTO_IPC 3
-#endif
-
-extern int
-  ldap_init_fd(ber_socket_t fd, int proto, LDAP_CONST char *url, LDAP **ldp);
+/* initialize_fd(fileno, url) */
 
 static PyObject *
 l_ldap_initialize_fd(PyObject *unused, PyObject *args)

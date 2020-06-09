@@ -5,12 +5,6 @@
 
 #include "common.h"
 
-#include "lber.h"
-#include "ldap.h"
-#if LDAP_API_VERSION < 2040
-#error Current python-ldap requires OpenLDAP 2.4.x
-#endif
-
 #if PYTHON_API_VERSION < 1007
 typedef PyObject *_threadstate;
 #else

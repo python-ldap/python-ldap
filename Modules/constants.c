@@ -4,8 +4,6 @@
 #include "common.h"
 #include "constants.h"
 #include "ldapcontrol.h"
-#include "lber.h"
-#include "ldap.h"
 
 /* the base exception class */
 
