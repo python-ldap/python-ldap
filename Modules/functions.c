@@ -30,8 +30,6 @@ l_ldap_initialize(PyObject *unused, PyObject *args)
     return (PyObject *)newLDAPObject(ld);
 }
 
-#ifdef HAVE_LDAP_INIT_FD
-
 /* initialize_fd(fileno, url) */
 
 static PyObject *
@@ -84,7 +82,6 @@ l_ldap_initialize_fd(PyObject *unused, PyObject *args)
 
     return (PyObject *)newLDAPObject(ld);
 }
-#endif /* HAVE_LDAP_INIT_FD */
 
 /* ldap_str2dn */
 
@@ -193,9 +190,7 @@ l_ldap_get_option(PyObject *self, PyObject *args)
 
 static PyMethodDef methods[] = {
     {"initialize", (PyCFunction)l_ldap_initialize, METH_VARARGS},
-#ifdef HAVE_LDAP_INIT_FD
     {"initialize_fd", (PyCFunction)l_ldap_initialize_fd, METH_VARARGS},
-#endif
     {"str2dn", (PyCFunction)l_ldap_str2dn, METH_VARARGS},
     {"set_option", (PyCFunction)l_ldap_set_option, METH_VARARGS},
     {"get_option", (PyCFunction)l_ldap_get_option, METH_VARARGS},

@@ -145,7 +145,6 @@ setup(
           ('LDAPMODULE_VERSION', pkginfo.__version__),
           ('LDAPMODULE_AUTHOR', pkginfo.__author__),
           ('LDAPMODULE_LICENSE', pkginfo.__license__),
-          ('HAVE_LDAP_INIT_FD', None),
         ]
     ),
   ],
