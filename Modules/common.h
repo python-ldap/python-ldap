@@ -25,9 +25,6 @@
    * see https://bugs.openldap.org/show_bug.cgi?id=8671
    */
 #include <openldap.h>
-#ifndef HAVE_LDAP_INIT_FD
-#define HAVE_LDAP_INIT_FD
-#endif
 #else
   /* ldap_init_fd() has been around for a very long time
    * SSSD has been defining the function for a while, so it's probably OK.
