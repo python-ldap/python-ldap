@@ -462,26 +462,27 @@ The module defines the following exceptions:
    are instead turned into exceptions, raised as soon an the error condition
    is detected.
 
-   The exceptions are accompanied by a dictionary possibly
-   containing an string value for the key :py:const:`desc`
-   (giving an English description of the error class)
-   and/or a string value for the key :py:const:`info`
-   (giving a string containing more information that the server may have sent).
+   The exceptions are accompanied by a dictionary with additional information.
+   All fields are optional and more fields may be added in the future.
+   Currently, ``python-ldap`` may set the following fields:
 
-   A third possible field of this dictionary is :py:const:`matched` and
-   is set to a truncated form of the name provided or alias dereferenced
-   for the lowest entry (object or alias) that was matched.
-
-   The field :py:const:`msgid` is set in the dictionary where the
-   exception can be associated with an asynchronous request.
-   This can be used in asynchronous code where :py:meth:`result()` raises the
-   result of an operation as an exception. For example, this is the case for
-   :py:meth:`compare()`, always raises the boolean result as an exception
-   (:py:exc:`COMPARE_TRUE` or :py:exc:`COMPARE_FALSE`).
-
-   Most exceptions from protocol results also carry the :py:attr:`errnum`
-   attribute.
-
+   * ``'result'``: a numeric code of the error class.
+   * ``'desc'``: string giving a description of the error class, as provided
+     by calling OpenLDAP's ``ldap_err2string`` on the ``result``.
+   * ``'info'``: string containing more information that the server may
+     have sent. The value is server-specific: for example, the OpenLDAP server
+     may send different info messages than Active Directory or 389-DS.
+   * ``'matched'``: truncated form of the name provided or alias.
+     dereferenced for the lowest entry (object or alias) that was matched.
+   * ``'msgid'``: ID of the matching asynchronous request.
+     This can be used in asynchronous code where :py:meth:`result()` raises the
+     result of an operation as an exception. For example, this is the case for
+     :py:meth:`~LDAPObject.compare()`, always raises the boolean result as an
+     exception (:py:exc:`COMPARE_TRUE` or :py:exc:`COMPARE_FALSE`).
+   * ``'ctrls'``: list of :py:class:`ldap.controls.LDAPControl` instances
+     attached to the error.
+   * ``'errno'``: the C ``errno``, usually set by system calls or ``libc``
+     rather than the LDAP libraries.
 
 .. py:exception:: ADMINLIMIT_EXCEEDED
 
@@ -515,14 +516,14 @@ The module defines the following exceptions:
 .. py:exception:: COMPARE_FALSE
 
    A compare operation returned false.
-   (This exception should never be seen because :py:meth:`compare()` returns
-   a boolean result.)
+   (This exception should only be seen asynchronous operations, because
+   :py:meth:`~LDAPObject.compare_s()` returns a boolean result.)
 
 .. py:exception:: COMPARE_TRUE
 
    A compare operation returned true.
-   (This exception should never be seen because :py:meth:`compare()` returns
-   a boolean result.)
+   (This exception should only be seen asynchronous operations, because
+   :py:meth:`~LDAPObject.compare_s()` returns a boolean result.)
 
 .. py:exception:: CONFIDENTIALITY_REQUIRED
 
