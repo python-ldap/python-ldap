@@ -314,34 +314,35 @@ class SyncInfoMessage:
         self.refreshPresent = None
         self.syncIdSet = None
 
-        for attr in ['newcookie', 'refreshDelete', 'refreshPresent', 'syncIdSet']:
-            comp = d[0].getComponentByName(attr)
+        # Due to the way pyasn1 works, refreshDelete and refreshPresent are both
+        # valid in the components as they are fully populated defaults. We must
+        # get the component directly from the message, not by iteration.
+        attr = d[0].getName()
+        comp = d[0].getComponent()
 
-            if comp is not None and comp.hasValue():
-
-                if attr == 'newcookie':
-                    self.newcookie = str(comp)
-                    return
-
-                val = {}
-
-                cookie = comp.getComponentByName('cookie')
-                if cookie.hasValue():
-                    val['cookie'] = str(cookie)
-
-                if attr.startswith('refresh'):
-                    val['refreshDone'] = bool(comp.getComponentByName('refreshDone'))
-                elif attr == 'syncIdSet':
-                    uuids = []
-                    ids = comp.getComponentByName('syncUUIDs')
-                    for i in range(len(ids)):
-                        uuid = UUID(bytes=bytes(ids.getComponentByPosition(i)))
-                        uuids.append(str(uuid))
-                    val['syncUUIDs'] = uuids
-                    val['refreshDeletes'] = bool(comp.getComponentByName('refreshDeletes'))
-
-                setattr(self, attr, val)
+        if comp is not None and comp.hasValue():
+            if attr == 'newcookie':
+                self.newcookie = str(comp)
                 return
+
+            val = {}
+
+            cookie = comp.getComponentByName('cookie')
+            if cookie.hasValue():
+                val['cookie'] = str(cookie)
+
+            if attr.startswith('refresh'):
+                val['refreshDone'] = bool(comp.getComponentByName('refreshDone'))
+            elif attr == 'syncIdSet':
+                uuids = []
+                ids = comp.getComponentByName('syncUUIDs')
+                for i in range(len(ids)):
+                    uuid = UUID(bytes=bytes(ids.getComponentByPosition(i)))
+                    uuids.append(str(uuid))
+                val['syncUUIDs'] = uuids
+                val['refreshDeletes'] = bool(comp.getComponentByName('refreshDeletes'))
+
+            setattr(self, attr, val)
 
 
 class SyncreplConsumer:
