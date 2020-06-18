@@ -221,10 +221,13 @@ If you are tasked with releasing python-ldap, remember to:
 * Merge all that (using pull requests).
 * Run ``python setup.py sdist``, and smoke-test the resulting package
   (install in a clean virtual environment, import ``ldap``).
-* Create Git tag ``python-ldap-{version}``, and push it to GitHub and Pagure.
+* Create GPG-signed Git tag: ``git tag -s python-ldap-{version}``.
+  Push it to GitHub and Pagure.
 * Release the ``sdist`` on PyPI.
 * Announce the release on the mailing list.
   Mention the Git hash.
 * Add the release's log from ``CHANGES`` on the `GitHub release page`_.
+* Check that python-ldap.org shows the latest version; if not, adjust
+  things at readthedocs.org
 
 .. _GitHub release page: https://github.com/python-ldap/python-ldap/releases
