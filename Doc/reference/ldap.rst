@@ -463,13 +463,15 @@ The module defines the following exceptions:
    is detected.
 
    The exceptions are accompanied by a dictionary with additional information.
-   The following fields are set in the dictionary if the relevant information
-   is available:
+   All fields are optional and more fields may be added in the future.
+   Currently, ``python-ldap`` may set the following fields:
 
-   * ``'desc'``: string giving an English description of the error class.
+   * ``'desc'``: string giving a description of the error class, as provided
+     by OpenLDAP's ``ldap_err2string``.
    * ``'info'``: string containing more information that the server may
-     have sent.
-   * ``'errnum'``: numeric error code.
+     have sent. The value is server-specific: for example, the OpenLDAP server
+     may send different info messages than Active Directory or 389-DS.
+   * ``'errno'``: numeric error code.
    * ``'matched'``: truncated form of the name provided or alias.
      dereferenced for the lowest entry (object or alias) that was matched.
    * ``'msgid'``: ID of the matching asynchronous request.
