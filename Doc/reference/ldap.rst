@@ -466,12 +466,12 @@ The module defines the following exceptions:
    All fields are optional and more fields may be added in the future.
    Currently, ``python-ldap`` may set the following fields:
 
+   * ``'result'``: a numeric code of the error class.
    * ``'desc'``: string giving a description of the error class, as provided
-     by OpenLDAP's ``ldap_err2string``.
+     by calling OpenLDAP's ``ldap_err2string`` on the ``result``.
    * ``'info'``: string containing more information that the server may
      have sent. The value is server-specific: for example, the OpenLDAP server
      may send different info messages than Active Directory or 389-DS.
-   * ``'errno'``: numeric error code.
    * ``'matched'``: truncated form of the name provided or alias.
      dereferenced for the lowest entry (object or alias) that was matched.
    * ``'msgid'``: ID of the matching asynchronous request.
@@ -481,6 +481,8 @@ The module defines the following exceptions:
      exception (:py:exc:`COMPARE_TRUE` or :py:exc:`COMPARE_FALSE`).
    * ``'ctrls'``: list of :py:class:`ldap.controls.LDAPControl` instances
      attached to the error.
+   * ``'errno'``: the C ``errno``, usually set by system calls or ``libc``
+     rather than the LDAP libraries.
 
 .. py:exception:: ADMINLIMIT_EXCEEDED
 
