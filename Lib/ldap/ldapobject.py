@@ -30,28 +30,14 @@ from ldap import LDAPError
 
 
 class LDAPBytesWarning(BytesWarning):
-  """python-ldap bytes mode warning
-  """
+    """Python 2 bytes mode warning"""
 
-def _raise_byteswarning(message):
-    """Raise LDAPBytesWarning
-    """
-
-    # Call stacks that raise the warning tend to be complicated, so
-    # getting a useful stacklevel is tricky.
-    # We walk stack frames, ignoring functions in uninteresting files,
-    # based on the _LDAP_WARN_SKIP_FRAME marker in globals().
-    stacklevel = 2
-    try:
-        getframe = sys._getframe
-    except AttributeError:
-        pass
-    else:
-        frame = sys._getframe(stacklevel)
-        while frame and frame.f_globals.get('_LDAP_WARN_SKIP_FRAME'):
-            stacklevel += 1
-            frame = frame.f_back
-    warnings.warn(message, LDAPBytesWarning, stacklevel=stacklevel+1)
+    def __init__(self, *args, **kwargs):
+        warnings.warn(
+            "LDAPBytesWarning is deprecated and will be removed in the future",
+            DeprecationWarning,
+        )
+        super().__init__(*args, **kwargs)
 
 
 class NO_UNIQUE_ENTRY(ldap.NO_SUCH_OBJECT):
