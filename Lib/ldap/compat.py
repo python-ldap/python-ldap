@@ -2,8 +2,8 @@
 import warnings
 
 warnings.warn(
+    "The ldap.compat module is deprecated and will be removed in the future",
     DeprecationWarning,
-    "The ldap.compat module is deprecated and will be removed in the future"
 )
 
 from collections import UserDict
