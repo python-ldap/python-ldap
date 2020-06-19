@@ -3,9 +3,6 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See https://www.python-ldap.org/ for details.
 """
-
-from __future__ import unicode_literals
-
 __version__ = '3.3.0'
 
 __all__ = [
@@ -25,7 +22,8 @@ from base64 import b64encode, b64decode
 from io import StringIO
 import warnings
 
-from ldap.compat import urlparse, urlopen
+from urllib.parse import urlparse
+from urllib.request import urlopen
 
 attrtype_pattern = r'[\w;.-]+(;[\w_-]+)*'
 attrvalue_pattern = r'(([^,]|\\,)+|".*?")'

@@ -4,18 +4,10 @@ Automatic tests for python-ldap's module ldap.syncrepl
 
 See https://www.python-ldap.org/ for details.
 """
-
-
 import os
 import shelve
-import sys
 import unittest
 import binascii
-
-if sys.version_info[0] <= 2:
-    PY2 = True
-else:
-    PY2 = False
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
@@ -433,18 +425,6 @@ class TestSyncrepl(BaseSyncreplTests, SlapdTestCase):
         )
         self.suffix = self.server.suffix
 
-
-@unittest.skipUnless(PY2, "no bytes_mode under Py3")
-class TestSyncreplBytesMode(BaseSyncreplTests, SlapdTestCase):
-    def setUp(self):
-        super(TestSyncreplBytesMode, self).setUp()
-        self.tester = SyncreplClient(
-            self.server.ldap_uri,
-            self.server.root_dn.encode('utf-8'),
-            self.server.root_pw.encode('utf-8'),
-            bytes_mode=True
-        )
-        self.suffix = self.server.suffix.encode('utf-8')
 
 class DecodeSyncreplProtoTests(unittest.TestCase):
     """

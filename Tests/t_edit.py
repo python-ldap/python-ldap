@@ -1,14 +1,3 @@
-from __future__ import unicode_literals
-
-import sys
-
-if sys.version_info[0] <= 2:
-    PY2 = True
-    text_type = unicode
-else:
-    PY2 = False
-    text_type = str
-
 import os
 import unittest
 

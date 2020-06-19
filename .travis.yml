@@ -14,25 +14,14 @@ addons:
 # Note: when updating Python versions, also change setup.py and tox.ini
 matrix:
   include:
-    - python: 2.7
-      env:
-        - TOXENV=py27
-        - WITH_GCOV=1
-    - python: 3.4
-      env:
-        - TOXENV=py34
-        - WITH_GCOV=1
-    - python: 3.5
-      env:
-        - TOXENV=py35
-        - WITH_GCOV=1
     - python: 3.6
       env:
         - TOXENV=py36
         - WITH_GCOV=1
-    - python: pypy
+    - python: pypy3
       env:
-        - TOXENV=pypy
+        - TOXENV=pypy3
+        - CFLAGS_std="-std=c99"
     - python: 3.7
       env:
         - TOXENV=py37
@@ -53,10 +42,6 @@ matrix:
         - WITH_GCOV=1
       dist: xenial
       sudo: true
-    - python: 2.7
-      env:
-        - TOXENV=py2-nosasltls
-        - WITH_GCOV=1
     - python: 3.6
       env:
         - TOXENV=py3-nosasltls
@@ -68,7 +53,7 @@ matrix:
       env: TOXENV=doc
   allow_failures:
      - env:
-        - TOXENV=pypy
+        - TOXENV=pypy3
 
 env:
     global:
@@ -87,4 +72,3 @@ install:
   - pip install tox-travis tox codecov
 
 script: CFLAGS="$CFLAGS_warnings $CFLAGS_std" tox
-

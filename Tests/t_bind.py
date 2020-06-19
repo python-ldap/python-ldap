@@ -1,14 +1,3 @@
-from __future__ import unicode_literals
-
-import sys
-
-if sys.version_info[0] <= 2:
-    PY2 = True
-    text_type = unicode
-else:
-    PY2 = False
-    text_type = str
-
 import os
 import unittest
 
@@ -43,19 +32,6 @@ class TestBinds(SlapdTestCase):
 
         l = self._get_ldapobject(False)
         l.simple_bind("CN=user", self.unicode_val)
-
-    @unittest.skipUnless(PY2, "no bytes_mode under Py3")
-    def test_unicode_bind_bytesmode(self):
-        l = self._get_ldapobject(True)
-        with self.assertRaises(TypeError):
-            l.simple_bind_s(self.dn_unicode, self.unicode_val_bytes)
-
-        with self.assertRaises(TypeError):
-            l.simple_bind_s(self.dn_bytes, self.unicode_val)
-
-        # Works when encoded to UTF-8
-        with self.assertRaises(ldap.INVALID_CREDENTIALS):
-            l.simple_bind_s(self.dn_bytes, self.unicode_val_bytes)
 
     def test_unicode_bind_no_bytesmode(self):
         l = self._get_ldapobject(False)

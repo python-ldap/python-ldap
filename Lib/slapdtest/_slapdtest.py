@@ -4,9 +4,6 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See https://www.python-ldap.org/ for details.
 """
-
-from __future__ import unicode_literals
-
 import os
 import socket
 import sys
@@ -16,12 +13,13 @@ import logging
 import atexit
 from logging.handlers import SysLogHandler
 import unittest
+from shutil import which
+from urllib.parse import quote_plus
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
-from ldap.compat import quote_plus, which
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 

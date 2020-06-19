@@ -7,7 +7,7 @@ See https://www.python-ldap.org/ for details.
 """
 import warnings
 
-from ldap.compat import MutableMapping
+from collections.abc import MutableMapping
 from ldap import __version__
 
 

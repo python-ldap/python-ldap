@@ -63,9 +63,8 @@ This module defines the following functions:
    *trace_file* specifies a file-like object as target of the debug log and
    *trace_stack_limit* specifies the stack limit of tracebacks in debug log.
 
-   The *bytes_mode* and *bytes_strictness* arguments specify text/bytes
-   behavior under Python 2.
-   See :ref:`text-bytes` for a complete documentation.
+   The *bytes_mode* and *bytes_strictness* arguments are deprecated and
+   ignored.
 
    Possible values for *trace_level* are
    :py:const:`0` for no logging,
@@ -85,6 +84,10 @@ This module defines the following functions:
    .. versionadded:: 3.3
 
       The *fileno* argument was added.
+
+   .. deprecated:: 3.4
+
+      *bytes_mode* and *bytes_strictness* arguments are deprecated.
 
 
 .. py:function:: get_option(option) -> int|string

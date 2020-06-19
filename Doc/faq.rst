@@ -29,7 +29,7 @@ Usage
 .. _pyldap: https://pypi.org/project/pyldap/
 
 
-**Q**: Does it work with Python 2.6? (1.5|2.0|2.1|2.2|2.3|2.4|2.5)?
+**Q**: Does it work with Python 2.7? (1.5|2.0|2.1|2.2|2.3|2.4|2.5|2.6|2.7)?
 
   **A**: No. Old versions of python-ldap are still available from PyPI, though.
 

@@ -4,9 +4,6 @@ Automatic tests for python-ldap's module ldap.dn
 
 See https://www.python-ldap.org/ for details.
 """
-
-from __future__ import unicode_literals
-
 # from Python's standard lib
 import os
 import unittest
