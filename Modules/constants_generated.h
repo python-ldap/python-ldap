@@ -329,6 +329,14 @@ if (PyModule_AddIntConstant(m, "TLS_AVAIL", 0) != 0)
     return -1;
 #endif
 
+#ifdef HAVE_LDAP_INIT_FD
+if (PyModule_AddIntConstant(m, "INIT_FD_AVAIL", 1) != 0)
+    return -1;
+#else
+if (PyModule_AddIntConstant(m, "INIT_FD_AVAIL", 0) != 0)
+    return -1;
+#endif
+
 add_string(CONTROL_MANAGEDSAIT);
 add_string(CONTROL_PROXY_AUTHZ);
 add_string(CONTROL_SUBENTRIES);

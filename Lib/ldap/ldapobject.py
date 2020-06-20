@@ -104,6 +104,8 @@ class SimpleLDAPObject:
     self._uri = uri
     self._ldap_object_lock = self._ldap_lock('opcall')
     if fileno is not None:
+      if not hasattr(_ldap, "initialize_fd"):
+        raise ValueError("libldap does not support initialize_fd")
       if hasattr(fileno, "fileno"):
         fileno = fileno.fileno()
       self._l = ldap.functions._ldap_function_call(

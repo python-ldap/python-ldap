@@ -33,6 +33,7 @@ from ldap.ldapobject import SimpleLDAPObject, ReconnectLDAPObject
 
 from slapdtest import SlapdTestCase
 from slapdtest import requires_ldapi, requires_sasl, requires_tls
+from slapdtest import requires_init_fd
 
 
 LDIF_TEMPLATE = """dn: %(suffix)s
@@ -811,6 +812,7 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
         self.assertEqual(l1.whoami_s(), 'dn:'+bind_dn)
 
 
+@requires_init_fd()
 class Test03_SimpleLDAPObjectWithFileno(Test00_SimpleLDAPObject):
     def _get_bytes_ldapobject(self, explicit=True, **kwargs):
         raise unittest.SkipTest("Test opens two sockets")
