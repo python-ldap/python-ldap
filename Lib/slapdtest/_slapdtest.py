@@ -107,6 +107,14 @@ def requires_ldapi():
     else:
         return identity
 
+def requires_init_fd():
+    if not ldap.INIT_FD_AVAIL:
+        return skip_unless_ci(
+            "test needs ldap.INIT_FD", feature='INIT_FD')
+    else:
+        return identity
+
+
 def _add_sbin(path):
     """Add /sbin and related directories to a command search path"""
     directories = path.split(os.pathsep)
