@@ -4,9 +4,6 @@ Automatic tests for python-ldap's module ldif
 
 See https://www.python-ldap.org/ for details.
 """
-
-from __future__ import unicode_literals
-
 import os
 import textwrap
 import unittest

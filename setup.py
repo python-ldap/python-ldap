@@ -7,15 +7,10 @@ See https://www.python-ldap.org/ for details.
 import sys,os
 from setuptools import setup, Extension
 
-if sys.version_info[0] == 2 and sys.version_info[1] < 7:
-    raise RuntimeError('This software requires Python 2.7 or 3.x.')
-if sys.version_info[0] >= 3 and sys.version_info < (3, 4):
-    raise RuntimeError('The C API from Python 3.4+ is required.')
+if sys.version_info < (3, 6):
+    raise RuntimeError('The C API from Python 3.6+ is required.')
 
-if sys.version_info[0] >= 3:
-    from configparser import ConfigParser
-else:
-    from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
 sys.path.insert(0, os.path.join(os.getcwd(), 'Lib/ldap'))
 import pkginfo
@@ -88,14 +83,11 @@ setup(
     'Programming Language :: C',
 
     'Programming Language :: Python',
-    'Programming Language :: Python :: 2',
-    'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.4',
-    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
     # Note: when updating Python versions, also change .travis.yml and tox.ini
 
     'Topic :: Database',
@@ -169,6 +161,6 @@ setup(
     'pyasn1_modules >= 0.1.5',
   ],
   zip_safe=False,
-  python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
+  python_requires='>=3.6',
   test_suite = 'Tests',
 )

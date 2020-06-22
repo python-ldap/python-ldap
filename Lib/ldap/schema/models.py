@@ -7,7 +7,7 @@ See https://www.python-ldap.org/ for details.
 import sys
 
 import ldap.cidict
-from ldap.compat import IterableUserDict
+from collections import UserDict as IterableUserDict
 
 from ldap.schema.tokenizer import split_tokens,extract_tokens
 
@@ -47,7 +47,7 @@ class SchemaElement:
   }
 
   def __init__(self,schema_element_str=None):
-    if sys.version_info >= (3, 0) and isinstance(schema_element_str, bytes):
+    if isinstance(schema_element_str, bytes):
       schema_element_str = schema_element_str.decode('utf-8')
     if schema_element_str:
       l = split_tokens(schema_element_str)

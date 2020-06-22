@@ -27,9 +27,6 @@ if __debug__:
   # Tracing is only supported in debugging mode
   import traceback
 
-# See _raise_byteswarning in ldapobject.py
-_LDAP_WARN_SKIP_FRAME = True
-
 
 def _ldap_function_call(lock,func,*args,**kwargs):
   """

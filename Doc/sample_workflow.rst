@@ -31,8 +31,6 @@ python-ldap won't affect the rest of your system::
 
     $ python3 -m venv __venv__
 
-(For Python 2, install `virtualenv`_ and use it instead of ``python3 -m venv``.)
-
 .. _git: https://git-scm.com/
 .. _virtualenv: https://virtualenv.pypa.io/en/stable/
 

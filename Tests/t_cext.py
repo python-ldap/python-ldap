@@ -4,9 +4,6 @@ Automatic tests for python-ldap's C wrapper module _ldap
 
 See https://www.python-ldap.org/ for details.
 """
-
-from __future__ import unicode_literals
-
 import contextlib
 import errno
 import os

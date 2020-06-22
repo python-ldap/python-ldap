@@ -5,10 +5,9 @@ See https://www.python-ldap.org/ for details.
 """
 
 import copy
+from urllib.request import urlopen
 
 import ldap.cidict,ldap.schema
-
-from ldap.compat import urlopen
 from ldap.schema.models import *
 
 import ldapurl

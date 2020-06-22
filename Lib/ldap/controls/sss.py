@@ -22,10 +22,6 @@ from ldap.controls import (RequestControl, ResponseControl,
 from pyasn1.type import univ, namedtype, tag, namedval, constraint
 from pyasn1.codec.ber import encoder, decoder
 
-PY2 = sys.version_info[0] <= 2
-if not PY2:
-  basestring = str
-
 
 #    SortKeyList ::= SEQUENCE OF SEQUENCE {
 #                     attributeType   AttributeDescription,
@@ -63,7 +59,7 @@ class SSSRequestControl(RequestControl):
     ):
         RequestControl.__init__(self,self.controlType,criticality)
         self.ordering_rules = ordering_rules
-        if isinstance(ordering_rules, basestring):
+        if isinstance(ordering_rules, str):
             ordering_rules = [ordering_rules]
         for rule in ordering_rules:
             rule = rule.split(':')

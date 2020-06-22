@@ -29,7 +29,7 @@ Functions
 
 This module defines the following functions:
 
-.. py:function:: initialize(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=None, [bytes_mode=None, [bytes_strictness=None, [fileno=None]]]]]]) -> LDAPObject object
+.. py:function:: initialize(uri [, trace_level=0 [, trace_file=sys.stdout [, trace_stack_limit=None, [fileno=None]]]]) -> LDAPObject object
 
    Initializes a new connection object for accessing the given LDAP server,
    and return an :class:`~ldap.ldapobject.LDAPObject` used to perform operations
@@ -63,10 +63,6 @@ This module defines the following functions:
    *trace_file* specifies a file-like object as target of the debug log and
    *trace_stack_limit* specifies the stack limit of tracebacks in debug log.
 
-   The *bytes_mode* and *bytes_strictness* arguments specify text/bytes
-   behavior under Python 2.
-   See :ref:`text-bytes` for a complete documentation.
-
    Possible values for *trace_level* are
    :py:const:`0` for no logging,
    :py:const:`1` for only logging the method calls with arguments,
@@ -78,6 +74,10 @@ This module defines the following functions:
    Any additional keyword arguments are passed to ``LDAPObject``.
    It is also fine to instantiate a ``LDAPObject`` (or a subclass) directly.
 
+   The function additionally takes *bytes_mode* and *bytes_strictness* keyword
+   arguments, which are deprecated and ignored. See :ref:`bytes_mode` for
+   details.
+
    .. seealso::
 
       :rfc:`4516` - Lightweight Directory Access Protocol (LDAP): Uniform Resource Locator
@@ -85,6 +85,10 @@ This module defines the following functions:
    .. versionadded:: 3.3
 
       The *fileno* argument was added.
+
+   .. deprecated:: 3.4
+
+      *bytes_mode* and *bytes_strictness* arguments are deprecated.
 
 
 .. py:function:: get_option(option) -> int|string
@@ -730,12 +734,16 @@ Warnings
 
 .. py:class:: LDAPBytesWarning
 
-    Raised when bytes/text mismatch in non-strict bytes mode.
+    This warning is deprecated. python-ldap no longer raises it.
 
-    See :ref:`bytes_mode` for details.
+    It used to be raised under Python 2 when bytes/text mismatch in non-strict
+    bytes mode. See :ref:`bytes_mode` for details.
 
     .. versionadded:: 3.0.0
 
+    .. versionchanged:: 3.4.0
+
+      Deprecated.
 
 .. _ldap-objects:
 

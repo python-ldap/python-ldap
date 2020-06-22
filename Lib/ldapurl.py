@@ -16,7 +16,8 @@ __all__ = [
   'LDAPUrlExtension','LDAPUrlExtensions','LDAPUrl'
 ]
 
-from ldap.compat import quote, unquote, MutableMapping
+from collections.abc import MutableMapping
+from urllib.parse import quote, unquote
 
 LDAP_SCOPE_BASE = 0
 LDAP_SCOPE_ONELEVEL = 1
