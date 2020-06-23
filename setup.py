@@ -8,7 +8,9 @@ import sys,os
 from setuptools import setup, Extension
 
 if sys.version_info < (3, 6):
-    raise RuntimeError('The C API from Python 3.6+ is required.')
+  raise RuntimeError(
+    'The C API from Python 3.6+ is required, found %s' % sys.version_info
+  )
 
 from configparser import ConfigParser
 
