@@ -56,6 +56,7 @@ filterstr
 filterStr
 formatOID
 func
+GPG
 Heimdal
 hostport
 hrefTarget
@@ -105,6 +106,7 @@ processResultsCount
 Proxied
 py
 rdn
+readthedocs
 reentrant
 refmodule
 refreshAndPersist
