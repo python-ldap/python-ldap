@@ -68,7 +68,7 @@ env:
         - TOX_TESTENV_PASSENV="CFLAGS CI WITH_GCOV"
 
 install:
-  - pip install "pip>=7.1.0"
-  - pip install tox-travis tox codecov
+  - python3 -m pip install "pip>=7.1.0"
+  - python3 -m pip install tox-travis tox codecov
 
-script: CFLAGS="$CFLAGS_warnings $CFLAGS_std" tox
+script: CFLAGS="$CFLAGS_warnings $CFLAGS_std" python3 -m tox
