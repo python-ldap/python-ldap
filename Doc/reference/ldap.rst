@@ -49,7 +49,7 @@ This module defines the following functions:
    and explicitly closed after the :class:`~ldap.ldapobject.LDAPObject` is
    unbound. The internal connection type is determined from the URI, ``TCP``
    for ``ldap://`` / ``ldaps://``, ``IPC`` (``AF_UNIX``) for ``ldapi://``.
-   The is not available on macOS when python-ldap is compiled with system
+   The parameter is not available on macOS when python-ldap is compiled with system
    libldap, see :py:const:`INIT_FD_AVAIL`.
 
    Note that internally the OpenLDAP function
