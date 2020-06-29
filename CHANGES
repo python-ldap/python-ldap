@@ -1,3 +1,12 @@
+Released 3.3.1 2020-06-29
+
+Changes:
+* On MacOS, remove option to make LDAP connections from a file descriptor
+  when built wit the system libldap (which lacks the underlying function,
+  ``ldap_init_fd``)
+
+
+----------------------------------------------------------------
 Released 3.3.0 2020-06-18
 
 Highlights:
