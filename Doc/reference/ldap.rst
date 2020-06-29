@@ -49,6 +49,8 @@ This module defines the following functions:
    and explicitly closed after the :class:`~ldap.ldapobject.LDAPObject` is
    unbound. The internal connection type is determined from the URI, ``TCP``
    for ``ldap://`` / ``ldaps://``, ``IPC`` (``AF_UNIX``) for ``ldapi://``.
+   The parameter is not available on macOS when python-ldap is compiled with system
+   libldap, see :py:const:`INIT_FD_AVAIL`.
 
    Note that internally the OpenLDAP function
    `ldap_initialize(3) <https://www.openldap.org/software/man.cgi?query=ldap_init&sektion=3>`_
@@ -138,6 +140,12 @@ General
 
    Integer where a non-zero value indicates that python-ldap was built with
    support for SSL/TLS (OpenSSL or similar libs).
+
+.. py:data:: INIT_FD_AVAIL
+
+   Integer where a non-zero value indicates that python-ldap supports
+   :py:func:`initialize` from a file descriptor. The feature is generally
+   available except on macOS when python-ldap is compiled with system libldap.
 
 
 .. _ldap-options:

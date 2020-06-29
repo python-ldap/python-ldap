@@ -1,4 +1,5 @@
 language: python
+group: travis_latest
 
 sudo: false
 
@@ -14,6 +15,13 @@ addons:
 # Note: when updating Python versions, also change setup.py and tox.ini
 matrix:
   include:
+    - os: osx
+      osx_image: xcode11.4
+      language: minimal
+      env:
+        - TOXENV=macos
+        - CFLAGS_warnings="-Wall -Werror=declaration-after-statement"
+        - CFLAGS_std="-std=c99"
     - python: 3.6
       env:
         - TOXENV=py36
@@ -25,6 +33,7 @@ matrix:
     - python: 3.7
       env:
         - TOXENV=py37
+        - CFLAGS_std="-std=c99"
         - WITH_GCOV=1
       dist: xenial
       sudo: true

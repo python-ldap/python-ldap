@@ -15,7 +15,7 @@ os.environ['LDAPNOINIT'] = '1'
 
 # import the plain C wrapper module
 import _ldap
-from slapdtest import SlapdTestCase, requires_tls
+from slapdtest import SlapdTestCase, requires_tls, requires_init_fd
 
 
 class TestLdapCExtension(SlapdTestCase):
@@ -248,12 +248,14 @@ class TestLdapCExtension(SlapdTestCase):
         with self._open_conn_fd() as (sock, l):
             self.assertEqual(l.whoami_s(), "dn:" + self.server.root_dn)
 
+    @requires_init_fd()
     def test_simple_bind_fileno_invalid(self):
         with open(os.devnull) as f:
             l = _ldap.initialize_fd(f.fileno(), self.server.ldap_uri)
             with self.assertRaises(_ldap.SERVER_DOWN):
                 self._bind_conn(l)
 
+    @requires_init_fd()
     def test_simple_bind_fileno_closed(self):
         with self._open_conn_fd() as (sock, l):
             self.assertEqual(l.whoami_s(), "dn:" + self.server.root_dn)
@@ -261,6 +263,7 @@ class TestLdapCExtension(SlapdTestCase):
             with self.assertRaises(_ldap.SERVER_DOWN):
                 l.whoami_s()
 
+    @requires_init_fd()
     def test_simple_bind_fileno_rebind(self):
         with self._open_conn_fd() as (sock, l):
             self.assertEqual(l.whoami_s(), "dn:" + self.server.root_dn)
