@@ -108,7 +108,7 @@ Notable targets are:
     Note that no backups are made – please commit any other changes before
     using this target.
 
-    Requires the ``indent`` program and the ``autopep8`` Python module.
+    Requires the ``indent`` program and the ``black`` Python module.
 
 .. _PEP 7: https://www.python.org/dev/peps/pep-0007/
 .. _PEP 8: https://www.python.org/dev/peps/pep-0008/
