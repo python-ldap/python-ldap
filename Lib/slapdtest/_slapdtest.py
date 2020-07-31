@@ -392,17 +392,19 @@ class SlapdObject(object):
         self._log.debug('testing config %s', self._slapd_conf)
         popen_list = [
             self.PATH_SLAPD,
-            '-Ttest',
+            "-Ttest",
             "-f", self._slapd_conf,
-            '-u',
+            "-u",
+            "-v",
+            "-d", "config"
         ]
-        if self._log.isEnabledFor(logging.DEBUG):
-            popen_list.append('-v')
-            popen_list.extend(['-d', 'config'])
-        else:
-            popen_list.append('-Q')
-        proc = subprocess.Popen(popen_list)
-        if proc.wait() != 0:
+        p = subprocess.run(
+            popen_list,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT
+        )
+        if p.returncode != 0:
+            self._log.error(p.stdout.decode("utf-8"))
             raise RuntimeError("configuration test failed")
         self._log.info("config ok: %s", self._slapd_conf)
 
