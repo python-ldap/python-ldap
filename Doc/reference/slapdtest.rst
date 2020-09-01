@@ -14,6 +14,8 @@ This module is pure Python and does not rely on any non-standard modules.
 Therefore it can be used stand-alone without the rest of the python-ldap
 package.
 
+For pytest fixtures, check `pytest-ldap`_.
+
 Functions
 ^^^^^^^^^
 
@@ -26,3 +28,5 @@ Classes
 
 .. autoclass:: slapdtest.SlapdTestCase
    :members:
+
+.. _pytest-ldap: https://pypi.org/project/pytest-ldap/
