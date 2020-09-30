@@ -14,7 +14,7 @@ This module is pure Python and does not rely on any non-standard modules.
 Therefore it can be used stand-alone without the rest of the python-ldap
 package.
 
-For pytest fixtures, check `pytest-ldap`_.
+Test fixtures for the popular `pytest` framework are developed in an external project, `pytest-ldap`_.
 
 Functions
 ^^^^^^^^^
