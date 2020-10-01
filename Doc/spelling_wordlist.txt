@@ -129,6 +129,7 @@ serverctrls
 sessionSourceIp
 sessionSourceName
 sessionTrackingIdentifier
+slapadd
 sizelimit
 slapd
 stderr

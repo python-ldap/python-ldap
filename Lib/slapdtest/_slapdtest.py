@@ -174,6 +174,9 @@ class SlapdObject(object):
     manager, the slapd server is shut down and the temporary data store is
     removed.
 
+    :param openldap_schema_files: A list of schema names or schema paths to
+        load at startup. By default this only contains `core`.
+
     .. versionchanged:: 3.1
 
         Added context manager functionality
