@@ -41,7 +41,7 @@ def _ldap_function_call(lock,func,*args,**kwargs):
     lock.acquire()
   if __debug__:
     if ldap._trace_level>=1:
-      ldap._trace_file.write('*** %s.%s %s\n' % (
+      ldap._trace_file.write('*** {}.{} {}\n'.format(
         '_ldap',func.__name__,
         pprint.pformat((args,kwargs))
       ))

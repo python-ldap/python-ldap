@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.controls.ppolicy - classes for Password Policy controls
 (see https://tools.ietf.org/html/draft-behera-ldap-password-policy)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Automatic tests for python-ldap's module ldap.syncrepl
 
@@ -249,7 +248,7 @@ class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
             pass
 
 
-class BaseSyncreplTests(object):
+class BaseSyncreplTests:
     """
     This is a test of all the basic Syncrepl operations.  It covers starting a
     search (both types of search), doing the refresh part of the search,
@@ -262,7 +261,7 @@ class BaseSyncreplTests(object):
 
     @classmethod
     def setUpClass(cls):
-        super(BaseSyncreplTests, cls).setUpClass()
+        super().setUpClass()
         # insert some Foo* objects via ldapadd
         cls.server.ldapadd(
             LDIF_TEMPLATE % {
@@ -275,13 +274,13 @@ class BaseSyncreplTests(object):
         )
 
     def setUp(self):
-        super(BaseSyncreplTests, self).setUp()
+        super().setUp()
         self.tester = None
         self.suffix = None
 
     def tearDown(self):
         self.tester.unbind_s()
-        super(BaseSyncreplTests, self).tearDown()
+        super().tearDown()
 
     def create_client(self):
         raise NotImplementedError
@@ -416,7 +415,7 @@ class BaseSyncreplTests(object):
 
 class TestSyncrepl(BaseSyncreplTests, SlapdTestCase):
     def setUp(self):
-        super(TestSyncrepl, self).setUp()
+        super().setUp()
         self.tester = SyncreplClient(
             self.server.ldap_uri,
             self.server.root_dn,

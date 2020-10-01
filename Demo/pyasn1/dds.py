@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Demo script for Dynamic Entries (see RFC 2589)
 
@@ -8,7 +7,6 @@ pyasn1
 pyasn1-modules
 python-ldap 2.4+
 """
-from __future__ import print_function
 
 from ldap.extop.dds import RefreshRequest,RefreshResponse
 

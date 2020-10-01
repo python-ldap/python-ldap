@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Automatic tests for python-ldap's module ldapurl
 
@@ -160,7 +159,7 @@ class TestParseLDAPUrl(unittest.TestCase):
             ldap_url_obj = LDAPUrl(ldapUrl=ldap_url_str)
             self.assertEqual(
                 ldap_url_obj, test_ldap_url_obj,
-                'Attributes of LDAPUrl(%s) are:\n%s\ninstead of:\n%s' % (
+                'Attributes of LDAPUrl({}) are:\n{}\ninstead of:\n{}'.format(
                     repr(ldap_url_str),
                     repr(ldap_url_obj),
                     repr(test_ldap_url_obj),
@@ -170,7 +169,7 @@ class TestParseLDAPUrl(unittest.TestCase):
             unparsed_ldap_url_obj = LDAPUrl(ldapUrl=unparsed_ldap_url_str)
             self.assertEqual(
                 unparsed_ldap_url_obj, test_ldap_url_obj,
-                'Attributes of LDAPUrl(%s) are:\n%s\ninstead of:\n%s' % (
+                'Attributes of LDAPUrl({}) are:\n{}\ninstead of:\n{}'.format(
                     repr(unparsed_ldap_url_str),
                     repr(unparsed_ldap_url_obj),
                     repr(test_ldap_url_obj),

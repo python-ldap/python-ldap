@@ -1,4 +1,3 @@
-from __future__ import print_function
 import sys,ldap,ldap.schema
 
 schema_attrs = ldap.schema.SCHEMA_ATTRS

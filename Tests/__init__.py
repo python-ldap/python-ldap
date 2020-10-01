@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 Automatic tests for python-ldap
 
 See https://www.python-ldap.org/ for details.
 """
 
-from __future__ import absolute_import
 
 from . import t_bind
 from . import t_cext

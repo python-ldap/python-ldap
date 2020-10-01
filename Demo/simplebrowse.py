@@ -3,7 +3,6 @@
 #
 # simple LDAP server browsing example
 #
-from __future__ import print_function
 
 import ldap
 from traceback import print_exc

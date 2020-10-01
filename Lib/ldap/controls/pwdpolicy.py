@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.controls.pwdpolicy - classes for Password Policy controls
 (see https://tools.ietf.org/html/draft-vchu-ldap-pwd-policy)

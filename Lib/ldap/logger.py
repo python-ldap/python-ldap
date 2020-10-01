@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 """
 Helper class for using logging as trace file object
 """
 
 import logging
 
-class logging_file_class(object):
+class logging_file_class:
 
     def __init__(self, logging_level):
         self._logging_level = logging_level

@@ -28,7 +28,7 @@ TEST_CTRL_EXPECTED = [
 ]
 
 
-class BaseTestOptions(object):
+class BaseTestOptions:
     """Common tests for getting/setting options
 
     Used in subclasses below
@@ -97,7 +97,7 @@ class BaseTestOptions(object):
             # data must be bytes or None
             self.set_option(
                 option,
-                [TEST_CTRL[0][0], TEST_CTRL[0][1], u'data']
+                [TEST_CTRL[0][0], TEST_CTRL[0][1], 'data']
             )
 
     def test_client_controls(self):

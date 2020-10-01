@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.extop.passwd - Classes for Password Modify extended operation
 (see RFC 3062)

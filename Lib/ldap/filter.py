@@ -71,7 +71,7 @@ def time_span_filter(
         if from_timestamp < 0:
             from_timestamp = until_timestamp + from_timestamp
     if from_timestamp > until_timestamp:
-        raise ValueError('from_timestamp %r must not be greater than until_timestamp %r' % (
+        raise ValueError('from_timestamp {!r} must not be greater than until_timestamp {!r}'.format(
             from_timestamp, until_timestamp
         ))
     return (

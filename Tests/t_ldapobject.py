@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Automatic tests for python-ldap's module ldap.ldapobject
 
@@ -72,7 +71,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(Test00_SimpleLDAPObject, cls).setUpClass()
+        super().setUpClass()
         # insert some Foo* objects via ldapadd
         cls.server.ldapadd(
             LDIF_TEMPLATE % {
@@ -270,11 +269,11 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertEqual(
             sorted(subschema),
             [
-                u'attributeTypes',
-                u'ldapSyntaxes',
-                u'matchingRuleUse',
-                u'matchingRules',
-                u'objectClasses'
+                'attributeTypes',
+                'ldapSyntaxes',
+                'matchingRuleUse',
+                'matchingRules',
+                'objectClasses'
             ]
         )
 
@@ -291,7 +290,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             info = ldap_err.args[0]['info']
             expected_info = os.strerror(errno.ENOTCONN)
             if info != expected_info:
-                self.fail("expected info=%r, got %r" % (expected_info, info))
+                self.fail(f"expected info={expected_info!r}, got {info!r}")
         else:
             self.fail("expected SERVER_DOWN, got %r" % r)
 
@@ -333,10 +332,10 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
     def test_simple_bind_noarg(self):
         l = self.ldap_object_class(self.server.ldap_uri)
         l.simple_bind_s()
-        self.assertEqual(l.whoami_s(), u'')
+        self.assertEqual(l.whoami_s(), '')
         l = self.ldap_object_class(self.server.ldap_uri)
         l.simple_bind_s(None, None)
-        self.assertEqual(l.whoami_s(), u'')
+        self.assertEqual(l.whoami_s(), '')
 
     def _check_byteswarning(self, warning, expected_message):
         self.assertIs(warning.category, ldap.LDAPBytesWarning)
@@ -374,16 +373,16 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
     def test_dse(self):
         dse = self._ldap_conn.read_rootdse_s()
         self.assertIsInstance(dse, dict)
-        self.assertEqual(dse[u'supportedLDAPVersion'], [b'3'])
+        self.assertEqual(dse['supportedLDAPVersion'], [b'3'])
         keys = set(dse)
         # SASL info may be missing in restricted build environments
-        keys.discard(u'supportedSASLMechanisms')
+        keys.discard('supportedSASLMechanisms')
         self.assertEqual(
             keys,
-            {u'configContext', u'entryDN', u'namingContexts', u'objectClass',
-             u'structuralObjectClass', u'subschemaSubentry',
-             u'supportedControl', u'supportedExtension', u'supportedFeatures',
-             u'supportedLDAPVersion'}
+            {'configContext', 'entryDN', 'namingContexts', 'objectClass',
+             'structuralObjectClass', 'subschemaSubentry',
+             'supportedControl', 'supportedExtension', 'supportedFeatures',
+             'supportedLDAPVersion'}
         )
         self.assertEqual(
             self._ldap_conn.get_naming_contexts(),
@@ -499,20 +498,20 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
         self.assertEqual(
             l1.__getstate__(),
             {
-                str('_last_bind'): (
+                '_last_bind': (
                     'simple_bind_s',
                     (bind_dn, 'user1_pw'),
                     {}
                 ),
-                str('_options'): [(17, 3)],
-                str('_reconnects_done'): 0,
-                str('_retry_delay'): 60.0,
-                str('_retry_max'): 1,
-                str('_start_tls'): 0,
-                str('_trace_level'): ldap._trace_level,
-                str('_trace_stack_limit'): 5,
-                str('_uri'): self.server.ldap_uri,
-                str('timeout'): -1,
+                '_options': [(17, 3)],
+                '_reconnects_done': 0,
+                '_retry_delay': 60.0,
+                '_retry_max': 1,
+                '_start_tls': 0,
+                '_trace_level': ldap._trace_level,
+                '_trace_stack_limit': 5,
+                '_uri': self.server.ldap_uri,
+                'timeout': -1,
             },
         )
 
@@ -552,14 +551,14 @@ class Test03_SimpleLDAPObjectWithFileno(Test00_SimpleLDAPObject):
         self._sock = socket.create_connection(
             (self.server.hostname, self.server.port)
         )
-        return super(Test03_SimpleLDAPObjectWithFileno, self)._open_ldap_conn(
+        return super()._open_ldap_conn(
             who=who, cred=cred, fileno=self._sock.fileno(), **kwargs
         )
 
     def tearDown(self):
         self._sock.close()
         del self._sock
-        super(Test03_SimpleLDAPObjectWithFileno, self).tearDown()
+        super().tearDown()
 
 
 if __name__ == '__main__':

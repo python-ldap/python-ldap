@@ -1,7 +1,6 @@
 """
 Example showing the use of the password extended operation.
 """
-from __future__ import print_function
 
 import sys,ldap,ldapurl,getpass
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.controls.readentry - classes for the Read Entry controls
 (see RFC 4527)

@@ -33,7 +33,7 @@ else:
 
 import _ldap
 assert _ldap.__version__==__version__, \
-       ImportError('ldap %s and _ldap %s version mismatch!' % (__version__,_ldap.__version__))
+       ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 from _ldap import *
 # call into libldap to initialize it right now
 LIBLDAP_API_INFO = _ldap.get_option(_ldap.OPT_API_INFO)
@@ -83,14 +83,14 @@ class LDAPLock:
     if __debug__:
       global _trace_level
       if _trace_level>=self._min_trace_level:
-        _trace_file.write('***%s.acquire() %s %s\n' % (self.__class__.__name__,repr(self),self._desc))
+        _trace_file.write('***{}.acquire() {} {}\n'.format(self.__class__.__name__,repr(self),self._desc))
     return self._lock.acquire()
 
   def release(self):
     if __debug__:
       global _trace_level
       if _trace_level>=self._min_trace_level:
-        _trace_file.write('***%s.release() %s %s\n' % (self.__class__.__name__,repr(self),self._desc))
+        _trace_file.write('***{}.release() {} {}\n'.format(self.__class__.__name__,repr(self),self._desc))
     return self._lock.release()
 
 

@@ -4,7 +4,6 @@ written by Michael Stroeder <michael@stroeder.com>
 
 See https://www.python-ldap.org for details.
 """
-from __future__ import print_function
 
 import ldap,ldap.resiter
 

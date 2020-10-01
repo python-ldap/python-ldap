@@ -69,9 +69,9 @@ class SchemaElement:
     assert value is None or type(value)==str,TypeError("value has to be of str, was %r" % value)
     if value:
       if quoted:
-        return " %s '%s'" % (key,value.replace("'","\\'"))
+        return " {} '{}'".format(key,value.replace("'","\\'"))
       else:
-        return " %s %s" % (key,value)
+        return f" {key} {value}"
     else:
       return ""
 
@@ -84,9 +84,9 @@ class SchemaElement:
     else:
       quoted_values = values
     if len(values)==1:
-      return ' %s %s' % (key,quoted_values[0])
+      return ' {} {}'.format(key,quoted_values[0])
     else:
-      return ' %s ( %s )' % (key,sep.join(quoted_values))
+      return ' {} ( {} )'.format(key,sep.join(quoted_values))
 
   def __str__(self):
     result = [str(self.oid)]
@@ -133,7 +133,7 @@ class ObjectClass(SchemaElement):
     implementations to indicate the source of the associated schema
     element
   """
-  schema_attribute = u'objectClasses'
+  schema_attribute = 'objectClasses'
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),
@@ -240,7 +240,7 @@ class AttributeType(SchemaElement):
     implementations to indicate the source of the associated schema
     element
   """
-  schema_attribute = u'attributeTypes'
+  schema_attribute = 'attributeTypes'
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),
@@ -334,7 +334,7 @@ class LDAPSyntax(SchemaElement):
     Integer flag (0 or 1) indicating whether the attribute type is marked
     as not human-readable (X-NOT-HUMAN-READABLE)
   """
-  schema_attribute = u'ldapSyntaxes'
+  schema_attribute = 'ldapSyntaxes'
   token_defaults = {
     'DESC':(None,),
     'X-NOT-HUMAN-READABLE':(None,),
@@ -383,7 +383,7 @@ class MatchingRule(SchemaElement):
     OID of the LDAP syntax this matching rule is usable with
     (string, or None if missing)
   """
-  schema_attribute = u'matchingRules'
+  schema_attribute = 'matchingRules'
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),
@@ -429,7 +429,7 @@ class MatchingRuleUse(SchemaElement):
     NAMEs or OIDs of attribute types for which this matching rule is used
     (tuple of strings)
   """
-  schema_attribute = u'matchingRuleUse'
+  schema_attribute = 'matchingRuleUse'
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),
@@ -489,7 +489,7 @@ class DITContentRule(SchemaElement):
     NAMEs or OIDs of attributes which may not be present in an entry of the
     object class. (tuple of strings)
   """
-  schema_attribute = u'dITContentRules'
+  schema_attribute = 'dITContentRules'
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),
@@ -547,7 +547,7 @@ class DITStructureRule(SchemaElement):
     NAMEs or OIDs of allowed structural object classes
     of superior entries in the DIT (tuple of strings)
   """
-  schema_attribute = u'dITStructureRules'
+  schema_attribute = 'dITStructureRules'
 
   token_defaults = {
     'NAME':(()),
@@ -610,7 +610,7 @@ class NameForm(SchemaElement):
     NAMEs or OIDs of additional attributes an RDN may contain
     (tuple of strings)
   """
-  schema_attribute = u'nameForms'
+  schema_attribute = 'nameForms'
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),

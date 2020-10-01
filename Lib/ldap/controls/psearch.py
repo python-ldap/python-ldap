@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.controls.psearch - classes for Persistent Search Control
 (see https://tools.ietf.org/html/draft-ietf-ldapext-psearch)

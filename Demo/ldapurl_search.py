@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import sys,pprint,ldap
 
 from ldap.ldapobject import LDAPObject

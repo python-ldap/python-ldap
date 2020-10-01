@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.controls.deref - classes for
 (see https://tools.ietf.org/html/draft-masarati-ldap-deref)

@@ -7,7 +7,7 @@ from ldap.pkginfo import __version__
 
 import _ldap
 assert _ldap.__version__==__version__, \
-       ImportError('ldap %s and _ldap %s version mismatch!' % (__version__,_ldap.__version__))
+       ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 
 import ldap.functions
 

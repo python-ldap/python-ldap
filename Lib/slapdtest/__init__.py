@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 slapdtest - module for spawning test instances of OpenLDAP's slapd server
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.syncrepl - for implementing syncrepl consumer (see RFC 4533)
 

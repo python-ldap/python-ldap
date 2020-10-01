@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.controls.sessiontrack - class for session tracking control
 (see draft-wahl-ldap-session)

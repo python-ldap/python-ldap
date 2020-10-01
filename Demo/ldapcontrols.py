@@ -1,4 +1,3 @@
-from __future__ import print_function
 import ldap,ldapurl,pprint
 
 from ldap.controls import LDAPControl,BooleanControl

@@ -3,7 +3,6 @@ Do a search with the LDAP URL specified at command-line.
 
 No output of LDAP data is produced except trace output.
 """
-from __future__ import print_function
 import sys,getpass,ldap,ldapurl
 
 try:
