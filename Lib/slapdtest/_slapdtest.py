@@ -186,7 +186,6 @@ class SlapdObject(object):
     slapd_loglevel = 'stats stats2'
     local_host = LOCALHOST
     testrunsubdirs = (
-        'schema',
         'slapd.d',
     )
     openldap_schema_files = (
@@ -217,7 +216,6 @@ class SlapdObject(object):
         self._port = self._avail_tcp_port()
         self.server_id = self._port % 4096
         self.testrundir = os.path.join(self.TMPDIR, 'python-ldap-test-%d' % self._port)
-        self._schema_prefix = os.path.join(self.testrundir, 'schema')
         self._slapd_conf = os.path.join(self.testrundir, 'slapd.d')
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
         self.ldap_uri = "ldap://%s:%d/" % (self.local_host, self._port)
@@ -293,7 +291,6 @@ class SlapdObject(object):
         os.mkdir(self.testrundir)
         os.mkdir(self._db_directory)
         self._create_sub_dirs(self.testrunsubdirs)
-        self._ln_schema_files(self.openldap_schema_files, self.SCHEMADIR)
 
     def _cleanup_rundir(self):
         """
@@ -340,7 +337,6 @@ class SlapdObject(object):
         """
         config_dict = {
             'serverid': hex(self.server_id),
-            'schema_prefix':self._schema_prefix,
             'loglevel': self.slapd_loglevel,
             'database': self.database,
             'directory': self._db_directory,
@@ -364,23 +360,15 @@ class SlapdObject(object):
             self._log.debug('Create directory %s', dir_name)
             os.mkdir(dir_name)
 
-    def _ln_schema_files(self, file_names, source_dir):
-        """
-        write symbolic links to original schema files
-        """
-        for fname in file_names:
-            ln_source = os.path.join(source_dir, fname)
-            ln_target = os.path.join(self._schema_prefix, fname)
-            self._log.debug('Create symlink %s -> %s', ln_source, ln_target)
-            os.symlink(ln_source, ln_target)
-
     def _write_config(self):
         """Loads the slapd.d configuration."""
         self._log.debug("importing configuration: %s", self._slapd_conf)
 
         self.slapadd(self.gen_config(), ["-n0"])
         ldif_paths = [
-            os.path.join(self.SCHEMADIR, schema)
+            schema
+            if os.path.exists(schema)
+            else os.path.join(self.SCHEMADIR, schema)
             for schema in self.openldap_schema_files
         ]
         for ldif_path in ldif_paths:
