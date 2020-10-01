@@ -25,8 +25,10 @@ try:
 	 ]
        )
 
-except _ldap.LDAPError:
-    pass
+except _ldap.LDAPError as e:
+  mssg = list(e.args)[0]['desc']
+  print("Error while adding new entry: " + msg)
+    
 
 #
 # create an entry for me
@@ -37,8 +39,9 @@ print("Updating", repr(dn))
 
 try:
 	l.delete_s(dn)
-except:
-	pass
+except _ldap.LDAPError as e:
+  mssg = list(e.args)[0]['desc']
+  print("Error while adding new entry: " + msg)
 
 l.add_s(dn,
      [
