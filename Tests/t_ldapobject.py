@@ -62,6 +62,25 @@ cn: Foo4
 
 """
 
+SCHEMA_TEMPLATE = """dn: cn=mySchema,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: mySchema
+olcAttributeTypes: ( 1.3.6.1.4.1.56207.1.1.1 NAME 'myAttribute'
+    DESC 'fobar attribute'
+    EQUALITY caseExactMatch
+    ORDERING caseExactOrderingMatch
+    SUBSTR caseExactSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+    SINGLE-VALUE
+    USAGE userApplications
+    X-ORIGIN 'foobar' )
+olcObjectClasses: ( 1.3.6.1.4.1.56207.1.2.2 NAME 'myClass'
+    DESC 'foobar objectclass'
+    SUP top
+    STRUCTURAL
+    MUST myAttribute
+    X-ORIGIN 'foobar' )"""
+
 
 class Test00_SimpleLDAPObject(SlapdTestCase):
     """
@@ -93,6 +112,14 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
 
     def tearDown(self):
         del self._ldap_conn
+
+    def reset_connection(self):
+        try:
+            del self._ldap_conn
+        except AttributeError:
+            pass
+
+        self._ldap_conn = self._open_ldap_conn(bytes_mode=False)
 
     def test_reject_bytes_base(self):
         base = self.server.suffix
@@ -465,6 +492,22 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
 
         l.delete_s(dn)
 
+    def test_slapadd(self):
+        with self.assertRaises(ldap.INVALID_DN_SYNTAX):
+            self._ldap_conn.add_s("myAttribute=foobar,ou=Container,%s" % self.server.suffix, [
+                ("objectClass", b'myClass'),
+                ("myAttribute", b'foobar'),
+            ])
+
+        self.server.slapadd(SCHEMA_TEMPLATE, ["-n0"])
+        self.server.restart()
+        self.reset_connection()
+
+        self._ldap_conn.add_s("myAttribute=foobar,ou=Container,%s" % self.server.suffix, [
+            ("objectClass", b'myClass'),
+            ("myAttribute", b'foobar'),
+        ])
+
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
     """
@@ -560,6 +603,11 @@ class Test03_SimpleLDAPObjectWithFileno(Test00_SimpleLDAPObject):
         self._sock.close()
         del self._sock
         super(Test03_SimpleLDAPObjectWithFileno, self).tearDown()
+
+    def reset_connection(self):
+        self._sock.close()
+        del self._sock
+        super(Test03_SimpleLDAPObjectWithFileno, self).reset_connection()
 
 
 if __name__ == '__main__':
