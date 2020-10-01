@@ -132,6 +132,7 @@ sessionTrackingIdentifier
 slapadd
 sizelimit
 slapd
+startup
 stderr
 stdout
 str
