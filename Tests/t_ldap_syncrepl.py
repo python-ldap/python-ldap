@@ -19,27 +19,44 @@ from ldap.syncrepl import SyncreplConsumer, SyncInfoMessage
 from slapdtest import SlapdObject, SlapdTestCase
 
 # a template string for generating simple slapd.conf file
-SLAPD_CONF_PROVIDER_TEMPLATE = r"""
-serverID %(serverid)s
-moduleload back_%(database)s
-moduleload syncprov
-include "%(schema_prefix)s/core.schema"
-loglevel %(loglevel)s
-allow bind_v2
+SLAPD_CONF_PROVIDER_TEMPLATE = r"""dn: cn=config
+objectClass: olcGlobal
+cn: config
+olcServerID: %(serverid)s
+olcLogLevel: %(loglevel)s
+olcAllows: bind_v2
+olcAuthzRegexp: {0}"gidnumber=%(root_gid)s\+uidnumber=%(root_uid)s,cn=peercred,cn=external,cn=auth" "%(rootdn)s"
+olcAuthzRegexp: {1}"C=DE, O=python-ldap, OU=slapd-test, CN=([A-Za-z]+)" "ldap://ou=people,dc=local???($1)"
+olcTLSCACertificateFile: %(cafile)s
+olcTLSCertificateFile: %(servercert)s
+olcTLSCertificateKeyFile: %(serverkey)s
+olcTLSVerifyClient: try
 
-authz-regexp
-  "gidnumber=%(root_gid)s\\+uidnumber=%(root_uid)s,cn=peercred,cn=external,cn=auth"
-  "%(rootdn)s"
+dn: cn=module,cn=config
+objectClass: olcModuleList
+cn: module
+olcModuleLoad: back_%(database)s
+olcModuleLoad: syncprov
 
-database %(database)s
-directory "%(directory)s"
-suffix "%(suffix)s"
-rootdn "%(rootdn)s"
-rootpw "%(rootpw)s"
-overlay syncprov
-syncprov-checkpoint 100 10
-syncprov-sessionlog 100
-index objectclass,entryCSN,entryUUID eq
+dn: olcDatabase=%(database)s,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcMdbConfig
+olcDatabase: %(database)s
+olcSuffix: %(suffix)s
+olcRootDN: %(rootdn)s
+olcRootPW: %(rootpw)s
+olcDbDirectory: %(directory)s
+olcDbIndex: objectclass,entryCSN,entryUUID eq
+
+dn: olcOverlay=syncprov,olcDatabase={1}%(database)s,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcSyncProvConfig
+olcOverlay: syncprov
+olcSpCheckpoint: 100 10
+olcSpSessionlog: 100
+"""
+
+OTHER_CONF = r"""
 """
 
 # Define initial data load, both as an LDIF and as a dictionary.
