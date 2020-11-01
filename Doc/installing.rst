@@ -168,10 +168,10 @@ Packages for building and testing::
    newer are required.
 
 
-setup.cfg
-=========
+``setup.cfg``
+=============
 
-The file setup.cfg allows to set some build and installation parameters for
+The file ``setup.cfg`` allows to set some build and installation parameters for
 reflecting the local installation of required software packages. Only section
 ``[_ldap]`` is described here. More information about other sections can be
 found in :ref:`Setuptools documentation <distributing-index>`.
