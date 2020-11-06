@@ -71,6 +71,19 @@ class TestCidict(unittest.TestCase):
         assert data == {'a': 1, 'b': 2}
         self.assertEqual(len(w), 1)
 
+    def test_copy(self):
+        cix1 = ldap.cidict.cidict(
+            {"a": 1, "B": 2}
+        )
+        cix2 = cix1.copy()
+        self.assertEqual(cix1, cix2)
+        cix1["c"] = 3
+        self.assertNotIn("c", cix2)
+        cix2["C"] = 4
+        self.assertNotEqual(cix1, cix2)
+        self.assertEqual(list(cix1.keys()), ["a", "B", "c"])
+        self.assertEqual(list(cix2.keys()), ["a", "B", "C"])
+
 
 if __name__ == '__main__':
     unittest.main()

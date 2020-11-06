@@ -53,6 +53,14 @@ class cidict(MutableMapping):
         self._keys.clear()
         self._data.clear()
 
+    def copy(self):
+        inst = self.__class__.__new__(self.__class__)
+        inst._data = self._data.copy()
+        inst._keys = self._keys.copy()
+        return inst
+
+    __copy__ = copy
+
     # Backwards compatibility
 
     def has_key(self, key):
