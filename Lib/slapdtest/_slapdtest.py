@@ -177,6 +177,12 @@ class SlapdObject(object):
     :param openldap_schema_files: A list of schema names or schema paths to
         load at startup. By default this only contains `core`.
 
+    :param host: The host on which the slapd server will listen to.
+        The default value is `127.0.0.1`.
+
+    :param port: The port on which the slapd server will listen to.
+        If `None` a random available port will be chosen.
+
     .. versionchanged:: 3.1
 
         Added context manager functionality
@@ -214,14 +220,14 @@ class SlapdObject(object):
     # create loggers once, multiple calls mess up refleak tests
     _log = combined_logger('python-ldap-test')
 
-    def __init__(self):
+    def __init__(self, host=None, port=None):
         self._proc = None
-        self._port = self._avail_tcp_port()
+        self._port = port or self._avail_tcp_port()
         self.server_id = self._port % 4096
         self.testrundir = os.path.join(self.TMPDIR, 'python-ldap-test-%d' % self._port)
         self._slapd_conf = os.path.join(self.testrundir, 'slapd.d')
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
-        self.ldap_uri = "ldap://%s:%d/" % (self.local_host, self._port)
+        self.ldap_uri = "ldap://%s:%d/" % (host or self.local_host, self._port)
         if HAVE_LDAPI:
             ldapi_path = os.path.join(self.testrundir, 'ldapi')
             self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
