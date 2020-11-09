@@ -224,9 +224,17 @@ class SlapdObject(object):
     # create loggers once, multiple calls mess up refleak tests
     _log = None
 
-    def __init__(self, host=None, port=None, log_level=logging.WARN):
+    def __init__(self,
+                 host=None,
+                 port=None,
+                 log_level=logging.WARN,
+                 openldap_schema_files=None,
+                 ):
         if SlapdObject._log is None:
             SlapdObject._log = combined_logger('python-ldap-test', log_level=log_level)
+
+        if openldap_schema_files is not None:
+            self.openldap_schema_files = openldap_schema_files
 
         self._proc = None
         self._port = port or self._avail_tcp_port()
