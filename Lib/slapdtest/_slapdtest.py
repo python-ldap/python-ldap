@@ -229,12 +229,28 @@ class SlapdObject(object):
                  port=None,
                  log_level=logging.WARN,
                  openldap_schema_files=None,
+                 database=None,
+                 suffix=None,
+                 root_cn=None,
+                 root_pw=None,
                  ):
         if SlapdObject._log is None:
             SlapdObject._log = combined_logger('python-ldap-test', log_level=log_level)
 
         if openldap_schema_files is not None:
             self.openldap_schema_files = openldap_schema_files
+
+        if database is not None:
+            self.database = database
+
+        if suffix is not None:
+            self.suffix = suffix
+
+        if root_cn is not None:
+            self.root_cn = root_cn
+
+        if root_pw is not None:
+            self.root_pw = root_pw
 
         self._proc = None
         self._port = port or self._avail_tcp_port()
