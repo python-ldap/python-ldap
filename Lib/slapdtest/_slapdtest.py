@@ -463,15 +463,7 @@ class SlapdObject(object):
             self._proc.terminate()
             self.wait()
         self._cleanup_rundir()
-        if hasattr(atexit, 'unregister'):
-            # Python 3
-            atexit.unregister(self.stop)
-        elif hasattr(atexit, '_exithandlers'):
-            # Python 2, can be None during process shutdown
-            try:
-                atexit._exithandlers.remove(self.stop)
-            except ValueError:
-                pass
+        atexit.unregister(self.stop)
 
     def restart(self):
         """
