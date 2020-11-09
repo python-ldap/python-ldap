@@ -125,7 +125,7 @@ def _add_sbin(path):
 
 def combined_logger(
         log_name,
-        log_level=logging.WARN,
+        log_level,
         sys_log_format='%(levelname)s %(message)s',
         console_log_format='%(asctime)s %(levelname)s %(message)s',
     ):
@@ -183,6 +183,10 @@ class SlapdObject(object):
     :param port: The port on which the slapd server will listen to.
         If `None` a random available port will be chosen.
 
+    :param log_level: The verbosity of SlapdObject..
+        The default value is `logging.WARNING`.
+
+
     .. versionchanged:: 3.1
 
         Added context manager functionality
@@ -218,9 +222,12 @@ class SlapdObject(object):
     _start_sleep = 1.5
 
     # create loggers once, multiple calls mess up refleak tests
-    _log = combined_logger('python-ldap-test')
+    _log = None
 
-    def __init__(self, host=None, port=None):
+    def __init__(self, host=None, port=None, log_level=logging.WARN):
+        if SlapdObject._log is None:
+            SlapdObject._log = combined_logger('python-ldap-test', log_level=log_level)
+
         self._proc = None
         self._port = port or self._avail_tcp_port()
         self.server_id = self._port % 4096
