@@ -415,10 +415,10 @@ class SlapdObject(object):
         self._log.info('starting slapd: %r', ' '.join(slapd_args))
         self._proc = subprocess.Popen(slapd_args)
         # Waits until the LDAP server socket is open, or slapd crashed
-        wait_time = 0.1
+        deadline = time.monotonic() + 10
         # no cover to avoid spurious coverage changes, see
         # https://github.com/python-ldap/python-ldap/issues/127
-        for _ in range(20):  # pragma: no cover
+        while True:  # pragma: no cover
             if self._proc.poll() is not None:
                 self._stopped()
                 raise RuntimeError("slapd exited before opening port")
@@ -428,8 +428,9 @@ class SlapdObject(object):
                 )
                 self.ldapwhoami()
             except RuntimeError:
-                time.sleep(wait_time)
-                wait_time = wait_time + 0.1
+                if time.monotonic() >= deadline:
+                    break
+                time.sleep(0.2)
             else:
                 return
         raise RuntimeError("slapd did not start properly")
