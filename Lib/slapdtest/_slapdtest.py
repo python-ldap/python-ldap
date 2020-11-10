@@ -512,42 +512,43 @@ class SlapdObject:
         args += (extra_args or [])
 
         self._log.debug('Run command: %r', ' '.join(args))
-        proc = subprocess.Popen(
-            args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        proc = subprocess.run(
+            args,
+            input=stdin_data,
+            stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
         self._log.debug('stdin_data=%r', stdin_data)
-        stdout_data, stderr_data = proc.communicate(stdin_data)
-        if stdout_data is not None:
-            self._log.debug('stdout_data=%r', stdout_data)
-        if stderr_data is not None:
-            self._log.debug('stderr_data=%r', stderr_data)
-        if proc.wait() != 0:
+        if proc.stdout is not None:
+            self._log.debug('stdout=%r', proc.stdout.decode("utf-8"))
+        if proc.stderr is not None:
+            self._log.debug('stderr=%r', proc.stderr.decode("utf-8"))
+        if proc.returncode != 0:
             raise RuntimeError(
                 '{!r} process failed:\n{!r}\n{!r}'.format(
-                    args, stdout_data, stderr_data
+                    args, proc.stdout, proc.stderr
                 )
             )
-        return stdout_data, stderr_data
+        return proc
 
     def ldapwhoami(self, extra_args=None):
         """
         Runs ldapwhoami on this slapd instance
         """
-        self._cli_popen(self.PATH_LDAPWHOAMI, extra_args=extra_args)
+        return self._cli_popen(self.PATH_LDAPWHOAMI, extra_args=extra_args)
 
     def ldapadd(self, ldif, extra_args=None):
         """
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(self.PATH_LDAPADD, extra_args=extra_args,
+        return self._cli_popen(self.PATH_LDAPADD, extra_args=extra_args,
                         stdin_data=ldif.encode('utf-8'))
 
     def ldapmodify(self, ldif, extra_args=None):
         """
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args,
+        return self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args,
                         stdin_data=ldif.encode('utf-8'))
 
     def ldapdelete(self, dn, recursive=False, extra_args=None):
@@ -559,13 +560,13 @@ class SlapdObject:
         if recursive:
             extra_args.append('-r')
         extra_args.append(dn)
-        self._cli_popen(self.PATH_LDAPDELETE, extra_args=extra_args)
+        return self._cli_popen(self.PATH_LDAPDELETE, extra_args=extra_args)
 
     def slapadd(self, ldif, extra_args=None):
         """
         Runs slapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(
+        return self._cli_popen(
             self.PATH_SLAPADD,
             stdin_data=ldif.encode("utf-8") if ldif else None,
             extra_args=extra_args,
