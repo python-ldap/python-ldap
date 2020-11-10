@@ -233,6 +233,7 @@ class SlapdObject(object):
                  suffix=None,
                  root_cn=None,
                  root_pw=None,
+                 datadir_prefix=None,
                  ):
         if SlapdObject._log is None:
             SlapdObject._log = combined_logger('python-ldap-test', log_level=log_level)
@@ -255,7 +256,7 @@ class SlapdObject(object):
         self._proc = None
         self._port = port or self._avail_tcp_port()
         self.server_id = self._port % 4096
-        self.testrundir = os.path.join(self.TMPDIR, 'python-ldap-test-%d' % self._port)
+        self.testrundir = os.path.join(self.TMPDIR, '%s-%d' % (datadir_prefix or "python-ldap-test", self._port))
         self._slapd_conf = os.path.join(self.testrundir, 'slapd.d')
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
         self.ldap_uri = "ldap://%s:%d/" % (host or self.local_host, self._port)
