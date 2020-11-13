@@ -125,7 +125,7 @@ def _add_sbin(path):
 
 def combined_logger(
         log_name,
-        log_level,
+        log_level=logging.WARN,
         sys_log_format='%(levelname)s %(message)s',
         console_log_format='%(asctime)s %(levelname)s %(message)s',
     ):
@@ -235,8 +235,8 @@ class SlapdObject(object):
                  root_pw=None,
                  datadir_prefix=None,
                  ):
-        if SlapdObject._log is None:
-            SlapdObject._log = combined_logger('python-ldap-test', log_level=log_level)
+        if self._log is None:
+            self._log = combined_logger('python-ldap-test', log_level=log_level)
 
         if openldap_schema_files is not None:
             self.openldap_schema_files = openldap_schema_files
