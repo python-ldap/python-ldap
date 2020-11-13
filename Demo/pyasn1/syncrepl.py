@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 This script implements a syncrepl consumer which syncs data from an OpenLDAP
 server to a local (shelve) database.
@@ -8,7 +7,6 @@ Notes:
 
 The bound user needs read access to the attributes entryDN and entryCSN.
 """
-from __future__ import print_function
 
 # Import modules from Python standard lib
 import logging

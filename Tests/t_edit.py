@@ -13,7 +13,7 @@ class EditionTests(SlapdTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(EditionTests, cls).setUpClass()
+        super().setUpClass()
         base = cls.server.suffix
         suffix_dc = base.split(',')[0][3:]
 

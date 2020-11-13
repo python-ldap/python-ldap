@@ -4,7 +4,6 @@ This sample script demonstrates the use of the pre-read control (see RFC 4527).
 
 Originally contributed by Andreas Hasenack <ahasenack@terra.com.br>
 """
-from __future__ import print_function
 
 import pprint,ldap,ldap.modlist
 

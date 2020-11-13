@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.controls.simple - classes for some very simple LDAP controls
 

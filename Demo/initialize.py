@@ -7,7 +7,6 @@ ldap://localhost:1390 (LDAP with StartTLS)
 ldaps://localhost:1391 (LDAP over SSL)
 ldapi://%2ftmp%2fopenldap2 (domain socket /tmp/openldap2)
 """
-from __future__ import print_function
 
 import sys,os,ldap
 

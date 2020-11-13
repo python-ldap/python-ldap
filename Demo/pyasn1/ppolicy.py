@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Demo script for Password Policy Controls
 (see https://tools.ietf.org/html/draft-behera-ldap-password-policy)
@@ -9,7 +8,6 @@ pyasn1
 pyasn1-modules
 python-ldap 2.4+
 """
-from __future__ import print_function
 
 import sys,ldap,ldapurl,getpass
 

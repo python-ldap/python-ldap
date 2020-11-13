@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.controls.sss - classes for Server Side Sorting
 (see RFC 2891)

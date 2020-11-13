@@ -114,7 +114,7 @@ class SimpleLDAPObject:
     self._ldap_object_lock.acquire()
     if __debug__:
       if self._trace_level>=1:
-        self._trace_file.write('*** %s %s - %s\n%s\n' % (
+        self._trace_file.write('*** {} {} - {}\n{}\n'.format(
           repr(self),
           self._uri,
           '.'.join((self.__class__.__name__,func.__name__)),
@@ -138,7 +138,7 @@ class SimpleLDAPObject:
       except IndexError:
         pass
       if __debug__ and self._trace_level>=2:
-        self._trace_file.write('=> LDAPError - %s: %s\n' % (e.__class__.__name__,str(e)))
+        self._trace_file.write('=> LDAPError - {}: {}\n'.format(e.__class__.__name__,str(e)))
       raise
     else:
       if __debug__ and self._trace_level>=2:
@@ -159,7 +159,7 @@ class SimpleLDAPObject:
     elif name in self.__dict__:
       return self.__dict__[name]
     else:
-      raise AttributeError('%s has no attribute %s' % (
+      raise AttributeError('{} has no attribute {}'.format(
         self.__class__.__name__,repr(name)
       ))
 
@@ -326,7 +326,7 @@ class SimpleLDAPObject:
     except ldap.COMPARE_FALSE:
       return False
     raise ldap.PROTOCOL_ERROR(
-        'Compare operation returned wrong result: %r' % (ldap_res,)
+        f'Compare operation returned wrong result: {ldap_res!r}'
     )
 
   def compare(self,dn,attr,value):
@@ -384,7 +384,7 @@ class SimpleLDAPObject:
     if extop_resp_class:
       respoid,respvalue = res
       if extop_resp_class.responseName!=respoid:
-        raise ldap.PROTOCOL_ERROR("Wrong OID in extended response! Expected %s, got %s" % (extop_resp_class.responseName,respoid))
+        raise ldap.PROTOCOL_ERROR(f"Wrong OID in extended response! Expected {extop_resp_class.responseName}, got {respoid}")
       return extop_resp_class(extop_resp_class.responseName,respvalue)
     else:
       return res
@@ -707,8 +707,8 @@ class SimpleLDAPObject:
 
     Returns: None or text/bytes depending on bytes_mode.
     """
-    empty_dn = u''
-    attrname = u'subschemaSubentry'
+    empty_dn = ''
+    attrname = 'subschemaSubentry'
     if dn is None:
       dn = empty_dn
     try:
@@ -760,7 +760,7 @@ class SimpleLDAPObject:
     """
     Returns the sub schema sub entry's data
     """
-    filterstr = u'(objectClass=subschema)'
+    filterstr = '(objectClass=subschema)'
     if attrs is None:
       attrs = SCHEMA_ATTRS
     try:
@@ -797,8 +797,8 @@ class SimpleLDAPObject:
     """
     convenience wrapper around read_s() for reading rootDSE
     """
-    base = u''
-    attrlist = attrlist or [u'*', u'+']
+    base = ''
+    attrlist = attrlist or ['*', '+']
     ldap_rootdse = self.read_s(
       base,
       filterstr=filterstr,
@@ -811,7 +811,7 @@ class SimpleLDAPObject:
     returns all attribute values of namingContexts in rootDSE
     if namingContexts is not present (not readable) then empty list is returned
     """
-    name = u'namingContexts'
+    name = 'namingContexts'
     return self.read_rootdse_s(
       attrlist=[name]
     ).get(name, [])
@@ -923,7 +923,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
       while reconnect_counter:
         counter_text = '%d. (of %d)' % (retry_max-reconnect_counter+1,retry_max)
         if __debug__ and self._trace_level>=1:
-          self._trace_file.write('*** Trying %s reconnect to %s...\n' % (
+          self._trace_file.write('*** Trying {} reconnect to {}...\n'.format(
             counter_text,uri
           ))
         try:
@@ -941,7 +941,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
             raise
         except (ldap.SERVER_DOWN,ldap.TIMEOUT):
           if __debug__ and self._trace_level>=1:
-            self._trace_file.write('*** %s reconnect to %s failed\n' % (
+            self._trace_file.write('*** {} reconnect to {} failed\n'.format(
               counter_text,uri
             ))
           reconnect_counter = reconnect_counter-1
@@ -952,7 +952,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
           time.sleep(retry_delay)
         else:
           if __debug__ and self._trace_level>=1:
-            self._trace_file.write('*** %s reconnect to %s successful => repeat last operation\n' % (
+            self._trace_file.write('*** {} reconnect to {} successful => repeat last operation\n'.format(
               counter_text,uri
             ))
           self._reconnects_done = self._reconnects_done + 1

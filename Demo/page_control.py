@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-
 url = "ldap://localhost:1390"
 base = "dc=stroeder,dc=de"
 search_flt = r'(objectClass=*)'

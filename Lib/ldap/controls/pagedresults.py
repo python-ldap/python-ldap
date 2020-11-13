@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.controls.paged - classes for Simple Paged control
 (see RFC 2696)

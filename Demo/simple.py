@@ -1,4 +1,3 @@
-from __future__ import print_function
 import sys,getpass
 import ldap
 
@@ -86,7 +85,7 @@ l.add_s(dn,
 	("labeleduri",			["labeleduri"]),
 	("manager",			["cn=Jaga Indulska"]),
 	("reports",			["reports"]),
-	("jpegPhoto",			[open("/www/leonard/leonard.jpg","r").read()]),
+	("jpegPhoto",			[open("/www/leonard/leonard.jpg").read()]),
 	("uid",				["leonard"]),
 	("userPassword",		[""])
 

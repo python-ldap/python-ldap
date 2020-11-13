@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Automatic tests for python-ldap's module ldap.modlist
 
@@ -44,7 +43,7 @@ class TestModlist(unittest.TestCase):
             result_modlist.sort()
             self.assertEqual(
                 test_modlist, result_modlist,
-                'addModlist(%s) returns\n%s\ninstead of\n%s.' % (
+                'addModlist({}) returns\n{}\ninstead of\n{}.'.format(
                     repr(entry),repr(result_modlist),repr(test_modlist)
                 )
             )
@@ -146,7 +145,7 @@ class TestModlist(unittest.TestCase):
 
             self.assertEqual(
                 test_modlist, result_modlist,
-                'modifyModlist(%s,%s) returns\n%s\ninstead of\n%s.' % (
+                'modifyModlist({},{}) returns\n{}\ninstead of\n{}.'.format(
                     repr(old_entry),
                     repr(new_entry),
                     repr(result_modlist),

@@ -30,7 +30,7 @@ class WrongResultType(Exception):
     Exception.__init__(self)
 
   def __str__(self):
-    return 'Received wrong result type %s (expected one of %s).' % (
+    return 'Received wrong result type {} (expected one of {}).'.format(
       self.receivedResultType,
       ', '.join(self.expectedResultTypes),
     )

@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import ldap
 
 host="localhost:1390"

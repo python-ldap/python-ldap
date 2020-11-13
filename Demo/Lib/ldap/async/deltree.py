@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import ldap,ldap.async
 
 class DeleteLeafs(ldap.async.AsyncSearchHandler):

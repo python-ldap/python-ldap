@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Automatic tests for python-ldap's C wrapper module _ldap
 
@@ -28,7 +27,7 @@ class TestLdapCExtension(SlapdTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestLdapCExtension, cls).setUpClass()
+        super().setUpClass()
         # add two initial objects after server was started and is still empty
         suffix_dc = cls.server.suffix.split(',')[0][3:]
         cls.server._log.debug(
@@ -52,14 +51,14 @@ class TestLdapCExtension(SlapdTestCase):
         )
 
     def setUp(self):
-        super(TestLdapCExtension, self).setUp()
+        super().setUp()
         self._writesuffix = None
 
     def tearDown(self):
         # cleanup test subtree
         if self._writesuffix is not None:
             self.server.ldapdelete(self._writesuffix, recursive=True)
-        super(TestLdapCExtension, self).tearDown()
+        super().tearDown()
 
     @property
     def writesuffix(self):
@@ -288,7 +287,7 @@ class TestLdapCExtension(SlapdTestCase):
             '',
             _ldap.SCOPE_BASE,
             '(objectClass=*)',
-            [str('objectClass'), str('namingContexts')],
+            ['objectClass', 'namingContexts'],
         )
         self.assertEqual(type(m), type(0))
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)

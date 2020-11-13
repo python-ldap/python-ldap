@@ -3,7 +3,6 @@
 This sample script demonstrates the use of the dereference control
 (see https://tools.ietf.org/html/draft-masarati-ldap-deref)
 """
-from __future__ import print_function
 
 import pprint,ldap,ldap.modlist,ldap.resiter
 

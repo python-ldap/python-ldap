@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.controls.openldap - classes for OpenLDAP-specific controls
 

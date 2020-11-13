@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.extop.dds - Classes for Dynamic Entries extended operations
 (see RFC 2589)

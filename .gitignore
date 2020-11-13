@@ -21,3 +21,6 @@ PKG-INFO
 
 # generated in the sample workflow
 /__venv__/
+
+# test dirs
+python-ldap-test-*

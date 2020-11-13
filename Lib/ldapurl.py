@@ -62,7 +62,7 @@ def ldapUrlEscape(s):
   """Returns URL encoding of string s"""
   return quote(s).replace(',','%2C').replace('/','%2F')
 
-class LDAPUrlExtension(object):
+class LDAPUrlExtension:
   """
   Class for parsing and unparsing LDAP URL extensions
   as described in RFC 4516.
@@ -103,9 +103,9 @@ class LDAPUrlExtension(object):
 
   def unparse(self):
     if self.exvalue is None:
-      return '%s%s' % ('!'*(self.critical>0),self.extype)
+      return '{}{}'.format('!'*(self.critical>0),self.extype)
     else:
-      return '%s%s=%s' % (
+      return '{}{}={}'.format(
         '!'*(self.critical>0),
         self.extype,quote(self.exvalue or '')
       )
@@ -114,7 +114,7 @@ class LDAPUrlExtension(object):
     return self.unparse()
 
   def __repr__(self):
-    return '<%s.%s instance at %s: %s>' % (
+    return '<{}.{} instance at {}: {}>'.format(
       self.__class__.__module__,
       self.__class__.__name__,
       hex(id(self)),
@@ -176,7 +176,7 @@ class LDAPUrlExtensions(MutableMapping):
         return ','.join(str(v) for v in self.values())
 
     def __repr__(self):
-        return '<%s.%s instance at %s: %s>' % (
+        return '<{}.{} instance at {}: {}>'.format(
             self.__class__.__module__,
             self.__class__.__name__,
             hex(id(self)),
@@ -198,7 +198,7 @@ class LDAPUrlExtensions(MutableMapping):
         return ','.join(v.unparse() for v in self.values())
 
 
-class LDAPUrl(object):
+class LDAPUrl:
   """
   Class for parsing and unparsing LDAP URLs
   as described in RFC 4516.
@@ -340,7 +340,7 @@ class LDAPUrl(object):
       hostport = ldapUrlEscape(self.hostport)
     else:
       hostport = self.hostport
-    return '%s://%s' % (self.urlscheme,hostport)
+    return f'{self.urlscheme}://{hostport}'
 
   def unparse(self):
     """
@@ -361,7 +361,7 @@ class LDAPUrl(object):
       hostport = ldapUrlEscape(self.hostport)
     else:
       hostport = self.hostport
-    ldap_url = '%s://%s/%s?%s?%s?%s' % (
+    ldap_url = '{}://{}/{}?{}?{}?{}'.format(
       self.urlscheme,
       hostport,dn,attrs_str,scope_str,filterstr
     )
@@ -395,7 +395,7 @@ class LDAPUrl(object):
             raise TypeError("hrefTarget must be str, not "
                             + type(hrefTarget).__name__)
         target = ' target="%s"' % hrefTarget
-    return '<a%s href="%s%s">%s</a>' % (
+    return '<a{} href="{}{}">{}</a>'.format(
         target, urlPrefix, self.unparse(), hrefText
     )
 
@@ -403,7 +403,7 @@ class LDAPUrl(object):
     return self.unparse()
 
   def __repr__(self):
-    return '<%s.%s instance at %s: %s>' % (
+    return '<{}.{} instance at {}: {}>'.format(
       self.__class__.__module__,
       self.__class__.__name__,
       hex(id(self)),
@@ -420,7 +420,7 @@ class LDAPUrl(object):
       else:
         return None
     else:
-      raise AttributeError('%s has no attribute %s' % (
+      raise AttributeError('{} has no attribute {}'.format(
         self.__class__.__name__,name
       ))
     return result # __getattr__()

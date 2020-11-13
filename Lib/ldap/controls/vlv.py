@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ldap.controls.vlv - classes for Virtual List View
 (see draft-ietf-ldapext-ldapv3-vlv)

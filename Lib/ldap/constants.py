@@ -13,16 +13,15 @@ The information serves two purposes:
 # This module cannot import anything from ldap.
 # When building documentation, it is used to initialize ldap.__init__.
 
-from __future__ import print_function
 
-class Constant(object):
+class Constant:
     """Base class for a definition of an OpenLDAP constant
     """
 
     def __init__(self, name, optional=False, requirements=(), doc=None):
         self.name = name
         if optional:
-            self_requirement = 'defined(LDAP_{})'.format(self.name)
+            self_requirement = f'defined(LDAP_{self.name})'
             requirements = list(requirements) + [self_requirement]
         self.requirements = requirements
         self.doc = self.__doc__ = doc
@@ -50,7 +49,7 @@ class TLSInt(Int):
     def __init__(self, *args, **kwargs):
         requrements = list(kwargs.get('requirements', ()))
         kwargs['requirements'] = ['HAVE_TLS'] + requrements
-        super(TLSInt, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class Feature(Constant):
@@ -70,7 +69,7 @@ class Feature(Constant):
 
 
     def __init__(self, name, c_feature, **kwargs):
-        super(Feature, self).__init__(name, **kwargs)
+        super().__init__(name, **kwargs)
         self.c_feature = c_feature
 
 
@@ -392,7 +391,7 @@ def print_header():  # pragma: no cover
             if requirement not in current_requirements:
                 current_requirements.append(requirement)
                 print()
-                print('#if {}'.format(requirement))
+                print(f'#if {requirement}')
 
         print(definition.c_template.format(self=definition))
 

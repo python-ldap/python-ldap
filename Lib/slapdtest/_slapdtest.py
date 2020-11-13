@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
@@ -159,7 +158,7 @@ def combined_logger(
     return new_logger  # end of combined_logger()
 
 
-class SlapdObject(object):
+class SlapdObject:
     """
     Controller class for a slapd instance, OpenLDAP's server.
 

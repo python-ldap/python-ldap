@@ -1,6 +1,5 @@
 # For documentation, see comments in Module/LDAPObject.c and the
 # ldap.sasl module documentation.
-from __future__ import print_function
 
 import ldap,ldap.sasl
 

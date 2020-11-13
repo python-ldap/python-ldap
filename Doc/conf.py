@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # python-ldap documentation build configuration file, created by
 # sphinx-quickstart on Sat Mar 29 15:08:17 2008.

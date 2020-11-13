@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Automatic tests for python-ldap's module ldap.sasl
 
@@ -47,7 +46,7 @@ class TestSasl(SlapdTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestSasl, cls).setUpClass()
+        super().setUpClass()
         ldif = LDIF.format(
             suffix=cls.server.suffix,
             rootdn=cls.server.root_dn,
@@ -72,7 +71,7 @@ class TestSasl(SlapdTestCase):
         ldap_conn.sasl_interactive_bind_s("", auth)
         self.assertEqual(
             ldap_conn.whoami_s().lower(),
-            "dn:{}".format(self.server.root_dn.lower())
+            f"dn:{self.server.root_dn.lower()}"
         )
 
     @requires_tls()
@@ -89,7 +88,7 @@ class TestSasl(SlapdTestCase):
         ldap_conn.sasl_interactive_bind_s("", auth)
         self.assertEqual(
             ldap_conn.whoami_s().lower(),
-            "dn:{}".format(self.certsubject)
+            f"dn:{self.certsubject}"
         )
 
 if __name__ == '__main__':

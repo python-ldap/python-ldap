@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 demo_track_ldap_session.py
 
@@ -8,7 +7,6 @@ Client-side demo implementation of Session Tracking Control
 https://tools.ietf.org/html/draft-wahl-ldap-session-03
 """
 
-from __future__ import print_function
 
 __version__ = '0.1'
 

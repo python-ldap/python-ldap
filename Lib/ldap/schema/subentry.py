@@ -191,7 +191,7 @@ class SubSchema:
         # This helps with falsely assigned OIDs.
         continue
       assert se_obj.__class__==schema_element_class, \
-        "Schema element referenced by %s must be of class %s but was %s" % (
+        "Schema element referenced by {} must be of class {} but was {}".format(
           se_oid,schema_element_class.__name__,se_obj.__class__
         )
       for s in se_obj.sup or ('_',):
@@ -216,7 +216,7 @@ class SubSchema:
         result_oid = self.name2oid[se_class][nameoroid_stripped]
       except KeyError:
         if raise_keyerror:
-          raise KeyError('No registered %s-OID for nameoroid %s' % (se_class.__name__,repr(nameoroid_stripped)))
+          raise KeyError('No registered {}-OID for nameoroid {}'.format(se_class.__name__,repr(nameoroid_stripped)))
         else:
           result_oid = nameoroid_stripped
     return result_oid
@@ -249,7 +249,7 @@ class SubSchema:
       se_obj = self.sed[se_class][se_oid]
     except KeyError:
       if raise_keyerror:
-        raise KeyError('No ldap.schema.%s instance with nameoroid %s and se_oid %s' % (
+        raise KeyError('No ldap.schema.{} instance with nameoroid {} and se_oid {}'.format(
           se_class.__name__,repr(nameoroid),repr(se_oid))
         )
       else:
@@ -461,7 +461,7 @@ def urlfetch(uri,trace_level=0):
 
     l=ldap.initialize(ldap_url.initializeUrl(),trace_level)
     l.protocol_version = ldap.VERSION3
-    l.simple_bind_s(ldap_url.who or u'', ldap_url.cred or u'')
+    l.simple_bind_s(ldap_url.who or '', ldap_url.cred or '')
     subschemasubentry_dn = l.search_subschemasubentry_s(ldap_url.dn)
     if subschemasubentry_dn is None:
       s_temp = None
