@@ -208,9 +208,6 @@ class SlapdObject(object):
     BIN_PATH = os.environ.get('BIN', os.environ.get('PATH', os.defpath))
     SBIN_PATH = os.environ.get('SBIN', _add_sbin(BIN_PATH))
 
-    # time in secs to wait before trying to access slapd via LDAP (again)
-    _start_sleep = 1.5
-
     # create loggers once, multiple calls mess up refleak tests
     _log = combined_logger('python-ldap-test')
 
@@ -418,20 +415,22 @@ class SlapdObject(object):
         self._log.info('starting slapd: %r', ' '.join(slapd_args))
         self._proc = subprocess.Popen(slapd_args)
         # Waits until the LDAP server socket is open, or slapd crashed
+        deadline = time.monotonic() + 10
         # no cover to avoid spurious coverage changes, see
         # https://github.com/python-ldap/python-ldap/issues/127
-        for _ in range(10):  # pragma: no cover
+        while True:  # pragma: no cover
             if self._proc.poll() is not None:
                 self._stopped()
                 raise RuntimeError("slapd exited before opening port")
-            time.sleep(self._start_sleep)
             try:
                 self._log.debug(
                     "slapd connection check to %s", self.default_ldap_uri
                 )
                 self.ldapwhoami()
             except RuntimeError:
-                pass
+                if time.monotonic() >= deadline:
+                    break
+                time.sleep(0.2)
             else:
                 return
         raise RuntimeError("slapd did not start properly")
