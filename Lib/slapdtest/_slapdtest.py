@@ -467,8 +467,16 @@ class SlapdObject:
         """
         Restarts the slapd server with same data
         """
-        self._proc.terminate()
+        self.terminate()
         self.wait()
+        self.resume()
+
+    def terminate(self):
+        """Terminate slapd server"""
+        self._proc.terminate()
+
+    def resume(self):
+        """Start slapd server"""
         self._start_slapd()
 
     def wait(self):
