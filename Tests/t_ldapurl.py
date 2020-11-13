@@ -65,7 +65,7 @@ class TestIsLDAPUrl(unittest.TestCase):
             if expected:
                 LDAPUrl(ldapUrl=ldap_url)
             else:
-                with self.assertRaises(Exception):
+                with self.assertRaises(ValueError):
                     LDAPUrl(ldapUrl=ldap_url)
 
 
