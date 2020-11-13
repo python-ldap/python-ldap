@@ -9,8 +9,11 @@ import linecache
 import os
 import re
 import socket
+import threading
+import time
 import unittest
 import pickle
+
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
@@ -642,6 +645,72 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
         finally:
             self.server._start_slapd()
         self.assertEqual(l1.whoami_s(), 'dn:'+bind_dn)
+
+    def test106_reconnect_restore(self):
+        """
+        The idea of this test is to stop the LDAP server, make a search and ignore the `SERVER_DOWN` exception which happens after the reconnect timeout
+        and then re-use the same connection when the LDAP server is available again.
+        After starting the server the LDAP connection can be re-used again as it will reconnect on the next operation.
+        Prior to fixing PR !267 the connection was reestablished but no `bind()` was done resulting in a anonymous search which caused `INSUFFICIENT_ACCESS` when anonymous seach is disallowed.
+        """
+        lo = self.ldap_object_class(self.server.ldap_uri, retry_max=2, retry_delay=1)
+        bind_dn = 'cn=user1,' + self.server.suffix
+        lo.simple_bind_s(bind_dn, 'user1_pw')
+
+        dn = lo.whoami_s()[3:]
+
+        self.server._proc.terminate()
+        self.server.wait()
+
+        # do a search, wait for the timeout, ignore SERVER_DOWN
+        with self.assertRaises(ldap.SERVER_DOWN):
+            lo.search_s(dn, ldap.SCOPE_BASE, '(objectClass=*)')
+
+        self.server._start_slapd()
+
+        # try to use the connection again
+        lo.search_s(dn, ldap.SCOPE_BASE, '(objectClass=*)')
+
+    def test107_reconnect_restore(self):
+        """
+        The idea of this test is to restart the LDAP-Server while there are ongoing searches.
+        This causes :class:`ldap.UNAVAILABLE` to be raised (with |OpenLDAP|) for a short time.
+        To increase the chance of triggering this bug we are starting multiple threads
+        with a large number of retry attempts in a short amount of time.
+        """
+        # TODO: refactor this test
+        excs = []
+
+        def _reconnect_search_thread():
+            lo = self.ldap_object_class(self.server.ldap_uri)
+            bind_dn = 'cn=user1,' + self.server.suffix
+            lo.simple_bind_s(bind_dn, 'user1_pw')
+            lo._retry_max = 10E4
+            lo._retry_delay = .001
+            lo.search_ext_s(self.server.suffix, ldap.SCOPE_SUBTREE, "cn=user1", attrlist=["cn"])
+            s = time.time()
+            while (time.time() - s) < run_time:
+                lo.search_ext_s(self.server.suffix, ldap.SCOPE_SUBTREE, filterstr="cn=user1", attrlist=["cn"])
+
+        def reconnect_search_thread():
+            try:
+                _reconnect_search_thread()
+            except Exception as exc:
+                excs.append(exc)
+
+        thread_count = 100
+        run_time = 10.0
+        my_thread = [None] * thread_count
+        for i in range(0, thread_count):
+            my_thread[i] = threading.Thread(target=reconnect_search_thread)
+        for t in my_thread:
+            t.start()
+        time.sleep(3)
+        self.server.restart()
+        for t in my_thread:
+            t.join()
+
+        self.assertEqual(excs, [])
 
 
 @requires_init_fd()
