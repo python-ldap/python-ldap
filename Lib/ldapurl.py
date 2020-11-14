@@ -48,14 +48,9 @@ TupleType=type(())
 
 
 def isLDAPUrl(s):
+  """Returns True if s is a LDAP URL, else False
   """
-  Returns 1 if s is a LDAP URL, 0 else
-  """
-  s_lower = s.lower()
-  return \
-    s_lower.startswith('ldap://') or \
-    s_lower.startswith('ldaps://') or \
-    s_lower.startswith('ldapi://')
+  return s.lower().startswith(('ldap://', 'ldaps://', 'ldapi://'))
 
 
 def ldapUrlEscape(s):
@@ -235,7 +230,7 @@ class LDAPUrl:
     extensions=None,
     who=None,cred=None
   ):
-    self.urlscheme=urlscheme
+    self.urlscheme=urlscheme.lower()
     self.hostport=hostport
     self.dn=dn
     self.attrs=attrs
@@ -270,9 +265,7 @@ class LDAPUrl:
     if not isLDAPUrl(ldap_url):
       raise ValueError('Value %s for ldap_url does not seem to be a LDAP URL.' % (repr(ldap_url)))
     scheme,rest = ldap_url.split('://',1)
-    self.urlscheme = scheme.strip()
-    if not self.urlscheme in ['ldap','ldaps','ldapi']:
-      raise ValueError('LDAP URL contains unsupported URL scheme %s.' % (self.urlscheme))
+    self.urlscheme = scheme.lower()
     slash_pos = rest.find('/')
     qemark_pos = rest.find('?')
     if (slash_pos==-1) and (qemark_pos==-1):
