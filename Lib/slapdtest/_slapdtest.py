@@ -520,14 +520,12 @@ class SlapdObject:
         )
         self._log.debug('stdin_data=%r', stdin_data)
         if proc.stdout is not None:
-            self._log.debug('stdout=%r', proc.stdout.decode("utf-8"))
+            self._log.debug('stdout=%s', proc.stdout.decode("utf-8"))
         if proc.stderr is not None:
-            self._log.debug('stderr=%r', proc.stderr.decode("utf-8"))
+            self._log.debug('stderr=%s', proc.stderr.decode("utf-8"))
         if proc.returncode != 0:
             raise RuntimeError(
-                '{!r} process failed:\n{!r}\n{!r}'.format(
-                    args, proc.stdout, proc.stderr
-                )
+                'Process failed: {!r}'.format(" ".join(args))
             )
         return proc
 
