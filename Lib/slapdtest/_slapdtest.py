@@ -186,6 +186,15 @@ class SlapdObject(object):
     :param log_level: The verbosity of SlapdObject..
         The default value is `logging.WARNING`.
 
+    :param suffix: The LDAP suffix for all objects. The default is
+        `dc=slapd-test,dc=python-ldap,dc=org`.
+
+    :param root_cn: The root user common name. The default value is `Manager`.
+
+    :param root_pw: The root user password. The default value is `password`.
+
+    :param datadir_prefix: The prefix of the temporary directory where the slapd
+        configuration and data will be stored. The default value is `python-ldap-test`.
 
     .. versionchanged:: 3.1
 
