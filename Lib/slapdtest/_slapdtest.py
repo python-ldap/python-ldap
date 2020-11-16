@@ -518,7 +518,7 @@ class SlapdObject:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
-        self._log.debug('stdin_data=%r', stdin_data)
+        self._log.debug('stdin_data=%s', stdin_data.decode("utf-8") if stdin_data else stdin_data)
         if proc.stdout is not None:
             self._log.debug('stdout=%s', proc.stdout.decode("utf-8"))
         if proc.stderr is not None:
