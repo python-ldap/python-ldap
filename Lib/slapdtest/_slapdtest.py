@@ -196,7 +196,7 @@ class SlapdObject(object):
     :param datadir_prefix: The prefix of the temporary directory where the slapd
         configuration and data will be stored. The default value is `python-ldap-test`.
 
-    :param debug: Wether to launch slapd with debug verbosity on. When `True` debug is enabled,
+    :param debug: Whether to launch slapd with debug verbosity on. When `True` debug is enabled,
         when `False` debug is disabled, when `None`, debug is only enable when *log_level* is
         `logging.DEBUG`. Default value is `None`.
 
