@@ -196,6 +196,10 @@ class SlapdObject(object):
     :param datadir_prefix: The prefix of the temporary directory where the slapd
         configuration and data will be stored. The default value is `python-ldap-test`.
 
+    :param debug: Wether to launch slapd with debug verbosity on. When `True` debug is enabled,
+        when `False` debug is disabled, when `None`, debug is only enable when *log_level* is
+        `logging.DEBUG`. Default value is `None`.
+
     .. versionchanged:: 3.1
 
         Added context manager functionality
@@ -243,6 +247,7 @@ class SlapdObject(object):
                  root_cn=None,
                  root_pw=None,
                  datadir_prefix=None,
+                 debug=None,
                  ):
         if self._log is None:
             self._log = combined_logger('python-ldap-test', log_level=log_level)
@@ -269,6 +274,7 @@ class SlapdObject(object):
         self._slapd_conf = os.path.join(self.testrundir, 'slapd.d')
         self._db_directory = os.path.join(self.testrundir, "openldap-data")
         self.ldap_uri = "ldap://%s:%d/" % (host or self.local_host, self._port)
+        self.debug = debug
         if HAVE_LDAPI:
             ldapi_path = os.path.join(self.testrundir, 'ldapi')
             self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
@@ -458,7 +464,7 @@ class SlapdObject(object):
             '-F', self._slapd_conf,
             '-h', ' '.join(urls),
         ]
-        if self._log.isEnabledFor(logging.DEBUG):
+        if self.debug is True or (self.debug is None and self._log.isEnabledFor(logging.DEBUG)):
             slapd_args.extend(['-d', '-1'])
         else:
             slapd_args.extend(['-d', '0'])
