@@ -10,6 +10,7 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 
+import datetime
 import sys
 import os
 
@@ -53,7 +54,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'python-ldap'
-copyright = '2008-2017, python-ldap project team'
+copyright = '2008-{}, python-ldap project team'.format(datetime.datetime.now().year)
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
