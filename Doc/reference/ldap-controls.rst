@@ -197,6 +197,9 @@ search.
 
    :rfc:`4527` - Lightweight Directory Access Protocol (LDAP): Read Entry Controls
 
+.. versionchanged:: 4.0
+   The attribute values of the entry now consists of `bytes` instead of ISO8859-1 decoded `str`.
+
 
 .. autoclass:: ldap.controls.readentry.ReadEntryControl
    :members:
