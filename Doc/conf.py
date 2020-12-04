@@ -54,7 +54,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'python-ldap'
-copyright = '2008-{}, python-ldap project team'.format(datetime.datetime.now().year)
+copyright = 'python-ldap project team'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
