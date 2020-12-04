@@ -62,17 +62,31 @@ class PasswordPolicyResponseValue(univ.Sequence):
 
 
 class PasswordPolicyControl(ValueLessRequestControl,ResponseControl):
+  """
+  Indicates the errors and warnings about the password policy.
+
+  Attributes
+  ----------
+
+  timeBeforeExpiration : int
+      The time before the password expires.
+
+  graceAuthNsRemaining : int
+      The number of grace authentications remaining.
+
+  error: int
+      The password and authentication errors.
+  """
   controlType = '1.3.6.1.4.1.42.2.27.8.5.1'
 
   def __init__(self,criticality=False):
     self.criticality = criticality
-
-  def decodeControlValue(self,encodedControlValue):
-    ppolicyValue,_ = decoder.decode(encodedControlValue,asn1Spec=PasswordPolicyResponseValue())
     self.timeBeforeExpiration = None
     self.graceAuthNsRemaining = None
     self.error = None
 
+  def decodeControlValue(self,encodedControlValue):
+    ppolicyValue,_ = decoder.decode(encodedControlValue,asn1Spec=PasswordPolicyResponseValue())
     warning = ppolicyValue.getComponentByName('warning')
     if warning.hasValue():
       if 'timeBeforeExpiration' in warning:

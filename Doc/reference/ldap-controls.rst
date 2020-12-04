@@ -209,3 +209,16 @@ search.
 
 .. autoclass:: ldap.controls.readentry.PostReadControl
    :members:
+
+
+:py:mod:`ldap.controls.ppolicy` Password Policy Control
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. seealso::
+   `draft-behera-ldap-password-policy <https://tools.ietf.org/html/draft-behera-ldap-password-policy>`_
+
+.. py:module:: ldap.controls.ppolicy
+   :synopsis: passworld policies
+
+.. autoclass:: ldap.controls.ppolicy.PasswordPolicyControl
+   :members:
