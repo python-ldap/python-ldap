@@ -5,6 +5,7 @@
 #include "LDAPObject.h"
 #include "ldapcontrol.h"
 #include "options.h"
+#include "berval.h"
 
 void
 set_timeval_from_double(struct timeval *tv, double d)
@@ -235,6 +236,7 @@ LDAP_get_option(LDAPObject *self, int option)
 {
     int res;
     int intval;
+    struct berval *bv;
     struct timeval *tv;
     LDAPAPIInfo apiinfo;
     LDAPControl **lcs;
@@ -399,7 +401,20 @@ LDAP_get_option(LDAPObject *self, int option)
         v = LDAPControls_to_List(lcs);
         ldap_controls_free(lcs);
         return v;
-
+#ifdef LDAP_OPT_X_TLS_PEERCERT
+    case LDAP_OPT_X_TLS_PEERCERT:
+#endif
+        /* Berval-valued options */
+        res = LDAP_int_get_option(self, option, &bv);
+        if (res != LDAP_OPT_SUCCESS)
+            return option_error(res, "ldap_get_option");
+        if (bv == NULL) {
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+        v = LDAPberval_to_object(bv);
+        ldap_memfree(bv);
+        return v;
     default:
         PyErr_Format(PyExc_ValueError, "unknown option %d", option);
         return NULL;

@@ -383,7 +383,7 @@ TLS options
 
 .. py:data:: OPT_X_TLS_PEERCERT
 
-   Get peer's certificate as binary ASN.1 data structure (not supported)
+   Get peer's certificate as binary ASN.1 data structure
 
 .. py:data:: OPT_X_TLS_PROTOCOL_MIN
 
