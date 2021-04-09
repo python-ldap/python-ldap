@@ -65,6 +65,10 @@ connection.”* Alternatively, a Samba 4 AD returns the diagnostic message
       l = ldap.initialize('ldap://foobar')
       l.set_option(ldap.OPT_REFERRALS,0)
 
+    Note that setting the above option does NOT prevent search continuations
+    from being returned, rather only that ``libldap`` won't attempt to resolve
+    referrals.
+
 **Q**: Why am I seeing a ``ldap.SUCCESS`` traceback as output?
 
     **A**: Most likely, you are using one of the non-synchronous calls, and probably
