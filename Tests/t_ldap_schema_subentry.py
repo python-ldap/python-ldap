@@ -15,7 +15,7 @@ import ldif
 from ldap.ldapobject import SimpleLDAPObject
 import ldap.schema
 from ldap.schema.models import ObjectClass, AttributeType
-from slapdtest import SlapdTestCase, requires_ldapi
+from Tests.utils import SlapdTestCase, requires_ldapi
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 

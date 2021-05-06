@@ -4,5 +4,5 @@ target-version = ['py36', 'py37', 'py38']
 
 [tool.isort]
 line_length=88
-known_first_party=['ldap', '_ldap', 'ldapurl', 'ldif', 'slapdtest']
+known_first_party=['ldap', '_ldap', 'ldapurl', 'ldif']
 sections=['FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER']

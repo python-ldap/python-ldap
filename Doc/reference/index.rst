@@ -23,4 +23,3 @@ knowledge about the Python language and the LDAP standard (LDAPv3).
    ldap-sasl.rst
    ldif.rst
    ldapurl.rst
-   slapdtest.rst

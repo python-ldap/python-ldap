@@ -6,7 +6,7 @@ os.environ['LDAPNOINIT'] = '1'
 
 import ldap
 from ldap.ldapobject import LDAPObject
-from slapdtest import SlapdTestCase
+from Tests.utils import SlapdTestCase
 
 
 class EditionTests(SlapdTestCase):

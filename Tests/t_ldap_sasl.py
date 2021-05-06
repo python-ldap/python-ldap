@@ -11,8 +11,8 @@ os.environ['LDAPNOINIT'] = '1'
 
 from ldap.ldapobject import SimpleLDAPObject
 import ldap.sasl
-from slapdtest import SlapdTestCase
-from slapdtest import requires_ldapi, requires_sasl, requires_tls
+from Tests.utils import SlapdTestCase
+from Tests.utils import requires_ldapi, requires_sasl, requires_tls
 
 
 LDIF = """

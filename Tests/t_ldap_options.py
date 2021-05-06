@@ -4,7 +4,7 @@ import unittest
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
-from slapdtest import SlapdTestCase, requires_tls
+from Tests.utils import SlapdTestCase, requires_tls
 
 import ldap
 from ldap.controls import RequestControlTuples

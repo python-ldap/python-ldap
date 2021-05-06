@@ -14,7 +14,7 @@ os.environ['LDAPNOINIT'] = '1'
 
 # import the plain C wrapper module
 import _ldap
-from slapdtest import SlapdTestCase, requires_tls, requires_init_fd
+from Tests.utils import SlapdTestCase, requires_tls, requires_init_fd
 
 
 class TestLdapCExtension(SlapdTestCase):

@@ -16,7 +16,7 @@ import ldap
 from ldap.ldapobject import SimpleLDAPObject
 from ldap.syncrepl import SyncreplConsumer, SyncInfoMessage
 
-from slapdtest import SlapdTestCase
+from Tests.utils import SlapdTestCase
 
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_PROVIDER_TEMPLATE = r"""dn: cn=config
