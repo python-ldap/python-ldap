@@ -592,7 +592,7 @@ class Test03_SimpleLDAPObjectWithFileno(Test00_SimpleLDAPObject):
         if hasattr(self, '_sock'):
             raise RuntimeError("socket already connected")
         self._sock = socket.create_connection(
-            (self.server.hostname, self.server.port)
+            (self.server.host, self.server.port)
         )
         return super()._open_ldap_conn(
             who=who, cred=cred, fileno=self._sock.fileno(), **kwargs

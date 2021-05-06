@@ -30,7 +30,7 @@ class TestLdapCExtension(SlapdTestCase):
         super().setUpClass()
         # add two initial objects after server was started and is still empty
         suffix_dc = cls.server.suffix.split(',')[0][3:]
-        cls.server._log.debug(
+        cls.server.logger.debug(
             "adding %s and %s",
             cls.server.suffix,
             cls.server.root_dn,
@@ -96,7 +96,7 @@ class TestLdapCExtension(SlapdTestCase):
     @contextlib.contextmanager
     def _open_conn_fd(self, bind=True):
         sock = socket.create_connection(
-            (self.server.hostname, self.server.port)
+            (self.server.host, self.server.port)
         )
         try:
             l = _ldap.initialize_fd(sock.fileno(), self.server.ldap_uri)

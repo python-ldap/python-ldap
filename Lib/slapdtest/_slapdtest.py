@@ -10,6 +10,7 @@ import time
 import subprocess
 import logging
 import atexit
+import slapd
 from logging.handlers import SysLogHandler
 import unittest
 from shutil import which
@@ -584,7 +585,7 @@ class SlapdTestCase(unittest.TestCase):
     test class which also clones or initializes a running slapd
     """
 
-    server_class = SlapdObject
+    server_class = slapd.Slapd
     server = None
     ldap_object_class = None
 

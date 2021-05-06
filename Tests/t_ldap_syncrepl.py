@@ -7,6 +7,7 @@ import os
 import shelve
 import unittest
 import binascii
+import slapd
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
@@ -15,14 +16,14 @@ import ldap
 from ldap.ldapobject import SimpleLDAPObject
 from ldap.syncrepl import SyncreplConsumer, SyncInfoMessage
 
-from slapdtest import SlapdObject, SlapdTestCase
+from slapdtest import SlapdTestCase
 
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_PROVIDER_TEMPLATE = r"""dn: cn=config
 objectClass: olcGlobal
 cn: config
 olcServerID: %(serverid)s
-olcLogLevel: %(loglevel)s
+olcLogLevel: stats stats2
 olcAllows: bind_v2
 olcAuthzRegexp: {0}"gidnumber=%(root_gid)s\+uidnumber=%(root_uid)s,cn=peercred,cn=external,cn=auth" "%(rootdn)s"
 olcAuthzRegexp: {1}"C=DE, O=python-ldap, OU=slapd-test, CN=([A-Za-z]+)" "ldap://ou=people,dc=local???($1)"
@@ -128,8 +129,10 @@ LDAP_ENTRIES = {
 }
 
 
-class SyncreplProvider(SlapdObject):
-    slapd_conf_template = SLAPD_CONF_PROVIDER_TEMPLATE
+class SyncreplProvider(slapd.Slapd):
+    def __init__(self, *args, **kwargs):
+        kwargs["configuration_template"] = SLAPD_CONF_PROVIDER_TEMPLATE
+        super().__init__(*args, **kwargs)
 
 
 class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
