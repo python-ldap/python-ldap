@@ -43,6 +43,10 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
     double doubleval;
     char *strval;
     struct timeval tv;
+#if HAVE_SASL
+    /* unsigned long */
+    ber_len_t blen;
+#endif
     void *ptr;
     LDAP *ld;
     LDAPControl **controls = NULL;
@@ -92,10 +96,6 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
     case LDAP_OPT_X_TLS_REQUIRE_SAN:
 #endif
 #endif
-#ifdef HAVE_SASL
-    case LDAP_OPT_X_SASL_SSF_MIN:
-    case LDAP_OPT_X_SASL_SSF_MAX:
-#endif
 #ifdef LDAP_OPT_X_KEEPALIVE_IDLE
     case LDAP_OPT_X_KEEPALIVE_IDLE:
 #endif
@@ -111,6 +111,16 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
             return 0;
         ptr = &intval;
         break;
+
+#ifdef HAVE_SASL
+    case LDAP_OPT_X_SASL_SSF_MIN:
+    case LDAP_OPT_X_SASL_SSF_MAX:
+        if (!PyArg_Parse(value, "k:set_option", &blen))
+            return 0;
+        ptr = &blen;
+        break;
+#endif
+
     case LDAP_OPT_HOST_NAME:
     case LDAP_OPT_URI:
 #ifdef LDAP_OPT_DEFBASE
@@ -138,6 +148,7 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
             return 0;
         ptr = strval;
         break;
+
     case LDAP_OPT_TIMEOUT:
     case LDAP_OPT_NETWORK_TIMEOUT:
         /* Float valued timeval options */
@@ -242,6 +253,10 @@ LDAP_get_option(LDAPObject *self, int option)
     LDAPAPIInfo apiinfo;
     LDAPControl **lcs;
     char *strval;
+#if HAVE_SASL
+    /* unsigned long */
+    ber_len_t blen;
+#endif
     PyObject *extensions, *v;
     Py_ssize_t i, num_extensions;
 
@@ -280,9 +295,6 @@ LDAP_get_option(LDAPObject *self, int option)
 
         return v;
 
-#ifdef HAVE_SASL
-    case LDAP_OPT_X_SASL_SSF:
-#endif
     case LDAP_OPT_REFERRALS:
     case LDAP_OPT_RESTART:
     case LDAP_OPT_DEREF:
@@ -305,10 +317,6 @@ LDAP_get_option(LDAPObject *self, int option)
     case LDAP_OPT_X_TLS_REQUIRE_SAN:
 #endif
 #endif
-#ifdef HAVE_SASL
-    case LDAP_OPT_X_SASL_SSF_MIN:
-    case LDAP_OPT_X_SASL_SSF_MAX:
-#endif
 #ifdef LDAP_OPT_X_SASL_NOCANON
     case LDAP_OPT_X_SASL_NOCANON:
 #endif
@@ -329,6 +337,17 @@ LDAP_get_option(LDAPObject *self, int option)
         if (res != LDAP_OPT_SUCCESS)
             return option_error(res, "ldap_get_option");
         return PyInt_FromLong(intval);
+
+#ifdef HAVE_SASL
+    case LDAP_OPT_X_SASL_SSF:
+    case LDAP_OPT_X_SASL_SSF_MIN:
+    case LDAP_OPT_X_SASL_SSF_MAX:
+        /* ber_len_t options (unsigned long)*/
+        res = LDAP_int_get_option(self, option, &blen);
+        if (res != LDAP_OPT_SUCCESS)
+            return option_error(res, "ldap_get_option");
+        return PyLong_FromUnsignedLong(blen);
+#endif
 
     case LDAP_OPT_HOST_NAME:
     case LDAP_OPT_URI:
