@@ -334,7 +334,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
 
     @requires_sasl()
     @requires_ldapi()
-    def test006_sasl_extenal_bind_s(self):
+    def test006_sasl_external_bind_s(self):
         l = self.ldap_object_class(self.server.ldapi_uri)
         l.sasl_external_bind_s()
         self.assertEqual(l.whoami_s(), 'dn:'+self.server.root_dn.lower())
@@ -342,6 +342,27 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         l = self.ldap_object_class(self.server.ldapi_uri)
         l.sasl_external_bind_s(authz_id=authz_id)
         self.assertEqual(l.whoami_s(), authz_id.lower())
+
+    @requires_sasl()
+    @requires_ldapi()
+    def test006_sasl_options(self):
+        l = self.ldap_object_class(self.server.ldapi_uri)
+
+        minssf = l.get_option(ldap.OPT_X_SASL_SSF_MIN)
+        self.assertGreaterEqual(minssf, 0)
+        self.assertLessEqual(minssf, 256)
+        maxssf = l.get_option(ldap.OPT_X_SASL_SSF_MAX)
+        self.assertGreaterEqual(maxssf, 0)
+        # libldap sets SSF_MAX to INT_MAX
+        self.assertLessEqual(maxssf, 2**31 - 1)
+
+        l.set_option(ldap.OPT_X_SASL_SSF_MIN, 56)
+        l.set_option(ldap.OPT_X_SASL_SSF_MAX, 256)
+        self.assertEqual(l.get_option(ldap.OPT_X_SASL_SSF_MIN), 56)
+        self.assertEqual(l.get_option(ldap.OPT_X_SASL_SSF_MAX), 256)
+
+        l.sasl_external_bind_s()
+        self.assertEqual(l.whoami_s(), 'dn:' + self.server.root_dn.lower())
 
     def test007_timeout(self):
         l = self.ldap_object_class(self.server.ldap_uri)
