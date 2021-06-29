@@ -133,7 +133,7 @@ Licence
 
 The python-ldap project comes with a LICENCE file.
 
-We aware that its text is unclear, but it cannot be changed:
+We are aware that its text is unclear, but it cannot be changed:
 all authors of python-ldap would need to approve the licence change,
 but a complete list of all the authors is not available.
 (Note that the Git repository of the project is incomplete.
