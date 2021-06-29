@@ -1,0 +1,35 @@
+---
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  distros:
+    name: "Ubuntu with Python ${{ matrix.python-version }}"
+    runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9, pypy3]
+    steps:
+      - name: Checkout
+        uses: "actions/checkout@v2"
+      - name: Install apt dependencies
+        run: |
+          set -ex
+          sudo apt update
+          sudo apt install -y ldap-utils slapd enchant libldap2-dev libsasl2-dev apparmor-utils
+      - name: Disable AppArmor
+        run: sudo aa-disable /usr/sbin/slapd
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: "Install Python dependencies"
+        run: |
+          set -xe
+          python -V
+          python -m pip install --upgrade pip setuptools
+          python -m pip install --upgrade tox tox-gh-actions
+      - name: "Test tox with Python ${{ matrix.python-version }}"
+        run: "python -m tox"
