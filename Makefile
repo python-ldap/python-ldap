@@ -35,7 +35,7 @@ lcov-clean:
 	if [ -d build ]; then find build -name '*.gc??' -delete; fi
 
 lcov-coverage:
-	WITH_GCOV=1 tox -e py27,py36
+	WITH_GCOV=1 tox -e py36
 
 $(LCOV_INFO): build
 	lcov --capture --directory build --output-file $(LCOV_INFO)

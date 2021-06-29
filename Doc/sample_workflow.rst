@@ -61,15 +61,15 @@ This will run tests on all supported versions of Python that you have
 installed, skipping the ones you don't.
 To run a subset of test environments, run for example::
 
-    (__venv__)$ tox -e py27,py36
+    (__venv__)$ tox -e py36,py39
 
 In addition to ``pyXY`` environments, we have extra environments
 for checking things independent of the Python version:
 
 * ``doc`` checks syntax and spelling of the documentation
 * ``coverage-report`` generates a test coverage report for Python code.
-  It must be used last, e.g. ``tox -e py27,py36,coverage-report``.
-* ``py2-nosasltls`` and ``py3-nosasltls`` check functionality without
+  It must be used last, e.g. ``tox -e py36,py39,coverage-report``.
+* ``py3-nosasltls`` check functionality without
   SASL and TLS bindings compiled in.
 
 
