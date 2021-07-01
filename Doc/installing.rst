@@ -130,7 +130,7 @@ Alpine
 
 Packages for building::
 
-    # apk add build-base openldap-dev python2-dev python3-dev
+    # apk add build-base openldap-dev python3-dev
 
 CentOS
 ------
@@ -145,12 +145,12 @@ Debian
 
 Packages for building and testing::
 
-   # apt-get install build-essential python3-dev python2.7-dev \
+   # apt-get install build-essential python3-dev \
        libldap2-dev libsasl2-dev slapd ldap-utils tox \
        lcov valgrind
-       
+
 .. note::
-   
+
    On older releases ``tox`` was called ``python-tox``.
 
 Fedora
@@ -159,7 +159,7 @@ Fedora
 Packages for building and testing::
 
    # dnf install "@C Development Tools and Libraries" openldap-devel \
-       python2-devel python3-devel python3-tox \
+       python3-devel python3-tox \
        lcov clang-analyzer valgrind
 
 .. note::

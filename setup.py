@@ -90,7 +90,7 @@ setup(
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
-    # Note: when updating Python versions, also change .travis.yml and tox.ini
+    # Note: when updating Python versions, also change tox.ini and .github/workflows/*
 
     'Topic :: Database',
     'Topic :: Internet',

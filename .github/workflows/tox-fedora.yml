@@ -1,0 +1,34 @@
+on: [push, pull_request]
+
+name: Tox on Fedora
+
+jobs:
+  tox_test:
+    name: Tox env "${{matrix.tox_env}}" on Fedora
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run Tox tests
+      uses: fedora-python/tox-github-action@master
+      with:
+        tox_env: ${{ matrix.tox_env }}
+        dnf_install: >
+            @c-development openldap-devel python3-devel
+            openldap-servers openldap-clients lcov clang-analyzer valgrind
+            enchant
+    strategy:
+      matrix:
+        tox_env:
+        - py36
+        - py37
+        - py38
+        - py39
+        - py310
+        - c90-py36
+        - c90-py37
+        - py3-nosasltls
+        - py3-trace
+        - pypy3
+        - doc
+
+    # Use GitHub's Linux Docker host
+    runs-on: ubuntu-latest
