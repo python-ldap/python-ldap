@@ -127,3 +127,27 @@ their contributions and input into this package.
 
    Thanks! We may have missed someone: please mail us if we have omitted
    your name.
+
+Licence
+=======
+
+The python-ldap project comes with a LICENCE file.
+
+We are aware that its text is unclear, but it cannot be changed:
+all authors of python-ldap would need to approve the licence change,
+but a complete list of all the authors is not available.
+(Note that the Git repository of the project is incomplete.
+Furthermore, commits imported from CVS lack authorship information; users
+"stroeder" or "leonard" are commiters (reviewers), but sometimes not
+authors of the committed code.)
+
+The current maintainers assume that the license is the sentence that refers
+to "Python-style license" and assume this means a highly permissive open source
+license that only requires preservation of the text of the LICENCE file
+(including the disclaimer paragraph).
+
+-------------------------------------------------------------------------------
+
+All contributions committed since July 1st, 2021, as well as some past
+contributions, are licensed under the MIT license.
+The MIT licence and more details are listed in the file LICENCE.MIT.
