@@ -298,6 +298,9 @@ CONSTANTS = (
     TLSInt('OPT_X_TLS_PROTOCOL_MIN', optional=True),
     TLSInt('OPT_X_TLS_PACKAGE', optional=True),
 
+    # Added in OpenLDAP 2.4.52
+    TLSInt('OPT_X_TLS_REQUIRE_SAN', optional=True),
+
     Int('OPT_X_SASL_MECH'),
     Int('OPT_X_SASL_REALM'),
     Int('OPT_X_SASL_AUTHCID'),

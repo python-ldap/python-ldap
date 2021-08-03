@@ -932,6 +932,29 @@ class TestLdapCExtension(SlapdTestCase):
         package = _ldap.get_option(_ldap.OPT_X_TLS_PACKAGE)
         self.assertIn(package, {"GnuTLS", "MozNSS", "OpenSSL"})
 
+    @unittest.skipUnless(
+        hasattr(_ldap, "OPT_X_TLS_REQUIRE_SAN"),
+        reason="Test requires OPT_X_TLS_REQUIRE_SAN"
+    )
+    def test_require_san(self):
+        l = self._open_conn(bind=False)
+        value = l.get_option(_ldap.OPT_X_TLS_REQUIRE_SAN)
+        self.assertIn(
+            value,
+            {
+                _ldap.OPT_X_TLS_NEVER,
+                _ldap.OPT_X_TLS_ALLOW,
+                _ldap.OPT_X_TLS_TRY,
+                _ldap.OPT_X_TLS_DEMAND,
+                _ldap.OPT_X_TLS_HARD,
+            }
+        )
+        l.set_option(_ldap.OPT_X_TLS_REQUIRE_SAN, _ldap.OPT_X_TLS_TRY)
+        self.assertEqual(
+            l.get_option(_ldap.OPT_X_TLS_REQUIRE_SAN),
+            _ldap.OPT_X_TLS_TRY
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

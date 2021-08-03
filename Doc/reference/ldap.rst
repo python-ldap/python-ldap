@@ -346,6 +346,29 @@ TLS options
    :py:const:`OPT_X_TLS_HARD`
       Same as :py:const:`OPT_X_TLS_DEMAND`
 
+.. py:data:: OPT_X_TLS_REQUIRE_SAN
+
+   get/set how OpenLDAP validates subject alternative name extension,
+   available in OpenSSL 2.4.52 and newer.
+
+   :py:const:`OPT_X_TLS_NEVER`
+      Don't check SAN
+
+   :py:const:`OPT_X_TLS_ALLOW`
+      Check SAN first, always fall back to subject common name (default)
+
+   :py:const:`OPT_X_TLS_TRY`
+      Check SAN first, only fall back to subject common name, when no SAN
+      extension is present (:rfc:`6125` conform validation)
+
+   :py:const:`OPT_X_TLS_DEMAND`
+      Validate peer cert chain and host name
+
+   :py:const:`OPT_X_TLS_HARD`
+      Require SAN, don't fall back to subject common name
+
+   .. versionadded:: 3.4.0
+
 .. py:data:: OPT_X_TLS_ALLOW
 
    Value for :py:const:`OPT_X_TLS_REQUIRE_CERT`

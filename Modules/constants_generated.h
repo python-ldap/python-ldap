@@ -249,6 +249,10 @@ add_int(OPT_X_TLS_PROTOCOL_MIN);
 add_int(OPT_X_TLS_PACKAGE);
 #endif
 
+#if defined(LDAP_OPT_X_TLS_REQUIRE_SAN)
+add_int(OPT_X_TLS_REQUIRE_SAN);
+#endif
+
 #endif
 
 add_int(OPT_X_SASL_MECH);
