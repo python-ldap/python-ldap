@@ -362,6 +362,9 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertEqual(l.get_option(ldap.OPT_X_SASL_SSF_MAX), 256)
 
         l.sasl_external_bind_s()
+        with self.assertRaisesRegex(ValueError, "write-only option"):
+            l.get_option(ldap.OPT_X_SASL_SSF_EXTERNAL)
+        l.set_option(ldap.OPT_X_SASL_SSF_EXTERNAL, 256)
         self.assertEqual(l.whoami_s(), 'dn:' + self.server.root_dn.lower())
 
     def test007_timeout(self):

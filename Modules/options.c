@@ -115,6 +115,7 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
 #ifdef HAVE_SASL
     case LDAP_OPT_X_SASL_SSF_MIN:
     case LDAP_OPT_X_SASL_SSF_MAX:
+    case LDAP_OPT_X_SASL_SSF_EXTERNAL:
         if (!PyArg_Parse(value, "k:set_option", &blen))
             return 0;
         ptr = &blen;
@@ -261,6 +262,12 @@ LDAP_get_option(LDAPObject *self, int option)
     Py_ssize_t i, num_extensions;
 
     switch (option) {
+#ifdef HAVE_SASL
+    case LDAP_OPT_X_SASL_SSF_EXTERNAL:
+        /* Write-only options */
+        PyErr_SetString(PyExc_ValueError, "write-only option");
+        return NULL;
+#endif
     case LDAP_OPT_API_INFO:
         apiinfo.ldapai_info_version = LDAP_API_INFO_VERSION;
         res = LDAP_int_get_option(self, option, &apiinfo);
