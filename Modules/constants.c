@@ -31,7 +31,8 @@ static PyObject *errobjects[LDAP_ERROR_MAX - LDAP_ERROR_MIN + 1];
 PyObject *
 LDAPerr(int errnum)
 {
-    if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX) {
+    if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX &&
+            errobjects[errnum + LDAP_ERROR_OFFSET] != NULL) {
         PyErr_SetNone(errobjects[errnum + LDAP_ERROR_OFFSET]);
     }
     else {
@@ -88,10 +89,13 @@ LDAPraise_for_message(LDAP *l, LDAPMessage *m)
             ldap_get_option(l, LDAP_OPT_ERROR_STRING, &error);
         }
 
-        if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX)
+        if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX &&
+                errobjects[errnum + LDAP_ERROR_OFFSET] != NULL) {
             errobj = errobjects[errnum + LDAP_ERROR_OFFSET];
-        else
+        }
+        else {
             errobj = LDAPexception_class;
+        }
 
         info = PyDict_New();
         if (info == NULL) {
