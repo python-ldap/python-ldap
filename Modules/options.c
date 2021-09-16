@@ -5,6 +5,7 @@
 #include "LDAPObject.h"
 #include "ldapcontrol.h"
 #include "options.h"
+#include "berval.h"
 
 void
 set_timeval_from_double(struct timeval *tv, double d)
@@ -58,6 +59,9 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
     case LDAP_OPT_API_FEATURE_INFO:
 #ifdef HAVE_SASL
     case LDAP_OPT_X_SASL_SSF:
+#endif
+#ifdef LDAP_OPT_X_TLS_PEERCERT
+    case LDAP_OPT_X_TLS_PEERCERT:
 #endif
         /* Read-only options */
         PyErr_SetString(PyExc_ValueError, "read-only option");
@@ -258,6 +262,9 @@ LDAP_get_option(LDAPObject *self, int option)
     /* unsigned long */
     ber_len_t blen;
 #endif
+#ifdef LDAP_OPT_X_TLS_PEERCERT
+    struct berval bv = {0};
+#endif
     PyObject *extensions, *v;
     Py_ssize_t i, num_extensions;
 
@@ -431,7 +438,22 @@ LDAP_get_option(LDAPObject *self, int option)
         v = LDAPControls_to_List(lcs);
         ldap_controls_free(lcs);
         return v;
-
+#ifdef LDAP_OPT_X_TLS_PEERCERT
+    case LDAP_OPT_X_TLS_PEERCERT:
+        res = LDAP_int_get_option(self, option, &bv);
+        if (res != LDAP_OPT_SUCCESS) {
+            return option_error(res, "ldap_get_option");
+        }
+        if (bv.bv_len == 0) {
+            Py_RETURN_NONE;
+        } else {
+            v = LDAPberval_to_object(&bv);
+            /* bv_val memory is allocated with ber_memalloc_x()
+             * context allocation/dealloc is a private API. */
+            ber_memfree(bv.bv_val);
+            return v;
+        }
+#endif
     default:
         PyErr_Format(PyExc_ValueError, "unknown option %d", option);
         return NULL;
