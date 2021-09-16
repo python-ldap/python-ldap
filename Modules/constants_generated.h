@@ -263,6 +263,11 @@ add_int(OPT_X_TLS_PACKAGE);
 add_int(OPT_X_TLS_REQUIRE_SAN);
 #endif
 
+
+#if defined(LDAP_OPT_X_TLS_PEERCERT)
+add_int(OPT_X_TLS_PEERCERT);
+#endif
+
 #endif
 
 add_int(OPT_X_SASL_MECH);

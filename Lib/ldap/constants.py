@@ -301,6 +301,9 @@ CONSTANTS = (
     # Added in OpenLDAP 2.4.52
     TLSInt('OPT_X_TLS_REQUIRE_SAN', optional=True),
 
+    # Added in OpenLDAP 2.5
+    TLSInt('OPT_X_TLS_PEERCERT', optional=True),
+
     Int('OPT_X_SASL_MECH'),
     Int('OPT_X_SASL_REALM'),
     Int('OPT_X_SASL_AUTHCID'),

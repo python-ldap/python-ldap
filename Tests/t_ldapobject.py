@@ -20,6 +20,11 @@ from slapdtest import SlapdTestCase
 from slapdtest import requires_ldapi, requires_sasl, requires_tls
 from slapdtest import requires_init_fd
 
+try:
+    from ssl import PEM_cert_to_DER_cert
+except ImportError:
+    PEM_cert_to_DER_cert = None
+
 
 LDIF_TEMPLATE = """dn: %(suffix)s
 objectClass: dcObject
@@ -420,6 +425,36 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             l.start_tls_s()
             l.simple_bind_s(self.server.root_dn, self.server.root_pw)
             self.assertEqual(l.whoami_s(), 'dn:' + self.server.root_dn)
+
+    @requires_tls()
+    @unittest.skipUnless(
+        hasattr(ldap, "OPT_X_TLS_PEERCERT"),
+        reason="Requires OPT_X_TLS_PEERCERT"
+    )
+    def test_get_tls_peercert(self):
+        l = self.ldap_object_class(self.server.ldap_uri)
+        peercert = l.get_option(ldap.OPT_X_TLS_PEERCERT)
+        self.assertEqual(peercert, None)
+        with self.assertRaises(ValueError):
+            l.set_option(ldap.OPT_X_TLS_PEERCERT, b"")
+
+        l.set_option(ldap.OPT_X_TLS_CACERTFILE, self.server.cafile)
+        l.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+        l.start_tls_s()
+
+        peercert = l.get_option(ldap.OPT_X_TLS_PEERCERT)
+        self.assertTrue(peercert)
+        self.assertIsInstance(peercert, bytes)
+
+        if PEM_cert_to_DER_cert is not None:
+            with open(self.server.servercert) as f:
+                server_pem = f.read()
+            # remove text
+            begin = server_pem.find("-----BEGIN CERTIFICATE-----")
+            server_pem = server_pem[begin:-1]
+
+            server_der = PEM_cert_to_DER_cert(server_pem)
+            self.assertEqual(server_der, peercert)
 
     def test_dse(self):
         dse = self._ldap_conn.read_rootdse_s()

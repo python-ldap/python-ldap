@@ -17,7 +17,7 @@ LDAPberval_to_object(const struct berval *bv)
 {
     PyObject *ret = NULL;
 
-    if (!bv) {
+    if (!bv || !bv->bv_val) {
         ret = Py_None;
         Py_INCREF(ret);
     }
