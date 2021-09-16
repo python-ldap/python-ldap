@@ -5,6 +5,7 @@
 #include "LDAPObject.h"
 #include "ldapcontrol.h"
 #include "options.h"
+#include "berval.h"
 
 void
 set_timeval_from_double(struct timeval *tv, double d)
@@ -58,6 +59,9 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
     case LDAP_OPT_API_FEATURE_INFO:
 #ifdef HAVE_SASL
     case LDAP_OPT_X_SASL_SSF:
+#endif
+#ifdef LDAP_OPT_X_TLS_PEERCERT
+    case LDAP_OPT_X_TLS_PEERCERT:
 #endif
         /* Read-only options */
         PyErr_SetString(PyExc_ValueError, "read-only option");
@@ -254,6 +258,7 @@ LDAP_get_option(LDAPObject *self, int option)
     LDAPAPIInfo apiinfo;
     LDAPControl **lcs;
     char *strval;
+    struct berval berbytes;
 #if HAVE_SASL
     /* unsigned long */
     ber_len_t blen;
@@ -404,6 +409,19 @@ LDAP_get_option(LDAPObject *self, int option)
         }
         v = PyUnicode_FromString(strval);
         ldap_memfree(strval);
+        return v;
+
+#ifdef HAVE_TLS
+#ifdef LDAP_OPT_X_TLS_PEERCERT
+    case LDAP_OPT_X_TLS_PEERCERT:
+#endif
+#endif
+        /* Options dealing with raw data */
+        res = LDAP_int_get_option(self, option, &berbytes);
+        if (res != LDAP_OPT_SUCCESS)
+            return option_error(res, "ldap_get_option");
+        v = LDAPberval_to_object(&berbytes);
+        ldap_memfree(berbytes.bv_val);
         return v;
 
     case LDAP_OPT_TIMEOUT:
