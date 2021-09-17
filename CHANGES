@@ -1,3 +1,48 @@
+Released 3.4.0 2021-09-17
+
+This release requires Python 3.6 or above,
+and is tested with Python 3.6 to 3.10.
+Python 2 is no longer supported.
+
+New code in the python-ldap project is available under the MIT licence
+(available in ``LICENCE.MIT`` in the source). Several contributors have agreed
+to apply this licence their previous contributions as well.
+See the ``README`` for details.
+
+The following undocumented functions are deprecated and scheduled for removal:
+- ``ldap.cidict.strlist_intersection``
+- ``ldap.cidict.strlist_minus``
+- ``ldap.cidict.strlist_union``
+
+Changes:
+* On MacOS, remove option to make LDAP connections from a file descriptor
+  when built with the system libldap (which lacks the underlying function,
+  ``ldap_init_fd``)
+* Attribute values of the post read control are now ``bytes``
+  instead of ISO8859-1 decoded ``str``
+* ``LDAPUrl`` now treats urlscheme as case-insensitive
+* Several OpenLDAP options are now supported:
+  * ``OPT_X_TLS_REQUIRE_SAN``
+  * ``OPT_X_SASL_SSF_EXTERNAL``
+  * ``OPT_X_TLS_PEERCERT``
+
+Fixes:
+* The ``copy()`` method of ``cidict`` was added back. It was unintentionally
+  removed in 3.3.0
+* Fixed getting/setting ``SASL`` options on big endian platforms
+* Unknown LDAP result code are now converted to ``LDAPexception``,
+  rather than raising a ``SystemError``.
+
+slapdtest:
+* Show stderr of slapd -Ttest
+* ``SlapdObject`` uses directory-based configuration of ``slapd``
+* ``SlapdObject`` startup is now faster
+
+Infrastructure:
+* CI now runs on GitHub Actions rather than Travis CI.
+
+
+----------------------------------------------------------------
 Released 3.3.0 2020-06-18
 
 Highlights:
