@@ -3,9 +3,11 @@ Automatic tests for python-ldap's module ldap.ldapobject
 
 See https://www.python-ldap.org/ for details.
 """
+import base64
 import errno
 import linecache
 import os
+import re
 import socket
 import unittest
 import pickle
@@ -20,10 +22,10 @@ from slapdtest import SlapdTestCase
 from slapdtest import requires_ldapi, requires_sasl, requires_tls
 from slapdtest import requires_init_fd
 
-try:
-    from ssl import PEM_cert_to_DER_cert
-except ImportError:
-    PEM_cert_to_DER_cert = None
+PEM_CERT_RE = re.compile(
+    b'-----BEGIN CERTIFICATE-----(.*?)-----END CERTIFICATE-----',
+    re.DOTALL
+)
 
 
 LDIF_TEMPLATE = """dn: %(suffix)s
@@ -446,15 +448,12 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertTrue(peercert)
         self.assertIsInstance(peercert, bytes)
 
-        if PEM_cert_to_DER_cert is not None:
-            with open(self.server.servercert) as f:
-                server_pem = f.read()
-            # remove text
-            begin = server_pem.find("-----BEGIN CERTIFICATE-----")
-            server_pem = server_pem[begin:-1]
+        with open(self.server.servercert, "rb") as f:
+            server_cert = f.read()
+        pem_body = PEM_CERT_RE.search(server_cert).group(1)
+        server_der = base64.b64decode(pem_body)
 
-            server_der = PEM_cert_to_DER_cert(server_pem)
-            self.assertEqual(server_der, peercert)
+        self.assertEqual(server_der, peercert)
 
     def test_dse(self):
         dse = self._ldap_conn.read_rootdse_s()
