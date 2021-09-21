@@ -531,6 +531,17 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             ("myAttribute", b'foobar'),
         ])
 
+    @requires_tls()
+    @requires_ldapi()
+    def test_ldapi_tls(self):
+        l = self.ldap_object_class(self.server.ldapi_uri)
+        l.set_option(ldap.OPT_X_TLS_CACERTFILE, self.server.cafile)
+        # l.set_option(ldap.OPT_HOST_NAME, self.server.hostname)
+        l.set_option(ldap.OPT_HOST_NAME, "localhost")
+        l.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+        l.start_tls_s()
+        self.assertEqual(l.whoami_s(), '')
+
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
     """
