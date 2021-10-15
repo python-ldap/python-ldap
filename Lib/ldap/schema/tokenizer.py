@@ -13,7 +13,7 @@ TOKENS_FINDALL = re.compile(
     r"|"              # or
     r"([^'$()\s]+)"   # string of length >= 1 without '$() or whitespace
     r"|"              # or
-    r"('(?:[^'\\]|\\\\|\\.)*?'(?!\w))"
+    r"('(?:[^'\\]|\\.)*'(?!\w))"
                       # any string or empty string surrounded by unescaped
                       # single quotes except if right quote is succeeded by
                       # alphanumeric char
