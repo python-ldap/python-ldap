@@ -234,11 +234,11 @@ class TestLdapCExtension(SlapdTestCase):
         if 'TLS' in disabled:
             self.assertFalse(_ldap.TLS_AVAIL)
         else:
-            self.assertFalse(_ldap.TLS_AVAIL)
+            self.assertTrue(_ldap.TLS_AVAIL)
         if 'SASL' in disabled:
             self.assertFalse(_ldap.SASL_AVAIL)
         else:
-            self.assertFalse(_ldap.SASL_AVAIL)
+            self.assertTrue(_ldap.SASL_AVAIL)
 
     def test_simple_bind(self):
         l = self._open_conn()
