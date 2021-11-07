@@ -57,8 +57,8 @@ class BooleanControl(LDAPControl):
   booleanValue
     Boolean (True/False or 1/0) which is the boolean controlValue.
   """
-  boolean2ber = { 1:'\x01\x01\xFF', 0:'\x01\x01\x00' }
-  ber2boolean = { '\x01\x01\xFF':1, '\x01\x01\x00':0 }
+  boolean2ber = { 1:b'\x01\x01\xFF', 0:b'\x01\x01\x00' }
+  ber2boolean = { b'\x01\x01\xFF':1, b'\x01\x01\x00':0 }
 
   def __init__(self,controlType=None,criticality=False,booleanValue=False):
     self.controlType = controlType
