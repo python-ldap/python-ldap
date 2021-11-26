@@ -14,6 +14,11 @@ The following undocumented functions are deprecated and scheduled for removal:
 - ``ldap.cidict.strlist_minus``
 - ``ldap.cidict.strlist_union``
 
+Security fixes:
+* Fix inefficient regular expression which allows denial-of-service attacks
+  when parsing specially-crafted LDAP schema.
+  (GHSL-2021-117)
+
 Changes:
 * On MacOS, remove option to make LDAP connections from a file descriptor
   when built with the system libldap (which lacks the underlying function,
