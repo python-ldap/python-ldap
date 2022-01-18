@@ -7,6 +7,9 @@ See https://www.python-ldap.org/ for details.
 import struct,ldap
 from ldap.controls import RequestControl,ResponseControl,LDAPControl,KNOWN_RESPONSE_CONTROLS
 
+from pyasn1.type import univ
+from pyasn1.codec.ber import encoder,decoder
+
 
 class ValueLessRequestControl(RequestControl):
   """
@@ -57,8 +60,6 @@ class BooleanControl(LDAPControl):
   booleanValue
     Boolean (True/False or 1/0) which is the boolean controlValue.
   """
-  boolean2ber = { 1:'\x01\x01\xFF', 0:'\x01\x01\x00' }
-  ber2boolean = { '\x01\x01\xFF':1, '\x01\x01\x00':0 }
 
   def __init__(self,controlType=None,criticality=False,booleanValue=False):
     self.controlType = controlType
@@ -66,10 +67,11 @@ class BooleanControl(LDAPControl):
     self.booleanValue = booleanValue
 
   def encodeControlValue(self):
-    return self.boolean2ber[int(self.booleanValue)]
+    return encoder.encode(self.booleanValue,asn1Spec=univ.Boolean())
 
   def decodeControlValue(self,encodedControlValue):
-    self.booleanValue = self.ber2boolean[encodedControlValue]
+    decodedValue,_ = decoder.decode(encodedControlValue,asn1Spec=univ.Boolean())
+    self.booleanValue = bool(int(decodedValue))
 
 
 class ManageDSAITControl(ValueLessRequestControl):
