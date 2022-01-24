@@ -7,7 +7,7 @@ See https://www.python-ldap.org/ for details.
 import sys
 
 import ldap.cidict
-from collections import UserDict as IterableUserDict
+from collections import UserDict
 
 from ldap.schema.tokenizer import split_tokens,extract_tokens
 
@@ -640,7 +640,7 @@ class NameForm(SchemaElement):
     return '( %s )' % ''.join(result)
 
 
-class Entry(IterableUserDict):
+class Entry(UserDict):
   """
   Schema-aware implementation of an LDAP entry class.
 
@@ -653,7 +653,7 @@ class Entry(IterableUserDict):
     self._attrtype2keytuple = {}
     self._s = schema
     self.dn = dn
-    IterableUserDict.IterableUserDict.__init__(self,{})
+    super().__init__()
     self.update(entry)
 
   def _at2key(self,nameoroid):
@@ -674,7 +674,7 @@ class Entry(IterableUserDict):
       return t
 
   def update(self,dict):
-    for key, value in dict.values():
+    for key, value in dict.items():
       self[key] = value
 
   def __contains__(self,nameoroid):
