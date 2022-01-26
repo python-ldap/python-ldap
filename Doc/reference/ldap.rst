@@ -109,6 +109,11 @@ This module defines the following functions:
       connections. Applications should call :py:func:`set_option()` before
       they establish connections with :py:func:`initialize`.
 
+   .. note::
+
+      Most `OPT_X_TLS_*` options do not take effect until `set_option(
+      OPT_X_TLS_NEWCTX, 0 )` is called.
+
 .. versionchanged:: 3.1
 
    The deprecated functions ``ldap.init()`` and ``ldap.open()`` were removed.
@@ -1337,6 +1342,11 @@ Connection-specific LDAP options
 
    This method sets the value of the LDAPObject option
    specified by *option* to *invalue*.
+
+   .. note::
+
+      Most `OPT_X_TLS_*` options do not take effect until `set_option(
+      OPT_X_TLS_NEWCTX, 0 )` is called.
 
 
 Object attributes
