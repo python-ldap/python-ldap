@@ -144,6 +144,7 @@ subtree
 syncrepl
 syntaxes
 timelimit
+TLS
 tracebacks
 tuple
 tuples
