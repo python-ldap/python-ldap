@@ -84,6 +84,11 @@ connection.”* Alternatively, a Samba 4 AD returns the diagnostic message
     `LDAPv2 is considered historic <https://tools.ietf.org/html/rfc3494>`_
     since many years.
 
+**Q**: My TLS settings are ignored/TLS isn't working?
+
+    **A**: Make sure you call `set_option( ldap.OPT_X_TLS_NEWCTX, 0 )`
+    after changing any of the `OPT_X_TLS_*` options.
+
 
 
 Installing
