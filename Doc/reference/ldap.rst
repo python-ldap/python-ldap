@@ -349,7 +349,7 @@ TLS options
 .. py:data:: OPT_X_TLS_REQUIRE_SAN
 
    get/set how OpenLDAP validates subject alternative name extension,
-   available in OpenSSL 2.4.52 and newer.
+   available in OpenLDAP 2.4.52 and newer.
 
    :py:const:`OPT_X_TLS_NEVER`
       Don't check SAN
@@ -422,7 +422,7 @@ TLS options
 .. py:data:: OPT_X_TLS_PROTOCOL_MAX
 
    get/set maximum protocol version (wire protocol version as int),
-   available in OpenSSL 2.5 and newer.
+   available in OpenLDAP 2.5 and newer.
 
    .. versionadded:: 3.4.1
 
