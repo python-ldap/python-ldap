@@ -341,9 +341,7 @@ CONSTANTS = (
     # XXX - these should be errors
     Int('URL_ERR_BADSCOPE'),
     Int('URL_ERR_MEM'),
-    # Int('LIBLDAP_R'),
 
-    Feature('LIBLDAP_R', 'HAVE_LIBLDAP_R'),
     Feature('SASL_AVAIL', 'HAVE_SASL'),
     Feature('TLS_AVAIL', 'HAVE_TLS'),
     Feature('INIT_FD_AVAIL', 'HAVE_LDAP_INIT_FD'),
