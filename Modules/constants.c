@@ -197,6 +197,8 @@ int
 LDAPinit_constants(PyObject *m)
 {
     PyObject *exc, *nobj;
+    struct ldap_apifeature_info info = { 1, "X_OPENLDAP_THREAD_SAFE", 0 };
+    int thread_safe = 0;
 
     /* simple constants */
 
@@ -220,6 +222,14 @@ LDAPinit_constants(PyObject *m)
     if (PyModule_AddObject(m, "error", LDAPexception_class) != 0)
         return -1;
     Py_INCREF(LDAPexception_class);
+
+#ifdef LDAP_API_FEATURE_X_OPENLDAP_THREAD_SAFE
+    if (ldap_get_option(NULL, LDAP_OPT_API_FEATURE_INFO, &info) == LDAP_SUCCESS) {
+        thread_safe = (info.ldapaif_version == 1);
+    }
+#endif
+    if (PyModule_AddIntConstant(m, "LIBLDAP_R", thread_safe) != 0)
+        return -1;
 
     /* Generated constants -- see Lib/ldap/constants.py */
 
