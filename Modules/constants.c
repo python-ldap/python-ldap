@@ -165,10 +165,32 @@ LDAPraise_for_message(LDAP *l, LDAPMessage *m)
         if (errnum == LDAP_REFERRAL && refs != NULL && refs[0] != NULL) {
             /* Keep old behaviour, overshadow error message */
             char err[1024];
+            PyObject *referralList;
+            int i;
 
+            for ( i=0; refs[i]; i++ ) /* count */;
+            referralList = PyList_New(i);
+            if (referralList) {
+                for ( ; i--; ) {
+                    PyObject *referralURL = Py_BuildValue("s", refs[i]);
+                    if (referralURL == NULL ||
+                            PyList_SetItem(referralList, i, referralURL)) {
+                        Py_CLEAR(referralList);
+                        break;
+                    }
+                }
+            }
+            if (referralList) {
+                PyDict_SetItemString(info, "referrals", referralList);
+                Py_CLEAR(referralList);
+            }
+
+            /* FIXME: Drop this in 4.0/5.0 + make the "else if" below an "if" */
             snprintf(err, sizeof(err), "Referral:\n%s", refs[0]);
             str = PyUnicode_FromString(err);
-            PyDict_SetItemString(info, "info", str);
+            if (str) {
+                PyDict_SetItemString(info, "info", str);
+            }
             Py_XDECREF(str);
         }
         else if (error != NULL && *error != '\0') {

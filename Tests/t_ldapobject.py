@@ -21,6 +21,7 @@ os.environ['LDAPNOINIT'] = '1'
 
 import ldap
 from ldap.ldapobject import SimpleLDAPObject, ReconnectLDAPObject
+from ldap.controls.simple import ManageDSAITControl
 
 from slapdtest import SlapdTestCase
 from slapdtest import requires_ldapi, requires_sasl, requires_tls
@@ -601,6 +602,28 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
                 l.search_ext(
                     "%s" % self.server.suffix, ldap.SCOPE_SUBTREE, attrlist=attrlist
                 )
+
+    def test_referral_error(self):
+        """Tests the case where a modify cannot be serviced as under a
+        referral"""
+        l = self._open_ldap_conn(bytes_mode=False)
+
+        l.set_option(ldap.OPT_REFERRALS, 0)
+        dn = "cn=delegated,ou=Container,%s" % self.server.suffix
+        l.add_s(dn, [
+            ("objectClass", [b'referral', b'extensibleObject']),
+            ("ref", b'ldap://ldap.example.com'),
+        ])
+
+        try:
+            target = f"cn=test,{dn}"
+            with self.assertRaises(ldap.REFERRAL) as e:
+                l.modify_s(target, [])
+            result = e.exception
+            self.assertEqual(result.args[0]['referrals'],
+                             [f'ldap://ldap.example.com/{target}'])
+        finally:
+            l.delete_ext_s(dn, serverctrls=[ManageDSAITControl()])
 
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
