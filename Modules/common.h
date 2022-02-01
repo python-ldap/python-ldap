@@ -16,7 +16,7 @@
 #include <ldap.h>
 #include <ldap_features.h>
 
-#if LDAP_API_VERSION < 2040
+#if LDAP_VENDOR_VERSION < 20400
 #error Current python-ldap requires OpenLDAP 2.4.x
 #endif
 
