@@ -23,8 +23,8 @@ TEST_CTRL = RequestControlTuples([
 ])
 TEST_CTRL_EXPECTED = [
     TEST_CTRL[0],
-    # get_option returns empty bytes
-    (TEST_CTRL[1][0], TEST_CTRL[1][1], b''),
+    # Noop has no value
+    (TEST_CTRL[1][0], TEST_CTRL[1][1], None),
 ]
 
 
