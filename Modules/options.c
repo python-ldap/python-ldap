@@ -41,6 +41,7 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
 {
     int res;
     int intval;
+    unsigned int uintval;
     double doubleval;
     char *strval;
     struct timeval tv;
@@ -57,6 +58,7 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
     switch (option) {
     case LDAP_OPT_API_INFO:
     case LDAP_OPT_API_FEATURE_INFO:
+    case LDAP_OPT_DESC:
 #ifdef HAVE_SASL
     case LDAP_OPT_X_SASL_SSF:
 #endif
@@ -116,10 +118,19 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
         ptr = &intval;
         break;
 
+#ifdef LDAP_OPT_TCP_USER_TIMEOUT
+    case LDAP_OPT_TCP_USER_TIMEOUT:
+#endif
+        if (!PyArg_Parse(value, "I:set_option", &uintval))
+            return 0;
+        ptr = &uintval;
+        break;
+
 #ifdef HAVE_SASL
     case LDAP_OPT_X_SASL_SSF_MIN:
     case LDAP_OPT_X_SASL_SSF_MAX:
     case LDAP_OPT_X_SASL_SSF_EXTERNAL:
+    case LDAP_OPT_X_SASL_MAXBUFSIZE:
         if (!PyArg_Parse(value, "k:set_option", &blen))
             return 0;
         ptr = &blen;
@@ -144,9 +155,15 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
 #ifdef LDAP_OPT_X_TLS_CRLFILE
     case LDAP_OPT_X_TLS_CRLFILE:
 #endif
+#ifdef LDAP_OPT_X_TLS_ECNAME
+    case LDAP_OPT_X_TLS_ECNAME:
+#endif
 #endif
 #ifdef HAVE_SASL
     case LDAP_OPT_X_SASL_SECPROPS:
+#endif
+#ifdef LDAP_OPT_SOCKET_BIND_ADDRESSES
+    case LDAP_OPT_SOCKET_BIND_ADDRESSES:
 #endif
         /* String valued options */
         if (!PyArg_Parse(value, "s:set_option", &strval))
@@ -187,8 +204,8 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
         }
         else {
             PyErr_Format(PyExc_ValueError,
-                         "timeout must be >= 0 or -1/None for infinity, got %d",
-                         option);
+                         "timeout must be >= 0 or -1/None for infinity, got %f",
+                         doubleval);
             return 0;
         }
         break;
@@ -254,6 +271,7 @@ LDAP_get_option(LDAPObject *self, int option)
 {
     int res;
     int intval;
+    unsigned int uintval;
     struct timeval *tv;
     LDAPAPIInfo apiinfo;
     LDAPControl **lcs;
@@ -268,6 +286,7 @@ LDAP_get_option(LDAPObject *self, int option)
 
     switch (option) {
 #ifdef HAVE_SASL
+    case LDAP_OPT_X_SASL_SECPROPS:
     case LDAP_OPT_X_SASL_SSF_EXTERNAL:
         /* Write-only options */
         PyErr_SetString(PyExc_ValueError, "write-only option");
@@ -350,10 +369,20 @@ LDAP_get_option(LDAPObject *self, int option)
             return option_error(res, "ldap_get_option");
         return PyInt_FromLong(intval);
 
+#ifdef LDAP_OPT_TCP_USER_TIMEOUT
+    case LDAP_OPT_TCP_USER_TIMEOUT:
+#endif
+        /* unsigned int options */
+        res = LDAP_int_get_option(self, option, &uintval);
+        if (res != LDAP_OPT_SUCCESS)
+            return option_error(res, "ldap_get_option");
+        return PyLong_FromUnsignedLong(uintval);
+
 #ifdef HAVE_SASL
     case LDAP_OPT_X_SASL_SSF:
     case LDAP_OPT_X_SASL_SSF_MIN:
     case LDAP_OPT_X_SASL_SSF_MAX:
+    case LDAP_OPT_X_SASL_MAXBUFSIZE:
         /* ber_len_t options (unsigned long)*/
         res = LDAP_int_get_option(self, option, &blen);
         if (res != LDAP_OPT_SUCCESS)
@@ -388,9 +417,11 @@ LDAP_get_option(LDAPObject *self, int option)
 #ifdef LDAP_OPT_X_TLS_PACKAGE
     case LDAP_OPT_X_TLS_PACKAGE:
 #endif
+#ifdef LDAP_OPT_X_TLS_ECNAME
+    case LDAP_OPT_X_TLS_ECNAME:
+#endif
 #endif
 #ifdef HAVE_SASL
-    case LDAP_OPT_X_SASL_SECPROPS:
     case LDAP_OPT_X_SASL_MECH:
     case LDAP_OPT_X_SASL_REALM:
     case LDAP_OPT_X_SASL_AUTHCID:
@@ -398,6 +429,9 @@ LDAP_get_option(LDAPObject *self, int option)
 #ifdef LDAP_OPT_X_SASL_USERNAME
     case LDAP_OPT_X_SASL_USERNAME:
 #endif
+#endif
+#ifdef LDAP_OPT_SOCKET_BIND_ADDRESSES
+    case LDAP_OPT_SOCKET_BIND_ADDRESSES:
 #endif
         /* String-valued options */
         res = LDAP_int_get_option(self, option, &strval);

@@ -173,6 +173,7 @@ add_int(OPT_TIMELIMIT);
 add_int(OPT_REFERRALS);
 #endif
 
+add_int(OPT_RESULT_CODE);
 add_int(OPT_ERROR_NUMBER);
 add_int(OPT_RESTART);
 add_int(OPT_PROTOCOL_VERSION);
@@ -188,6 +189,11 @@ add_int(OPT_DEBUG_LEVEL);
 add_int(OPT_TIMEOUT);
 add_int(OPT_REFHOPLIMIT);
 add_int(OPT_NETWORK_TIMEOUT);
+
+#if defined(LDAP_OPT_TCP_USER_TIMEOUT)
+add_int(OPT_TCP_USER_TIMEOUT);
+#endif
+
 add_int(OPT_URI);
 
 #if defined(LDAP_OPT_DEFBASE)
@@ -256,6 +262,11 @@ add_int(OPT_X_TLS_PROTOCOL_MIN);
 
 #if defined(LDAP_OPT_X_TLS_PACKAGE)
 add_int(OPT_X_TLS_PACKAGE);
+#endif
+
+
+#if defined(LDAP_OPT_X_TLS_ECNAME)
+add_int(OPT_X_TLS_ECNAME);
 #endif
 
 
