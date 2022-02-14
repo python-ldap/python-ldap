@@ -244,6 +244,7 @@ CONSTANTS = (
     Int('OPT_SIZELIMIT'),
     Int('OPT_TIMELIMIT'),
     Int('OPT_REFERRALS', optional=True),
+    Int('OPT_RESULT_CODE'),
     Int('OPT_ERROR_NUMBER'),
     Int('OPT_RESTART'),
     Int('OPT_PROTOCOL_VERSION'),
@@ -261,6 +262,7 @@ CONSTANTS = (
     Int('OPT_TIMEOUT'),
     Int('OPT_REFHOPLIMIT'),
     Int('OPT_NETWORK_TIMEOUT'),
+    Int('OPT_TCP_USER_TIMEOUT', optional=True),
     Int('OPT_URI'),
 
     Int('OPT_DEFBASE', optional=True),
@@ -299,6 +301,7 @@ CONSTANTS = (
     TLSInt('OPT_X_TLS_PACKAGE', optional=True),
 
     # Added in OpenLDAP 2.4.52
+    TLSInt('OPT_X_TLS_ECNAME', optional=True),
     TLSInt('OPT_X_TLS_REQUIRE_SAN', optional=True),
 
     # Added in OpenLDAP 2.5
