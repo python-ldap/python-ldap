@@ -272,6 +272,7 @@ class SlapdObject:
         self.PATH_LDAPDELETE = self._find_command('ldapdelete')
         self.PATH_LDAPMODIFY = self._find_command('ldapmodify')
         self.PATH_LDAPWHOAMI = self._find_command('ldapwhoami')
+        self.PATH_SLAPADD = self._find_command('slapadd', in_sbin=True)
 
         env_path_slapd = os.environ.get('SLAPD', None)
         if env_path_slapd is not None:
