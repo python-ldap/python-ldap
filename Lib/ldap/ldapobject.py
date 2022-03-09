@@ -4,6 +4,7 @@ ldapobject.py - wraps class _ldap.LDAPObject
 See https://www.python-ldap.org/ for details.
 """
 from os import strerror
+import os.path
 
 from ldap.pkginfo import __version__, __author__, __license__
 
@@ -696,6 +697,133 @@ class SimpleLDAPObject:
     if option==ldap.OPT_SERVER_CONTROLS or option==ldap.OPT_CLIENT_CONTROLS:
       invalue = RequestControlTuples(invalue)
     return self._ldap_call(self._l.set_option,option,invalue)
+
+  def set_tls_options(self, cacertfile=None, cacertdir=None,
+                      require_cert=None, protocol_min=None,
+                      cipher_suite=None, certfile=None, keyfile=None,
+                      crlfile=None, crlcheck=None, start_tls=True):
+    """Set TLS/SSL options
+
+    :param cacertfile: path to a PEM bundle file containing root CA certs
+    :param cacertdir: path to a directory with hashed CA certificates
+    :param require_cert: cert validation strategy, one of
+       ldap.OPT_X_TLS_NEVER, OPT_X_TLS_DEMAND, OPT_X_TLS_HARD. Hard and
+       demand have the same meaning for client side sockets.
+    :param protocol_min: minimum protocol version, one of 0x303 (TLS 1.2)
+       or 0x304 (TLS 1.3).
+    :param cipher_suite: cipher suite string
+    :param certfile: path to cert file for client cert authentication
+    :param keyfile: path to key file for client cert authentication
+    :param crlfile: path to a CRL file
+    :param crlcheck: CRL verification strategy, one of
+       ldap.OPT_X_TLS_CRL_NONE, ldap.OPT_X_TLS_CRL_PEER, or
+       ldap.OPT_X_TLS_CRL_ALL
+    :param start_tls: automatically perform StartTLS for ldap:// connections
+    """
+    if not hasattr(ldap, "OPT_X_TLS_NEWCTX"):
+      raise ValueError("libldap does not have TLS support")
+
+    # OpenSSL and GnuTLS support these options
+    tls_pkg = self.get_option(ldap.OPT_X_TLS_PACKAGE)
+    if tls_pkg not in {"OpenSSL", "GnuTLS"}:
+      raise ValueError("Unsupport TLS package '{}'.".format(tls_pkg))
+
+    # block ldapi ('in' because libldap supports multiple URIs)
+    if "ldapi://" in self._uri:
+      raise ValueError("IPC (ldapi) does not support TLS.")
+
+    # Check that TLS layer is not inplace yet
+    if self._ldap_call(self._l.tls_inplace):
+      raise ValueError("TLS connection already established")
+
+    def _checkfile(option, filename):
+      # check that the file exists and is readable.
+      # libldap doesn't verify paths until it establishes a connection
+      if not os.access(filename, os.R_OK):
+        raise OSError(
+          f"{option} '{filename}' does not exist or is not readable"
+        )
+
+    if cacertfile is not None:
+      _checkfile("certfile", certfile)
+      self.set_option(ldap.OPT_X_TLS_CACERTFILE, cacertfile)
+
+    if cacertdir is not None:
+      if not os.path.isdir(cacertdir):
+        raise OSError(
+            "'{}' does not exist or is not a directory".format(cacertdir)
+        )
+      self.set_option(ldap.OPT_X_TLS_CACERTDIR, cacertdir)
+
+    if require_cert is not None:
+      supported = {
+        ldap.OPT_X_TLS_NEVER,
+        # ALLOW is a server-side setting
+        # ldap.OPT_X_TLS_ALLOW,
+        ldap.OPT_X_TLS_DEMAND,
+        ldap.OPT_X_TLS_HARD
+      }
+      if require_cert not in supported:
+        raise ValueError("Unsupported value for require_cert")
+      self.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, require_cert)
+
+    if protocol_min is not None:
+      # let's not support TLS 1.0 and 1.1
+      supported = {0x303, 0x304}
+      if protocol_min not in supported:
+        raise ValueError("Unsupported value for protocol_min")
+      self.set_option(ldap.OPT_X_TLS_PROTOCOL_MIN, protocol_min)
+
+    if cipher_suite is not None:
+      self.set_option(ldap.OPT_X_TLS_CIPHER_SUITE, cipher_suite)
+
+    if certfile is not None:
+      if keyfile is None:
+        raise ValueError("certfile option requires keyfile option")
+      _checkfile("certfile", certfile)
+      self.set_option(ldap.OPT_X_TLS_CERTFILE, certfile)
+
+    if keyfile is not None:
+      if certfile is None:
+        raise ValueError("keyfile option requires certfile option")
+      _checkfile("keyfile", keyfile)
+      self.set_option(ldap.OPT_X_TLS_KEYFILE, keyfile)
+
+    if crlfile is not None:
+      _checkfile("crlfile", crlfile)
+      self.set_option(ldap.OPT_X_TLS_CRLFILE, crlfile)
+
+    if crlcheck is not None:
+      # no check for crlfile. OpenSSL supports CRLs in CACERTDIR, too.
+      supported = {
+        ldap.OPT_X_TLS_CRL_NONE,
+        ldap.OPT_X_TLS_CRL_PEER,
+        ldap.OPT_X_TLS_CRL_ALL
+      }
+      if crlcheck not in supported:
+          raise ValueError("Unsupported value for crlcheck")
+      self.set_option(ldap.OPT_X_TLS_CRLCHECK, crlcheck)
+
+    # materialize settings
+    # 0 means client-side socket
+    try:
+      self.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+    except ValueError as e:
+      # libldap doesn't return better error message here, global debug log
+      # may contain more information.
+      raise ValueError(
+        "libldap or {} does not support one or more options: {}".format(
+          tls_pkg, e
+        )
+      )
+
+    # Cannot use OPT_X_TLS with OPT_X_TLS_HARD to enforce StartTLS.
+    # libldap ldap_int_open_connection() calls ldap_int_tls_start() when
+    # mode is HARD, but it does not send LDAP_EXOP_START_TLS first.
+    if start_tls and "ldap://" in self._uri:
+      if self.protocol_version != ldap.VERSION3:
+        self.protocol_version = ldap.VERSION3
+      self.start_tls_s()
 
   def search_subschemasubentry_s(self,dn=None):
     """

@@ -11,6 +11,7 @@ attrtype
 authzId
 automagically
 backend
+backends
 behaviour
 BER
 bindname
@@ -56,6 +57,7 @@ filterstr
 filterStr
 formatOID
 func
+GnuTLS
 GPG
 Heimdal
 hostport
