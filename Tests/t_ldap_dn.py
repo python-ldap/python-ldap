@@ -255,6 +255,12 @@ class TestDN(unittest.TestCase):
             ], ldap.DN_FORMAT_LDAPV3),
             r'cn=\C3\A4\C3\B6\C3\BC\C3\84\C3\96\C3\9C\C3\9F,dc=example,dc=com'
         )
+        self.assertEqual(
+            ldap.dn.dn2str([
+                [('c', 'DEU', 1)],  # country code only allow two-letters
+            ], ldap.DN_FORMAT_LDAPV3),
+            r'c=DEU'
+        )
 
     def test_dn_various_lengths(self):
         base = [

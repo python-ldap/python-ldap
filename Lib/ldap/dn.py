@@ -48,18 +48,24 @@ def str2dn(dn,flags=0):
   return ldap.functions._ldap_function_call(None,_ldap.str2dn,dn,flags)
 
 
-def dn2str(dn):
+def dn2str(dn, flags=0):
   """
   This function takes a decomposed DN as parameter and returns
-  a single string. It's the inverse to str2dn() but will always
-  return a DN in LDAPv3 format compliant to RFC 4514.
+  a single string. It's the inverse to str2dn() but will by default always
+  return a DN in LDAPv3 format compliant to RFC 4514 if not otherwise specified
+  via flags.
+
+  See also the OpenLDAP man-page ldap_dn2str(3)
   """
+  if flags:
+    return ldap.functions._ldap_function_call(None, _ldap.dn2str, dn, flags)
   return ','.join([
     '+'.join([
       '='.join((atype,escape_dn_chars(avalue or '')))
       for atype,avalue,dummy in rdn])
     for rdn in dn
   ])
+
 
 def explode_dn(dn, notypes=False, flags=0):
   """
