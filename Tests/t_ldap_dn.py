@@ -158,7 +158,7 @@ class TestDN(unittest.TestCase):
                 [('dc', 'example', 1)],
                 [('dc', 'com', 1)]
             ]),
-            'uid=test\\, 42,ou=Testing,dc=example,dc=com'
+            'uid=test\\2C 42,ou=Testing,dc=example,dc=com'
         )
         self.assertEqual(
             ldap.dn.dn2str([
@@ -166,7 +166,34 @@ class TestDN(unittest.TestCase):
                 [('dc', 'example', 1)],
                 [('dc', 'com', 1)]
             ]),
-            'cn=äöüÄÖÜß,dc=example,dc=com'
+            r'cn=\C3\A4\C3\B6\C3\BC\C3\84\C3\96\C3\9C\C3\9F,dc=example,dc=com'
+        )
+        self.assertEqual(
+            ldap.dn.dn2str([
+                [('uid', 'test42', 1)],
+                [('ou', 'Testing', 1)],
+                [('dc', 'example', 1)],
+                [('dc', 'com', 1)]
+            ], ldap.DN_FORMAT_AD_CANONICAL),
+            'example.com/Testing/test42'
+        )
+        self.assertEqual(
+            ldap.dn.dn2str([
+                [('uid', 'test42', 1)],
+                [('ou', 'Testing', 1)],
+                [('dc', 'example', 1)],
+                [('dc', 'com', 1)]
+            ], ldap.DN_FORMAT_UFN),
+            'test42, Testing, example.com'
+        )
+        self.assertEqual(
+            ldap.dn.dn2str([
+                [('uid', 'test42', 1)],
+                [('ou', 'Testing', 1)],
+                [('dc', 'example', 1)],
+                [('dc', 'com', 1)]
+            ], ldap.DN_FORMAT_DCE),
+            '/dc=com/dc=example/ou=Testing/uid=test42'
         )
 
     def test_explode_dn(self):
