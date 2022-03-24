@@ -57,6 +57,12 @@ extern PyObject *LDAPerror_TypeError(const char *, PyObject *);
 
 void LDAPadd_methods(PyObject *d, PyMethodDef *methods);
 
+extern PyStructSequence_Desc control_tuple_desc;
+extern PyTypeObject control_tuple_type;
+
+extern PyStructSequence_Desc message_tuple_desc;
+extern PyTypeObject message_tuple_type;
+
 #define PyNone_Check(o) ((o) == Py_None)
 
 /* Py2/3 compatibility */
