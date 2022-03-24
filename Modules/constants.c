@@ -194,7 +194,7 @@ LDAPerror(LDAP *l)
 int
 LDAPinit_constants(PyObject *m)
 {
-    PyObject *exc, *nobj;
+    PyObject *exc, *nobj, *exc_dict;
     struct ldap_apifeature_info info = { 1, "X_OPENLDAP_THREAD_SAFE", 0 };
     int thread_safe = 0;
 
@@ -206,6 +206,14 @@ LDAPinit_constants(PyObject *m)
         return -1;
 
     /* exceptions */
+
+    exc_dict = PyDict_New();
+    if ( exc_dict == NULL ) {
+        return -1;
+    }
+    if (PyModule_AddObject(m, "_exceptions", exc_dict) != 0) {
+        return -1;
+    }
 
     LDAPexception_class = PyErr_NewException("ldap.LDAPError", NULL, NULL);
     if (LDAPexception_class == NULL) {
@@ -241,6 +249,12 @@ LDAPinit_constants(PyObject *m)
     errobjects[LDAP_##n+LDAP_ERROR_OFFSET] = exc;  \
     if (PyModule_AddObject(m, #n, exc) != 0) return -1;  \
     Py_INCREF(exc);  \
+    if ( LDAP_##n > 0 ) { \
+        nobj = PyLong_FromUnsignedLong( LDAP_##n ); \
+        if (nobj == NULL) return -1; \
+        if (PyDict_SetItem(exc_dict, nobj, exc)) { Py_DECREF(nobj); return -1; } \
+        Py_DECREF(nobj); \
+    } \
 } while (0)
 
 #define add_int(n) do {  \

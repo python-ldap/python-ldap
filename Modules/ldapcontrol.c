@@ -20,6 +20,30 @@ LDAPControl_DumpList( LDAPControl** lcs ) {
     }
 } */
 
+PyStructSequence_Field control_fields[] = {
+    {
+        .name = "oid",
+    },
+    {
+        .name = "criticality",
+    },
+    {
+        .name = "value",
+    },
+    {
+        .name = NULL,
+    }
+};
+
+PyStructSequence_Desc control_tuple_desc = {
+    .name = "_ldap._RawControl",
+    .doc = "LDAP Control returned from native code",
+    .fields = control_fields,
+    .n_in_sequence = 3,
+};
+
+PyTypeObject control_tuple_type;
+
 /* Free a single LDAPControl object created by Tuple_to_LDAPControl */
 
 static void
@@ -165,7 +189,7 @@ LDAPControls_from_object(PyObject *list, LDAPControl ***controls_ret)
 PyObject *
 LDAPControls_to_List(LDAPControl **ldcs)
 {
-    PyObject *res = 0, *pyctrl;
+    PyObject *retval = NULL, *pytmp = NULL;
     LDAPControl **tmp = ldcs;
     Py_ssize_t num_ctrls = 0, i;
 
@@ -173,22 +197,42 @@ LDAPControls_to_List(LDAPControl **ldcs)
         while (*tmp++)
             num_ctrls++;
 
-    if ((res = PyList_New(num_ctrls)) == NULL) {
+    if ((retval = PyList_New(num_ctrls)) == NULL) {
         return NULL;
     }
 
     for (i = 0; i < num_ctrls; i++) {
-        pyctrl = Py_BuildValue("sbO&",
-                               ldcs[i]->ldctl_oid,
-                               ldcs[i]->ldctl_iscritical,
-                               LDAPberval_to_object, &ldcs[i]->ldctl_value);
-        if (pyctrl == NULL) {
-            Py_DECREF(res);
-            return NULL;
+        PyObject *pyctrl;
+
+        if ( (pytmp = PyStructSequence_New( &control_tuple_type )) == NULL ) {
+            goto error;
         }
-        PyList_SET_ITEM(res, i, pyctrl);
+        PyList_SET_ITEM( retval, i, pytmp );
+        pyctrl = pytmp;
+
+        if ( (pytmp = PyUnicode_FromString( ldcs[i]->ldctl_oid )) == NULL ) {
+            goto error;
+        }
+        PyStructSequence_SET_ITEM( pyctrl, 0, pytmp );
+
+        if ( (pytmp = PyBool_FromLong( ldcs[i]->ldctl_iscritical )) == NULL ) {
+            goto error;
+        }
+        PyStructSequence_SET_ITEM( pyctrl, 1, pytmp );
+
+        if ( (pytmp = LDAPberval_to_object( &ldcs[i]->ldctl_value )) == NULL ) {
+            goto error;
+        }
+        PyStructSequence_SET_ITEM( pyctrl, 2, pytmp );
+        pytmp = NULL;
     }
-    return res;
+
+    return retval;
+
+error:
+    Py_XDECREF(retval);
+    Py_XDECREF(pytmp);
+    return NULL;
 }
 
 /* --------------- en-/decoders ------------- */
