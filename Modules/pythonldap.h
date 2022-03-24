@@ -57,6 +57,12 @@ PYLDAP_FUNC(PyObject *) LDAPerror_TypeError(const char *, PyObject *);
 
 PYLDAP_FUNC(void) LDAPadd_methods(PyObject *d, PyMethodDef *methods);
 
+PYLDAP_DATA(PyStructSequence_Desc) control_tuple_desc;
+PYLDAP_DATA(PyTypeObject) control_tuple_type;
+
+PYLDAP_DATA(PyStructSequence_Desc) message_tuple_desc;
+PYLDAP_DATA(PyTypeObject) message_tuple_type;
+
 #define PyNone_Check(o) ((o) == Py_None)
 
 /* *** berval *** */
