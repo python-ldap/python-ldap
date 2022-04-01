@@ -169,8 +169,14 @@ l_ldap_dn2str(PyObject *unused, PyObject *args)
     struct berval str;
     LDAPDN dn = NULL;
     LDAPRDN rdn = NULL;
+    LDAPAVA *ava = NULL;
     int flags = 0;
-    PyObject *result = NULL, *tmp = NULL, *dn_list = NULL;
+
+    PyObject *result = NULL, *tmp, *dn_list;
+    PyObject *iter, *inext, *iiter, *next;
+    PyObject *name, *value, *encoding;
+
+    Py_ssize_t nrdns, navas;
     int res, i, j;
     char *type_error_message = "expected List[List[Tuple[str, str, int]]]";
 
@@ -185,13 +191,13 @@ l_ldap_dn2str(PyObject *unused, PyObject *args)
     Py_XDECREF(args);
     Py_INCREF(dn_list);
 
-    PyObject *iter = PyObject_GetIter(dn_list);
+    iter = PyObject_GetIter(dn_list);
     if (!iter) {
         PyErr_SetString(PyExc_TypeError, type_error_message);
         goto failed;
     }
 
-    Py_ssize_t nrdns = PyObject_Length(dn_list);
+    nrdns = PyObject_Length(dn_list);
     if (nrdns == -1) {
         // can't happen
         goto failed;
@@ -200,7 +206,7 @@ l_ldap_dn2str(PyObject *unused, PyObject *args)
 
     i = 0;
     while (1) {
-        PyObject *inext = PyIter_Next(iter);
+        inext = PyIter_Next(iter);
         if (!inext) {
             break;
         }
@@ -215,14 +221,14 @@ l_ldap_dn2str(PyObject *unused, PyObject *args)
             goto failed;
         }
 
-        PyObject *iiter = PyObject_GetIter(inext);
+        iiter = PyObject_GetIter(inext);
 
-        Py_ssize_t navas = PyObject_Length(inext);
+        navas = PyObject_Length(inext);
         rdn = malloc(sizeof(LDAPRDN) * (navas + 1));
 
         j = 0;
         while (1) {
-            PyObject *next = PyIter_Next(iiter);
+            next = PyIter_Next(iiter);
             if (!next) {
                 break;
             }
@@ -237,8 +243,6 @@ l_ldap_dn2str(PyObject *unused, PyObject *args)
                 Py_XDECREF(next);
                 goto failed;
             }
-
-            PyObject *name, *value, *encoding;
 
             name = PyTuple_GetItem(next, 0);
             value = PyTuple_GetItem(next, 1);
@@ -255,7 +259,7 @@ l_ldap_dn2str(PyObject *unused, PyObject *args)
                 goto failed;
             }
 
-            LDAPAVA *ava = malloc(sizeof(LDAPAVA));
+            ava = malloc(sizeof(LDAPAVA));
 
             ava->la_attr.bv_val = (char *) PyUnicode_AsUTF8AndSize(name, (long int*) &ava->la_attr.bv_len);
             ava->la_value.bv_val = (char *) PyUnicode_AsUTF8AndSize(value, (long int*) &ava->la_value.bv_len);
