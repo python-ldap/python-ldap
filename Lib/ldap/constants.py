@@ -267,8 +267,6 @@ CONSTANTS = (
 
     Int('OPT_DEFBASE', optional=True),
 
-    TLSInt('OPT_X_TLS', optional=True),
-    TLSInt('OPT_X_TLS_CTX'),
     TLSInt('OPT_X_TLS_CACERTFILE'),
     TLSInt('OPT_X_TLS_CACERTDIR'),
     TLSInt('OPT_X_TLS_CERTFILE'),
@@ -306,6 +304,13 @@ CONSTANTS = (
 
     # Added in OpenLDAP 2.5
     TLSInt('OPT_X_TLS_PEERCERT', optional=True),
+    TLSInt('OPT_X_TLS_PROTOCOL_MAX', optional=True),
+
+    TLSInt('OPT_X_TLS_PROTOCOL_SSL3', optional=True),
+    TLSInt('OPT_X_TLS_PROTOCOL_TLS1_0', optional=True),
+    TLSInt('OPT_X_TLS_PROTOCOL_TLS1_1', optional=True),
+    TLSInt('OPT_X_TLS_PROTOCOL_TLS1_2', optional=True),
+    TLSInt('OPT_X_TLS_PROTOCOL_TLS1_3', optional=True),
 
     Int('OPT_X_SASL_MECH'),
     Int('OPT_X_SASL_REALM'),

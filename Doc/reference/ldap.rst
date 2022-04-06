@@ -372,20 +372,26 @@ TLS options
 .. py:data:: OPT_X_TLS_ALLOW
 
    Value for :py:const:`OPT_X_TLS_REQUIRE_CERT`
+   and :py:const:`OPT_X_TLS_REQUIRE_SAN`
 
 .. py:data:: OPT_X_TLS_DEMAND
 
    Value for :py:const:`OPT_X_TLS_REQUIRE_CERT`
+   and :py:const:`OPT_X_TLS_REQUIRE_SAN`
 
 .. py:data:: OPT_X_TLS_HARD
 
    Value for :py:const:`OPT_X_TLS_REQUIRE_CERT`
+   and :py:const:`OPT_X_TLS_REQUIRE_SAN`
 
 .. py:data:: OPT_X_TLS_NEVER
 
    Value for :py:const:`OPT_X_TLS_REQUIRE_CERT`
+   and :py:const:`OPT_X_TLS_REQUIRE_SAN`
 
 .. py:data:: OPT_X_TLS_TRY
+
+   Value for :py:const:`OPT_X_TLS_REQUIRE_CERT`
 
    .. deprecated:: 3.3.0
       This value is only used by slapd server internally. It will be removed
@@ -400,10 +406,6 @@ TLS options
 
    get/set allowed cipher suites
 
-.. py:data:: OPT_X_TLS_CTX
-
-   get address of internal memory address of TLS context (**DO NOT USE**)
-
 .. py:data:: OPT_X_TLS_PEERCERT
 
    Get peer's certificate as binary ASN.1 data structure (DER)
@@ -417,8 +419,47 @@ TLS options
 
    get/set minimum protocol version (wire protocol version as int)
 
-   * ``0x303`` for TLS 1.2
-   * ``0x304`` for TLS 1.3
+.. py:data:: OPT_X_TLS_PROTOCOL_MAX
+
+   get/set maximum protocol version (wire protocol version as int),
+   available in OpenSSL 2.5 and newer.
+
+   .. versionadded:: 3.4.1
+
+.. py:data:: OPT_X_TLS_PROTOCOL_SSL3
+
+   Value for :py:const:`OPT_X_TLS_PROTOCOL_MIN` and
+   :py:const:`OPT_X_TLS_PROTOCOL_MAX`, represents SSL 3
+
+   .. versionadded:: 3.4.1
+
+.. py:data:: OPT_X_TLS_PROTOCOL_TLS1_0
+
+   Value for :py:const:`OPT_X_TLS_PROTOCOL_MIN` and
+   :py:const:`OPT_X_TLS_PROTOCOL_MAX`, represents TLS 1.0
+
+   .. versionadded:: 3.4.1
+
+.. py:data:: OPT_X_TLS_PROTOCOL_TLS1_1
+
+   Value for :py:const:`OPT_X_TLS_PROTOCOL_MIN` and
+   :py:const:`OPT_X_TLS_PROTOCOL_MAX`, represents TLS 1.1
+
+   .. versionadded:: 3.4.1
+
+.. py:data:: OPT_X_TLS_PROTOCOL_TLS1_2
+
+   Value for :py:const:`OPT_X_TLS_PROTOCOL_MIN` and
+   :py:const:`OPT_X_TLS_PROTOCOL_MAX`, represents TLS 1.2
+
+   .. versionadded:: 3.4.1
+
+.. py:data:: OPT_X_TLS_PROTOCOL_TLS1_3
+
+   Value for :py:const:`OPT_X_TLS_PROTOCOL_MIN` and
+   :py:const:`OPT_X_TLS_PROTOCOL_MAX`, represents TLS 1.3
+
+   .. versionadded:: 3.4.1
 
 .. py:data:: OPT_X_TLS_VERSION
 
@@ -427,12 +468,6 @@ TLS options
 .. py:data:: OPT_X_TLS_RANDOM_FILE
 
    get/set path to /dev/urandom (**DO NOT USE**)
-
-.. py:data:: OPT_X_TLS
-
-   .. deprecated:: 3.3.0
-      The option is deprecated in OpenLDAP and should no longer be used. It
-      will be removed in the future.
 
 .. note::
 
@@ -922,11 +957,6 @@ and wait for and return with the server's result, or with
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
 
    The *dn* and *attr* arguments are text strings; see :ref:`bytes_mode`.
-
-   .. note::
-
-      A design fault in the LDAP API prevents *value*
-      from containing *NULL* characters.
 
 
 .. py:method:: LDAPObject.delete(dn) -> int
