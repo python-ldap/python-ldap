@@ -40,9 +40,10 @@ class PasswordPolicyError(univ.Enumerated):
     ('insufficientPasswordQuality',5),
     ('passwordTooShort',6),
     ('passwordTooYoung',7),
-    ('passwordInHistory',8)
+    ('passwordInHistory',8),
+    ('passwordTooLong',9),
   )
-  subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0,1,2,3,4,5,6,7,8)
+  subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0,1,2,3,4,5,6,7,8,9)
 
 
 class PasswordPolicyResponseValue(univ.Sequence):
