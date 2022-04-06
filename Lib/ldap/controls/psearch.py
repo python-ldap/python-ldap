@@ -14,7 +14,7 @@ __all__ = [
 
 # Imports from python-ldap 2.4+
 import ldap.controls
-from ldap.controls import RequestControl,ResponseControl,KNOWN_RESPONSE_CONTROLS
+from ldap.controls import RequestControl,ResponseControl
 
 # Imports from pyasn1
 from pyasn1.type import namedtype,namedval,univ,constraint
@@ -125,5 +125,3 @@ class EntryChangeNotificationControl(ResponseControl):
     else:
       self.changeNumber = None
     return (self.changeType,self.previousDN,self.changeNumber)
-
-KNOWN_RESPONSE_CONTROLS[EntryChangeNotificationControl.controlType] = EntryChangeNotificationControl
