@@ -11,7 +11,7 @@ from pyasn1.type import tag, namedtype, namedval, univ, constraint
 from pyasn1.codec.ber import encoder, decoder
 
 from ldap.pkginfo import __version__, __author__, __license__
-from ldap.controls import RequestControl, ResponseControl, KNOWN_RESPONSE_CONTROLS
+from ldap.controls import RequestControl, ResponseControl
 from ldap import RES_SEARCH_RESULT, RES_SEARCH_ENTRY, RES_INTERMEDIATE
 
 __all__ = [
@@ -159,8 +159,6 @@ class SyncStateControl(ResponseControl):
         self.state = self.__class__.opnames[int(state)]
         self.entryUUID = str(uuid)
 
-KNOWN_RESPONSE_CONTROLS[SyncStateControl.controlType] = SyncStateControl
-
 
 class SyncDoneValue(univ.Sequence):
     """
@@ -199,8 +197,6 @@ class SyncDoneControl(ResponseControl):
             self.refreshDeletes = bool(refresh_deletes)
         else:
             self.refreshDeletes = None
-
-KNOWN_RESPONSE_CONTROLS[SyncDoneControl.controlType] = SyncDoneControl
 
 
 class RefreshDelete(univ.Sequence):

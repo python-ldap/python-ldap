@@ -43,6 +43,12 @@ for k,v in vars(_ldap).items():
   if k.startswith('OPT_'):
     OPT_NAMES_DICT[v]=k
 
+# OID to class registries
+KNOWN_RESPONSE_CONTROLS = {}
+KNOWN_INTERMEDIATE_RESPONSES = {}
+KNOWN_EXTENDED_RESPONSES = {}
+
+
 class DummyLock:
   """Define dummy class with methods compatible to threading.Lock"""
   def __init__(self):

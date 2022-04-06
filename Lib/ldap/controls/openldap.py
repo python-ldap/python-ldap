@@ -39,9 +39,6 @@ class SearchNoOpControl(ValueLessRequestControl,ResponseControl):
     self.numSearchContinuations = int(decodedValue[2])
 
 
-ldap.controls.KNOWN_RESPONSE_CONTROLS[SearchNoOpControl.controlType] = SearchNoOpControl
-
-
 class SearchNoOpMixIn:
   """
   Mix-in class to be used with class LDAPObject and friends.
