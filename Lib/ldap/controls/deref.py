@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 import ldap.controls
-from ldap.controls import LDAPControl,KNOWN_RESPONSE_CONTROLS
+from ldap.controls import LDAPControl
 
 import pyasn1_modules.rfc2251
 from pyasn1.type import namedtype,univ,tag
@@ -114,5 +114,3 @@ class DereferenceControl(LDAPControl):
         self.derefRes[str(deref_attr)].append((str(deref_val),partial_attrs_dict))
       except KeyError:
         self.derefRes[str(deref_attr)] = [(str(deref_val),partial_attrs_dict)]
-
-KNOWN_RESPONSE_CONTROLS[DereferenceControl.controlType] = DereferenceControl
