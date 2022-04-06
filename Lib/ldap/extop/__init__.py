@@ -10,6 +10,7 @@ response.
 """
 
 from ldap import __version__
+from ldap import KNOWN_EXTENDED_RESPONSES, KNOWN_INTERMEDIATE_RESPONSES
 
 
 class ExtendedRequest:
@@ -42,15 +43,48 @@ class ExtendedResponse:
   """
   Generic base class for a LDAPv3 extended operation response
 
-  requestName
-      OID as string of the LDAPv3 extended operation response
+  responseName
+      OID as string of the LDAPv3 extended operation response or None
   encodedResponseValue
       BER-encoded ASN.1 value of the LDAPv3 extended operation response
   """
 
+  def __init_subclass__(cls):
+    if not getattr(cls, 'responseName', None):
+      return
+
+    KNOWN_EXTENDED_RESPONSES.setdefault(cls.responseName, cls)
+
   def __init__(self,responseName,encodedResponseValue):
     self.responseName = responseName
     self.responseValue = self.decodeResponseValue(encodedResponseValue)
+
+  def __repr__(self):
+    return f'{self.__class__.__name__}({self.responseName},{self.responseValue})'
+
+  def decodeResponseValue(self,value):
+    """
+    decodes the BER-encoded ASN.1 extended operation response value and
+    sets the appropriate class attributes
+    """
+    return value
+
+
+class IntermediateResponse:
+  """
+  Generic base class for a LDAPv3 intermediate response message
+
+  responseName
+      OID as string of the LDAPv3 intermediate response message or None
+  encodedResponseValue
+      BER-encoded ASN.1 value of the LDAPv3 intermediate response message
+  """
+
+  def __init_subclass__(cls):
+    if not getattr(cls, 'responseName', None):
+      return
+
+    KNOWN_INTERMEDIATE_RESPONSES.setdefault(cls.responseName, cls)
 
   def __repr__(self):
     return f'{self.__class__.__name__}({self.responseName},{self.responseValue})'
