@@ -202,12 +202,6 @@ add_int(OPT_DEFBASE);
 
 
 #if HAVE_TLS
-
-#if defined(LDAP_OPT_X_TLS)
-add_int(OPT_X_TLS);
-#endif
-
-add_int(OPT_X_TLS_CTX);
 add_int(OPT_X_TLS_CACERTFILE);
 add_int(OPT_X_TLS_CACERTDIR);
 add_int(OPT_X_TLS_CERTFILE);
@@ -277,6 +271,36 @@ add_int(OPT_X_TLS_REQUIRE_SAN);
 
 #if defined(LDAP_OPT_X_TLS_PEERCERT)
 add_int(OPT_X_TLS_PEERCERT);
+#endif
+
+
+#if defined(LDAP_OPT_X_TLS_PROTOCOL_MAX)
+add_int(OPT_X_TLS_PROTOCOL_MAX);
+#endif
+
+
+#if defined(LDAP_OPT_X_TLS_PROTOCOL_SSL3)
+add_int(OPT_X_TLS_PROTOCOL_SSL3);
+#endif
+
+
+#if defined(LDAP_OPT_X_TLS_PROTOCOL_TLS1_0)
+add_int(OPT_X_TLS_PROTOCOL_TLS1_0);
+#endif
+
+
+#if defined(LDAP_OPT_X_TLS_PROTOCOL_TLS1_1)
+add_int(OPT_X_TLS_PROTOCOL_TLS1_1);
+#endif
+
+
+#if defined(LDAP_OPT_X_TLS_PROTOCOL_TLS1_2)
+add_int(OPT_X_TLS_PROTOCOL_TLS1_2);
+#endif
+
+
+#if defined(LDAP_OPT_X_TLS_PROTOCOL_TLS1_3)
+add_int(OPT_X_TLS_PROTOCOL_TLS1_3);
 #endif
 
 #endif
