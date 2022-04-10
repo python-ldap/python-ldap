@@ -76,6 +76,7 @@ ldapControls
 ldapControlTuples
 ldapdelete
 ldapi
+ldapmodify
 LDAPObject
 ldaps
 ldapurl

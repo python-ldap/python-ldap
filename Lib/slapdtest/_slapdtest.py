@@ -259,7 +259,6 @@ class SlapdObject:
         self.PATH_LDAPDELETE = self._find_command('ldapdelete')
         self.PATH_LDAPMODIFY = self._find_command('ldapmodify')
         self.PATH_LDAPWHOAMI = self._find_command('ldapwhoami')
-        self.PATH_SLAPADD = self._find_command('slapadd', in_sbin=True)
 
         self.PATH_SLAPD = os.environ.get('SLAPD', None)
         if not self.PATH_SLAPD:
@@ -483,34 +482,57 @@ class SlapdObject:
             self._log.info('slapd[%d] terminated', self._proc.pid)
             self._proc = None
 
-    def _cli_auth_args(self):
-        if self.cli_sasl_external:
-            authc_args = [
-                '-Y', 'EXTERNAL',
-            ]
-            if not self._log.isEnabledFor(logging.DEBUG):
-                authc_args.append('-Q')
-        else:
-            authc_args = [
-                '-x',
-                '-D', self.root_dn,
-                '-w', self.root_pw,
-            ]
-        return authc_args
+    def _cli_slap(self, cmd=None, extra_args=None, stdin_data=None):  # pragma: no cover
+        """Entry point for slap* commands directly modifying DB files."""
+        if self._proc is not None:
+            self._log.warning('Directly modifying DB files while slapd is running')
 
-    # no cover to avoid spurious coverage changes
-    def _cli_popen(self, ldapcommand, extra_args=None, ldap_uri=None,
-                   stdin_data=None):  # pragma: no cover
+        args = [self.PATH_SLAPD]
+
+        if cmd:
+            args.append('-T'+cmd)
+
+        args += ['-F', self._slapd_conf] + (extra_args or [])
+
+        return self._cli_exec(args, stdin_data=stdin_data)
+
+    def _cli_ldap(self, ldapcommand, extra_args=None, ldap_uri=None,
+                  bind_dn=None, bind_pw=None,
+                  stdin_data=None):  # pragma: no cover
+        """
+        Entry point for ldap* commands, interacting with running slapd
+        """
+        if self._proc is None:
+            raise RuntimeError('Must start daemon before LDAP access is possible')
+
         if ldap_uri is None:
             ldap_uri = self.default_ldap_uri
 
-        if ldapcommand.split("/")[-1].startswith("ldap"):
-            args = [ldapcommand, '-H', ldap_uri] + self._cli_auth_args()
+        args = [ldapcommand, '-H', ldap_uri or self.default_ldap_uri]
+
+        if ldap_uri.startswith('ldapi://'):
+            args += ['-Y', 'EXTERNAL']
+
+            if not self._log.isEnabledFor(logging.DEBUG):
+                args.append('-Q')
+
+            if bind_dn or bind_pw:
+                raise RuntimeError('-Y EXTERNAL ignores -D and -w')
+
         else:
-            args = [ldapcommand, '-F', self._slapd_conf]
+            args += [
+                '-x',
+                '-D', bind_dn or self.root_dn,
+                '-w', bind_pw or self.root_pw,
+            ]
 
-        args += (extra_args or [])
+        if extra_args:
+            args += extra_args
 
+        return self._cli_exec(args, stdin_data=stdin_data)
+
+    # no cover to avoid spurious coverage changes
+    def _cli_exec(self, args, stdin_data=None):  # pragma: no cover
         self._log.debug('Run command: %r', ' '.join(args))
         proc = subprocess.Popen(
             args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -530,27 +552,28 @@ class SlapdObject:
             )
         return stdout_data, stderr_data
 
-    def ldapwhoami(self, extra_args=None):
+    def ldapwhoami(self, extra_args=None, **kws):
         """
         Runs ldapwhoami on this slapd instance
         """
-        self._cli_popen(self.PATH_LDAPWHOAMI, extra_args=extra_args)
+        return self._cli_ldap(self.PATH_LDAPWHOAMI, extra_args=extra_args,
+                              **kws)
 
-    def ldapadd(self, ldif, extra_args=None):
+    def ldapadd(self, ldif, extra_args=None, **kws):
         """
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(self.PATH_LDAPADD, extra_args=extra_args,
-                        stdin_data=ldif.encode('utf-8'))
+        return self._cli_ldap(self.PATH_LDAPADD, extra_args=extra_args,
+                              stdin_data=ldif.encode('utf-8'), **kws)
 
-    def ldapmodify(self, ldif, extra_args=None):
+    def ldapmodify(self, ldif, extra_args=None, **kws):
         """
-        Runs ldapadd on this slapd instance, passing it the ldif content
+        Runs ldapmodify on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args,
-                        stdin_data=ldif.encode('utf-8'))
+        return self._cli_ldap(self.PATH_LDAPMODIFY, extra_args=extra_args,
+                              stdin_data=ldif.encode('utf-8'), **kws)
 
-    def ldapdelete(self, dn, recursive=False, extra_args=None):
+    def ldapdelete(self, dn, recursive=False, extra_args=None, **kws):
         """
         Runs ldapdelete on this slapd instance, deleting 'dn'
         """
@@ -559,14 +582,15 @@ class SlapdObject:
         if recursive:
             extra_args.append('-r')
         extra_args.append(dn)
-        self._cli_popen(self.PATH_LDAPDELETE, extra_args=extra_args)
+        return self._cli_ldap(self.PATH_LDAPDELETE, extra_args=extra_args,
+                              **kws)
 
     def slapadd(self, ldif, extra_args=None):
         """
         Runs slapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(
-            self.PATH_SLAPADD,
+        return self._cli_slap(
+            'add',
             stdin_data=ldif.encode("utf-8") if ldif else None,
             extra_args=extra_args,
         )
