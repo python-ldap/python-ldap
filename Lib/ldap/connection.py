@@ -17,10 +17,11 @@ from typing import AnyStr, Optional, Union
 import ldap
 from ldap.controls import DecodeControlTuples, RequestControl
 from ldap.extop import ExtendedRequest
+from ldap.extop.passwd import PasswordModifyResponse
 from ldap.ldapobject import SimpleLDAPObject, NO_UNIQUE_ENTRY
 from ldap.response import (
     Response,
-    SearchEntry, SearchReference, SearchResult,
+    SearchEntry, SearchReference,
     IntermediateResponse, ExtendedResult,
 )
 
@@ -39,10 +40,15 @@ class Connection(SimpleLDAPObject):
         super().__init__(uri, **kwargs)
 
     def result(self, msgid: int = ldap.RES_ANY, *, all: int = 1,
-               timeout: Optional[float] = None) -> Optional[list[Response]]:
+               timeout: Optional[float] = None,
+               defaultIntermediateClass:
+                   Optional[type[IntermediateResponse]] = None,
+               defaultExtendedClass: Optional[type[ExtendedResult]] = None
+               ) -> Optional[list[Response]]:
         """
-        result([msgid: int = RES_ANY [, all: int = 1 [, timeout :
-                Optional[float] = None]]]) -> Optional[list[Response]]
+        result([msgid: int = RES_ANY [, all: int = 1 [,
+                    timeout: Optional[float] = None]]])
+            -> Optional[list[Response]]
 
         This method is used to wait for and return the result of an
         operation previously initiated by one of the LDAP asynchronous
@@ -94,12 +100,25 @@ class Connection(SimpleLDAPObject):
 
         results = []
         for msgid, msgtype, controls, data in messages:
-            controls = DecodeControlTuples(controls, self.resp_ctrl_classes)
+            if controls is not None:
+                controls = DecodeControlTuples(controls, self.resp_ctrl_classes)
 
+            if msgtype == ldap.RES_INTERMEDIATE:
+                data['defaultClass'] = defaultIntermediateClass
+            if msgtype == ldap.RES_EXTENDED:
+                data['defaultClass'] = defaultExtendedClass
             m = Response(msgid, msgtype, controls, **data)
             results.append(m)
 
         return results
+
+    def add_s(self, dn: str,
+              modlist: list[tuple[str, Union[bytes, list[bytes]]]], *,
+              ctrls: RequestControls = None) -> ldap.response.AddResult:
+        msgid = self.add_ext(dn, modlist, serverctrls=ctrls)
+        responses = self.result(msgid)
+        result, = responses
+        return result
 
     def bind_s(self, dn: Optional[str] = None,
                cred: Optional[AnyStr] = None, *,
@@ -126,17 +145,36 @@ class Connection(SimpleLDAPObject):
         result, = responses
         return result
 
-    def extop_s(self, oid: Optional[str] = None,
+    def extop_s(self, name: Optional[str] = None,
                 value: Optional[bytes] = None, *,
                 request: Optional[ExtendedRequest] = None,
-                ctrls: RequestControls = None
+                ctrls: RequestControls = None,
+                defaultIntermediateClass: Optional[type[IntermediateResponse]] = None,
+                defaultExtendedClass: Optional[type[ExtendedResult]] = None
                 ) -> list[Union[IntermediateResponse, ExtendedResult]]:
         if request is not None:
-            oid = request.requestName
+            name = request.requestName
             value = request.encodedRequestValue()
 
-        msgid = self.extop(oid, value, serverctrls=ctrls)
-        return self.result(msgid)
+        msgid = self.extop(name, value, serverctrls=ctrls)
+        return self.result(msgid,
+                           defaultIntermediateClass=defaultIntermediateClass,
+                           defaultExtendedClass=defaultExtendedClass)
+
+    def modify_s(self, dn: str,
+                 modlist: list[tuple[str, Union[bytes, list[bytes]]]], *,
+                 ctrls: RequestControls = None) -> ldap.response.ModifyResult:
+        msgid = self.modify_ext(dn, modlist, serverctrls=ctrls)
+        responses = self.result(msgid)
+        result, = responses
+        return result
+
+    def passwd_s(self, user: Optional[str] = None,
+                 oldpw: Optional[bytes] = None, newpw: Optional[bytes] = None,
+                 ctrls: RequestControls = None) -> PasswordModifyResponse:
+        msgid = self.passwd(user, oldpw, newpw, serverctrls=ctrls)
+        res, = self.result(msgid, defaultExtendedClass=PasswordModifyResponse)
+        return res
 
     def search_s(self, base: Optional[str] = None,
                  scope: int = ldap.SCOPE_SUBTREE,
@@ -154,8 +192,11 @@ class Connection(SimpleLDAPObject):
                                 attrsonly=attrsonly, serverctrls=ctrls,
                                 sizelimit=sizelimit, timeout=timelimit)
         result = self.result(msgid, timeout=timeout)
+        # FIXME: we want a better way of returning a result with multiple
+        # messages, always useful in searches but other operations can also
+        # elicit those (by way of an IntermediateResponse)
         result[-1].raise_for_result()
-        return result[:-1]
+        return result
 
     def search_subschemasubentry_s(
             self, dn: Optional[str] = None) -> Optional[str]:
@@ -219,6 +260,6 @@ class Connection(SimpleLDAPObject):
         r = self.search_s(base, scope, filter, attrlist=attrlist,
                           attrsonly=attrsonly, ctrls=ctrls, timeout=timeout,
                           sizelimit=2)
-        if len(r) != 1:
+        if len(r) != 2:
             raise NO_UNIQUE_ENTRY(f'No or non-unique search result for {filter}')
         return r[0]
