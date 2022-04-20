@@ -92,7 +92,7 @@ PYLDAP_FUNC(void) LDAPinit_functions(PyObject *);
 PYLDAP_FUNC(void) LDAPinit_control(PyObject *d);
 PYLDAP_FUNC(void) LDAPControl_List_DEL(LDAPControl **);
 PYLDAP_FUNC(int) LDAPControls_from_object(PyObject *, LDAPControl ***);
-PYLDAP_FUNC(PyObject *) LDAPControls_to_List(LDAPControl **ldcs);
+PYLDAP_FUNC(PyObject *) LDAPControls_to_List(LDAPControl **ldcs, int require_list);
 
 /* *** ldapobject *** */
 typedef struct {

@@ -118,6 +118,7 @@ refreshDeletes
 refreshOnly
 requestName
 requestValue
+responseName
 resiter
 respvalue
 ResultProcessor

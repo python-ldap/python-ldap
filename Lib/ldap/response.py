@@ -29,7 +29,6 @@ from typing import Optional
 
 import ldap
 from ldap.controls import ResponseControl
-from ldap.extop import ExtendedResponse, Intermediate
 
 
 _SUCCESS_CODES = [
@@ -43,7 +42,7 @@ _SUCCESS_CODES = [
 class Response:
     msgid: int
     msgtype: int
-    controls: list[ResponseControl]
+    controls: Optional[list[ResponseControl]]
 
     __subclasses: dict[int, type] = {}
 
@@ -69,11 +68,18 @@ class Response:
         if c:
             return c.__new__(c, msgid, msgtype, controls, **kwargs)
 
-        instance = super().__new__(cls)
+        instance = super().__new__(cls, **kwargs)
         instance.msgid = msgid
         instance.msgtype = msgtype
         instance.controls = controls
         return instance
+
+    def __repr__(self):
+        optional = ""
+        if self.controls is not None:
+            optional += f", controls={self.controls}"
+        return (f"{self.__class__.__name__}(msgid={self.msgid}, "
+                f"msgtype={self.msgtype}{optional})")
 
 
 class Result(Response):
@@ -82,7 +88,7 @@ class Result(Response):
     message: str
     referrals: Optional[list[str]]
 
-    def __new__(cls, msgid, msgtype, controls,
+    def __new__(cls, msgid, msgtype, controls=None, *,
                 result, matcheddn, message, referrals, **kwargs):
         instance = super().__new__(cls, msgid, msgtype, controls, **kwargs)
 
@@ -99,8 +105,13 @@ class Result(Response):
         raise ldap._exceptions.get(self.result, ldap.LDAPError)(self)
 
     def __repr__(self):
+        optional = ""
+        if self.controls is not None:
+            optional = f", controls={self.controls}"
+        if self.message:
+            optional = f", message={self.message!r}"
         return (f"{self.__class__.__name__}"
-                f"(msgid={self.msgid}, result={self.result})")
+                f"(msgid={self.msgid}, result={self.result}{optional})")
 
 
 class SearchEntry(Response):
@@ -109,7 +120,8 @@ class SearchEntry(Response):
     dn: str
     attrs: dict[str, Optional[list[bytes]]]
 
-    def __new__(cls, msgid, msgtype, controls, dn, attrs, **kwargs):
+    def __new__(cls, msgid, msgtype, controls=None, *,
+                dn: str, attrs: dict[str, Optional[list[bytes]]], **kwargs):
         instance = super().__new__(cls, msgid, msgtype, controls, **kwargs)
 
         instance.dn = dn
@@ -123,7 +135,8 @@ class SearchReference(Response):
 
     referrals: list[str]
 
-    def __new__(cls, msgid, msgtype, controls, referrals, **kwargs):
+    def __new__(cls, msgid, msgtype, controls=None, *,
+                referrals, **kwargs):
         instance = super().__new__(cls, msgid, msgtype, controls, **kwargs)
 
         instance.referrals = referrals
@@ -138,27 +151,42 @@ class SearchResult(Result):
 class IntermediateResponse(Response):
     msgtype = ldap.RES_INTERMEDIATE
 
-    oid: Optional[str]
+    name: Optional[str]
     value: Optional[bytes]
 
-    __subclasses: dict[str, type] = {}
-
-    def __new__(cls, msgid, msgtype, controls=None, name=None,
-                value=None, *, defaultClass: Optional[Intermediate] = None,
+    def __new__(cls, msgid, msgtype, controls=None, *,
+                name=None, value=None,
+                defaultClass: Optional[type['IntermediateResponse']] = None,
                 **kwargs):
         if cls is not __class__:
-            instance = super().__new__(cls, )
+            instance = super().__new__(cls, msgid, msgtype, controls, **kwargs)
+            instance.name = name
+            instance.value = value
             return instance
 
-        c = __class__.__subclasses.get(msgtype)
+        c = ldap.KNOWN_INTERMEDIATE_RESPONSES.get(name, defaultClass)
         if c:
-            return c.__new__(c, msgid, msgtype, controls, **kwargs)
+            instance = c.__new__(c, msgid, msgtype, controls,
+                                 name=name, value=value, **kwargs)
+            if hasattr(instance, 'decode'):
+                instance.decode(value)
+            return instance
 
-        instance = super().__new__(cls)
-        instance.msgid = msgid
-        instance.msgtype = msgtype
-        instance.controls = controls
+        instance = super().__new__(cls, msgid, msgtype, controls, **kwargs)
+        instance.name = name
+        instance.value = value
         return instance
+
+    def __repr__(self):
+        optional = ""
+        if self.name is not None:
+            optional += f", name={self.name}"
+        if self.value is not None:
+            optional += f", value={self.value}"
+        if self.controls is not None:
+            optional += f", controls={self.controls}"
+        return (f"{self.__class__.__name__}"
+                f"(msgid={self.msgid}{optional})")
 
 
 class BindResult(Result):
@@ -197,24 +225,52 @@ class CompareResult(Result):
 class ExtendedResult(Result):
     msgtype = ldap.RES_EXTENDED
 
-    oid: Optional[str]
+    responseName: Optional[str]
     value: Optional[bytes]
-    # TODO: how to subclass these dynamically? (UnsolicitedResponse, ...),
-    # is it just with __new__?
-
-
-class UnsolicitedResponse(ExtendedResult):
-    msgid = ldap.RES_UNSOLICITED
-
-    __subclasses: dict[str, type] = {}
 
     def __new__(cls, msgid, msgtype, controls=None, *,
-                name, value=None, **kwargs):
-        if cls is __class__:
-            c = __class__.__subclasses.get(msgtype)
-            if c:
-                return c.__new__(c, msgid, msgtype, controls,
-                                 name=name, value=value, **kwargs)
+                result, matcheddn, message, referrals,
+                name=None, value=None,
+                defaultClass: Optional[type['ExtendedResult']] = None,
+                **kwargs):
+        if cls is not __class__:
+            instance = super().__new__(cls, msgid, msgtype, controls,
+                                       result=result, matcheddn=matcheddn,
+                                       message=message, referrals=referrals)
+            instance.name = name
+            instance.value = value
+            return instance
 
-        return super().__new__(cls, msgid, msgtype, controls,
-                               name=name, value=value, **kwargs)
+        c = ldap.KNOWN_EXTENDED_RESPONSES.get(name, defaultClass)
+        if not c and msgid == ldap.RES_UNSOLICITED:
+            c = UnsolicitedNotification
+
+        if c:
+            return c.__new__(c, msgid, msgtype, controls,
+                             result=result, matcheddn=matcheddn,
+                             message=message, referrals=referrals,
+                             name=name, value=value, **kwargs)
+
+        instance = super().__new__(cls, msgid, msgtype, controls,
+                                   result=result, matcheddn=matcheddn,
+                                   message=message, referrals=referrals)
+        instance.name = name
+        instance.value = value
+        return instance
+
+    def __repr__(self):
+        optional = ""
+        if self.name is not None:
+            optional += f", name={self.name}"
+        if self.value is not None:
+            optional += f", value={self.value}"
+        if self.message:
+            optional = f", message={self.message!r}"
+        if self.controls is not None:
+            optional += f", controls={self.controls}"
+        return (f"{self.__class__.__name__}"
+                f"(msgid={self.msgid}, result={self.result}{optional})")
+
+
+class UnsolicitedNotification(ExtendedResult):
+    msgid = ldap.RES_UNSOLICITED

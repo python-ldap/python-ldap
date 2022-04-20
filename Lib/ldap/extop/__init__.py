@@ -12,6 +12,13 @@ response.
 from ldap import __version__
 from ldap import KNOWN_EXTENDED_RESPONSES, KNOWN_INTERMEDIATE_RESPONSES
 
+import ldap
+import ldap.response
+
+from typing import Optional
+
+_NOTSET = object()
+
 
 class ExtendedRequest:
   """
@@ -39,7 +46,7 @@ class ExtendedRequest:
     return self.requestValue
 
 
-class ExtendedResponse:
+class ExtendedResponse(ldap.response.ExtendedResult):
   """
   Generic base class for a LDAPv3 extended operation response
 
@@ -55,9 +62,116 @@ class ExtendedResponse:
 
     KNOWN_EXTENDED_RESPONSES.setdefault(cls.responseName, cls)
 
-  def __init__(self,responseName,encodedResponseValue):
+  @classmethod
+  def __convert_old_api(cls, responseName_or_msgid=_NOTSET,
+                        encodedResponseValue_or_msgtype=_NOTSET,
+                        controls=None, *,
+                        result=_NOTSET, matcheddn=_NOTSET, message=_NOTSET,
+                        referrals=_NOTSET, name=None, value=None,
+                        defaultClass: Optional[type['ExtendedResult']] = None,
+                        msgid=_NOTSET, msgtype=_NOTSET,
+                        responseName=_NOTSET, encodedResponseValue=_NOTSET,
+                        **kwargs):
+    """
+    Implements both old and new API:
+    __init__(self, responseName, encodedResponseValue)
+    and
+    __init__/__new__(self, msgid, msgtype, controls=None, *,
+                     result, matcheddn, message, referrals,
+                     defaultClass=None, **kwargs)
+    """
+    if responseName is not _NOTSET:
+        name = responseName
+        value = encodedResponseValue
+        msgid = None
+        msgtype = ldap.RES_EXTENDED
+        result = ldap.SUCCESS.errnum
+    elif responseName_or_msgid is not _NOTSET and \
+            isinstance(responseName_or_msgid, (str, type(None))):
+        if responseName is not _NOTSET:
+            raise TypeError("responseName passed twice")
+        if encodedResponseValue_or_msgtype is not _NOTSET and \
+                encodedResponseValue is not _NOTSET:
+            raise TypeError("encodedResponseValue passed twice")
+        name = responseName = responseName_or_msgid
+        value = encodedResponseValue = encodedResponseValue_or_msgtype
+        msgid = None
+        msgtype = ldap.RES_EXTENDED
+        result = ldap.SUCCESS.errnum
+    else:
+        responseName = name
+        encodedResponseValue = value
+        if msgid is _NOTSET:
+            if responseName_or_msgid is _NOTSET:
+                raise TypeError("msgid parameter not provided")
+            msgid = responseName_or_msgid
+        if msgtype is _NOTSET:
+            if encodedResponseValue_or_msgtype is _NOTSET:
+                raise TypeError("msgtype parameter not provided")
+            msgtype = encodedResponseValue_or_msgtype or ldap.RES_EXTENDED
+        if result is _NOTSET:
+            raise TypeError("result parameter not provided")
+        if matcheddn is _NOTSET:
+            raise TypeError("matcheddn parameter not provided")
+        if message is _NOTSET:
+            raise TypeError("message parameter not provided")
+        if referrals is _NOTSET:
+            raise TypeError("referrals parameter not provided")
+
+    return (
+        responseName, encodedResponseValue,
+        (msgid, msgtype, controls),
+        {'result': result,
+         'matcheddn': matcheddn,
+         'message': message,
+         'referrals': referrals,
+         'name': name,
+         'value': value,
+         'defaultClass': defaultClass,
+         **kwargs
+         }
+    )
+
+  def __new__(cls, *args, **kwargs):
+    """
+    Has to support both old and new API:
+    __new__(cls, responseName: Optional[str],
+            encodedResponseValue: Optional[bytes])
+    and
+    __new__(cls, msgid: int, msgtype: int, controls: Controls = None, *,
+            result: int, matcheddn: str, message: str, referrals: List[str],
+            defaultClass: Optional[type[ExtendedResponse]] = None,
+            **kwargs)
+
+    The old API is deprecated and will be removed in 4.0.
+    """
+    # TODO: retire polymorhpism when old API is removed (4.0?)
+    _, _, args, kwargs = __class__.__convert_old_api(*args, **kwargs)
+
+    return super().__new__(cls, *args, **kwargs)
+
+  def __init__(self, *args, **kwargs):
+    """
+    Supports both old and new API:
+    __init__(self, responseName: Optional[str],
+             encodedResponseValue: Optional[bytes])
+    and
+    __init__(self, msgid: int, msgtype: int, controls: Controls = None, *,
+             result: int, matcheddn: str, message: str, referrals: List[str],
+             defaultClass: Optional[type[ExtendedResponse]] = None,
+             **kwargs)
+
+    The old API is deprecated and will be removed in 4.0.
+    """
+    # TODO: retire polymorhpism when old API is removed (4.0?)
+    responseName, encodedResponseValue, _, _ = \
+        __class__.__convert_old_api(*args, **kwargs)
+
     self.responseName = responseName
-    self.responseValue = self.decodeResponseValue(encodedResponseValue)
+    if encodedResponseValue is not None:
+        self.responseValue = self.decodeResponseValue(encodedResponseValue)
+    else:
+        self.responseValue = None
 
   def decodeResponseValue(self,value):
     """
@@ -67,7 +181,7 @@ class ExtendedResponse:
     return value
 
 
-class IntermediateResponse:
+class IntermediateResponse(ldap.response.IntermediateResponse):
   """
   Generic base class for a LDAPv3 intermediate response message
 

@@ -380,14 +380,17 @@ class SimpleLDAPObject:
 
   def extop_s(self,extreq,serverctrls=None,clientctrls=None,extop_resp_class=None):
     msgid = self.extop(extreq,serverctrls,clientctrls)
-    res = self.extop_result(msgid,all=1,timeout=self.timeout)
+    resulttype,_,msgid,respctrls,respoid,respvalue = self.extop_result(msgid,all=1,timeout=self.timeout)
+    extop_resp_class = extop_resp_class or KNOWN_EXTENDED_RESPONSES.get(respoid)
     if extop_resp_class:
-      respoid,respvalue = res
       if extop_resp_class.responseName!=respoid:
         raise ldap.PROTOCOL_ERROR(f"Wrong OID in extended response! Expected {extop_resp_class.responseName}, got {respoid}")
-      return extop_resp_class(extop_resp_class.responseName,respvalue)
+      return extop_resp_class(msgid, resulttype, respctrls,
+                              result=0, matcheddn=None,
+                              message=None, referrals=None,
+                              name=respoid, value=respvalue)
     else:
-      return res
+      return respoid, respvalue
 
   def modify_ext(self,dn,modlist,serverctrls=None,clientctrls=None):
     """
