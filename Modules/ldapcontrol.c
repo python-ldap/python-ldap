@@ -149,6 +149,11 @@ LDAPControls_from_object(PyObject *list, LDAPControl ***controls_ret)
     LDAPControl *ldc;
     PyObject *item;
 
+    if (PyNone_Check(list)) {
+        *controls_ret = NULL;
+        return 0;
+    }
+
     if (!PySequence_Check(list)) {
         LDAPerror_TypeError("LDAPControls_from_object(): expected a list",
                             list);
@@ -187,15 +192,18 @@ LDAPControls_from_object(PyObject *list, LDAPControl ***controls_ret)
 }
 
 PyObject *
-LDAPControls_to_List(LDAPControl **ldcs)
+LDAPControls_to_List(LDAPControl **ldcs, int require_list)
 {
     PyObject *retval = NULL, *pytmp = NULL;
     LDAPControl **tmp = ldcs;
     Py_ssize_t num_ctrls = 0, i;
 
-    if (tmp)
+    if (tmp) {
         while (*tmp++)
             num_ctrls++;
+    } else if (!require_list) {
+        Py_RETURN_NONE;
+    }
 
     if ((retval = PyList_New(num_ctrls)) == NULL) {
         return NULL;

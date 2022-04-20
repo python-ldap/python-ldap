@@ -1225,7 +1225,7 @@ l_ldap_result(LDAPObject *self, PyObject *args)
                         &controls )) != LDAP_SUCCESS ) {
                 goto error;
             }
-            pytmp = LDAPControls_to_List( controls );
+            pytmp = LDAPControls_to_List( controls, 0 );
             ldap_controls_free( controls );
             if ( pytmp == NULL ) {
                 goto error;
@@ -1262,7 +1262,7 @@ l_ldap_result(LDAPObject *self, PyObject *args)
             Py_DECREF( pytmp );
             refs_list = pytmp;
 
-            pytmp = LDAPControls_to_List( controls );
+            pytmp = LDAPControls_to_List( controls, 0 );
             ldap_controls_free( controls );
             if ( pytmp == NULL ) {
                 ldap_memvfree( (void **)refs );
@@ -1325,7 +1325,7 @@ l_ldap_result(LDAPObject *self, PyObject *args)
                 }
             }
 
-            pytmp = LDAPControls_to_List( controls );
+            pytmp = LDAPControls_to_List( controls, 0 );
             ldap_controls_free( controls );
             if ( pytmp == NULL ) {
                 goto error;
@@ -1407,7 +1407,7 @@ l_ldap_result(LDAPObject *self, PyObject *args)
             }
             ldap_memvfree( (void **)referrals );
 
-            pytmp = LDAPControls_to_List( controls );
+            pytmp = LDAPControls_to_List( controls, 0 );
             ldap_controls_free( controls );
             if ( pytmp == NULL ) {
                 goto error;
@@ -1594,7 +1594,7 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
         return LDAPraise_for_message(self->ldap, msg);
     }
 
-    if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
+    if (!(pyctrls = LDAPControls_to_List(serverctrls, 1))) {
         int err = LDAP_NO_MEMORY;
 
         LDAP_BEGIN_ALLOW_THREADS(self);
