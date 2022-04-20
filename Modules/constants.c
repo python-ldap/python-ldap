@@ -135,7 +135,7 @@ LDAPraise_for_message(LDAP *l, LDAPMessage *m)
             Py_XDECREF(pyerrno);
         }
 
-        if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
+        if (!(pyctrls = LDAPControls_to_List(serverctrls, 1))) {
             int err = LDAP_NO_MEMORY;
 
             ldap_set_option(l, LDAP_OPT_ERROR_NUMBER, &err);

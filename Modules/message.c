@@ -69,7 +69,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
         }
 
         /* convert serverctrls to list of tuples */
-        if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
+        if (!(pyctrls = LDAPControls_to_List(serverctrls, 1))) {
             int err = LDAP_NO_MEMORY;
 
             ldap_set_option(ld, LDAP_OPT_ERROR_NUMBER, &err);
@@ -200,7 +200,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
             return LDAPerror(ld);
         }
         /* convert serverctrls to list of tuples */
-        if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
+        if (!(pyctrls = LDAPControls_to_List(serverctrls, 1))) {
             int err = LDAP_NO_MEMORY;
 
             ldap_set_option(ld, LDAP_OPT_ERROR_NUMBER, &err);
@@ -254,7 +254,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
                     return LDAPerror(ld);
                 }
                 /* convert serverctrls to list of tuples */
-                if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
+                if (!(pyctrls = LDAPControls_to_List(serverctrls, 1))) {
                     int err = LDAP_NO_MEMORY;
 
                     ldap_set_option(ld, LDAP_OPT_ERROR_NUMBER, &err);
