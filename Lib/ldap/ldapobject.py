@@ -895,8 +895,8 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self._trace_file = ldap._trace_file
     self.reconnect(self._uri)
 
-  def _store_last_bind(self,method,*args,**kwargs):
-    self._last_bind = (method,args,kwargs)
+  def _store_last_bind(self,_method,*args,**kwargs):
+    self._last_bind = (_method,args,kwargs)
 
   def _apply_last_bind(self):
     if self._last_bind!=None:
