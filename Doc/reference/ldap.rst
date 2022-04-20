@@ -226,6 +226,9 @@ the following option identifiers are defined as constants:
 SASL options
 ::::::::::::
 
+Unlike most other options, SASL options must be set on an
+:py:class:`LDAPObject` instance.
+
 .. py:data:: OPT_X_SASL_AUTHCID
 
 .. py:data:: OPT_X_SASL_AUTHZID
@@ -234,7 +237,8 @@ SASL options
 
 .. py:data:: OPT_X_SASL_NOCANON
 
-   If set to zero SASL host name canonicalization is disabled.
+   If set to zero, SASL host name canonicalization is disabled. This is the only
+   SASL option that can be set globally.
 
 .. py:data:: OPT_X_SASL_REALM
 
