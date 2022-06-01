@@ -1,3 +1,43 @@
+Released 3.4.1 2022-07-05
+
+This is a minor release to provide out-of-the-box compatibility with the merge
+of libldap and libldap_r that happened with OpenLDAP's 2.5 release.
+
+The following undocumented functions are deprecated and scheduled for removal:
+- ``ldap.cidict.strlist_intersection``
+- ``ldap.cidict.strlist_minus``
+- ``ldap.cidict.strlist_union``
+
+The following deprecated option has been removed:
+- ``OPT_X_TLS``
+
+Doc/
+* SASL option usage has been clarified
+
+Lib/
+* ppolicy control definition has been updated to match Behera draft 11
+
+Modules/
+* By default, compile against libldap, checking whether it provides a
+  threadsafe implementation at runtime
+* When decoding controls, the module can now distinguish between no value
+  (now exposed as ``None``) and an empty value (exposed as ``b''``)
+* Several new OpenLDAP options are now supported:
+  * ``OPT_SOCKET_BIND_ADDRESSES``
+  * ``OPT_TCP_USER_TIMEOUT``
+  * ``OPT_X_SASL_MAXBUFSIZE``
+  * ``OPT_X_SASL_SECPROPS``
+  * ``OPT_X_TLS_ECNAME``
+  * ``OPT_X_TLS_PEERCERT``
+  * ``OPT_X_TLS_PROTOCOL``-related options and constants
+
+Fixes:
+* Encoding/decoding of boolean controls has been corrected
+* ldap.schema.models.Entry is now usable
+* ``method`` keyword to ReconnectLDAPObject.bind_s is now usable
+
+
+----------------------------------------------------------------
 Released 3.4.0 2021-11-26
 
 This release requires Python 3.6 or above,
