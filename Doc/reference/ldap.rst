@@ -237,8 +237,7 @@ Unlike most other options, SASL options must be set on an
 
 .. py:data:: OPT_X_SASL_NOCANON
 
-   If set to zero, SASL host name canonicalization is disabled. This is the only
-   SASL option that can be set globally.
+   If set to zero, SASL host name canonicalization is disabled.
 
 .. py:data:: OPT_X_SASL_REALM
 
