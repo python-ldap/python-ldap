@@ -1,4 +1,4 @@
-Released 3.4.1 2022-07-05
+Released 3.4.2 2022-07-06
 
 This is a minor release to provide out-of-the-box compatibility with the merge
 of libldap and libldap_r that happened with OpenLDAP's 2.5 release.
