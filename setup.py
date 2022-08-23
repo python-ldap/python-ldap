@@ -153,6 +153,7 @@ setup(
     'ldap.extop',
     'ldap.schema',
     'slapdtest',
+    'slapdtest.certs',
   ],
   package_dir = {'': 'Lib',},
   data_files = LDAP_CLASS.extra_files,
