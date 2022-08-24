@@ -409,6 +409,10 @@ TLS options
 
    get/set allowed cipher suites
 
+.. py:data:: OPT_X_TLS_CTX
+
+   get address of internal memory address of TLS context (**DO NOT USE**)
+
 .. py:data:: OPT_X_TLS_PEERCERT
 
    Get peer's certificate as binary ASN.1 data structure (DER)
@@ -471,6 +475,12 @@ TLS options
 .. py:data:: OPT_X_TLS_RANDOM_FILE
 
    get/set path to /dev/urandom (**DO NOT USE**)
+
+.. py:data:: OPT_X_TLS
+
+   .. deprecated:: 3.3.0
+      The option is deprecated in OpenLDAP and should no longer be used. It
+      will be removed in the future.
 
 .. note::
 
