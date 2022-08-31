@@ -658,12 +658,12 @@ class Test03_SimpleLDAPObjectWithFileno(Test00_SimpleLDAPObject):
 
     def tearDown(self):
         self._sock.close()
-        del self._sock
+        delattr(self, '_sock')
         super().tearDown()
 
     def reset_connection(self):
         self._sock.close()
-        del self._sock
+        delattr(self, '_sock')
         super(Test03_SimpleLDAPObjectWithFileno, self).reset_connection()
 
 

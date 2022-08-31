@@ -171,6 +171,7 @@ search.
 .. autoclass:: ldap.controls.psearch.EntryChangeNotificationControl
    :members:
 
+.. |ASN.1| replace:: Asn1Type
 
 :py:mod:`ldap.controls.sessiontrack` Session tracking control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
