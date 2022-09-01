@@ -202,6 +202,12 @@ add_int(OPT_DEFBASE);
 
 
 #if HAVE_TLS
+
+#if defined(LDAP_OPT_X_TLS)
+add_int(OPT_X_TLS);
+#endif
+
+add_int(OPT_X_TLS_CTX);
 add_int(OPT_X_TLS_CACERTFILE);
 add_int(OPT_X_TLS_CACERTDIR);
 add_int(OPT_X_TLS_CERTFILE);
