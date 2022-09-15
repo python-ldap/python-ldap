@@ -1,3 +1,18 @@
+Released 3.4.3 2022-09-15
+
+This is a minor release to bring back the removed OPT_X_TLS option.
+Please note, it's still a deprecated option and it will be removed in 3.5.0.
+
+The following deprecated option has been brought back:
+- ``OPT_X_TLS``
+
+Fixes:
+* Sphinx documentation is now successfully built
+* pypy3 tests stability was improved
+* setup.py deprecation warning is now resolved
+
+
+----------------------------------------------------------------
 Released 3.4.2 2022-07-06
 
 This is a minor release to provide out-of-the-box compatibility with the merge
