@@ -118,6 +118,15 @@ class TestDN(unittest.TestCase):
                 [('dc', 'com', 1)]
             ]
         )
+        self.assertEqual(
+            ldap.dn.str2dn('/dc=com/dc=example/ou=Testing/uid=test42', flags=ldap.DN_FORMAT_DCE),
+            [
+                [('uid', 'test42', 1)],
+                [('ou', 'Testing', 1)],
+                [('dc', 'example', 1)],
+                [('dc', 'com', 1)]
+            ]
+        )
 
     def test_dn2str(self):
         """
