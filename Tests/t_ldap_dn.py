@@ -105,7 +105,7 @@ class TestDN(unittest.TestCase):
         self.assertEqual(
             ldap.dn.str2dn('cn=äöüÄÖÜß,dc=example,dc=com', flags=0),
             [
-                [('cn', 'äöüÄÖÜß', 4)],
+                [('cn', 'äöüÄÖÜß', ldap.AVA_NONPRINTABLE)],
                 [('dc', 'example', 1)],
                 [('dc', 'com', 1)]
             ]
@@ -113,7 +113,7 @@ class TestDN(unittest.TestCase):
         self.assertEqual(
             ldap.dn.str2dn('cn=\\c3\\a4\\c3\\b6\\c3\\bc\\c3\\84\\c3\\96\\c3\\9c\\c3\\9f,dc=example,dc=com', flags=0),
             [
-                [('cn', 'äöüÄÖÜß', 4)],
+                [('cn', 'äöüÄÖÜß', ldap.AVA_NONPRINTABLE)],
                 [('dc', 'example', 1)],
                 [('dc', 'com', 1)]
             ]
@@ -162,7 +162,7 @@ class TestDN(unittest.TestCase):
         )
         self.assertEqual(
             ldap.dn.dn2str([
-                [('cn', 'äöüÄÖÜß', 4)],
+                [('cn', 'äöüÄÖÜß', ldap.AVA_NONPRINTABLE)],
                 [('dc', 'example', 1)],
                 [('dc', 'com', 1)]
             ]),
