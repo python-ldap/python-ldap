@@ -6,7 +6,7 @@ on: [push, pull_request]
 jobs:
   distros:
     name: "Ubuntu with Python ${{ matrix.python-version }}"
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-20.04"
     strategy:
       fail-fast: false
       matrix:
@@ -18,7 +18,7 @@ jobs:
         run: |
           set -ex
           sudo apt update
-          sudo apt install -y ldap-utils slapd enchant libldap2-dev libsasl2-dev apparmor-utils
+          sudo apt install -y ldap-utils slapd enchant-2 libldap2-dev libsasl2-dev apparmor-utils
       - name: Disable AppArmor
         run: sudo aa-disable /usr/sbin/slapd
       - name: Set up Python ${{ matrix.python-version }}
