@@ -32,4 +32,4 @@ jobs:
         - doc
 
     # Use GitHub's Linux Docker host
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
