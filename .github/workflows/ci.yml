@@ -17,8 +17,8 @@ jobs:
       - name: Install apt dependencies
         run: |
           set -ex
-          sudo apt update
-          sudo apt install -y ldap-utils slapd enchant libldap2-dev libsasl2-dev apparmor-utils
+          sudo apt-get update
+          sudo apt-get install -y ldap-utils slapd enchant-2 libldap2-dev libsasl2-dev apparmor-utils
       - name: Disable AppArmor
         run: sudo aa-disable /usr/sbin/slapd
       - name: Set up Python ${{ matrix.python-version }}
