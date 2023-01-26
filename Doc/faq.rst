@@ -13,7 +13,7 @@ Project
   **A3**: see file CHANGES in source distribution
   or `repository`_.
 
-.. _repository: https://github.com/python-ldap/python-ldap/blob/master/CHANGES
+.. _repository: https://github.com/python-ldap/python-ldap/blob/main/CHANGES
 
 
 Usage
