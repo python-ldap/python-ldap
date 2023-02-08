@@ -893,7 +893,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self._reconnect_lock = ldap.LDAPLock(desc='reconnect lock within %s' % (repr(self)))
     # XXX cannot pickle file, use default trace file
     self._trace_file = ldap._trace_file
-    self.reconnect(self._uri)
+    self.reconnect(self._uri,force=True)
 
   def _store_last_bind(self,_method,*args,**kwargs):
     self._last_bind = (_method,args,kwargs)
@@ -914,11 +914,16 @@ class ReconnectLDAPObject(SimpleLDAPObject):
   def passwd_s(self,*args,**kwargs):
     return self._apply_method_s(SimpleLDAPObject.passwd_s,*args,**kwargs)
 
-  def reconnect(self,uri,retry_max=1,retry_delay=60.0):
+  def reconnect(self,uri,retry_max=1,retry_delay=60.0,force=True):
     # Drop and clean up old connection completely
     # Reconnect
     self._reconnect_lock.acquire()
     try:
+      if hasattr(self,'_l'):
+        if force:
+          SimpleLDAPObject.unbind_s(self)
+        else:
+          return
       reconnect_counter = retry_max
       while reconnect_counter:
         counter_text = '%d. (of %d)' % (retry_max-reconnect_counter+1,retry_max)
@@ -962,14 +967,12 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     return # reconnect()
 
   def _apply_method_s(self,func,*args,**kwargs):
-    if not hasattr(self,'_l'):
-      self.reconnect(self._uri,retry_max=self._retry_max,retry_delay=self._retry_delay)
+    self.reconnect(self._uri,retry_max=self._retry_max,retry_delay=self._retry_delay,force=False)
     try:
       return func(self,*args,**kwargs)
     except ldap.SERVER_DOWN:
-      SimpleLDAPObject.unbind_s(self)
       # Try to reconnect
-      self.reconnect(self._uri,retry_max=self._retry_max,retry_delay=self._retry_delay)
+      self.reconnect(self._uri,retry_max=self._retry_max,retry_delay=self._retry_delay,force=True)
       # Re-try last operation
       return func(self,*args,**kwargs)
 
