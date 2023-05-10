@@ -8,8 +8,20 @@ The ldap.extop module provides base classes for LDAPv3 extended operations.
 Each class provides support for a certain extended operation request and
 response.
 """
+from __future__ import annotations
 
-from ldap import __version__
+from ldap.pkginfo import __version__
+
+from typing import Any
+
+
+__all__ = [
+  # dds
+  'RefreshRequest',
+  'RefreshResponse',
+  # passwd
+  'PasswordModifyResponse',
+]
 
 
 class ExtendedRequest:
@@ -23,14 +35,14 @@ class ExtendedRequest:
       (here it is the BER-encoded ASN.1 request value)
   """
 
-  def __init__(self,requestName,requestValue):
+  def __init__(self, requestName: str, requestValue: bytes) -> None:
     self.requestName = requestName
     self.requestValue = requestValue
 
-  def __repr__(self):
-    return f'{self.__class__.__name__}({self.requestName},{self.requestValue})'
+  def __repr__(self) -> str:
+    return f'{self.__class__.__name__}({self.requestName},{self.requestValue!r})'
 
-  def encodedRequestValue(self):
+  def encodedRequestValue(self) -> bytes:
     """
     returns the BER-encoded ASN.1 request value composed by class attributes
     set before
@@ -48,14 +60,14 @@ class ExtendedResponse:
       BER-encoded ASN.1 value of the LDAPv3 extended operation response
   """
 
-  def __init__(self,responseName,encodedResponseValue):
+  def __init__(self, responseName: str, encodedResponseValue: bytes) -> None:
     self.responseName = responseName
     self.responseValue = self.decodeResponseValue(encodedResponseValue)
 
-  def __repr__(self):
-    return f'{self.__class__.__name__}({self.responseName},{self.responseValue})'
+  def __repr__(self) -> str:
+    return f'{self.__class__.__name__}({self.responseName},{self.responseValue!r})'
 
-  def decodeResponseValue(self,value):
+  def decodeResponseValue(self, value: bytes) -> Any:
     """
     decodes the BER-encoded ASN.1 extended operation response value and
     sets the appropriate class attributes
@@ -64,5 +76,5 @@ class ExtendedResponse:
 
 
 # Import sub-modules
-from ldap.extop.dds import *
+from ldap.extop.dds import RefreshRequest, RefreshResponse
 from ldap.extop.passwd import PasswordModifyResponse

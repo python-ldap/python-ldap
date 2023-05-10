@@ -18,7 +18,7 @@ class RefreshRequest(ExtendedRequest):
   requestName = '1.3.6.1.4.1.1466.101.119.1'
   defaultRequestTtl = 86400
 
-  class RefreshRequestValue(univ.Sequence):
+  class RefreshRequestValue(univ.Sequence):  # type: ignore[misc]
     componentType = namedtype.NamedTypes(
       namedtype.NamedType(
         'entryName',
@@ -34,11 +34,16 @@ class RefreshRequest(ExtendedRequest):
       ),
     )
 
-  def __init__(self,requestName=None,entryName=None,requestTtl=None):
+  def __init__(
+    self,
+    requestName: str | None = None,
+    entryName: str | None = None,
+    requestTtl: int | None = None
+  ) -> None:
     self.entryName = entryName
     self.requestTtl = requestTtl or self.defaultRequestTtl
 
-  def encodedRequestValue(self):
+  def encodedRequestValue(self) -> bytes:
     p = self.RefreshRequestValue()
     p.setComponentByName(
       'entryName',
@@ -52,13 +57,13 @@ class RefreshRequest(ExtendedRequest):
         implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,1)
       )
     )
-    return encoder.encode(p)
+    return encoder.encode(p)  # type: ignore[no-any-return]
 
 
 class RefreshResponse(ExtendedResponse):
   responseName = '1.3.6.1.4.1.1466.101.119.1'
 
-  class RefreshResponseValue(univ.Sequence):
+  class RefreshResponseValue(univ.Sequence):  # type: ignore[misc]
     componentType = namedtype.NamedTypes(
       namedtype.NamedType(
         'responseTtl',
@@ -68,7 +73,7 @@ class RefreshResponse(ExtendedResponse):
       )
     )
 
-  def decodeResponseValue(self,value):
+  def decodeResponseValue(self, value: bytes) -> int:
     respValue,_ = decoder.decode(value,asn1Spec=self.RefreshResponseValue())
     self.responseTtl = int(respValue.getComponentByName('responseTtl'))
     return self.responseTtl
