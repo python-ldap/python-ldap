@@ -6,10 +6,13 @@ See https://www.python-ldap.org/ for details.
 Compatibility:
 - Tested with Python 2.0+
 """
+from __future__ import annotations
 
-from ldap import __version__
+from ldap.pkginfo import __version__
 
 from ldap.functions import strf_secs
+
+from typing import Iterable
 
 import time
 
@@ -46,7 +49,7 @@ def escape_filter_chars(assertion_value: str, escape_mode: int = 0) -> str:
   return s
 
 
-def filter_format(filter_template,assertion_values):
+def filter_format(filter_template: str, assertion_values: Iterable[str]) -> str:
   """
   filter_template
         String containing %s as placeholder for assertion values.

@@ -23,20 +23,20 @@ __all__ = [
 ]
 
 
-class SyncUUID(univ.OctetString):
+class SyncUUID(univ.OctetString):  # type: ignore
     """
     syncUUID ::= OCTET STRING (SIZE(16))
     """
     subtypeSpec = constraint.ValueSizeConstraint(16, 16)
 
 
-class SyncCookie(univ.OctetString):
+class SyncCookie(univ.OctetString):  # type: ignore
     """
     syncCookie ::= OCTET STRING
     """
 
 
-class SyncRequestMode(univ.Enumerated):
+class SyncRequestMode(univ.Enumerated):  # type: ignore
     """
            mode ENUMERATED {
                -- 0 unused
@@ -52,7 +52,7 @@ class SyncRequestMode(univ.Enumerated):
     subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(1, 3)
 
 
-class SyncRequestValue(univ.Sequence):
+class SyncRequestValue(univ.Sequence):  # type: ignore
     """
        syncRequestValue ::= SEQUENCE {
            mode ENUMERATED {
@@ -109,7 +109,7 @@ class SyncRequestControl(RequestControl):
         return encoder.encode(rcv)  # type: ignore
 
 
-class SyncStateOp(univ.Enumerated):
+class SyncStateOp(univ.Enumerated):  # type: ignore
     """
            state ENUMERATED {
                present (0),

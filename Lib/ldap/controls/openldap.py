@@ -11,7 +11,7 @@ from ldap.controls import ValueLessRequestControl,ResponseControl
 from pyasn1.type import univ
 from pyasn1.codec.ber import decoder
 
-from typing import Tuple
+from typing import List, Tuple
 
 __all__ = [
   'SearchNoOpControl',
@@ -31,7 +31,7 @@ class SearchNoOpControl(ValueLessRequestControl,ResponseControl):
   def __init__(self, criticality: bool = False) -> None:
     self.criticality = criticality
 
-  class SearchNoOpControlValue(univ.Sequence):
+  class SearchNoOpControlValue(univ.Sequence):  # type: ignore
     pass
 
   def decodeControlValue(self, encodedControlValue: bytes) -> None:
@@ -80,8 +80,8 @@ class SearchNoOpMixIn(ldap.ldapobject.SimpleLDAPObject):
     else:
       noop_srch_ctrl = [
         c
-        for c in search_response_ctrls
-        if c.controlType==SearchNoOpControl.controlType
+        for c in search_response_ctrls or []
+        if isinstance(c, SearchNoOpControl)
       ]
       if noop_srch_ctrl:
         return noop_srch_ctrl[0].numSearchResults,noop_srch_ctrl[0].numSearchContinuations

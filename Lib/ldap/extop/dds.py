@@ -18,7 +18,7 @@ class RefreshRequest(ExtendedRequest):
   requestName = '1.3.6.1.4.1.1466.101.119.1'
   defaultRequestTtl = 86400
 
-  class RefreshRequestValue(univ.Sequence):
+  class RefreshRequestValue(univ.Sequence):  # type: ignore
     componentType = namedtype.NamedTypes(
       namedtype.NamedType(
         'entryName',
@@ -63,7 +63,7 @@ class RefreshRequest(ExtendedRequest):
 class RefreshResponse(ExtendedResponse):
   responseName = '1.3.6.1.4.1.1466.101.119.1'
 
-  class RefreshResponseValue(univ.Sequence):
+  class RefreshResponseValue(univ.Sequence):  # type: ignore
     componentType = namedtype.NamedTypes(
       namedtype.NamedType(
         'responseTtl',
