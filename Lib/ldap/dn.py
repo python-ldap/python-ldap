@@ -3,6 +3,8 @@ dn.py - misc stuff for handling distinguished names (see RFC 4514)
 
 See https://www.python-ldap.org/ for details.
 """
+from __future__ import annotations
+
 from ldap.pkginfo import __version__
 
 import _ldap
@@ -11,8 +13,10 @@ assert _ldap.__version__==__version__, \
 
 import ldap.functions
 
+from typing import List, Tuple
 
-def escape_dn_chars(s):
+
+def escape_dn_chars(s: str) -> str:
   """
   Escape all DN special characters found in s
   with a back-slash (see RFC 4514, section 2.4)
@@ -34,10 +38,17 @@ def escape_dn_chars(s):
   return s
 
 
-def str2dn(dn,flags=0):
+def str2dn(dn: str, flags: int = 0) -> List[List[Tuple[str, str, int]]]:
   """
   This function takes a DN as string as parameter and returns
   a decomposed DN. It's the inverse to dn2str().
+
+  The decomposed DN is a list of sublists, each sublist containing one or
+  more tuples with the attribute type, attribute value a flag indicating the
+  encoding of the value.
+
+  For example, str2dn("dc=example+ou=example,dc=com") would yield:
+  [[('dc', 'example', 1), ('ou', 'example', 1)], [('dc', 'com', 1)]]
 
   flags describes the format of the dn
 
@@ -45,10 +56,10 @@ def str2dn(dn,flags=0):
   """
   if not dn:
     return []
-  return ldap.functions._ldap_function_call(None,_ldap.str2dn,dn,flags)
+  return ldap.functions._ldap_function_call(None,_ldap.str2dn,dn,flags)  # type: ignore
 
 
-def dn2str(dn):
+def dn2str(dn: List[List[Tuple[str, str, int]]]) -> str:
   """
   This function takes a decomposed DN as parameter and returns
   a single string. It's the inverse to str2dn() but will always
@@ -61,7 +72,7 @@ def dn2str(dn):
     for rdn in dn
   ])
 
-def explode_dn(dn, notypes=False, flags=0):
+def explode_dn(dn: str, notypes: bool = False, flags: int = 0) -> List[str]:
   """
   explode_dn(dn [, notypes=False [, flags=0]]) -> list
 
@@ -87,7 +98,7 @@ def explode_dn(dn, notypes=False, flags=0):
   return rdn_list
 
 
-def explode_rdn(rdn, notypes=False, flags=0):
+def explode_rdn(rdn: str, notypes: bool = False, flags: int = 0) -> List[str]:
   """
   explode_rdn(rdn [, notypes=0 [, flags=0]]) -> list
 
@@ -105,7 +116,7 @@ def explode_rdn(rdn, notypes=False, flags=0):
     return ['='.join((atype,escape_dn_chars(avalue or ''))) for atype,avalue,dummy in rdn_decomp]
 
 
-def is_dn(s,flags=0):
+def is_dn(s: str, flags: int = 0) -> bool:
   """
   Returns True if `s' can be parsed by ldap.dn.str2dn() as a
   distinguished host_name (DN), otherwise False is returned.

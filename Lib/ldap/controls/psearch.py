@@ -4,6 +4,7 @@ ldap.controls.psearch - classes for Persistent Search Control
 
 See https://www.python-ldap.org/ for project details.
 """
+from __future__ import annotations
 
 __all__ = [
   'PersistentSearchControl',
@@ -20,6 +21,9 @@ from ldap.controls import RequestControl,ResponseControl,KNOWN_RESPONSE_CONTROLS
 from pyasn1.type import namedtype,namedval,univ,constraint
 from pyasn1.codec.ber import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPDN
+
+from typing import Dict, List, Tuple
+
 
 #---------------------------------------------------------------------------
 # Constants and classes for Persistent Search Control
@@ -57,23 +61,28 @@ class PersistentSearchControl(RequestControl):
 
   controlType = "2.16.840.1.113730.3.4.3"
 
-  def __init__(self,criticality=True,changeTypes=None,changesOnly=False,returnECs=True):
+  def __init__(
+    self,
+    criticality: bool = True,
+    changeTypes: List[str] | None = None,
+    changesOnly: bool = False,
+    returnECs: bool = True
+  ) -> None:
     self.criticality,self.changesOnly,self.returnECs = \
       criticality,changesOnly,returnECs
-    self.changeTypes = changeTypes or CHANGE_TYPES_INT.values()
+    self.changeTypes = changeTypes or CHANGE_TYPES_INT.keys()
 
-  def encodeControlValue(self):
-    if not type(self.changeTypes)==type(0):
-      # Assume a sequence type of integers to be OR-ed
-      changeTypes_int = 0
-      for ct in self.changeTypes:
-        changeTypes_int = changeTypes_int|CHANGE_TYPES_INT.get(ct,ct)
-      self.changeTypes = changeTypes_int
+  def encodeControlValue(self) -> bytes:
+    # Assume a sequence type of names of integers to be OR-ed
+    changeTypes_int = 0
+    for ct in self.changeTypes:
+      changeTypes_int |= CHANGE_TYPES_INT.get(ct, 0)
+
     p = self.PersistentSearchControlValue()
-    p.setComponentByName('changeTypes',univ.Integer(self.changeTypes))
+    p.setComponentByName('changeTypes',univ.Integer(changeTypes_int))
     p.setComponentByName('changesOnly',univ.Boolean(self.changesOnly))
     p.setComponentByName('returnECs',univ.Boolean(self.returnECs))
-    return encoder.encode(p)
+    return encoder.encode(p)  # type: ignore
 
 
 class ChangeType(univ.Enumerated):
@@ -111,19 +120,18 @@ class EntryChangeNotificationControl(ResponseControl):
 
   controlType = "2.16.840.1.113730.3.4.7"
 
-  def decodeControlValue(self,encodedControlValue):
+  def decodeControlValue(self, encodedControlValue: bytes) -> None:
     ecncValue,_ = decoder.decode(encodedControlValue,asn1Spec=EntryChangeNotificationValue())
     self.changeType = int(ecncValue.getComponentByName('changeType'))
     previousDN = ecncValue.getComponentByName('previousDN')
     if previousDN.hasValue():
-      self.previousDN = str(previousDN)
+      self.previousDN: str | None = str(previousDN)
     else:
       self.previousDN = None
     changeNumber = ecncValue.getComponentByName('changeNumber')
     if changeNumber.hasValue():
-      self.changeNumber = int(changeNumber)
+      self.changeNumber: int | None = int(changeNumber)
     else:
       self.changeNumber = None
-    return (self.changeType,self.previousDN,self.changeNumber)
 
 KNOWN_RESPONSE_CONTROLS[EntryChangeNotificationControl.controlType] = EntryChangeNotificationControl

@@ -3,6 +3,7 @@ ldap.schema.subentry -  subschema subentry handling
 
 See https://www.python-ldap.org/ for details.
 """
+from __future__ import annotations
 
 import copy
 from urllib.request import urlopen
@@ -12,6 +13,8 @@ from ldap.schema.models import *
 
 import ldapurl
 import ldif
+
+from ldap_types import *
 
 
 SCHEMA_CLASS_MAPPING = ldap.cidict.cidict()
@@ -31,19 +34,19 @@ class SubschemaError(ValueError):
 
 class OIDNotUnique(SubschemaError):
 
-  def __init__(self,desc):
+  def __init__(self, desc: str) -> None:
     self.desc = desc
 
-  def __str__(self):
+  def __str__(self) -> str:
     return 'OID not unique for %s' % (self.desc)
 
 
 class NameNotUnique(SubschemaError):
 
-  def __init__(self,desc):
+  def __init__(self, desc: str) -> None:
     self.desc = desc
 
-  def __str__(self):
+  def __str__(self) -> str:
     return 'NAME not unique for %s' % (self.desc)
 
 
@@ -79,10 +82,15 @@ class SubSchema:
     List of NAMEs used at least twice in the subschema for the same schema element
   """
 
-  def __init__(self,sub_schema_sub_entry,check_uniqueness=1):
+  def __init__(
+    self,
+    sub_schema_sub_entry: LDAPEntryDict,
+    check_uniqueness: int = 1,
+  ) -> None:
 
     # Initialize all dictionaries
     self.name2oid = {}
+    #self.sed: Dict[LDAPSchemaElementClass, Dict[str,  = {}
     self.sed = {}
     self.non_unique_oids = {}
     self.non_unique_names = {}
@@ -203,7 +211,12 @@ class SubSchema:
     return tree
 
 
-  def getoid(self,se_class,nameoroid,raise_keyerror=0):
+  def getoid(
+    self,
+    se_class: Type[ObjectClass] | Type[AttributeType],
+    nameoroid: str,
+    raise_keyerror: int = 0,
+  ) -> str:
     """
     Get an OID by name or OID
     """

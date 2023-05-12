@@ -4,6 +4,7 @@ ldap.controls.paged - classes for Simple Paged control
 
 See https://www.python-ldap.org/ for project details.
 """
+from __future__ import annotations
 
 __all__ = [
   'SimplePagedResultsControl'
@@ -22,6 +23,7 @@ from pyasn1_modules.rfc2251 import LDAPString
 class PagedResultsControlValue(univ.Sequence):
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('size',univ.Integer()),
+    # FIXME: This should be univ.OctetString, not LDAPString()?
     namedtype.NamedType('cookie',LDAPString()),
   )
 
@@ -29,18 +31,29 @@ class PagedResultsControlValue(univ.Sequence):
 class SimplePagedResultsControl(RequestControl,ResponseControl):
   controlType = '1.2.840.113556.1.4.319'
 
-  def __init__(self,criticality=False,size=10,cookie=''):
+  def __init__(
+    self,
+    criticality: bool = False,
+    size: int = 10,
+    cookie: str | bytes = '',
+  ) -> None:
     self.criticality = criticality
     self.size = size
-    self.cookie = cookie or ''
 
-  def encodeControlValue(self):
+    if cookie is None:
+        cookie = b''
+    elif isinstance(cookie, str):
+        self.cookie = cookie.encode('utf-8')
+    else:
+        self.cookie = cookie
+
+  def encodeControlValue(self) -> bytes:
     pc = PagedResultsControlValue()
     pc.setComponentByName('size',univ.Integer(self.size))
     pc.setComponentByName('cookie',LDAPString(self.cookie))
-    return encoder.encode(pc)
+    return encoder.encode(pc)  # type: ignore
 
-  def decodeControlValue(self,encodedControlValue):
+  def decodeControlValue(self, encodedControlValue: bytes) -> None:
     decodedValue,_ = decoder.decode(encodedControlValue,asn1Spec=PagedResultsControlValue())
     self.size = int(decodedValue.getComponentByName('size'))
     self.cookie = bytes(decodedValue.getComponentByName('cookie'))

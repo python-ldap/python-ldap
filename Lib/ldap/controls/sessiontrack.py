@@ -4,6 +4,7 @@ ldap.controls.sessiontrack - class for session tracking control
 
 See https://www.python-ldap.org/ for project details.
 """
+from __future__ import annotations
 
 from ldap.controls import RequestControl
 
@@ -46,16 +47,22 @@ class SessionTrackingControl(RequestControl):
 
   controlType = SESSION_TRACKING_CONTROL_OID
 
-  def __init__(self,sessionSourceIp,sessionSourceName,formatOID,sessionTrackingIdentifier):
+  def __init__(
+    self,
+    sessionSourceIp: str,
+    sessionSourceName: str,
+    formatOID: str,
+    sessionTrackingIdentifier:str,
+  ) -> None:
     # criticality MUST be false for this control
     self.criticality = False
     self.sessionSourceIp,self.sessionSourceName,self.formatOID,self.sessionTrackingIdentifier = \
       sessionSourceIp,sessionSourceName,formatOID,sessionTrackingIdentifier
 
-  def encodeControlValue(self):
+  def encodeControlValue(self) -> bytes:
     s = self.SessionIdentifierControlValue()
     s.setComponentByName('sessionSourceIp',LDAPString(self.sessionSourceIp))
     s.setComponentByName('sessionSourceName',LDAPString(self.sessionSourceName))
     s.setComponentByName('formatOID',LDAPOID(self.formatOID))
     s.setComponentByName('sessionTrackingIdentifier',LDAPString(self.sessionTrackingIdentifier))
-    return encoder.encode(s)
+    return encoder.encode(s)  # type: ignore

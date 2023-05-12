@@ -4,6 +4,7 @@ ldap.controls.readentry - classes for the Read Entry controls
 
 See https://www.python-ldap.org/ for project details.
 """
+from __future__ import annotations
 
 import ldap
 
@@ -12,6 +13,7 @@ from ldap.controls import LDAPControl,KNOWN_RESPONSE_CONTROLS
 
 from pyasn1_modules.rfc2251 import AttributeDescriptionList,SearchResultEntry
 
+from typing import Dict, List
 
 class ReadEntryControl(LDAPControl):
   """
@@ -28,16 +30,22 @@ class ReadEntryControl(LDAPControl):
       dictionary holding the LDAP entry
   """
 
-  def __init__(self,criticality=False,attrList=None):
-    self.criticality,self.attrList,self.entry = criticality,attrList or [],None
+  def __init__(
+    self,
+    criticality: bool = False,
+    attrList: List[str] | None = None
+  ) -> None:
+    self.criticality = criticality
+    self.attrList = attrList or []
+    self.entry: Dict[str, List[bytes]] | None = None
 
-  def encodeControlValue(self):
+  def encodeControlValue(self) -> bytes:
     attributeSelection = AttributeDescriptionList()
     for i in range(len(self.attrList)):
       attributeSelection.setComponentByPosition(i,self.attrList[i])
-    return encoder.encode(attributeSelection)
+    return encoder.encode(attributeSelection)  # type: ignore
 
-  def decodeControlValue(self,encodedControlValue):
+  def decodeControlValue(self, encodedControlValue: bytes) -> None:
     decodedEntry,_ = decoder.decode(encodedControlValue,asn1Spec=SearchResultEntry())
     self.dn = str(decodedEntry[0])
     self.entry = {}

@@ -14,7 +14,7 @@ from ldap.functions import strf_secs
 import time
 
 
-def escape_filter_chars(assertion_value,escape_mode=0):
+def escape_filter_chars(assertion_value: str, escape_mode: int = 0) -> str:
   """
   Replace all special characters found in assertion_value
   by quoted notation.
@@ -58,11 +58,11 @@ def filter_format(filter_template,assertion_values):
 
 
 def time_span_filter(
-        filterstr='',
-        from_timestamp=0,
-        until_timestamp=None,
-        delta_attr='modifyTimestamp',
-    ):
+        filterstr: str = '',
+        from_timestamp: int | float = 0,
+        until_timestamp: int | float | None = None,
+        delta_attr: str = 'modifyTimestamp',
+    ) -> str:
     """
     If last_run_timestr is non-zero filterstr will be extended
     """

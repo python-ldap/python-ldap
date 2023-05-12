@@ -4,6 +4,7 @@ ldap.controls.sss - classes for Server Side Sorting
 
 See https://www.python-ldap.org/ for project details.
 """
+from __future__ import annotations
 
 __all__ = [
     'SSSRequestControl',
@@ -21,6 +22,7 @@ from ldap.controls import (RequestControl, ResponseControl,
 from pyasn1.type import univ, namedtype, tag, namedval, constraint
 from pyasn1.codec.ber import encoder, decoder
 
+from typing import List
 
 #    SortKeyList ::= SEQUENCE OF SEQUENCE {
 #                     attributeType   AttributeDescription,
@@ -53,18 +55,18 @@ class SSSRequestControl(RequestControl):
 
     def __init__(
         self,
-        criticality=False,
-        ordering_rules=None,
+        criticality: bool = False,
+        ordering_rules: List[str] | str = [],
     ):
         RequestControl.__init__(self,self.controlType,criticality)
         self.ordering_rules = ordering_rules
         if isinstance(ordering_rules, str):
             ordering_rules = [ordering_rules]
         for rule in ordering_rules:
-            rule = rule.split(':')
-            assert len(rule) < 3, 'syntax for ordering rule: [-]<attribute-type>[:ordering-rule]'
+            rule_parts = rule.split(':')
+            assert len(rule_parts) < 3, 'syntax for ordering rule: [-]<attribute-type>[:ordering-rule]'
 
-    def asn1(self):
+    def asn1(self) -> SortKeyListType:
         p = SortKeyListType()
         for i, rule in enumerate(self.ordering_rules):
             q = SortKeyType()
@@ -83,8 +85,8 @@ class SSSRequestControl(RequestControl):
             p.setComponentByPosition(i, q)
         return p
 
-    def encodeControlValue(self):
-        return encoder.encode(self.asn1())
+    def encodeControlValue(self) -> bytes:
+        return encoder.encode(self.asn1())  # type: ignore
 
 
 class SortResultType(univ.Sequence):
@@ -114,10 +116,10 @@ class SortResultType(univ.Sequence):
 class SSSResponseControl(ResponseControl):
     controlType = '1.2.840.113556.1.4.474'
 
-    def __init__(self,criticality=False):
+    def __init__(self, criticality: bool = False):
         ResponseControl.__init__(self,self.controlType,criticality)
 
-    def decodeControlValue(self, encoded):
+    def decodeControlValue(self, encoded: bytes) -> None:
         p, rest = decoder.decode(encoded, asn1Spec=SortResultType())
         assert not rest, 'all data could not be decoded'
         sort_result = p.getComponentByName('sortResult')

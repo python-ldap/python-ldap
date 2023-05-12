@@ -15,7 +15,7 @@ from pyasn1.codec.der import decoder
 class PasswordModifyResponse(ExtendedResponse):
     responseName = None
 
-    class PasswordModifyResponseValue(univ.Sequence):  # type: ignore[misc]
+    class PasswordModifyResponseValue(univ.Sequence):
         componentType = namedtype.NamedTypes(
             namedtype.OptionalNamedType(
                 'genPasswd',

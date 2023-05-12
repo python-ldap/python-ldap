@@ -3,8 +3,12 @@ ldap.schema.tokenizer - Low-level parsing functions for schema element strings
 
 See https://www.python-ldap.org/ for details.
 """
+from __future__ import annotations
 
 import re
+
+from typing import Dict, List
+from ldap.schema import LDAPTokenDict, LDAPTokenDictValue
 
 TOKENS_FINDALL = re.compile(
     r"(\()"           # opening parenthesis
@@ -24,7 +28,7 @@ TOKENS_FINDALL = re.compile(
 UNESCAPE_PATTERN = re.compile(r"\\(.)")
 
 
-def split_tokens(s):
+def split_tokens(s: str) -> List[str]:
     """
     Returns list of syntax elements with quotes and spaces stripped.
     """
@@ -50,12 +54,12 @@ def split_tokens(s):
         raise ValueError("Unbalanced parenthesis in %r" % (s))
     return parts
 
-def extract_tokens(l,known_tokens):
+def extract_tokens(l: List[str], known_tokens: LDAPTokenDict) -> LDAPTokenDict:
   """
   Returns dictionary of known tokens with all values
   """
   assert l[0].strip()=="(" and l[-1].strip()==")",ValueError(l)
-  result = {}
+  result: Dict[str, LDAPTokenDictValue] = {}
   result.update(known_tokens)
   i = 0
   l_len = len(l)

@@ -13,9 +13,8 @@ import warnings
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
-from typing import TYPE_CHECKING, BinaryIO, Dict, List, TextIO, Tuple, Sequence, cast
-if TYPE_CHECKING:
-  from typing_extensions import TypeAlias
+from ldap_types import *
+from typing import BinaryIO, Dict, List, TextIO, Tuple, cast
 
 __version__ = '3.4.3'
 
@@ -31,27 +30,6 @@ __all__ = [
   'LDIFRecordList',
   'LDIFCopy',
 ]
-
-LDAPModListAddition: TypeAlias = "Tuple[str, List[bytes]]"
-"""The type of an addition entry in a modlist."""
-
-LDAPModListModify: TypeAlias = "Tuple[int, str, List[bytes] | None]"
-"""The type of a modification entry in a modlist."""
-
-LDAPModListEntry: TypeAlias = "LDAPModListAddition | LDAPModListModify"
-"""The type of a single entry in a modlist."""
-
-LDAPModList: TypeAlias = "Sequence[LDAPModListEntry]"
-"""The type of a modlist."""
-
-LDAPEntryDict: TypeAlias = "Dict[str, List[bytes]]"
-"""The type used to store attribute-value mappings for a given LDAP entry (attribute name, list of binary values)."""
-
-LDAPControl: TypeAlias = "Tuple[str, str, str | None]"
-"""The type used to store controls (type, criticality, value)."""
-
-LDAPControls: TypeAlias = "List[LDAPControl]"
-"""The type used to store control lists."""
 
 attrtype_pattern = r'[\w;.-]+(;[\w_-]+)*'
 attrvalue_pattern = r'(([^,]|\\,)+|".*?")'
@@ -203,12 +181,12 @@ class LDIFWriter:
     for mod in modlist:
       # Note: the following order will give mod_vals the right type
       if mod_len==3:
-        mod = cast(LDAPModListModify, mod)
+        mod = cast(LDAPModListModifyEntry, mod)
         mod_op,mod_type,mod_vals = mod
         self._unparseAttrTypeandValue(MOD_OP_STR[mod_op],
                                       mod_type.encode('ascii'))
       elif mod_len==2:
-        mod = cast(LDAPModListAddition, mod)
+        mod = cast(LDAPModListAddEntry, mod)
         mod_type,mod_vals = mod
       else:
         raise ValueError("Subsequent modlist item of wrong length")

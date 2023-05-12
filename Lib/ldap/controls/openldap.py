@@ -3,6 +3,7 @@ ldap.controls.openldap - classes for OpenLDAP-specific controls
 
 See https://www.python-ldap.org/ for project details.
 """
+from __future__ import annotations
 
 import ldap.controls
 from ldap.controls import ValueLessRequestControl,ResponseControl
@@ -10,6 +11,7 @@ from ldap.controls import ValueLessRequestControl,ResponseControl
 from pyasn1.type import univ
 from pyasn1.codec.ber import decoder
 
+from typing import Tuple
 
 __all__ = [
   'SearchNoOpControl',
@@ -26,13 +28,13 @@ class SearchNoOpControl(ValueLessRequestControl,ResponseControl):
   """
   controlType = '1.3.6.1.4.1.4203.666.5.18'
 
-  def __init__(self,criticality=False):
+  def __init__(self, criticality: bool = False) -> None:
     self.criticality = criticality
 
   class SearchNoOpControlValue(univ.Sequence):
     pass
 
-  def decodeControlValue(self,encodedControlValue):
+  def decodeControlValue(self, encodedControlValue: bytes) -> None:
     decodedValue,_ = decoder.decode(encodedControlValue,asn1Spec=self.SearchNoOpControlValue())
     self.resultCode = int(decodedValue[0])
     self.numSearchResults = int(decodedValue[1])
@@ -42,7 +44,7 @@ class SearchNoOpControl(ValueLessRequestControl,ResponseControl):
 ldap.controls.KNOWN_RESPONSE_CONTROLS[SearchNoOpControl.controlType] = SearchNoOpControl
 
 
-class SearchNoOpMixIn:
+class SearchNoOpMixIn(ldap.ldapobject.SimpleLDAPObject):
   """
   Mix-in class to be used with class LDAPObject and friends.
 
@@ -50,7 +52,13 @@ class SearchNoOpMixIn:
   for easily using the no-op search control.
   """
 
-  def noop_search_st(self,base,scope=ldap.SCOPE_SUBTREE,filterstr='(objectClass=*)',timeout=-1):
+  def noop_search_st(
+    self,
+    base: str,
+    scope: int = ldap.SCOPE_SUBTREE,
+    filterstr: str = '(objectClass=*)',
+    timeout: int = -1,
+  ) -> Tuple[int, int] | Tuple[None, None]:
     try:
       msg_id = self.search_ext(
         base,
