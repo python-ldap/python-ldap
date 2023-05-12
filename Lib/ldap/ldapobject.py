@@ -9,10 +9,10 @@ from os import strerror
 
 from ldap.pkginfo import __version__, __author__, __license__
 
-from ldap.controls import RequestControl
+from ldap.controls import RequestControl, ResponseControl
 
 from ldap_types import *
-from typing import Any, Callable, BinaryIO, List, Sequence, TextIO, Tuple, Type
+from typing import Any, BinaryIO, Callable, Dict, List, Sequence, TextIO, Tuple, Type
 
 __all__ = [
   'LDAPObject',
@@ -223,7 +223,7 @@ class SimpleLDAPObject:
         In opposite to abandon() this extended operation gets an result from
         the server and thus should be preferred if the server supports it.
     """
-    return self._ldap_call(self._l.cancel,cancelid,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    return self._ldap_call(self._l.cancel,cancelid,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))  # type: ignore
 
   def cancel_s(
     self,
@@ -236,7 +236,7 @@ class SimpleLDAPObject:
       res = self.result(msgid,all=1,timeout=self.timeout)
     except (ldap.CANCELLED,ldap.SUCCESS):
       res = None
-    return res
+    return res  # type: ignore
 
   def add_ext(
     self,
@@ -252,7 +252,7 @@ class SimpleLDAPObject:
         The parameter modlist is similar to the one passed to modify(),
         except that no operation integer need be included in the tuples.
     """
-    return self._ldap_call(self._l.add_ext,dn,modlist,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    return self._ldap_call(self._l.add_ext,dn,modlist,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))  # type: ignore
 
   def add_ext_s(
     self,
@@ -297,7 +297,7 @@ class SimpleLDAPObject:
     """
     simple_bind([who=''[,cred=''[,serverctrls=None[,clientctrls=None]]]]) -> int
     """
-    return self._ldap_call(self._l.simple_bind,who,cred,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    return self._ldap_call(self._l.simple_bind,who,cred,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))  # type: ignore
 
   def simple_bind_s(
     self,
@@ -336,7 +336,7 @@ class SimpleLDAPObject:
     bind_s(who, cred, method) -> None
     """
     msgid = self.bind(who,cred,method)
-    return self.result(msgid,all=1,timeout=self.timeout)
+    return self.result(msgid,all=1,timeout=self.timeout)  # type: ignore
 
   def sasl_interactive_bind_s(
     self,
@@ -349,7 +349,7 @@ class SimpleLDAPObject:
     """
     sasl_interactive_bind_s(who, auth [,serverctrls=None[,clientctrls=None[,sasl_flags=ldap.SASL_QUIET]]]) -> None
     """
-    return self._ldap_call(self._l.sasl_interactive_bind_s,who,auth,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls),sasl_flags)
+    return self._ldap_call(self._l.sasl_interactive_bind_s,who,auth,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls),sasl_flags)  # type: ignore
 
   def sasl_non_interactive_bind_s(
     self,
@@ -403,7 +403,7 @@ class SimpleLDAPObject:
     """
     sasl_bind_s(dn, mechanism, cred [,serverctrls=None[,clientctrls=None]]) -> int|str
     """
-    return self._ldap_call(self._l.sasl_bind_s,dn,mechanism,cred,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    return self._ldap_call(self._l.sasl_bind_s,dn,mechanism,cred,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))  # type: ignore
 
   def compare_ext(
     self,
@@ -430,7 +430,7 @@ class SimpleLDAPObject:
         A design bug in the library prevents value from containing
         nul characters.
     """
-    return self._ldap_call(self._l.compare_ext,dn,attr,value,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    return self._ldap_call(self._l.compare_ext,dn,attr,value,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))  # type: ignore
 
   def compare_ext_s(
     self,
@@ -482,7 +482,7 @@ class SimpleLDAPObject:
         form returns the message id of the initiated request, and the
         result can be obtained from a subsequent call to result().
     """
-    return self._ldap_call(self._l.delete_ext,dn,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    return self._ldap_call(self._l.delete_ext,dn,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))  # type: ignore
 
   def delete_ext_s(
     self,
@@ -498,7 +498,7 @@ class SimpleLDAPObject:
     return self.delete_ext(dn,None,None)
 
   def delete_s(self, dn: str) -> None:
-    return self.delete_ext_s(dn,None,None)
+    self.delete_ext_s(dn,None,None)
 
   def extop(
     self,
@@ -519,17 +519,17 @@ class SimpleLDAPObject:
         ldap.extop.ExtendedResponse this class is used to return an
         object of this class instead of a raw BER value in respvalue.
     """
-    return self._ldap_call(self._l.extop,extreq.requestName,extreq.encodedRequestValue(),RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    return self._ldap_call(self._l.extop,extreq.requestName,extreq.encodedRequestValue(),RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))  # type: ignore
 
   def extop_result(
     self,
     msgid: int = ldap.RES_ANY,
     all: int = 1,
     timeout: int | None = None,
-  ) -> Tuple[str, bytes]:
+  ) -> Tuple[str | None, bytes]:
     # FIXME: The timeout argument isn't used?
-    resulttype,msg,msgid,respctrls,respoid,respvalue = self.result4(msgid,all=1,timeout=self.timeout,add_ctrls=1,add_intermediates=1,add_extop=1)
-    return (respoid,respvalue)
+    resulttype,msg,rmsgid,respctrls,respoid,respvalue = self.result4(msgid,all=1,timeout=self.timeout,add_ctrls=1,add_intermediates=1,add_extop=1)
+    return (respoid,respvalue)  # type: ignore
 
   def extop_s(
     self,
@@ -537,7 +537,7 @@ class SimpleLDAPObject:
     serverctrls: List[RequestControl] | None = None,
     clientctrls: List[RequestControl] | None = None,
     extop_resp_class: Type[ldap.extop.ExtendedResponse] | None = None,
-  ) -> Tuple[str, bytes] | ldap.extop.ExtendedResponse:
+  ) -> Tuple[str | None, bytes] | ldap.extop.ExtendedResponse:
     msgid = self.extop(extreq,serverctrls,clientctrls)
     res = self.extop_result(msgid,all=1,timeout=self.timeout)
     if extop_resp_class:
@@ -558,7 +558,7 @@ class SimpleLDAPObject:
     """
     modify_ext(dn, modlist[,serverctrls=None[,clientctrls=None]]) -> int
     """
-    return self._ldap_call(self._l.modify_ext,dn,modlist,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    return self._ldap_call(self._l.modify_ext,dn,modlist,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))  # type: ignore
 
   def modify_ext_s(
     self,
@@ -603,7 +603,7 @@ class SimpleLDAPObject:
     dn: str,
     modlist: LDAPModifyModList,
   ) -> None:
-    return self.modify_ext_s(dn,modlist,None,None)
+    self.modify_ext_s(dn,modlist,None,None)
 
   def modrdn(
     self,
@@ -642,7 +642,7 @@ class SimpleLDAPObject:
     serverctrls: List[RequestControl] | None = None,
     clientctrls: List[RequestControl] | None = None,
   ) -> int:
-    return self._ldap_call(self._l.passwd,user,oldpw,newpw,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    return self._ldap_call(self._l.passwd,user,oldpw,newpw,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))  # type: ignore
 
   def passwd_s(
     self,
@@ -652,16 +652,17 @@ class SimpleLDAPObject:
     serverctrls: List[RequestControl] | None = None,
     clientctrls: List[RequestControl] | None = None,
     extract_newpw: bool = False,
-  ) -> Tuple[str, bytes]:
+  ) -> Tuple[str, bytes | PasswordModifyResponse]:
     msgid = self.passwd(user, oldpw, newpw, serverctrls, clientctrls)
     respoid, respvalue = self.extop_result(msgid, all=1, timeout=self.timeout)
 
     if respoid != PasswordModifyResponse.responseName:
       raise ldap.PROTOCOL_ERROR("Unexpected OID %s in extended response!" % respoid)
-    if extract_newpw and respvalue:
-      respvalue = PasswordModifyResponse(PasswordModifyResponse.responseName, respvalue)
 
-    return respoid, respvalue
+    if extract_newpw and respvalue:
+      return respoid, PasswordModifyResponse(PasswordModifyResponse.responseName, respvalue)
+    else:
+      return respoid, respvalue
 
   def rename(
     self,
@@ -686,7 +687,7 @@ class SimpleLDAPObject:
         This actually corresponds to the rename* routines in the
         LDAP-EXT C API library.
     """
-    return self._ldap_call(self._l.rename,dn,newrdn,newsuperior,delold,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    return self._ldap_call(self._l.rename,dn,newrdn,newsuperior,delold,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))  # type: ignore
 
   def rename_s(
     self,
@@ -699,7 +700,7 @@ class SimpleLDAPObject:
   ) -> None:
     msgid = self.rename(dn,newrdn,newsuperior,delold,serverctrls,clientctrls)
     resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid,all=1,timeout=self.timeout)
-    return resp_type, resp_data, resp_msgid, resp_ctrls
+    #return resp_type, resp_data, resp_msgid, resp_ctrls
 
   def result(
     self,
@@ -774,7 +775,7 @@ class SimpleLDAPObject:
     msgid: int = ldap.RES_ANY,
     all: int = 1,
     timeout: int | None = None,
-    resp_ctrl_classes: List[Type[ResponseControl]] | None = None,
+    resp_ctrl_classes: Dict[str, Type[ResponseControl]] | None = None,
   ) -> Tuple[int | None, Any | None, int | None, List[ResponseControl] | None]:
     resp_type, resp_data, resp_msgid, decoded_resp_ctrls, retoid, retval = self.result4(
       msgid,all,timeout,
@@ -791,7 +792,7 @@ class SimpleLDAPObject:
     add_ctrls: int = 0,
     add_intermediates: int = 0,
     add_extop: int = 0,
-    resp_ctrl_classes: List[Type[ResponseControl]] | None = None,
+    resp_ctrl_classes: Dict[str, Type[ResponseControl]] | None = None,
   ) -> Tuple[int | None, Any | None, int | None, List[ResponseControl] | None, Any | None, Any | None]:
     if timeout is None:
       timeout = self.timeout
@@ -867,7 +868,7 @@ class SimpleLDAPObject:
     """
     if filterstr is None:
       filterstr = '(objectClass=*)'
-    return self._ldap_call(
+    return self._ldap_call(  # type: ignore
       self._l.search_ext,
       base,scope,filterstr,
       attrlist,attrsonly,
@@ -889,7 +890,7 @@ class SimpleLDAPObject:
     sizelimit: int = 0,
   ) -> List[Tuple[str, LDAPEntryDict]]:
     msgid = self.search_ext(base,scope,filterstr,attrlist,attrsonly,serverctrls,clientctrls,timeout,sizelimit)
-    return self.result(msgid,all=1,timeout=timeout)[1]
+    return self.result(msgid,all=1,timeout=timeout)[1]  # type: ignore
 
   def search(
     self,
@@ -929,7 +930,7 @@ class SimpleLDAPObject:
     set to VERSION3 before calling start_tls_s.
     If TLS could not be started an exception will be raised.
     """
-    return self._ldap_call(self._l.start_tls_s)
+    self._ldap_call(self._l.start_tls_s)
 
   def unbind_ext(
     self,
@@ -955,7 +956,7 @@ class SimpleLDAPObject:
       del self._l
     except AttributeError:
       pass
-    return res
+    return res  # type: ignore
 
   def unbind_ext_s(
     self,
@@ -972,7 +973,6 @@ class SimpleLDAPObject:
         self._trace_file.flush()
       except AttributeError:
         pass
-    return result
 
   def unbind(self) -> int:
     return self.unbind_ext(None,None)
@@ -985,7 +985,7 @@ class SimpleLDAPObject:
     serverctrls: List[RequestControl] | None = None,
     clientctrls: List[RequestControl] | None = None,
   ) -> str:
-    return self._ldap_call(self._l.whoami_s,serverctrls,clientctrls)
+    return self._ldap_call(self._l.whoami_s,serverctrls,clientctrls)  # type: ignore
 
   def get_option(self, option: int) -> Any:
     result = self._ldap_call(self._l.get_option,option)
@@ -1036,9 +1036,12 @@ class SimpleLDAPObject:
             return None
         else:
           if search_subschemasubentry_dn is not None:
-            return search_subschemasubentry_dn.decode('utf-8')
+            dn_str: str = search_subschemasubentry_dn.decode('utf-8')
+            return dn_str
     except IndexError:
       return None
+
+    return None
 
   def read_s(
     self,
@@ -1100,7 +1103,7 @@ class SimpleLDAPObject:
     serverctrls: List[RequestControl] | None = None,
     clientctrls: List[RequestControl] | None = None,
     timeout: int = -1,
-  ) -> LDAPEntryDict:
+  ) -> Tuple[str, LDAPEntryDict]:
     """
     Returns a unique entry, raises exception if not unique
     """
@@ -1142,9 +1145,11 @@ class SimpleLDAPObject:
     if namingContexts is not present (not readable) then empty list is returned
     """
     name = 'namingContexts'
-    return self.read_rootdse_s(
-      attrlist=[name]
-    ).get(name, [])
+    rootdse = self.read_rootdse_s(attrlist=[name])
+    if rootdse is None:
+        return []
+    else:
+        return rootdse.get(name, [])
 
 
 class ReconnectLDAPObject(SimpleLDAPObject):
@@ -1196,7 +1201,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     """
     self._uri = uri
     self._options: List[Tuple[int, Any]] = []
-    self._last_bind = None
+    self._last_bind: Tuple[Callable[..., Any] | str, Tuple[Any, ...], Dict[str, Any]] | None = None
     SimpleLDAPObject.__init__(self, uri, trace_level, trace_file,
                               trace_stack_limit, bytes_mode,
                               bytes_strictness=bytes_strictness,
@@ -1214,7 +1219,10 @@ class ReconnectLDAPObject(SimpleLDAPObject):
         for k,v in self.__dict__.items()
         if k not in self.__transient_attrs__
     }
-    state['_last_bind'] = self._last_bind[0].__name__, self._last_bind[1], self._last_bind[2]
+    if self._last_bind is not None and not isinstance(self._last_bind[0], str):
+        state['_last_bind'] = self._last_bind[0].__name__, self._last_bind[1], self._last_bind[2]
+    else:
+        state['_last_bind'] = None
     return state
 
   def __setstate__(self, d: Dict[str, Any]) -> None:
@@ -1225,7 +1233,8 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     else:
         d.setdefault('bytes_strictness', 'warn')
     self.__dict__.update(d)
-    self._last_bind = getattr(SimpleLDAPObject, self._last_bind[0]), self._last_bind[1], self._last_bind[2]
+    if self._last_bind is not None and isinstance(self._last_bind[0], str):
+        self._last_bind = getattr(SimpleLDAPObject, self._last_bind[0]), self._last_bind[1], self._last_bind[2]
     self._ldap_object_lock = self._ldap_lock()
     self._reconnect_lock = ldap.LDAPLock(desc='reconnect lock within %s' % (repr(self)))
     # XXX cannot pickle file, use default trace file
@@ -1241,9 +1250,9 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self._last_bind = (_method,args,kwargs)
 
   def _apply_last_bind(self) -> None:
-    if self._last_bind!=None:
+    if self._last_bind is not None and isinstance(self._last_bind[0], function):
       func,args,kwargs = self._last_bind
-      func(self,*args,**kwargs)
+      func(self,*args,**kwargs)  # type: ignore
     else:
       # Send explicit anon simple bind request to provoke ldap.SERVER_DOWN in method reconnect()
       SimpleLDAPObject.simple_bind_s(self, None, None)
@@ -1257,8 +1266,8 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self,
     *args: Any,
     **kwargs: Any,
-  ) -> Tuple[str, bytes]:
-    return self._apply_method_s(SimpleLDAPObject.passwd_s,*args,**kwargs)
+  ) -> Tuple[str, bytes | PasswordModifyResponse]:
+    return self._apply_method_s(SimpleLDAPObject.passwd_s,*args,**kwargs)  # type: ignore
 
   def reconnect(
     self,

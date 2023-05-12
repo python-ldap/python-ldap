@@ -60,7 +60,11 @@ class ExtendedResponse:
       BER-encoded ASN.1 value of the LDAPv3 extended operation response
   """
 
-  def __init__(self, responseName: str, encodedResponseValue: bytes) -> None:
+  def __init__(
+    self,
+    responseName: str | None,
+    encodedResponseValue: bytes
+  ) -> None:
     self.responseName = responseName
     self.responseValue = self.decodeResponseValue(encodedResponseValue)
 

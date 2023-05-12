@@ -209,9 +209,9 @@ class SyncDoneControl(ResponseControl):
             self.cookie = None
         refresh_deletes = d[0].getComponentByName('refreshDeletes')
         if refresh_deletes.hasValue():
-            self.refreshDeletes: bool | None = bool(refresh_deletes)
+            self.refreshDeletes = bool(refresh_deletes)
         else:
-            self.refreshDeletes = None
+            self.refreshDeletes = False
 
 KNOWN_RESPONSE_CONTROLS[SyncDoneControl.controlType] = SyncDoneControl
 
@@ -446,7 +446,7 @@ class SyncreplConsumer:
                 # look for a SyncDone control, save the cookie, and if necessary
                 # delete non-present entries.
                 for c in ctrls or []:
-                    if c.__class__.__name__ != 'SyncDoneControl':
+                    if not isinstance(c, SyncDoneControl):
                         continue
                     self.syncrepl_present(None, refreshDeletes=c.refreshDeletes)
                     if c.cookie is not None:
@@ -459,7 +459,7 @@ class SyncreplConsumer:
                 for m in msg or []:
                     dn, attrs, ctrls = m
                     for c in ctrls or []:
-                        if c.__class__.__name__ != 'SyncStateControl':
+                        if not isinstance(c, SyncStateControl):
                             continue
                         if c.state == 'present':
                             self.syncrepl_present([c.entryUUID])

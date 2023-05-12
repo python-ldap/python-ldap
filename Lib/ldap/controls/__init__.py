@@ -143,7 +143,7 @@ def RequestControlTuples(
 
 def DecodeControlTuples(
     ldapControlTuples: List[Tuple[str, bool, bytes]] | None,
-    knownLDAPControls: Dict[str, Type[ResponseControl]]
+    knownLDAPControls: Dict[str, Type[ResponseControl]] | None = None,
   ) -> List[ResponseControl]:
   """
   Returns list of readily decoded ResponseControl objects
