@@ -20,7 +20,7 @@ from pyasn1.type import tag,namedtype,namedval,univ,constraint
 from pyasn1.codec.der import decoder
 
 
-class PasswordPolicyWarning(univ.Choice):
+class PasswordPolicyWarning(univ.Choice):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('timeBeforeExpiration',univ.Integer().subtype(
       implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,0)
@@ -31,7 +31,7 @@ class PasswordPolicyWarning(univ.Choice):
   )
 
 
-class PasswordPolicyError(univ.Enumerated):
+class PasswordPolicyError(univ.Enumerated):  # type: ignore
   namedValues = namedval.NamedValues(
     ('passwordExpired',0),
     ('accountLocked',1),
@@ -47,7 +47,7 @@ class PasswordPolicyError(univ.Enumerated):
   subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0,1,2,3,4,5,6,7,8,9)
 
 
-class PasswordPolicyResponseValue(univ.Sequence):
+class PasswordPolicyResponseValue(univ.Sequence):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.OptionalNamedType(
       'warning',

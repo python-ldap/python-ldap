@@ -30,7 +30,7 @@ from typing import List
 #                     reverseOrder    [1] BOOLEAN DEFAULT FALSE }
 
 
-class SortKeyType(univ.Sequence):
+class SortKeyType(univ.Sequence):  # type: ignore
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('attributeType', univ.OctetString()),
             namedtype.OptionalNamedType('orderingRule',
@@ -42,7 +42,7 @@ class SortKeyType(univ.Sequence):
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1))))
 
 
-class SortKeyListType(univ.SequenceOf):
+class SortKeyListType(univ.SequenceOf):  # type: ignore
     componentType = SortKeyType()
 
 
@@ -89,7 +89,7 @@ class SSSRequestControl(RequestControl):
         return encoder.encode(self.asn1())  # type: ignore
 
 
-class SortResultType(univ.Sequence):
+class SortResultType(univ.Sequence):  # type: ignore
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('sortResult', univ.Enumerated().subtype(
                 namedValues=namedval.NamedValues(

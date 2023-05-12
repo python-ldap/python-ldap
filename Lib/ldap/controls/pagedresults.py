@@ -20,7 +20,7 @@ from pyasn1.codec.ber import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPString
 
 
-class PagedResultsControlValue(univ.Sequence):
+class PagedResultsControlValue(univ.Sequence):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('size',univ.Integer()),
     # FIXME: This should be univ.OctetString, not LDAPString()?

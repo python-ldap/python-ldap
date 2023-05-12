@@ -20,7 +20,7 @@ from pyasn1.type import univ, namedtype, tag, namedval, constraint
 from pyasn1.codec.ber import encoder, decoder
 
 
-class ByOffsetType(univ.Sequence):
+class ByOffsetType(univ.Sequence):  # type: ignore
     tagSet = univ.Sequence.tagSet.tagImplicitly(
             tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0))
     componentType = namedtype.NamedTypes(
@@ -28,7 +28,7 @@ class ByOffsetType(univ.Sequence):
             namedtype.NamedType('contentCount', univ.Integer()))
 
 
-class TargetType(univ.Choice):
+class TargetType(univ.Choice):  # type: ignore
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('byOffset', ByOffsetType()),
             namedtype.NamedType('greaterThanOrEqual', univ.OctetString().subtype(
@@ -36,7 +36,7 @@ class TargetType(univ.Choice):
                     tag.tagFormatSimple, 1))))
 
 
-class VirtualListViewRequestType(univ.Sequence):
+class VirtualListViewRequestType(univ.Sequence):  # type: ignore
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('beforeCount', univ.Integer()),
             namedtype.NamedType('afterCount', univ.Integer()),
@@ -93,7 +93,7 @@ class VLVRequestControl(RequestControl):
 #KNOWN_RESPONSE_CONTROLS[VLVRequestControl.controlType] = VLVRequestControl
 
 
-class VirtualListViewResultType(univ.Enumerated):
+class VirtualListViewResultType(univ.Enumerated):  # type: ignore
     namedValues = namedval.NamedValues(
                ('success', 0),
                ('operationsError', 1),
@@ -108,7 +108,7 @@ class VirtualListViewResultType(univ.Enumerated):
     )
 
 
-class VirtualListViewResponseType(univ.Sequence):
+class VirtualListViewResponseType(univ.Sequence):  # type: ignore
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('targetPosition', univ.Integer()),
             namedtype.NamedType('contentCount', univ.Integer()),

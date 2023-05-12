@@ -30,7 +30,7 @@ DEREF_CONTROL_OID = '1.3.6.1.4.1.4203.666.5.16'
 # For compatibility with ASN.1 declaration in I-D
 AttributeList = AttributeDescriptionList
 
-class DerefSpec(univ.Sequence):
+class DerefSpec(univ.Sequence):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.NamedType(
       'derefAttr',
@@ -42,32 +42,32 @@ class DerefSpec(univ.Sequence):
     ),
   )
 
-class DerefSpecs(univ.SequenceOf):
+class DerefSpecs(univ.SequenceOf):  # type: ignore
   componentType = DerefSpec()
 
 # Response types
 #---------------------------------------------------------------------------
 
 
-class AttributeValues(univ.SetOf):
+class AttributeValues(univ.SetOf):  # type: ignore
     componentType = AttributeValue()
 
 
-class PartialAttribute(univ.Sequence):
+class PartialAttribute(univ.Sequence):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('type', AttributeDescription()),
     namedtype.NamedType('vals', AttributeValues()),
   )
 
 
-class PartialAttributeList(univ.SequenceOf):
+class PartialAttributeList(univ.SequenceOf):  # type: ignore
   componentType = PartialAttribute()
   tagSet = univ.Sequence.tagSet.tagImplicitly(
     tag.Tag(tag.tagClassContext,tag.tagFormatConstructed,0)
   )
 
 
-class DerefRes(univ.Sequence):
+class DerefRes(univ.Sequence):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('derefAttr', AttributeDescription()),
     namedtype.NamedType('derefVal', LDAPDN()),
@@ -75,7 +75,7 @@ class DerefRes(univ.Sequence):
   )
 
 
-class DerefResultControlValue(univ.SequenceOf):
+class DerefResultControlValue(univ.SequenceOf):  # type: ignore
     componentType = DerefRes()
 
 

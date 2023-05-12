@@ -37,7 +37,7 @@ class SessionTrackingControl(RequestControl):
     String containing a specific tracking ID
   """
 
-  class SessionIdentifierControlValue(univ.Sequence):
+  class SessionIdentifierControlValue(univ.Sequence):  # type: ignore
     componentType = namedtype.NamedTypes(
       namedtype.NamedType('sessionSourceIp',LDAPString()),
       namedtype.NamedType('sessionSourceName',LDAPString()),

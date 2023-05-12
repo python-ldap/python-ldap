@@ -127,7 +127,7 @@ class SyncStateOp(univ.Enumerated):  # type: ignore
     subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0, 1, 2, 3)
 
 
-class SyncStateValue(univ.Sequence):
+class SyncStateValue(univ.Sequence):  # type: ignore
     """
        syncStateValue ::= SEQUENCE {
            state ENUMERATED {
@@ -175,7 +175,7 @@ class SyncStateControl(ResponseControl):
 KNOWN_RESPONSE_CONTROLS[SyncStateControl.controlType] = SyncStateControl
 
 
-class SyncDoneValue(univ.Sequence):
+class SyncDoneValue(univ.Sequence):  # type: ignore
     """
        syncDoneValue ::= SEQUENCE {
            cookie          syncCookie OPTIONAL,
@@ -216,7 +216,7 @@ class SyncDoneControl(ResponseControl):
 KNOWN_RESPONSE_CONTROLS[SyncDoneControl.controlType] = SyncDoneControl
 
 
-class RefreshDelete(univ.Sequence):
+class RefreshDelete(univ.Sequence):  # type: ignore
     """
            refreshDelete  [1] SEQUENCE {
                cookie         syncCookie OPTIONAL,
@@ -229,7 +229,7 @@ class RefreshDelete(univ.Sequence):
     )
 
 
-class RefreshPresent(univ.Sequence):
+class RefreshPresent(univ.Sequence):  # type: ignore
     """
            refreshPresent [2] SEQUENCE {
                cookie         syncCookie OPTIONAL,
@@ -242,14 +242,14 @@ class RefreshPresent(univ.Sequence):
     )
 
 
-class SyncUUIDs(univ.SetOf):
+class SyncUUIDs(univ.SetOf):  # type: ignore
     """
     syncUUIDs      SET OF syncUUID
     """
     componentType = SyncUUID()
 
 
-class SyncIdSet(univ.Sequence):
+class SyncIdSet(univ.Sequence):  # type: ignore
     """
      syncIdSet      [3] SEQUENCE {
          cookie         syncCookie OPTIONAL,
@@ -264,7 +264,7 @@ class SyncIdSet(univ.Sequence):
     )
 
 
-class SyncInfoValue(univ.Choice):
+class SyncInfoValue(univ.Choice):  # type: ignore
     """
        syncInfoValue ::= CHOICE {
            newcookie      [0] syncCookie,
