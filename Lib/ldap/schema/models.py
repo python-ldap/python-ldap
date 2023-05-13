@@ -1,4 +1,4 @@
-"""
+"""  # type: ignore[import]
 schema.py - support for subSchemaSubEntry information
 
 See https://www.python-ldap.org/ for details.

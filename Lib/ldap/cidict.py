@@ -12,28 +12,30 @@ import warnings
 from collections.abc import MutableMapping
 from ldap.pkginfo import __version__
 
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List, TypeVar
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-class cidict(MutableMapping[str, Any]):
+T = TypeVar('T', bound=Any)
+
+class cidict(MutableMapping[str, T]):
     """
     Case-insensitive but case-respecting dictionary.
     """
     __slots__ = ('_keys', '_data')
 
-    def __init__(self, default: Dict[str, Any] | None = None) -> None:
+    def __init__(self, default: Dict[str, T] | None = None) -> None:
         self._keys: Dict[str, str] = {}
-        self._data: Dict[str, Any] = {}
+        self._data: Dict[str, T] = {}
         if default:
             self.update(default)
 
     # MutableMapping abstract methods
 
-    def __getitem__(self, key: str) -> Any:
+    def __getitem__(self, key: str) -> T:
         return self._data[key.lower()]
 
-    def __setitem__(self, key: str, value: Any) -> None:
+    def __setitem__(self, key: str, value: T) -> None:
         lower_key = key.lower()
         self._keys[lower_key] = key
         self._data[lower_key] = value
@@ -75,7 +77,7 @@ class cidict(MutableMapping[str, Any]):
         return key in self
 
     @property
-    def data(self) -> Dict[str, Any]:
+    def data(self) -> Dict[str, T]:
         """Compatibility with older IterableUserDict-based implementation"""
         warnings.warn(
             'ldap.cidict.cidict.data is an internal attribute; it may be ' +
@@ -96,7 +98,7 @@ def strlist_minus(a: List[str], b: List[str]) -> List[str]:
     category=DeprecationWarning,
     stacklevel=2,
   )
-  temp = cidict()
+  temp: cidict[str] = cidict()
   for elt in b:
     temp[elt] = elt
   result = [
@@ -116,7 +118,7 @@ def strlist_intersection(a: List[str], b: List[str]) -> List[str]:
     category=DeprecationWarning,
     stacklevel=2,
   )
-  temp = cidict()
+  temp: cidict[str] = cidict()
   for elt in a:
     temp[elt] = elt
   result = [
@@ -136,7 +138,7 @@ def strlist_union(a: List[str], b: List[str]) -> List[str]:
     category=DeprecationWarning,
     stacklevel=2,
   )
-  temp = cidict()
+  temp: cidict[str] = cidict()
   for elt in a:
     temp[elt] = elt
   for elt in b:
