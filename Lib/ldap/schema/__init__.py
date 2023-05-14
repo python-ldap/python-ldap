@@ -15,11 +15,15 @@ if TYPE_CHECKING:
 
 __all__ = [
     'LDAPTokenDictValue',
+    'LDAPTokenValue',
     'LDAPTokenDict',
     'SCHEMA_ATTRS',
 ]
 
-LDAPTokenDictValue: TypeAlias = "None | str | Tuple[str, ...] | Tuple[None]"
+LDAPTokenDictValue: TypeAlias = "Tuple[()] | Tuple[str, ...]"
+"""The kind of values which may be found in a token dict."""
+
+LDAPTokenValue: TypeAlias = "Tuple[()] | Tuple[str, ...]"
 """The kind of values which may be found in a token dict."""
 
 LDAPTokenDict: TypeAlias = "Mapping[str, LDAPTokenDictValue]"

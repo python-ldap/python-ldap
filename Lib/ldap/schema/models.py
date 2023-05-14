@@ -1,4 +1,4 @@
-"""  # type: ignore[import]
+"""
 schema.py - support for subSchemaSubEntry information
 
 See https://www.python-ldap.org/ for details.
@@ -10,11 +10,11 @@ import sys
 import ldap.cidict
 from collections import UserDict
 
-from ldap.schema.tokenizer import split_tokens,extract_tokens
+from ldap.schema.tokenizer import extract_tokens, parse_tokens, split_tokens
 from ldap.schema.subentry import SubSchema
 
 from typing import Dict, List, Tuple
-from ldap.schema import LDAPTokenDict, LDAPTokenDictValue
+from ldap.schema import LDAPTokenDict, LDAPTokenDictValue, LDAPTokenValue
 
 from ldap_types import *
 
@@ -42,6 +42,15 @@ class SchemaElement:
     String which contains the schema element description to be parsed.
     (Bytestrings are decoded using UTF-8)
 
+  Instance attributes:
+
+  oid
+    OID assigned to the schema element
+  names
+    All NAMEs of the schema element (tuple of strings)
+  desc
+    Description text (DESC) of the schema element (string, or None if missing)
+
   Class attributes:
 
   schema_attribute
@@ -50,12 +59,14 @@ class SchemaElement:
     Dictionary internally used by the schema element parser
     containing the defaults for certain schema description key-words
   """
-  token_defaults: LDAPTokenDict = {
-    'DESC':(None,),
-  }
+  schema_attribute = 'SchemaElement (base class)'
+  known_tokens = ['DESC']
+
+  #token_defaults: LDAPTokenDict = {
+  #  'DESC':(None,),
+  #}
 
   def __init__(self, schema_element_str: str | bytes | None = None) -> None:
-    schema_element_string = ''
     if isinstance(schema_element_str, bytes):
       schema_element_string = schema_element_str.decode('utf-8')
     elif isinstance(schema_element_str, str):
@@ -65,16 +76,20 @@ class SchemaElement:
     else:
       raise TypeError("schema_element_str must be str/bytes, was %r" % schema_element_str)
 
-    if schema_element_string != '':
-      l = split_tokens(schema_element_string)
-      self.set_id(l[1])
-      d = extract_tokens(l,self.token_defaults)
-      self._set_attrs(l,d)
+    # FIXME
+    #if schema_element_string != '':
+    tokens = split_tokens(schema_element_string)
+    oid, schema_element_attributes = parse_tokens(tokens, self.known_tokens)
+    self.set_id(oid)
+    self._set_attrs(tokens, schema_element_attributes)
 
   def _set_attrs(self, l: List[str], d: LDAPTokenDict) -> None:
-    # FIXME: Union[None, str, Any, Any]" is not indexable
-    self.desc = d['DESC'][0]
-    return
+    self.desc = d.get('DESC', (None,))[0]
+    self.names = d.get('NAME', ())
+    #if desc is not None:
+    #    self.desc = desc[0]
+    #else:
+    #    self.desc = None
 
   def set_id(self, element_id: str) -> None:
     self.oid = element_id
@@ -134,8 +149,8 @@ class ObjectClass(SchemaElement):
   desc
     Description text (DESC) of the object class (string, or None if missing)
   obsolete
-    Integer flag (0 or 1) indicating whether the object class is marked
-    as OBSOLETE in the schema
+    Boolean indicating whether the object class is marked as OBSOLETE in the
+    schema
   must
     NAMEs or OIDs of all attributes an entry of the object class must have
     (tuple of strings)
@@ -158,6 +173,19 @@ class ObjectClass(SchemaElement):
     element
   """
   schema_attribute = 'objectClasses'
+
+  known_tokens = [
+    'NAME',
+    'DESC',
+    'OBSOLETE',
+    'SUP',
+    'STRUCTURAL',
+    'AUXILIARY',
+    'ABSTRACT',
+    'MUST',
+    'MAY',
+    'X-ORIGIN',
+  ]
   token_defaults = {
     'NAME':(()),
     'DESC':(None,),
@@ -172,31 +200,31 @@ class ObjectClass(SchemaElement):
   }
 
   def _set_attrs(self, l: List[str], d: LDAPTokenDict) -> None:
-    self.obsolete = d['OBSOLETE']!=None
-    self.names = d['NAME']
-    self.desc = d['DESC'][0]
-    self.must = d['MUST']
-    self.may = d['MAY']
-    self.x_origin = d['X-ORIGIN']
+    super()._set_attrs(l, d)
+    self.obsolete = 'OBSOLETE' in d
+    self.must = d.get('MUST', ())
+    self.may = d.get('MAY', ())
+    self.x_origin = d.get('X-ORIGIN', ())
+
     # Default is STRUCTURAL, see RFC2552 or draft-ietf-ldapbis-syntaxes
     self.kind = 0
-    if d['ABSTRACT']!=None:
+    if 'ABSTRACT' in d:
       self.kind = 1
-    elif d['AUXILIARY']!=None:
+    elif 'AUXILIARY' in d:
       self.kind = 2
-    if self.kind==0 and not d['SUP'] and self.oid!='2.5.6.0':
+
+    if self.kind==0 and len(d.get('SUP', ())) > 0 and self.oid!='2.5.6.0':
       # STRUCTURAL object classes are sub-classes of 'top' by default
-      self.sup: LDAPTokenDictValue = ('top',)
+      self.sup: Tuple[str, ...] = ('top',)
     else:
-      self.sup = d['SUP']
-    return
+      self.sup = d.get('SUP', ())
 
   def __str__(self) -> str:
     result = [str(self.oid)]
     result.append(self.key_list('NAME',self.names,quoted=1))
     result.append(self.key_attr('DESC',self.desc,quoted=1))
     result.append(self.key_list('SUP',self.sup,sep=' $ '))
-    result.append({0:'',1:' OBSOLETE'}[self.obsolete])
+    result.append({False:'',True:' OBSOLETE'}[self.obsolete])
     result.append({0:' STRUCTURAL',1:' ABSTRACT',2:' AUXILIARY'}[self.kind])
     result.append(self.key_list('MUST',self.must,sep=' $ '))
     result.append(self.key_list('MAY',self.may,sep=' $ '))
@@ -283,17 +311,17 @@ class AttributeType(SchemaElement):
   }
 
   def _set_attrs(self, l: List[str], d: LDAPTokenDict) -> None:
-    self.names = d['NAME']
-    self.desc = d['DESC'][0]
-    self.obsolete = d['OBSOLETE']!=None
-    self.sup = d['SUP']
-    self.equality = d['EQUALITY'][0]
-    self.ordering = d['ORDERING'][0]
-    self.substr = d['SUBSTR'][0]
-    self.x_origin = d['X-ORIGIN']
-    self.x_ordered = d['X-ORDERED'][0]
+    super()._set_attrs(l, d)
+    self.obsolete = 'OBSOLETE' in d
+    self.sup = d.get('SUP', ())
+    self.equality = d.get('EQUALITY', (None,))[0]
+    self.ordering = d.get('ORDERING', (None,))[0]
+    self.substr = d.get('SUBSTR', (None,))[0]
+    self.x_origin = d.get('X-ORIGIN', ())
+    self.x_ordered = d.get('X-ORDERED', (None,))[0]
+
     try:
-      syntax = d['SYNTAX'][0]
+      syntax = d.get('SYNTAX', (None,))[0]
     except IndexError:
       self.syntax = None
       self.syntax_len = None
@@ -352,6 +380,8 @@ class LDAPSyntax(SchemaElement):
 
   oid
     OID assigned to the LDAP syntax
+  names
+    All NAMEs of the LDAP syntax (tuple of strings)
   desc
     Description text (DESC) of the LDAP syntax (string, or None if missing)
   not_human_readable
@@ -367,6 +397,7 @@ class LDAPSyntax(SchemaElement):
   }
 
   def _set_attrs(self, l: List[str], d: LDAPTokenDict) -> None:
+    super._set_attrs(l, d)
     self.desc = d['DESC'][0]
     self.x_subst = d['X-SUBST'][0]
     self.not_human_readable = \
