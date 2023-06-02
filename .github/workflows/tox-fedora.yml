@@ -2,6 +2,9 @@ on: [push, pull_request]
 
 name: Tox on Fedora
 
+permissions:
+  contents: read
+
 jobs:
   tox_test:
     name: Tox env "${{matrix.tox_env}}" on Fedora

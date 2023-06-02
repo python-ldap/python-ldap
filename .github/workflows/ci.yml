@@ -3,6 +3,9 @@ name: CI
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   distros:
     name: "Ubuntu with Python ${{ matrix.python-version }}"
