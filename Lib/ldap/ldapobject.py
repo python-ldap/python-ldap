@@ -47,6 +47,24 @@ class NO_UNIQUE_ENTRY(ldap.NO_SUCH_OBJECT):
   """
 
 
+def _retry_on_interrupted_ldap_call(func, *args, **kwargs):
+  """Call func, retrying if it raises an LDAPError with errno == EINTR.
+  """
+
+  attempts = 0
+  while True:
+    attempts += 1
+    try:
+      return func(*args, **kwargs)
+    except LDAPError as e:
+      if attempts > 1:
+        raise e
+      if e.args[0]['errno'] == EINTR:
+          time.sleep(0.1)
+          continue
+      raise e
+
+
 class SimpleLDAPObject:
   """
   This basic class wraps all methods of the underlying C API object.
@@ -125,7 +143,7 @@ class SimpleLDAPObject:
     diagnostic_message_success = None
     try:
       try:
-        result = func(*args,**kwargs)
+        result = _retry_on_interrupted_ldap_call(*args,**kwargs)
         if __debug__ and self._trace_level>=2:
           if func.__name__!="unbind_ext":
             diagnostic_message_success = self._l.get_option(ldap.OPT_DIAGNOSTIC_MESSAGE)
