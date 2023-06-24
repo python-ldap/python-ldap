@@ -73,6 +73,9 @@ setup(
   author = 'python-ldap project',
   author_email = 'python-ldap@python.org',
   url = 'https://www.python-ldap.org/',
+  project_urls = {
+    'Source': 'https://github.com/python-ldap/python-ldap',
+  },
   download_url = 'https://pypi.org/project/python-ldap/',
   classifiers = [
     'Development Status :: 5 - Production/Stable',
