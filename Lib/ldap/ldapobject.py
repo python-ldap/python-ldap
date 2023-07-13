@@ -44,14 +44,13 @@ def _retry_on_interrupted_ldap_call(func, *args, **kwargs):
       if attempts > 1:
         raise e
       try:
-        if 'info' not in e.args[0] and 'errno' in e.args[0]:
+        if 'errno' in e.args[0]:
           if e.args[0]['errno'] == EINTR:
             time.sleep(0.1)
             continue
       except IndexError:
         pass
       raise e
-
 
 class LDAPBytesWarning(BytesWarning):
     """Python 2 bytes mode warning"""
