@@ -28,24 +28,7 @@ from ldap.extop import ExtendedRequest,ExtendedResponse,PasswordModifyResponse
 
 from ldap import LDAPError
 
-
-class LDAPBytesWarning(BytesWarning):
-    """Python 2 bytes mode warning"""
-
-    def __init__(self, *args, **kwargs):
-        warnings.warn(
-            "LDAPBytesWarning is deprecated and will be removed in the future",
-            DeprecationWarning,
-        )
-        super().__init__(*args, **kwargs)
-
-
-class NO_UNIQUE_ENTRY(ldap.NO_SUCH_OBJECT):
-  """
-  Exception raised if a LDAP search returned more than entry entry
-  although assumed to return a unique single search result.
-  """
-
+from errno import EINTR
 
 def _retry_on_interrupted_ldap_call(func, *args, **kwargs):
   """Call func, retrying if it raises an LDAPError with errno == EINTR.
@@ -63,6 +46,24 @@ def _retry_on_interrupted_ldap_call(func, *args, **kwargs):
           time.sleep(0.1)
           continue
       raise e
+
+
+class LDAPBytesWarning(BytesWarning):
+    """Python 2 bytes mode warning"""
+
+    def __init__(self, *args, **kwargs):
+        warnings.warn(
+            "LDAPBytesWarning is deprecated and will be removed in the future",
+            DeprecationWarning,
+        )
+        super().__init__(*args, **kwargs)
+
+
+class NO_UNIQUE_ENTRY(ldap.NO_SUCH_OBJECT):
+  """
+  Exception raised if a LDAP search returned more than entry entry
+  although assumed to return a unique single search result.
+  """
 
 
 class SimpleLDAPObject:
