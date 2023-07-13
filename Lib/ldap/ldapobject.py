@@ -31,7 +31,8 @@ from ldap import LDAPError
 from errno import EINTR
 
 def _retry_on_interrupted_ldap_call(func, *args, **kwargs):
-  """Call func, retrying if it raises an LDAPError with errno == EINTR.
+  """
+  Call func, retrying if it raises an LDAPError with errno == EINTR.
   """
 
   attempts = 0
@@ -42,9 +43,13 @@ def _retry_on_interrupted_ldap_call(func, *args, **kwargs):
     except LDAPError as e:
       if attempts > 1:
         raise e
-      if e.args[0]['errno'] == EINTR:
-          time.sleep(0.1)
-          continue
+      try:
+        if 'info' not in e.args[0] and 'errno' in e.args[0]:
+          if e.args[0]['errno'] == EINTR:
+            time.sleep(0.1)
+            continue
+      except IndexError:
+        pass
       raise e
 
 
