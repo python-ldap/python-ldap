@@ -144,7 +144,7 @@ class SimpleLDAPObject:
     diagnostic_message_success = None
     try:
       try:
-        result = _retry_on_interrupted_ldap_call(*args,**kwargs)
+        result = _retry_on_interrupted_ldap_call(func,*args,**kwargs)
         if __debug__ and self._trace_level>=2:
           if func.__name__!="unbind_ext":
             diagnostic_message_success = self._l.get_option(ldap.OPT_DIAGNOSTIC_MESSAGE)
