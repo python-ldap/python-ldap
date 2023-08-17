@@ -8,13 +8,13 @@ members. Therefore some information might be outdated or links might be broken.
 *Python LDAP Applications* articles by Matt Butcher
 ---------------------------------------------------
 
-* `Part 1 - Installing and Configuring the Python-LDAP Library and Binding to an LDAP Directory <https://www.packtpub.com/article/installing-and-configuring-the-python-ldap-library-and-binding-to-an-ldap-directory>`_
+* `Part 1 - Installing and Configuring the Python-LDAP Library and Binding to an LDAP Directory <https://hub.packtpub.com/python-ldap-applications-part-1-installing-and-configuring-python-ldap-library-and-bin/>`_
 
     This also covers SASL.
 
-* `Part 2 - LDAP Operations <https://www.packtpub.com/article/python-ldap-applications-ldap-opearations>`_
-* `Part 3 - More LDAP Operations and the LDAP URL Library <https://www.packtpub.com/article/python-ldap-applications-more-ldap-operations-and-the-ldap-url-library>`_
-* `Part 4 - LDAP Schema <https://www.packtpub.com/article/python-ldap-applications-ldap-schema>`_
+* `Part 2 - LDAP Operations <https://hub.packtpub.com/configuring-and-securing-python-ldap-applications-part-2/>`_
+* `Part 3 - More LDAP Operations and the LDAP URL Library <https://hub.packtpub.com/python-ldap-applications-extra-ldap-operations-and-ldap-url-library/>`_
+* `Part 4 - LDAP Schema <https://hub.packtpub.com/python-ldap-applications-part-4-ldap-schema/>`_
 
     Gee, someone waded through the badly documented mysteries of module
     :mod:`ldap.schema`.
