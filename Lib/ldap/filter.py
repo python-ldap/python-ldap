@@ -38,7 +38,7 @@ def escape_filter_chars(assertion_value,escape_mode=0):
       raise ValueError('escape_mode must be 0, 1 or 2.')
     s = ''.join(r)
   else:
-    s = assertion_value.replace('\\', r'\5c')
+    s = str(assertion_value).replace('\\', r'\5c')
     s = s.replace(r'*', r'\2a')
     s = s.replace(r'(', r'\28')
     s = s.replace(r')', r'\29')
