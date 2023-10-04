@@ -207,8 +207,8 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
         }
         else {
             PyErr_Format(PyExc_ValueError,
-                         "timeout must be >= 0 or -1/None for infinity, got %f",
-                         doubleval);
+                         "timeout must be >= 0 or -1/None for infinity, got %S",
+                         value);
             return 0;
         }
         break;

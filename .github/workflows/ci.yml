@@ -1,7 +1,13 @@
 ---
 name: CI
 
-on: [push, pull_request]
+on: 
+  push:
+  pull_request:
+  schedule:
+    # every Monday
+    - cron: '30 4 * * 1'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -9,14 +15,26 @@ permissions:
 jobs:
   distros:
     name: "Ubuntu with Python ${{ matrix.python-version }}"
-    runs-on: "ubuntu-20.04"
+    runs-on: "${{ matrix.image }}"
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "pypy3"]
+        python-version:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "pypy3.9"
+        image: 
+          - "ubuntu-22.04"
+        include:
+          - python-version: "3.6"
+            image: "ubuntu-20.04"
     steps:
       - name: Checkout
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v4"
       - name: Install apt dependencies
         run: |
           set -ex
@@ -25,9 +43,10 @@ jobs:
       - name: Disable AppArmor
         run: sudo aa-disable /usr/sbin/slapd
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
       - name: "Install Python dependencies"
         run: |
           set -xe

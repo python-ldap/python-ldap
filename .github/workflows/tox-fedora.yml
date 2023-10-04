@@ -27,6 +27,7 @@ jobs:
         - py39
         - py310
         - py311
+        - py312
         - c90-py36
         - c90-py37
         - py3-nosasltls
