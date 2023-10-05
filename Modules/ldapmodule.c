@@ -5,6 +5,10 @@
 #define _STR(x)        #x
 #define STR(x) _STR(x)
 
+LDAPAPIInfo ldap_version_info = {
+    .ldapai_info_version = LDAP_API_INFO_VERSION,
+};
+
 static char version_str[] = STR(LDAPMODULE_VERSION);
 static char author_str[] = STR(LDAPMODULE_AUTHOR);
 static char license_str[] = STR(LDAPMODULE_LICENSE);
