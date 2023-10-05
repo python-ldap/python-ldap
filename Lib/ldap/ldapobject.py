@@ -176,9 +176,7 @@ class SimpleLDAPObject:
     connect() -> None
         Establishes LDAP connection if needed.
     """
-    if _ldap.VENDOR_VERSION >= 20500:
-        return self._ldap_call(self._l.connect)
-    raise NotImplementedError
+    return self._ldap_call(self._l.connect)
 
   def abandon_ext(self,msgid,serverctrls=None,clientctrls=None):
     """
