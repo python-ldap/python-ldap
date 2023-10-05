@@ -71,6 +71,8 @@ PYLDAP_FUNC(PyObject *) LDAPerror(LDAP *);
 PYLDAP_FUNC(PyObject *) LDAPraise_for_message(LDAP *, LDAPMessage *m);
 PYLDAP_FUNC(PyObject *) LDAPerr(int errnum);
 
+PYLDAP_DATA(LDAPAPIInfo) ldap_version_info;
+
 #ifndef LDAP_CONTROL_PAGE_OID
 #define LDAP_CONTROL_PAGE_OID "1.2.840.113556.1.4.319"
 #endif /* !LDAP_CONTROL_PAGE_OID */
