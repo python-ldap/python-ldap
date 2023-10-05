@@ -281,7 +281,8 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(ctrls, [])
 
     @unittest.skipUnless(
-        _ldap.VENDOR_VERSION >= 20500,
+        _ldap.VENDOR_VERSION >= 20500 and \
+            _ldap._VENDOR_VERSION_RUNTIME >= 20500,
         reason="Test requires libldap 2.5+"
     )
     def test_connect(self):
@@ -292,6 +293,15 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertNotEqual(invalid_fileno, fileno)
 
         self._bind_conn(l)
+
+    @unittest.skipUnless(
+        _ldap._VENDOR_VERSION_RUNTIME < 20500,
+        reason="Test requires linking to libldap < 2.5"
+    )
+    def test_connect_notimpl(self):
+        l = self._open_conn(bind=False)
+        with self.assertRaises(NotImplementedError):
+            l.connect()
 
     def test_anon_rootdse_search(self):
         l = self._open_conn(bind=False)
