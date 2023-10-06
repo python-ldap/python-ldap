@@ -973,6 +973,15 @@ and wait for and return with the server's result, or with
    The *dn* and *attr* arguments are text strings; see :ref:`bytes_mode`.
 
 
+.. py:method:: LDAPObject.connect() -> None
+
+  Opens a connection to the server if one is not established already. If that
+  fails, an instance of :py:exc:`ldap.LDAPError` is raised.
+
+  Requires libldap 2.5+ and will fail with :py:exc:`NotImplementedError`
+  if that is not met.
+
+
 .. py:method:: LDAPObject.delete(dn) -> int
 
 .. py:method::  LDAPObject.delete_s(dn) -> None
