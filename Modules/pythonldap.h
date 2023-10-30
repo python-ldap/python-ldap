@@ -17,12 +17,6 @@
 #include <ldap.h>
 #include <ldap_features.h>
 
-/* Py2/3 compatibility */
-#if PY_VERSION_HEX >= 0x03000000
-/* In Python 3, alias PyInt to PyLong */
-#define PyInt_FromLong PyLong_FromLong
-#endif
-
 #if LDAP_VENDOR_VERSION < 20400
 #error Current python-ldap requires OpenLDAP 2.4.x
 #endif

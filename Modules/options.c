@@ -368,7 +368,7 @@ LDAP_get_option(LDAPObject *self, int option)
         res = LDAP_int_get_option(self, option, &intval);
         if (res != LDAP_OPT_SUCCESS)
             return option_error(res, "ldap_get_option");
-        return PyInt_FromLong(intval);
+        return PyLong_FromLong(intval);
 
 #ifdef LDAP_OPT_TCP_USER_TIMEOUT
     case LDAP_OPT_TCP_USER_TIMEOUT:
