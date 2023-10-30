@@ -1,7 +1,7 @@
 /* Miscellaneous common routines
  * See https://www.python-ldap.org/ for details. */
 
-#include "common.h"
+#include "pythonldap.h"
 
 /* dynamically add the methods into the module dictionary d */
 

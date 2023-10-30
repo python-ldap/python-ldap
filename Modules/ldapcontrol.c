@@ -1,10 +1,6 @@
 /* See https://www.python-ldap.org/ for details. */
 
-#include "common.h"
-#include "LDAPObject.h"
-#include "ldapcontrol.h"
-#include "berval.h"
-#include "constants.h"
+#include "pythonldap.h"
 
 /* Prints to stdout the contents of an array of LDAPControl objects */
 

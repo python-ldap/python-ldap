@@ -1,11 +1,6 @@
 /* See https://www.python-ldap.org/ for details. */
 
-#include "common.h"
-#include "functions.h"
-#include "LDAPObject.h"
-#include "berval.h"
-#include "constants.h"
-#include "options.h"
+#include "pythonldap.h"
 
 /* ldap_initialize */
 

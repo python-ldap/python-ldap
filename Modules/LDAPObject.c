@@ -1,16 +1,10 @@
 /* See https://www.python-ldap.org/ for details. */
 
-#include "common.h"
+#include "pythonldap.h"
 #include "patchlevel.h"
 
 #include <math.h>
 #include <limits.h>
-#include "constants.h"
-#include "LDAPObject.h"
-#include "ldapcontrol.h"
-#include "message.h"
-#include "berval.h"
-#include "options.h"
 
 #ifdef HAVE_SASL
 #include <sasl/sasl.h>

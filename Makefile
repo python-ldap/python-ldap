@@ -89,7 +89,8 @@ valgrind: build $(PYTHON_SUPP)
 autoformat: indent black
 
 indent:
-	indent Modules/*.c Modules/*.h
+	indent Modules/*.c
+	indent -npsl Modules/pythonldap.h
 	rm -f Modules/*.c~ Modules/*.h~
 
 black:

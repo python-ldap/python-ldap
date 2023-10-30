@@ -1,7 +1,6 @@
 /* See https://www.python-ldap.org/ for details. */
 
-#include "common.h"
-#include "berval.h"
+#include "pythonldap.h"
 
 /*
  * Copies out the data from a berval, and returns it as a new Python object,
