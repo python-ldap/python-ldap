@@ -105,20 +105,20 @@ LDAPraise_for_message(LDAP *l, LDAPMessage *m)
         }
 
         if (msgtype > 0) {
-            pyresult = PyInt_FromLong(msgtype);
+            pyresult = PyLong_FromLong(msgtype);
             if (pyresult)
                 PyDict_SetItemString(info, "msgtype", pyresult);
             Py_XDECREF(pyresult);
         }
 
         if (msgid >= 0) {
-            pyresult = PyInt_FromLong(msgid);
+            pyresult = PyLong_FromLong(msgid);
             if (pyresult)
                 PyDict_SetItemString(info, "msgid", pyresult);
             Py_XDECREF(pyresult);
         }
 
-        pyresult = PyInt_FromLong(errnum);
+        pyresult = PyLong_FromLong(errnum);
         if (pyresult)
             PyDict_SetItemString(info, "result", pyresult);
         Py_XDECREF(pyresult);
@@ -129,7 +129,7 @@ LDAPraise_for_message(LDAP *l, LDAPMessage *m)
         Py_XDECREF(str);
 
         if (myerrno != 0) {
-            pyerrno = PyInt_FromLong(myerrno);
+            pyerrno = PyLong_FromLong(myerrno);
             if (pyerrno)
                 PyDict_SetItemString(info, "errno", pyerrno);
             Py_XDECREF(pyerrno);
