@@ -1,11 +1,6 @@
 /* See https://www.python-ldap.org/ for details. */
 
-#include "common.h"
-#include "constants.h"
-#include "LDAPObject.h"
-#include "ldapcontrol.h"
-#include "options.h"
-#include "berval.h"
+#include "pythonldap.h"
 
 void
 set_timeval_from_double(struct timeval *tv, double d)

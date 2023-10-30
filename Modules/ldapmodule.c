@@ -1,11 +1,6 @@
 /* See https://www.python-ldap.org/ for details. */
 
-#include "common.h"
-#include "constants.h"
-#include "functions.h"
-#include "ldapcontrol.h"
-
-#include "LDAPObject.h"
+#include "pythonldap.h"
 
 #if PY_MAJOR_VERSION >= 3
 PyMODINIT_FUNC PyInit__ldap(void);

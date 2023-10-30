@@ -1,9 +1,7 @@
 /* constants defined for LDAP
  * See https://www.python-ldap.org/ for details. */
 
-#include "common.h"
-#include "constants.h"
-#include "ldapcontrol.h"
+#include "pythonldap.h"
 
 /* the base exception class */
 

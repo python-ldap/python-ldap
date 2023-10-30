@@ -1,10 +1,6 @@
 /* See https://www.python-ldap.org/ for details. */
 
-#include "common.h"
-#include "message.h"
-#include "berval.h"
-#include "ldapcontrol.h"
-#include "constants.h"
+#include "pythonldap.h"
 
 /*
  * Converts an LDAP message into a Python structure.
