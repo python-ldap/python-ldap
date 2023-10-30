@@ -186,7 +186,7 @@ LDAPControls_to_List(LDAPControl **ldcs)
             Py_DECREF(res);
             return NULL;
         }
-        PyList_SET_ITEM(res, i, pyctrl);
+        PyList_SetItem(res, i, pyctrl);
     }
     return res;
 }
