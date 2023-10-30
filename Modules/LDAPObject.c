@@ -280,9 +280,9 @@ attrs_from_List(PyObject *attrlist, char ***attrsp)
     }
     else {
         PyObject *item = NULL;
+        PyObject *bstr;
         Py_ssize_t i, len, strlen;
-
-        const char *str;
+        char *str;
 
         seq = PySequence_Fast(attrlist, "expected list of strings or None");
         if (seq == NULL)
@@ -297,24 +297,35 @@ attrs_from_List(PyObject *attrlist, char ***attrsp)
 
         for (i = 0; i < len; i++) {
             attrs[i] = NULL;
-            item = PySequence_Fast_GET_ITEM(seq, i);
+            item = PySequence_GetItem(seq, i);
             if (item == NULL)
                 goto error;
             if (!PyUnicode_Check(item)) {
                 LDAPerror_TypeError
                     ("attrs_from_List(): expected string in list", item);
+                Py_DECREF(item);
                 goto error;
             }
-            str = PyUnicode_AsUTF8AndSize(item, &strlen);
+            // PyUnicode_AsUTF8AndSize is not in limited API < 3.10.
+            bstr = PyUnicode_AsUTF8String(item);
+            Py_DECREF(item);
+            if (bstr == NULL) {
+                goto error;
+            }
+            if (PyBytes_AsStringAndSize(bstr, &str, &strlen) < 0) {
+                Py_DECREF(bstr);
+                goto error;
+            }
             /* Make a copy. PyBytes_AsString* / PyUnicode_AsUTF8* return
-             * internal values that must be treated like const char. Python
-             * 3.7 actually returns a const char.
+             * internal values that must be treated like const char.
              */
             attrs[i] = (char *)PyMem_NEW(char, strlen + 1);
-
-            if (attrs[i] == NULL)
+            if (attrs[i] == NULL) {
+                Py_DECREF(bstr);
                 goto nomem;
+            }
             memcpy(attrs[i], str, strlen + 1);
+            Py_DECREF(bstr);
         }
         attrs[len] = NULL;
         Py_DECREF(seq);

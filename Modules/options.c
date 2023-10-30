@@ -183,8 +183,8 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
                     /* TypeError: mention either float or None is expected */
                     PyErr_Clear();
                     PyErr_Format(PyExc_TypeError,
-                                 "A float or None is expected for timeout, got %.100s",
-                                 Py_TYPE(value)->tp_name);
+                                 "A float or None is expected for timeout, got %S",
+                                 Py_TYPE(value));
                 }
                 return 0;
             }
@@ -302,9 +302,9 @@ LDAP_get_option(LDAPObject *self, int option)
             num_extensions++;
         extensions = PyTuple_New(num_extensions);
         for (i = 0; i < num_extensions; i++)
-            PyTuple_SET_ITEM(extensions, i,
-                             PyUnicode_FromString(apiinfo.ldapai_extensions
-                                                  [i]));
+            PyTuple_SetItem(extensions, i,
+                            PyUnicode_FromString(apiinfo.ldapai_extensions
+                                                 [i]));
 
         /* return api info as a dictionary */
         v = Py_BuildValue("{s:i, s:i, s:i, s:s, s:i, s:O}",
