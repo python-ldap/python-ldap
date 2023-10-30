@@ -332,24 +332,33 @@ attrs_from_List(PyObject *attrlist, char ***attrsp)
 
         for (i = 0; i < len; i++) {
             attrs[i] = NULL;
-            item = PySequence_Fast_GET_ITEM(seq, i);
+            item = PySequence_GetItem(seq, i);
             if (item == NULL)
                 goto error;
             if (!PyUnicode_Check(item)) {
                 LDAPerror_TypeError
                     ("attrs_from_List(): expected string in list", item);
+                Py_DECREF(item);
                 goto error;
             }
             str = PyUnicode_AsUTF8AndSize(item, &strlen);
+            if (str == NULL) {
+                Py_DECREF(item);
+                goto error;
+            }
+
             /* Make a copy. PyBytes_AsString* / PyUnicode_AsUTF8* return
              * internal values that must be treated like const char. Python
              * 3.7 actually returns a const char.
              */
             attrs[i] = (char *)PyMem_NEW(char, strlen + 1);
 
-            if (attrs[i] == NULL)
+            if (attrs[i] == NULL) {
+                Py_DECREF(item);
                 goto nomem;
+            }
             memcpy(attrs[i], str, strlen + 1);
+            Py_DECREF(item);
         }
         attrs[len] = NULL;
         Py_DECREF(seq);
