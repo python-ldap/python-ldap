@@ -657,7 +657,11 @@ class Test03_SimpleLDAPObjectWithFileno(Test00_SimpleLDAPObject):
         )
 
     def tearDown(self):
-        self._sock.close()
+        try:
+            self._sock.close()
+        except OSError:
+            # PyPy sometimes fails with "Bad file descriptor"
+            pass
         delattr(self, '_sock')
         super().tearDown()
 
