@@ -647,24 +647,14 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
 @requires_init_fd()
 class Test03_SimpleLDAPObjectWithFileno(Test00_SimpleLDAPObject):
     def _open_ldap_conn(self, who=None, cred=None, **kwargs):
-        if hasattr(self, '_sock'):
-            raise RuntimeError("socket already connected")
-        self._sock = socket.create_connection(
+        sock = socket.create_connection(
             (self.server.hostname, self.server.port)
         )
-        return super()._open_ldap_conn(
-            who=who, cred=cred, fileno=self._sock.fileno(), **kwargs
+        result = super()._open_ldap_conn(
+            who=who, cred=cred, fileno=sock.fileno(), **kwargs
         )
-
-    def tearDown(self):
-        self._sock.close()
-        delattr(self, '_sock')
-        super().tearDown()
-
-    def reset_connection(self):
-        self._sock.close()
-        delattr(self, '_sock')
-        super(Test03_SimpleLDAPObjectWithFileno, self).reset_connection()
+        sock.detach()
+        return result
 
 
 if __name__ == '__main__':
