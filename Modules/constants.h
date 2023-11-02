@@ -13,6 +13,8 @@ extern PyObject *LDAPerror(LDAP *);
 extern PyObject *LDAPraise_for_message(LDAP *, LDAPMessage *m);
 PyObject *LDAPerr(int errnum);
 
+extern LDAPAPIInfo ldap_version_info;
+
 #ifndef LDAP_CONTROL_PAGE_OID
 #define LDAP_CONTROL_PAGE_OID "1.2.840.113556.1.4.319"
 #endif /* !LDAP_CONTROL_PAGE_OID */
