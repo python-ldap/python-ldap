@@ -6,6 +6,7 @@
 #include "berval.h"
 #include "constants.h"
 #include "options.h"
+#include <stdio.h>
 
 /* ldap_initialize */
 
@@ -160,6 +161,149 @@ l_ldap_str2dn(PyObject *unused, PyObject *args)
     return result;
 }
 
+/* ldap_dn2str */
+
+static PyObject *
+l_ldap_dn2str(PyObject *unused, PyObject *args)
+{
+    struct berval str;
+    LDAPDN dn = NULL;
+    LDAPRDN rdn = NULL;
+    LDAPAVA *ava = NULL;
+    int flags = 0;
+
+    PyObject *result = NULL, *tmp, *dn_list;
+    PyObject *iter, *inext, *iiter, *next;
+    PyObject *name, *value, *encoding;
+
+    Py_ssize_t nrdns, navas;
+    int res, i, j;
+    char *type_error_message = "expected List[List[Tuple[str, str, int]]]";
+
+    /*
+     * From a list-equivalent of AVA structures; namely:
+     * ((('a', 'b', 1), ('c', 'd', 1)), (('e', 'f', 1),)), build
+     * a DN string such as "a=b,c=d;e=f".
+     * The integers are a bit combination of the AVA_* flags
+     */
+    if (!PyArg_ParseTuple(args, "Oi:dn2str", &dn_list, &flags))
+        return NULL;
+    Py_XDECREF(args);
+    Py_INCREF(dn_list);
+
+    iter = PyObject_GetIter(dn_list);
+    if (!iter) {
+        PyErr_SetString(PyExc_TypeError, type_error_message);
+        goto failed;
+    }
+
+    nrdns = PyObject_Length(dn_list);
+    if (nrdns == -1) {
+        // can't happen
+        goto failed;
+    }
+    dn = malloc(sizeof(LDAPRDN *) * (nrdns + 1));
+
+    i = 0;
+    while (1) {
+        inext = PyIter_Next(iter);
+        if (!inext) {
+            break;
+        }
+
+        if (PyList_Check(inext)) {
+            inext = PyList_AsTuple(inext);
+        }
+        if (!PyTuple_Check(inext)) {
+            PyErr_SetString(PyExc_TypeError, type_error_message);
+            Py_XDECREF(iter);
+            Py_XDECREF(inext);
+            goto failed;
+        }
+
+        iiter = PyObject_GetIter(inext);
+
+        navas = PyObject_Length(inext);
+        rdn = malloc(sizeof(LDAPRDN) * (navas + 1));
+
+        j = 0;
+        while (1) {
+            next = PyIter_Next(iiter);
+            if (!next) {
+                break;
+            }
+
+            if (PyList_Check(next)) {
+                next = PyList_AsTuple(next);
+            }
+            if (!PyTuple_Check(next) || PyTuple_Size(next) != 3) {
+                PyErr_SetString(PyExc_TypeError, type_error_message);
+                Py_XDECREF(iter);
+                Py_XDECREF(iiter);
+                Py_XDECREF(next);
+                goto failed;
+            }
+
+            name = PyTuple_GetItem(next, 0);
+            value = PyTuple_GetItem(next, 1);
+            encoding = PyTuple_GetItem(next, 2);
+
+            if (!PyUnicode_Check(name) || !PyUnicode_Check(value) || !PyLong_Check(encoding)) {
+                PyErr_SetString(PyExc_TypeError, type_error_message);
+                Py_XDECREF(iter);
+                Py_XDECREF(iiter);
+                Py_XDECREF(next);
+                Py_XDECREF(name);
+                Py_XDECREF(value);
+                Py_XDECREF(encoding);
+                goto failed;
+            }
+
+            ava = malloc(sizeof(LDAPAVA));
+
+            ava->la_attr.bv_val = (char *) PyUnicode_AsUTF8AndSize(name, (long int*) &ava->la_attr.bv_len);
+            ava->la_value.bv_val = (char *) PyUnicode_AsUTF8AndSize(value, (long int*) &ava->la_value.bv_len);
+            ava->la_flags = (int)PyLong_AsLong(encoding);
+
+            Py_XDECREF(next);
+            // TODO: segfault when activating the following:
+            //Py_XDECREF(name);
+            //Py_XDECREF(value);
+            //Py_XDECREF(encoding);
+
+            rdn[j] = ava;
+            j++;
+        }
+        Py_XDECREF(iiter);
+        Py_XDECREF(inext);
+        rdn[j] = NULL;
+
+        dn[i] = rdn;
+        i++;
+    }
+    dn[i] = NULL;
+
+    res = ldap_dn2bv(dn, &str, flags);
+    if (res != LDAP_SUCCESS)
+        return LDAPerr(res);  // TODO: no attr set
+
+    tmp = PyUnicode_FromString(str.bv_val);
+    if (!tmp)
+        goto failed;
+
+    result = tmp;
+    //Py_XDECREF(tmp);
+    tmp = NULL;
+
+  failed:
+    Py_XDECREF(tmp);
+    Py_XDECREF(iter);
+    Py_XDECREF(dn_list);
+    //Py_XDECREF(result);
+    // ldap_dnfree(dn);
+    return result;
+}
+
 /* ldap_set_option (global options) */
 
 static PyObject *
@@ -196,6 +340,7 @@ static PyMethodDef methods[] = {
     {"initialize_fd", (PyCFunction)l_ldap_initialize_fd, METH_VARARGS},
 #endif
     {"str2dn", (PyCFunction)l_ldap_str2dn, METH_VARARGS},
+    {"dn2str", (PyCFunction)l_ldap_dn2str, METH_VARARGS},
     {"set_option", (PyCFunction)l_ldap_set_option, METH_VARARGS},
     {"get_option", (PyCFunction)l_ldap_get_option, METH_VARARGS},
     {NULL, NULL}
