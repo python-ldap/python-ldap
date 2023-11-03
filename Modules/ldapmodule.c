@@ -41,7 +41,7 @@ PyInit__ldap()
     m = PyModule_Create(&ldap_moduledef);
 
     /* Initialize LDAP class */
-    if (PyType_Ready(&LDAP_Type) < 0) {
+    if (LDAPMod_init_type(m) < 0) {
         Py_DECREF(m);
         return NULL;
     }

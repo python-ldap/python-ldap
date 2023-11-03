@@ -17,6 +17,11 @@
 #include <ldap.h>
 #include <ldap_features.h>
 
+#if PY_VERSION_HEX >= 0x030a0000 && (!defined(Py_LIMITED_API) || Py_LIMITED_API >= 0x030a0000)
+// Python 3.10 stable ABI introduced PyType_GetModuleState()
+#define HAVE_PYTYPE_GETMODULESTATE 1
+#endif
+
 #if LDAP_VENDOR_VERSION < 20400
 #error Current python-ldap requires OpenLDAP 2.4.x
 #endif
@@ -95,8 +100,9 @@ typedef struct {
     int valid;
 } LDAPObject;
 
-PYLDAP_DATA(PyTypeObject) LDAP_Type;
+PYLDAP_DATA(PyTypeObject *)LDAP_Type;
 PYLDAP_FUNC(LDAPObject *) newLDAPObject(LDAP *);
+PYLDAP_FUNC(int) LDAPMod_init_type(PyObject *module);
 
 /* macros to allow thread saving in the context of an LDAP connection */
 

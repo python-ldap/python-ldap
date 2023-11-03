@@ -12,36 +12,75 @@
 
 static void free_attrs(char ***);
 
-/* constructor */
+/* global heap type object */
+PyTypeObject *LDAP_Type;
 
+/* constructor */
 LDAPObject *
 newLDAPObject(LDAP *l)
 {
-    LDAPObject *self = (LDAPObject *)PyObject_NEW(LDAPObject, &LDAP_Type);
+    LDAPObject *self = (LDAPObject *)PyObject_GC_New(LDAPObject, LDAP_Type);
 
-    if (self == NULL)
+    if (self == NULL) {
         return NULL;
+    }
+#if PY_VERSION_HEX < 0x03080000
+    // Python 3.6 and 3.7 do not increase refcount of type object
+    Py_INCREF(Py_TYPE(self));
+#ifdef Py_LIMITED_API
+    // The workaround is incompatible with limited API.
+    #error "python-ldap does not supported limited API with Python < 3.8"
+#endif // Py_LIMITED_API
+#endif // PY_VERSION_HEX
     self->ldap = l;
     self->_save = NULL;
     self->valid = 1;
     return self;
 }
 
-/* destructor */
-
-static void
-dealloc(LDAPObject *self)
+// Py_TPFLAGS_DISALLOW_INSTANTIATION was introduced in 3.10.
+static PyObject *
+l_ldap_new(PyObject *type, PyObject *args, PyObject *kwargs)
 {
-    if (self->ldap) {
-        if (self->valid) {
-            LDAP_BEGIN_ALLOW_THREADS(self);
-            ldap_unbind_ext(self->ldap, NULL, NULL);
-            LDAP_END_ALLOW_THREADS(self);
-            self->valid = 0;
+    PyErr_SetString(PyExc_TypeError, "cannot create 'LDAP' instances");
+    return NULL;
+}
+
+/* GC protocol for heap types */
+static int
+l_ldap_traverse(PyObject *self, visitproc visit, void *arg)
+{
+    Py_VISIT((PyObject *)Py_TYPE(self));
+    return 0;
+}
+
+static int
+l_ldap_clear(PyObject *self)
+{
+    return 0;
+}
+
+/* destructor */
+static void
+l_ldap_dealloc(PyObject *self)
+{
+    LDAPObject *l = (LDAPObject *)self;
+    PyTypeObject *tp = Py_TYPE(self);
+
+    PyObject_GC_UnTrack(self);
+
+    if (l->ldap) {
+        if (l->valid) {
+            LDAP_BEGIN_ALLOW_THREADS(l);
+            ldap_unbind_ext(l->ldap, NULL, NULL);
+            LDAP_END_ALLOW_THREADS(l);
+            l->valid = 0;
         }
-        self->ldap = NULL;
+        l->ldap = NULL;
     }
-    PyObject_DEL(self);
+
+    PyObject_GC_Del(self);
+    Py_DECREF(tp);
 }
 
 /*------------------------------------------------------------
@@ -1473,8 +1512,7 @@ l_ldap_extended_operation(LDAPObject *self, PyObject *args)
 }
 
 /* methods */
-
-static PyMethodDef methods[] = {
+static PyMethodDef l_ldap_methods[] = {
     {"unbind_ext", (PyCFunction)l_ldap_unbind_ext, METH_VARARGS},
     {"abandon_ext", (PyCFunction)l_ldap_abandon_ext, METH_VARARGS},
     {"add_ext", (PyCFunction)l_ldap_add_ext, METH_VARARGS},
@@ -1505,37 +1543,41 @@ static PyMethodDef methods[] = {
 };
 
 /* type entry */
-
-PyTypeObject LDAP_Type = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-        "LDAP",         /*tp_name */
-    sizeof(LDAPObject), /*tp_basicsize */
-    0,                  /*tp_itemsize */
-    /* methods */
-    (destructor) dealloc,       /*tp_dealloc */
-    0,                  /*tp_print */
-    0,                  /*tp_getattr */
-    0,                  /*tp_setattr */
-    0,                  /*tp_compare */
-    0,                  /*tp_repr */
-    0,                  /*tp_as_number */
-    0,                  /*tp_as_sequence */
-    0,                  /*tp_as_mapping */
-    0,                  /*tp_hash */
-    0,                  /*tp_call */
-    0,                  /*tp_str */
-    0,                  /*tp_getattro */
-    0,                  /*tp_setattro */
-    0,                  /*tp_as_buffer */
-    0,                  /*tp_flags */
-    0,                  /*tp_doc */
-    0,                  /*tp_traverse */
-    0,                  /*tp_clear */
-    0,                  /*tp_richcompare */
-    0,                  /*tp_weaklistoffset */
-    0,                  /*tp_iter */
-    0,                  /*tp_iternext */
-    methods,            /*tp_methods */
-    0,                  /*tp_members */
-    0,                  /*tp_getset */
+static PyType_Slot ldap_type_slots[] = {
+    {Py_tp_methods, l_ldap_methods},
+    {Py_tp_new, l_ldap_new},
+    {Py_tp_dealloc, l_ldap_dealloc},
+    {Py_tp_traverse, l_ldap_traverse},
+    {Py_tp_clear, l_ldap_clear},
+    {0, 0}
 };
+
+static PyType_Spec ldap_type_spec = {
+    .name = "_ldap.LDAP",
+    .basicsize = sizeof(LDAPObject),
+    .flags = (Py_TPFLAGS_DEFAULT |
+#ifdef Py_TPFLAGS_DISALLOW_INSTANTIATION
+              Py_TPFLAGS_DISALLOW_INSTANTIATION |
+#endif
+#ifdef Py_TPFLAGS_IMMUTABLETYPE
+              Py_TPFLAGS_IMMUTABLETYPE |
+#endif
+              Py_TPFLAGS_HAVE_GC),
+    .slots = ldap_type_slots
+};
+
+int
+LDAPMod_init_type(PyObject *m)
+{
+    if (LDAP_Type == NULL) {
+#ifdef HAVE_PYTYPE_GETMODULESTATE
+        // PyType_GetModuleState() needs PyType_FromModuleAndSpec()
+        LDAP_Type =
+            (PyTypeObject *) PyType_FromModuleAndSpec(m, &ldap_type_spec,
+                                                      NULL);
+#else
+        LDAP_Type = (PyTypeObject *) PyType_FromSpec(&ldap_type_spec);
+#endif
+    }
+    return LDAP_Type != NULL ? 0 : -1;
+}

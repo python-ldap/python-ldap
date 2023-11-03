@@ -240,6 +240,18 @@ class TestLdapCExtension(SlapdTestCase):
         else:
             self.assertTrue(_ldap.SASL_AVAIL)
 
+    def test_ldap_type(self):
+        ldap_type = type(self._open_conn())
+        # Python 3.10+ versions use qualified class name
+        self.assertIn(
+            repr(ldap_type),
+            ["<class 'LDAP'>", "<class '_ldap.LDAP'>"],
+        )
+        with self.assertRaisesRegex(
+            TypeError, "cannot create '.*LDAP' instances"
+        ):
+            ldap_type()
+
     def test_simple_bind(self):
         l = self._open_conn()
 
