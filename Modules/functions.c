@@ -4,8 +4,8 @@
 
 /* ldap_initialize */
 
-static PyObject *
-l_ldap_initialize(PyObject *unused, PyObject *args)
+PyObject *
+LDAPMod_initialize(PyObject *module, PyObject *args)
 {
     char *uri;
     LDAP *ld = NULL;
@@ -28,8 +28,8 @@ l_ldap_initialize(PyObject *unused, PyObject *args)
 #ifdef HAVE_LDAP_INIT_FD
 /* initialize_fd(fileno, url) */
 
-static PyObject *
-l_ldap_initialize_fd(PyObject *unused, PyObject *args)
+PyObject *
+LDAPMod_initialize_fd(PyObject *module, PyObject *args)
 {
     char *url;
     LDAP *ld = NULL;
@@ -82,8 +82,8 @@ l_ldap_initialize_fd(PyObject *unused, PyObject *args)
 
 /* ldap_str2dn */
 
-static PyObject *
-l_ldap_str2dn(PyObject *unused, PyObject *args)
+PyObject *
+LDAPMod_str2dn(PyObject *module, PyObject *args)
 {
     struct berval str;
     LDAPDN dn;
@@ -157,8 +157,8 @@ l_ldap_str2dn(PyObject *unused, PyObject *args)
 
 /* ldap_set_option (global options) */
 
-static PyObject *
-l_ldap_set_option(PyObject *self, PyObject *args)
+PyObject *
+LDAPMod_set_option(PyObject *module, PyObject *args)
 {
     PyObject *value;
     int option;
@@ -173,8 +173,8 @@ l_ldap_set_option(PyObject *self, PyObject *args)
 
 /* ldap_get_option (global options) */
 
-static PyObject *
-l_ldap_get_option(PyObject *self, PyObject *args)
+PyObject *
+LDAPMod_get_option(PyObject *module, PyObject *args)
 {
     int option;
 
@@ -184,22 +184,3 @@ l_ldap_get_option(PyObject *self, PyObject *args)
 }
 
 /* methods */
-
-static PyMethodDef methods[] = {
-    {"initialize", (PyCFunction)l_ldap_initialize, METH_VARARGS},
-#ifdef HAVE_LDAP_INIT_FD
-    {"initialize_fd", (PyCFunction)l_ldap_initialize_fd, METH_VARARGS},
-#endif
-    {"str2dn", (PyCFunction)l_ldap_str2dn, METH_VARARGS},
-    {"set_option", (PyCFunction)l_ldap_set_option, METH_VARARGS},
-    {"get_option", (PyCFunction)l_ldap_get_option, METH_VARARGS},
-    {NULL, NULL}
-};
-
-/* initialisation */
-
-void
-LDAPinit_functions(PyObject *d)
-{
-    LDAPadd_methods(d, methods);
-}

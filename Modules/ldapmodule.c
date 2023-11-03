@@ -9,58 +9,55 @@ static char version_str[] = STR(LDAPMODULE_VERSION);
 static char author_str[] = STR(LDAPMODULE_AUTHOR);
 static char license_str[] = STR(LDAPMODULE_LICENSE);
 
-static void
+static int
 init_pkginfo(PyObject *m)
 {
-    PyModule_AddStringConstant(m, "__version__", version_str);
-    PyModule_AddStringConstant(m, "__author__", author_str);
-    PyModule_AddStringConstant(m, "__license__", license_str);
+    if (PyModule_AddStringConstant(m, "__version__", version_str) != 0)
+        return -1;
+    if (PyModule_AddStringConstant(m, "__author__", author_str) != 0)
+        return -1;
+    if (PyModule_AddStringConstant(m, "__license__", license_str) != 0)
+        return -1;
+    return 0;
 }
 
-/* dummy module methods */
-static PyMethodDef methods[] = {
+static PyMethodDef ldap_functions[] = {
+    // functions.c
+    {"initialize", LDAPMod_initialize, METH_VARARGS},
+#ifdef HAVE_LDAP_INIT_FD
+    {"initialize_fd", LDAPMod_initialize_fd, METH_VARARGS},
+#endif
+    {"str2dn", LDAPMod_str2dn, METH_VARARGS},
+    {"set_option", LDAPMod_set_option, METH_VARARGS},
+    {"get_option", LDAPMod_get_option, METH_VARARGS},
+    // ldapcontrol.c
+    {"encode_page_control", LDAPMod_encode_rfc2696, METH_VARARGS},
+    {"decode_page_control", LDAPMod_decode_rfc2696, METH_VARARGS},
+    {"encode_valuesreturnfilter_control", LDAPMod_encode_rfc3876,
+     METH_VARARGS},
+    {"encode_assertion_control", LDAPMod_encode_assertion_control,
+     METH_VARARGS},
     {NULL, NULL}
+};
+
+/* module initialisation */
+static PyModuleDef_Slot ldap_slots[] = {
+    {Py_mod_exec, LDAPMod_init_type},
+    {Py_mod_exec, LDAPMod_init_constants},
+    {Py_mod_exec, init_pkginfo},
+    {0, NULL}
 };
 
 static struct PyModuleDef ldap_moduledef = {
     PyModuleDef_HEAD_INIT,
-    "_ldap",        /* m_name */
-    "",             /* m_doc */
-    -1,             /* m_size */
-    methods,        /* m_methods */
+    .m_name = "_ldap",
+    .m_size = 0,
+    .m_methods = ldap_functions,
+    .m_slots = ldap_slots,
 };
-
-/* module initialisation */
 
 PyMODINIT_FUNC
 PyInit__ldap()
 {
-    PyObject *m, *d;
-
-    /* Create the module and add the functions */
-    m = PyModule_Create(&ldap_moduledef);
-
-    /* Initialize LDAP class */
-    if (PyType_Ready(&LDAP_Type) < 0) {
-        Py_DECREF(m);
-        return NULL;
-    }
-
-    /* Add some symbolic constants to the module */
-    d = PyModule_GetDict(m);
-
-    init_pkginfo(m);
-
-    if (LDAPinit_constants(m) == -1) {
-        return NULL;
-    }
-
-    LDAPinit_functions(d);
-    LDAPinit_control(d);
-
-    /* Check for errors */
-    if (PyErr_Occurred())
-        Py_FatalError("can't initialize module _ldap");
-
-    return m;
+    return PyModuleDef_Init(&ldap_moduledef);
 }

@@ -192,7 +192,7 @@ LDAPerror(LDAP *l)
 /* initialise the module constants */
 
 int
-LDAPinit_constants(PyObject *m)
+LDAPMod_init_constants(PyObject *m)
 {
     PyObject *exc, *nobj;
     struct ldap_apifeature_info info = { 1, "X_OPENLDAP_THREAD_SAFE", 0 };

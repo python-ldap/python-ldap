@@ -1539,3 +1539,13 @@ PyTypeObject LDAP_Type = {
     0,                  /*tp_members */
     0,                  /*tp_getset */
 };
+
+int
+LDAPMod_init_type(PyObject *m)
+{
+    /* Initialize LDAP class */
+    if (PyType_Ready(&LDAP_Type) < 0) {
+        return -1;
+    }
+    return 0;
+}

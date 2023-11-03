@@ -55,8 +55,6 @@ LDAP_F(int) ldap_init_fd(ber_socket_t fd, int proto, LDAP_CONST char *url,
 
 PYLDAP_FUNC(PyObject *) LDAPerror_TypeError(const char *, PyObject *);
 
-PYLDAP_FUNC(void) LDAPadd_methods(PyObject *d, PyMethodDef *methods);
-
 #define PyNone_Check(o) ((o) == Py_None)
 
 /* *** berval *** */
@@ -64,7 +62,7 @@ PYLDAP_FUNC(PyObject *) LDAPberval_to_object(const struct berval *bv);
 PYLDAP_FUNC(PyObject *) LDAPberval_to_unicode_object(const struct berval *bv);
 
 /* *** constants *** */
-PYLDAP_FUNC(int) LDAPinit_constants(PyObject *m);
+PYLDAP_FUNC(int) LDAPMod_init_constants(PyObject *m);
 
 PYLDAP_DATA(PyObject *) LDAPexception_class;
 PYLDAP_FUNC(PyObject *) LDAPerror(LDAP *);
@@ -79,14 +77,14 @@ PYLDAP_FUNC(PyObject *) LDAPerr(int errnum);
 #define LDAP_CONTROL_VALUESRETURNFILTER "1.2.826.0.1.3344810.2.3"       /* RFC 3876 */
 #endif /* !LDAP_CONTROL_VALUESRETURNFILTER */
 
-/* *** functions *** */
-PYLDAP_FUNC(void) LDAPinit_functions(PyObject *);
-
 /* *** ldapcontrol *** */
-PYLDAP_FUNC(void) LDAPinit_control(PyObject *d);
 PYLDAP_FUNC(void) LDAPControl_List_DEL(LDAPControl **);
 PYLDAP_FUNC(int) LDAPControls_from_object(PyObject *, LDAPControl ***);
 PYLDAP_FUNC(PyObject *) LDAPControls_to_List(LDAPControl **ldcs);
+PYLDAP_FUNC(PyObject *) LDAPMod_encode_rfc2696(PyObject *, PyObject *);
+PYLDAP_FUNC(PyObject *) LDAPMod_decode_rfc2696(PyObject *, PyObject *);
+PYLDAP_FUNC(PyObject *) LDAPMod_encode_rfc3876(PyObject *, PyObject *);
+PYLDAP_FUNC(PyObject *) LDAPMod_encode_assertion_control(PyObject *, PyObject *);
 
 /* *** ldapobject *** */
 typedef struct {
@@ -97,6 +95,7 @@ typedef struct {
 
 PYLDAP_DATA(PyTypeObject) LDAP_Type;
 PYLDAP_FUNC(LDAPObject *) newLDAPObject(LDAP *);
+PYLDAP_FUNC(int) LDAPMod_init_type(PyObject *module);
 
 /* macros to allow thread saving in the context of an LDAP connection */
 
@@ -127,5 +126,14 @@ PYLDAP_FUNC(int) LDAP_set_option(LDAPObject *self, int option,
                                  PyObject *value);
 PYLDAP_FUNC(PyObject *) LDAP_get_option(LDAPObject *self, int option);
 PYLDAP_FUNC(void) set_timeval_from_double(struct timeval *tv, double d);
+
+/* *** functions *** */
+PYLDAP_FUNC(PyObject *) LDAPMod_initialize(PyObject *, PyObject *);
+#ifdef HAVE_LDAP_INIT_FD
+PYLDAP_FUNC(PyObject *) LDAPMod_initialize_fd(PyObject *, PyObject *);
+#endif
+PYLDAP_FUNC(PyObject *) LDAPMod_str2dn(PyObject *, PyObject *);
+PYLDAP_FUNC(PyObject *) LDAPMod_set_option(PyObject *, PyObject *);
+PYLDAP_FUNC(PyObject *) LDAPMod_get_option(PyObject *, PyObject *);
 
 #endif /* pythonldap_h */
