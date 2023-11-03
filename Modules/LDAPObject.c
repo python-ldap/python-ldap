@@ -1518,7 +1518,7 @@ l_ldap_connect(LDAPObject *self, PyObject Py_UNUSED(args))
 #if LDAP_VENDOR_VERSION >= 20500
     int ldaperror;
 
-    if (ldap_version_info.ldapai_vendor_version < 20500)
+    if (LDAPMod_version_info.ldapai_vendor_version < 20500)
 #endif
     {
         PyErr_SetString(PyExc_NotImplementedError,
@@ -1600,15 +1600,8 @@ static PyType_Spec ldap_type_spec = {
 int
 LDAPMod_init_type(PyObject *m)
 {
-    if (LDAP_Type == NULL) {
-#ifdef HAVE_PYTYPE_GETMODULESTATE
-        // PyType_GetModuleState() needs PyType_FromModuleAndSpec()
-        LDAP_Type =
-            (PyTypeObject *) PyType_FromModuleAndSpec(m, &ldap_type_spec,
-                                                      NULL);
-#else
-        LDAP_Type = (PyTypeObject *) PyType_FromSpec(&ldap_type_spec);
-#endif
-    }
+    LDAP_Type = (PyTypeObject *) PyType_FromModuleAndSpec(m,
+        &ldap_type_spec, NULL);
+
     return LDAP_Type != NULL ? 0 : -1;
 }
