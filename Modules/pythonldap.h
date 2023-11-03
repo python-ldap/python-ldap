@@ -106,8 +106,9 @@ typedef struct {
     int valid;
 } LDAPObject;
 
-PYLDAP_DATA(PyTypeObject) LDAP_Type;
+PYLDAP_DATA(PyTypeObject *) LDAP_Type;
 PYLDAP_FUNC(LDAPObject *) newLDAPObject(LDAP *);
+PYLDAP_FUNC(int) LDAPMod_init_type(PyObject *module);
 
 /* macros to allow thread saving in the context of an LDAP connection */
 
