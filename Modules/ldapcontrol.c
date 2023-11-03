@@ -194,8 +194,8 @@ LDAPControls_to_List(LDAPControl **ldcs)
 /* --------------- en-/decoders ------------- */
 
 /* Matched Values, aka, Values Return Filter */
-static PyObject *
-encode_rfc3876(PyObject *self, PyObject *args)
+PyObject *
+LDAPMod_encode_rfc3876(PyObject *module, PyObject *args)
 {
     PyObject *res = 0;
     int err;
@@ -235,8 +235,8 @@ encode_rfc3876(PyObject *self, PyObject *args)
     return res;
 }
 
-static PyObject *
-encode_rfc2696(PyObject *self, PyObject *args)
+PyObject *
+LDAPMod_encode_rfc2696(PyObject *module, PyObject *args)
 {
     PyObject *res = 0;
     BerElement *ber = 0;
@@ -291,8 +291,8 @@ encode_rfc2696(PyObject *self, PyObject *args)
     return res;
 }
 
-static PyObject *
-decode_rfc2696(PyObject *self, PyObject *args)
+PyObject *
+LDAPMod_decode_rfc2696(PyObject *module, PyObject *args)
 {
     PyObject *res = 0;
     BerElement *ber = 0;
@@ -328,8 +328,8 @@ decode_rfc2696(PyObject *self, PyObject *args)
     return res;
 }
 
-static PyObject *
-encode_assertion_control(PyObject *self, PyObject *args)
+PyObject *
+LDAPMod_encode_assertion_control(PyObject *module, PyObject *args)
 {
     int err;
     PyObject *res = 0;
@@ -373,18 +373,4 @@ encode_assertion_control(PyObject *self, PyObject *args)
   endlbl:
 
     return res;
-}
-
-static PyMethodDef methods[] = {
-    {"encode_page_control", encode_rfc2696, METH_VARARGS},
-    {"decode_page_control", decode_rfc2696, METH_VARARGS},
-    {"encode_valuesreturnfilter_control", encode_rfc3876, METH_VARARGS},
-    {"encode_assertion_control", encode_assertion_control, METH_VARARGS},
-    {NULL, NULL}
-};
-
-void
-LDAPinit_control(PyObject *d)
-{
-    LDAPadd_methods(d, methods);
 }

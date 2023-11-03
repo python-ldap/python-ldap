@@ -180,11 +180,9 @@ LDAPerror(LDAP *l)
 /* initialise the module constants */
 
 int
-LDAPinit_constants(PyObject *m)
+LDAPMod_init_constants(PyObject *m)
 {
     PyObject *exc, *nobj;
-    struct ldap_apifeature_info info = { 1, "X_OPENLDAP_THREAD_SAFE", 0 };
-    int thread_safe = 0;
 
     /* simple constants */
 
@@ -209,20 +207,11 @@ LDAPinit_constants(PyObject *m)
         goto error;
     Py_INCREF(LDAPexception_class);
 
-#ifdef LDAP_API_FEATURE_X_OPENLDAP_THREAD_SAFE
-    if (ldap_get_option(NULL, LDAP_OPT_API_FEATURE_INFO, &info) == LDAP_SUCCESS) {
-        thread_safe = (info.ldapaif_version == 1);
-    }
-#endif
-    if (PyModule_AddIntConstant(m, "LIBLDAP_R", thread_safe) != 0)
+    if (PyModule_AddIntConstant(m, "LIBLDAP_R", LDAPMod_thread_safe) != 0)
         goto error;
 
-    if (ldap_get_option(NULL, LDAP_OPT_API_INFO, &ldap_version_info) != LDAP_SUCCESS) {
-        PyErr_SetString(PyExc_ImportError, "unrecognised libldap version");
-        goto error;
-    }
     if (PyModule_AddIntConstant(m, "_VENDOR_VERSION_RUNTIME",
-                ldap_version_info.ldapai_vendor_version ) != 0)
+                LDAPMod_version_info.ldapai_vendor_version) != 0)
         goto error;
 
     /* Generated constants -- see Lib/ldap/constants.py */
