@@ -38,7 +38,8 @@ This module defines the following functions:
    The *uri* parameter may be a comma- or whitespace-separated list of URIs
    containing only the schema, the host, and the port fields. Note that
    when using multiple URIs you cannot determine to which URI your client
-   gets connected.
+   gets connected. If *uri* is :py:const:`None`, the default URIs from
+   ``ldap.conf`` or :py:const:`OPT_URI` global option will be used.
 
    If *fileno* parameter is given then the file descriptor will be used to
    connect to an LDAP server. The *fileno* must either be a socket file
