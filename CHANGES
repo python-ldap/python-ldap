@@ -1,3 +1,20 @@
+Released 3.4.4 2022-11-17
+
+Fixes:
+* Reconnect race condition in ReconnectLDAPObject is now fixed
+* Socket ownership is now claimed once we've passed it to libldap
+* LDAP_set_option string formats are now compatible with Python 3.12
+
+Doc/
+* Security Policy was created
+* Broken article links are fixed now
+* Bring Conscious Language improvements
+
+Infrastructure:
+* Add testing and document support for Python 3.10, 3.11, and 3.12
+
+
+----------------------------------------------------------------
 Released 3.4.3 2022-09-15
 
 This is a minor release to bring back the removed OPT_X_TLS option.
