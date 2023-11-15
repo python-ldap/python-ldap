@@ -100,6 +100,11 @@ l_ldap_str2dn(PyObject *unused, PyObject *args)
      */
     if (!PyArg_ParseTuple(args, "z#|i:str2dn", &str.bv_val, &str_len, &flags))
         return NULL;
+
+    if (str_len == 0) {
+        // GH-549: ldap_bv2dn() does not support empty string.
+        return PyList_New(0);
+    }
     str.bv_len = (ber_len_t) str_len;
 
     res = ldap_bv2dn(&str, &dn, flags);
