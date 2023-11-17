@@ -3,7 +3,7 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See https://www.python-ldap.org/ for details.
 """
-__version__ = '3.4.3'
+__version__ = '3.4.4'
 
 __all__ = [
   # constants
