@@ -25,6 +25,7 @@ changeNumber
 changesOnly
 changeType
 changeTypes
+Christoph
 cidict
 clientctrls
 conf
@@ -56,6 +57,7 @@ filterstr
 filterStr
 formatOID
 func
+Gohlke
 GPG
 Heimdal
 hostport
