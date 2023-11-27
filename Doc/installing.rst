@@ -63,8 +63,8 @@ to get up to date information which versions are available.
 Windows
 -------
 
-Unofficial packages for Windows are available on
-`Christoph Gohlke's page <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_.
+Unofficial binary builds for Windows are provided by Christoph Gohlke, available at
+`python-ldap-build <https://github.com/cgohlke/python-ldap-build/releases>`_.
 
 
 `FreeBSD <https://www.freebsd.org/>`_
