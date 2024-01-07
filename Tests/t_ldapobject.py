@@ -478,6 +478,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             [self.server.suffix.encode('utf-8')]
         )
 
+
     def test_compare_s_true(self):
         base = self.server.suffix
         l = self._ldap_conn
@@ -568,6 +569,38 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             ("objectClass", b'myClass'),
             ("myAttribute", b'foobar'),
         ])
+
+    def test_valid_attrlist_parameter_types(self):
+        """Tests the case when a valid parameter type is passed to search_ext
+
+        Any iterable which only contains strings should not raise any errors.
+        """
+
+        l = self._ldap_conn
+
+        valid_attrlist_parameters = [{"a": "2"}, ["a", "b"], {}, set(), set(["a", "b"])]
+
+        for attrlist in valid_attrlist_parameters:
+            out = l.search_ext(
+                "%s" % self.server.suffix, ldap.SCOPE_SUBTREE, attrlist=attrlist
+            )
+
+    def test_invalid_attrlist_parameter_types(self):
+        """Tests the case when an invalid parameter type is passed to search_ext
+
+        Any object type that is either not a interable or does contain something
+        that isn't a string should raise a TypeError. The exception is the string type itself.
+        """
+
+        invalid_attrlist_parameters = [{1: 2}, 0, object(), "string"]
+
+        l = self._ldap_conn
+
+        for attrlist in invalid_attrlist_parameters:
+            with self.assertRaises(TypeError):
+                l.search_ext(
+                    "%s" % self.server.suffix, ldap.SCOPE_SUBTREE, attrlist=attrlist
+                )
 
 
 class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
