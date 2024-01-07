@@ -288,7 +288,10 @@ attrs_from_List(PyObject *attrlist, char ***attrsp)
         if (seq == NULL)
             goto error;
 
-        len = PySequence_Length(attrlist);
+        len = PySequence_Size(seq);
+        if (len == -1) {
+            goto error;
+        }
 
         attrs = PyMem_NEW(char *, len + 1);
 
