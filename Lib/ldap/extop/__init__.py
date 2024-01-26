@@ -11,6 +11,14 @@ response.
 
 from ldap.pkginfo import __version__
 
+__all__ = [
+  # dds
+  'RefreshRequest',
+  'RefreshResponse',
+  # passwd
+  'PasswordModifyResponse',
+]
+
 
 class ExtendedRequest:
   """
@@ -64,5 +72,5 @@ class ExtendedResponse:
 
 
 # Import sub-modules
-from ldap.extop.dds import *
+from ldap.extop.dds import RefreshRequest, RefreshResponse
 from ldap.extop.passwd import PasswordModifyResponse
