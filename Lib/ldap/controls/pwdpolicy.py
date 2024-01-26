@@ -34,6 +34,6 @@ class PasswordExpiredControl(ResponseControl):
   controlType = '2.16.840.1.113730.3.4.4'
 
   def decodeControlValue(self,encodedControlValue):
-    self.passwordExpired = encodedControlValue=='0'
+    self.passwordExpired = encodedControlValue == b'0'
 
 KNOWN_RESPONSE_CONTROLS[PasswordExpiredControl.controlType] = PasswordExpiredControl
