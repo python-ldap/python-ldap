@@ -3,11 +3,18 @@ ldap.resiter - processing LDAP results with iterators
 
 See https://www.python-ldap.org/ for details.
 """
-
 from ldap.pkginfo import __version__, __author__, __license__
 
+from typing import TYPE_CHECKING
 
-class ResultProcessor:
+if TYPE_CHECKING:
+    from ldap.ldapobject import LDAPObject
+    _Base = LDAPObject
+else:
+    _Base = object
+
+
+class ResultProcessor(_Base):
     """
     Mix-in class used with ldap.ldapopbject.LDAPObject or derived classes.
     """
