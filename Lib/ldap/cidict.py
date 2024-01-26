@@ -47,6 +47,8 @@ class cidict(MutableMapping):
     # Specializations for performance
 
     def __contains__(self, key):
+        if not isinstance(key, str):
+            return False
         return key.lower() in self._keys
 
     def clear(self):
@@ -134,4 +136,4 @@ def strlist_union(a,b):
     temp[elt] = elt
   for elt in b:
     temp[elt] = elt
-  return temp.values()
+  return [x for x in temp.values()]
