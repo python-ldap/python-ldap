@@ -46,9 +46,10 @@ class sasl:
         the SASL mechaninsm to be uesd.
         """
         self.cb_value_dict = cb_value_dict or {}
-        if not isinstance(mech, bytes):
-            mech = mech.encode('utf-8')
-        self.mech = mech
+        if isinstance(mech, str):
+            self.mech = mech.encode('utf-8')
+        else:
+            self.mech = mech
 
     def callback(self, cb_id, challenge, prompt, defresult):
         """
@@ -72,18 +73,22 @@ class sasl:
 
         # The following print command might be useful for debugging
         # new sasl mechanisms. So it is left here
-        cb_result = self.cb_value_dict.get(cb_id, defresult) or ''
+        cb_result = self.cb_value_dict.get(cb_id)
+        if cb_result is None:
+            cb_result = defresult or ''
+
         if __debug__:
             if _trace_level >= 1:
-                _trace_file.write("*** id=%d, challenge=%s, prompt=%s, defresult=%s\n-> %s\n" % (
+                _trace_file.write("*** id=%d, challenge=%r, prompt=%r, defresult=%s\n-> %s\n" % (
                     cb_id,
                     challenge,
                     prompt,
                     repr(defresult),
-                    repr(self.cb_value_dict.get(cb_result))
+                    repr(self.cb_value_dict.get(cb_id))
                 ))
-        if not isinstance(cb_result, bytes):
-            cb_result = cb_result.encode('utf-8')
+
+        if isinstance(cb_result, str):
+            return cb_result.encode('utf-8')
         return cb_result
 
 
