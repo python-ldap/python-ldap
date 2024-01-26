@@ -8,7 +8,7 @@ Compatibility:
 """
 
 import _ldap
-from ldap import __version__
+from ldap.pkginfo import __version__
 
 from ldap.functions import strf_secs
 
