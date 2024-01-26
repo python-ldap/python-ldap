@@ -32,7 +32,7 @@ class WrongResultType(Exception):
   def __str__(self):
     return 'Received wrong result type {} (expected one of {}).'.format(
       self.receivedResultType,
-      ', '.join(self.expectedResultTypes),
+      ', '.join([str(x) for x in self.expectedResultTypes]),
     )
 
 
@@ -118,6 +118,9 @@ class AsyncSearchHandler:
     timeout
         See parameter timeout of ldap.LDAPObject.result()
     """
+    if self._msgId is None:
+        raise RuntimeError('processResults() called without calling startSearch() first')
+
     self.preProcessing()
     result_counter = 0
     end_result_counter = ignoreResultsNumber+processResultsCount
