@@ -18,6 +18,8 @@ class Constant:
     """Base class for a definition of an OpenLDAP constant
     """
 
+    c_template = None
+
     def __init__(self, name, optional=False, requirements=(), doc=None):
         self.name = name
         if optional:
@@ -47,8 +49,8 @@ class TLSInt(Int):
     """Definition for a TLS integer constant -- requires HAVE_TLS"""
 
     def __init__(self, *args, **kwargs):
-        requrements = list(kwargs.get('requirements', ()))
-        kwargs['requirements'] = ['HAVE_TLS'] + requrements
+        requirements = list(kwargs.get('requirements', ()))
+        kwargs['requirements'] = ['HAVE_TLS'] + requirements
         super().__init__(*args, **kwargs)
 
 
@@ -407,7 +409,8 @@ def print_header():  # pragma: no cover
                 print()
                 print(f'#if {requirement}')
 
-        print(definition.c_template.format(self=definition))
+        if definition.c_template is not None:
+            print(definition.c_template.format(self=definition))
 
     while current_requirements:
         pop_requirement()
