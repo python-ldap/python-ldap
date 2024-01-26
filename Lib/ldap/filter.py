@@ -7,7 +7,7 @@ Compatibility:
 - Tested with Python 2.0+
 """
 
-from ldap import __version__
+from ldap.pkginfo import __version__
 
 from ldap.functions import strf_secs
 

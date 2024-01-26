@@ -6,7 +6,7 @@ See https://www.python-ldap.org/ for details.
 
 import ldap
 
-from ldap import __version__
+from ldap.pkginfo import __version__
 
 import ldif
 

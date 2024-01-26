@@ -4,7 +4,7 @@ functions.py - wraps functions of module _ldap
 See https://www.python-ldap.org/ for details.
 """
 
-from ldap import __version__
+from ldap.pkginfo import __version__
 
 __all__ = [
   'open','initialize','init',
