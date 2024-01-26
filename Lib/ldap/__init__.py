@@ -16,11 +16,11 @@ if __debug__:
   import atexit
   import traceback
   _trace_level = int(os.environ.get("PYTHON_LDAP_TRACE_LEVEL", 0))
-  _trace_file = os.environ.get("PYTHON_LDAP_TRACE_FILE")
-  if _trace_file is None:
+  _trace_file_path = os.environ.get("PYTHON_LDAP_TRACE_FILE")
+  if _trace_file_path is None:
     _trace_file = sys.stderr
   else:
-    _trace_file = open(_trace_file, 'a')
+    _trace_file = open(_trace_file_path, 'a')
     atexit.register(_trace_file.close)
   _trace_stack_limit = None
 else:
