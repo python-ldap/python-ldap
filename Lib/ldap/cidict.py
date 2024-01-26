@@ -8,7 +8,7 @@ See https://www.python-ldap.org/ for details.
 import warnings
 
 from collections.abc import MutableMapping
-from ldap import __version__
+from ldap.pkginfo import __version__
 
 
 class cidict(MutableMapping):

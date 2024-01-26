@@ -12,7 +12,7 @@ Implementing support for new sasl mechanism is very easy --- see
 the examples of digest_md5 and gssapi.
 """
 
-from ldap import __version__
+from ldap.pkginfo import __version__
 
 if __debug__:
     # Tracing is only supported in debugging mode

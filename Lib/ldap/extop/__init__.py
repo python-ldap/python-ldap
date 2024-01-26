@@ -9,7 +9,7 @@ Each class provides support for a certain extended operation request and
 response.
 """
 
-from ldap import __version__
+from ldap.pkginfo import __version__
 
 
 class ExtendedRequest:
