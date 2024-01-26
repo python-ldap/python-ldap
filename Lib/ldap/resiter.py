@@ -3,11 +3,12 @@ ldap.resiter - processing LDAP results with iterators
 
 See https://www.python-ldap.org/ for details.
 """
+import ldap
 
 from ldap.pkginfo import __version__, __author__, __license__
 
 
-class ResultProcessor:
+class ResultProcessor(ldap.ldapobject.LDAPObject):
     """
     Mix-in class used with ldap.ldapopbject.LDAPObject or derived classes.
     """
