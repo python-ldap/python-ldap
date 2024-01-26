@@ -54,15 +54,15 @@ class SSSRequestControl(RequestControl):
     def __init__(
         self,
         criticality=False,
-        ordering_rules=None,
+        ordering_rules=[],
     ):
         RequestControl.__init__(self,self.controlType,criticality)
         self.ordering_rules = ordering_rules
         if isinstance(ordering_rules, str):
             ordering_rules = [ordering_rules]
         for rule in ordering_rules:
-            rule = rule.split(':')
-            assert len(rule) < 3, 'syntax for ordering rule: [-]<attribute-type>[:ordering-rule]'
+            rule_parts = rule.split(':')
+            assert len(rule_parts) < 3, 'syntax for ordering rule: [-]<attribute-type>[:ordering-rule]'
 
     def asn1(self):
         p = SortKeyListType()
