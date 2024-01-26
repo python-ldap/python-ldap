@@ -106,7 +106,7 @@ class ProxyAuthzControl(RequestControl):
   """
 
   def __init__(self,criticality,authzId):
-    RequestControl.__init__(self,ldap.CONTROL_PROXY_AUTHZ,criticality,authzId)
+    RequestControl.__init__(self,ldap.CONTROL_PROXY_AUTHZ,criticality,authzId.encode('utf-8'))
 
 
 class AuthorizationIdentityRequestControl(ValueLessRequestControl):
@@ -131,7 +131,7 @@ class AuthorizationIdentityResponseControl(ResponseControl):
   controlType = '2.16.840.1.113730.3.4.15'
 
   def decodeControlValue(self,encodedControlValue):
-    self.authzId = encodedControlValue
+    self.authzId = encodedControlValue.decode('utf-8')
 
 
 KNOWN_RESPONSE_CONTROLS[AuthorizationIdentityResponseControl.controlType] = AuthorizationIdentityResponseControl
@@ -141,6 +141,7 @@ class GetEffectiveRightsControl(RequestControl):
   """
   Get Effective Rights Control
   """
+  controlType = '1.3.6.1.4.1.42.2.27.9.5.2'
 
   def __init__(self,criticality,authzId=None):
-    RequestControl.__init__(self,'1.3.6.1.4.1.42.2.27.9.5.2',criticality,authzId)
+    RequestControl.__init__(self,self.controlType,criticality,authzId.encode('utf-8'))
