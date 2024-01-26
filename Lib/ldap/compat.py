@@ -1,6 +1,9 @@
 """Compatibility wrappers for Py2/Py3."""
 import warnings
 
+from types import TracebackType
+from typing import NoReturn
+
 warnings.warn(
     "The ldap.compat module is deprecated and will be removed in the future",
     DeprecationWarning,
@@ -13,7 +16,8 @@ from urllib.request import urlopen
 from collections.abc import MutableMapping
 from shutil import which
 
-def reraise(exc_type, exc_value, exc_traceback):
+def reraise(exc_type: type[BaseException], exc_value: BaseException,
+            exc_traceback: TracebackType | None) -> NoReturn:
     """Re-raise an exception given information from sys.exc_info()
 
     Note that unlike six.reraise, this does not support replacing the
