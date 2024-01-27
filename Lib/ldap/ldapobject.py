@@ -169,7 +169,11 @@ class SimpleLDAPObject:
 
     Just a convenience wrapper for LDAPObject.get_option(ldap.OPT_DESC)
     """
-    return self.get_option(ldap.OPT_DESC)
+    fd = self.get_option(ldap.OPT_DESC)
+    if isinstance(fd, int):
+        return fd
+    else:
+        return -1
 
   def abandon_ext(self,msgid,serverctrls=None,clientctrls=None):
     """
@@ -181,7 +185,7 @@ class SimpleLDAPObject:
         can expect that the result of an abandoned operation will not be
         returned from a future call to result().
     """
-    return self._ldap_call(self._l.abandon_ext,msgid,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
+    self._ldap_call(self._l.abandon_ext,msgid,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def abandon(self,msgid):
     return self.abandon_ext(msgid,None,None)
@@ -237,13 +241,13 @@ class SimpleLDAPObject:
 
   def simple_bind(self,who=None,cred=None,serverctrls=None,clientctrls=None):
     """
-    simple_bind([who='' [,cred='']]) -> int
+    simple_bind([who=''[,cred=''[,serverctrls=None[,clientctrls=None]]]]) -> int
     """
     return self._ldap_call(self._l.simple_bind,who,cred,RequestControlTuples(serverctrls),RequestControlTuples(clientctrls))
 
   def simple_bind_s(self,who=None,cred=None,serverctrls=None,clientctrls=None):
     """
-    simple_bind_s([who='' [,cred='']]) -> 4-tuple
+    simple_bind_s([who=''[,cred=''[,serverctrls=None[,clientctrls=None]]]]) -> 4-tuple
     """
     msgid = self.simple_bind(who,cred,serverctrls,clientctrls)
     resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid,all=1,timeout=self.timeout)
@@ -356,7 +360,7 @@ class SimpleLDAPObject:
     return self.delete_ext(dn,None,None)
 
   def delete_s(self,dn):
-    return self.delete_ext_s(dn,None,None)
+    self.delete_ext_s(dn,None,None)
 
   def extop(self,extreq,serverctrls=None,clientctrls=None):
     """
@@ -454,10 +458,11 @@ class SimpleLDAPObject:
 
     if respoid != PasswordModifyResponse.responseName:
       raise ldap.PROTOCOL_ERROR("Unexpected OID %s in extended response!" % respoid)
-    if extract_newpw and respvalue:
-      respvalue = PasswordModifyResponse(PasswordModifyResponse.responseName, respvalue)
 
-    return respoid, respvalue
+    if extract_newpw and respvalue:
+      return respoid, PasswordModifyResponse(PasswordModifyResponse.responseName, respvalue)
+    else:
+      return respoid, respvalue
 
   def rename(self,dn,newrdn,newsuperior=None,delold=1,serverctrls=None,clientctrls=None):
     """
@@ -479,7 +484,6 @@ class SimpleLDAPObject:
   def rename_s(self,dn,newrdn,newsuperior=None,delold=1,serverctrls=None,clientctrls=None):
     msgid = self.rename(dn,newrdn,newsuperior,delold,serverctrls,clientctrls)
     resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid,all=1,timeout=self.timeout)
-    return resp_type, resp_data, resp_msgid, resp_ctrls
 
   def result(self,msgid=ldap.RES_ANY,all=1,timeout=None):
     """
@@ -640,7 +644,7 @@ class SimpleLDAPObject:
     set to VERSION3 before calling start_tls_s.
     If TLS could not be started an exception will be raised.
     """
-    return self._ldap_call(self._l.start_tls_s)
+    self._ldap_call(self._l.start_tls_s)
 
   def unbind_ext(self,serverctrls=None,clientctrls=None):
     """
@@ -675,7 +679,6 @@ class SimpleLDAPObject:
         self._trace_file.flush()
       except AttributeError:
         pass
-    return result
 
   def unbind(self):
     return self.unbind_ext(None,None)
@@ -705,7 +708,7 @@ class SimpleLDAPObject:
     None as result indicates that the DN of the sub schema sub entry could
     not be determined.
 
-    Returns: None or text/bytes depending on bytes_mode.
+    Returns: None or the DN as a string.
     """
     empty_dn = ''
     attrname = 'subschemaSubentry'
@@ -722,8 +725,8 @@ class SimpleLDAPObject:
     try:
       if r:
         e = ldap.cidict.cidict(r[0][1])
-        search_subschemasubentry_dn = e.get(attrname,[None])[0]
-        if search_subschemasubentry_dn is None:
+        search_subschemasubentry_dn = e.get(attrname,[b''])[0]
+        if search_subschemasubentry_dn == b'':
           if dn:
             # Try to find sub schema sub entry in root DSE
             return self.search_subschemasubentry_s(dn=empty_dn)
@@ -731,10 +734,12 @@ class SimpleLDAPObject:
             # If dn was already root DSE we can return here
             return None
         else:
-          if search_subschemasubentry_dn is not None:
-            return search_subschemasubentry_dn.decode('utf-8')
+          dn_str = search_subschemasubentry_dn.decode('utf-8')
+          return dn_str
     except IndexError:
       return None
+
+    return None
 
   def read_s(self,dn,filterstr=None,attrlist=None,serverctrls=None,clientctrls=None,timeout=-1):
     """
@@ -812,9 +817,11 @@ class SimpleLDAPObject:
     if namingContexts is not present (not readable) then empty list is returned
     """
     name = 'namingContexts'
-    return self.read_rootdse_s(
-      attrlist=[name]
-    ).get(name, [])
+    rootdse = self.read_rootdse_s(attrlist=[name])
+    if rootdse is None:
+        return []
+    else:
+        return rootdse.get(name, [])
 
 
 class ReconnectLDAPObject(SimpleLDAPObject):
@@ -881,10 +888,10 @@ class ReconnectLDAPObject(SimpleLDAPObject):
         for k,v in self.__dict__.items()
         if k not in self.__transient_attrs__
     }
-    if self._last_bind is None:
-        state['_last_bind'] = None
-    else:
+    if self._last_bind is not None and not isinstance(self._last_bind[0], str):
         state['_last_bind'] = self._last_bind[0].__name__, self._last_bind[1], self._last_bind[2]
+    else:
+        state['_last_bind'] = None
     return state
 
   def __setstate__(self,d):
@@ -895,7 +902,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     else:
         d.setdefault('bytes_strictness', 'warn')
     self.__dict__.update(d)
-    if self._last_bind is not None:
+    if self._last_bind is not None and isinstance(self._last_bind[0], str):
         self._last_bind = getattr(SimpleLDAPObject, self._last_bind[0]), self._last_bind[1], self._last_bind[2]
     self._ldap_object_lock = self._ldap_lock()
     self._reconnect_lock = ldap.LDAPLock(desc='reconnect lock within %s' % (repr(self)))
@@ -907,7 +914,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     self._last_bind = (_method,args,kwargs)
 
   def _apply_last_bind(self):
-    if self._last_bind!=None:
+    if self._last_bind is not None and callable(self._last_bind[0]):
       func,args,kwargs = self._last_bind
       func(self,*args,**kwargs)
     else:
