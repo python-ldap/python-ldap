@@ -36,7 +36,7 @@ class ExtendedRequest:
     self.requestValue = requestValue
 
   def __repr__(self):
-    return f'{self.__class__.__name__}({self.requestName},{self.requestValue})'
+    return f'{self.__class__.__name__}({self.requestName},{self.requestValue!r})'
 
   def encodedRequestValue(self):
     """
@@ -61,7 +61,7 @@ class ExtendedResponse:
     self.responseValue = self.decodeResponseValue(encodedResponseValue)
 
   def __repr__(self):
-    return f'{self.__class__.__name__}({self.responseName},{self.responseValue})'
+    return f'{self.__class__.__name__}({self.responseName},{self.responseValue!r})'
 
   def decodeResponseValue(self,value):
     """
