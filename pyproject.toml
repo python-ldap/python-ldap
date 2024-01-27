@@ -28,8 +28,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
 
-    # "License :: OSI Approved :: Python Software Foundation License",
-
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX",
@@ -48,10 +46,10 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Systems Administration :: Authentication/Directory :: LDAP",
 ]
-
 dependencies = [
     "pyasn1>=0.3.7",
     "pyasn1_modules>=0.1.5",
+    "typing_extensions>=0.4.1",
 ]
 
 [project.urls]
@@ -67,6 +65,9 @@ zip-safe = false
 include-package-data = true
 # Explicitly list all Python modules
 py-modules = ["ldapurl", "ldif"]
+
+[tool.setuptools.package-data]
+ldap = ["py.typed"]
 
 [tool.setuptools.dynamic]
 version = {attr = "ldap.pkginfo.__version__"}
