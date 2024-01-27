@@ -90,8 +90,6 @@ class VLVRequestControl(RequestControl):
             p.setComponentByName('contextID', self.context_id)
         return encoder.encode(p)
 
-KNOWN_RESPONSE_CONTROLS[VLVRequestControl.controlType] = VLVRequestControl
-
 
 class VirtualListViewResultType(univ.Enumerated):
     namedValues = namedval.NamedValues(
