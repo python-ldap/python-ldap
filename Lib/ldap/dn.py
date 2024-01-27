@@ -39,6 +39,13 @@ def str2dn(dn,flags=0):
   This function takes a DN as string as parameter and returns
   a decomposed DN. It's the inverse to dn2str().
 
+  The decomposed DN is a list of sublists, each sublist containing one or
+  more tuples with the attribute type, attribute value and a flag indicating
+  the encoding of the value.
+
+  For example, str2dn("dc=example+ou=example,dc=com") would yield:
+  [[('dc', 'example', 1), ('ou', 'example', 1)], [('dc', 'com', 1)]]
+
   flags describes the format of the dn
 
   See also the OpenLDAP man-page ldap_str2dn(3)
