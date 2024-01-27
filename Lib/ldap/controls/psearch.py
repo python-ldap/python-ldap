@@ -21,6 +21,9 @@ from pyasn1.type import namedtype,namedval,univ,constraint
 from pyasn1.codec.ber import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPDN
 
+from typing import Dict, List, Tuple, Optional
+
+
 #---------------------------------------------------------------------------
 # Constants and classes for Persistent Search Control
 #---------------------------------------------------------------------------
@@ -48,7 +51,7 @@ class PersistentSearchControl(RequestControl):
     Entry Change Notification response control
   """
 
-  class PersistentSearchControlValue(univ.Sequence):
+  class PersistentSearchControlValue(univ.Sequence):  # type: ignore
     componentType = namedtype.NamedTypes(
       namedtype.NamedType('changeTypes',univ.Integer()),
       namedtype.NamedType('changesOnly',univ.Boolean()),
@@ -57,7 +60,13 @@ class PersistentSearchControl(RequestControl):
 
   controlType = "2.16.840.1.113730.3.4.3"
 
-  def __init__(self,criticality=True,changeTypes=None,changesOnly=False,returnECs=True):
+  def __init__(
+    self,
+    criticality: bool = True,
+    changeTypes: Optional[List[str]] = None,
+    changesOnly: bool = False,
+    returnECs: bool = True
+  ) -> None:
     self.criticality,self.changesOnly,self.returnECs = \
       criticality,changesOnly,returnECs
     self.changeTypes = changeTypes or CHANGE_TYPES_INT.keys()
@@ -72,10 +81,10 @@ class PersistentSearchControl(RequestControl):
     p.setComponentByName('changeTypes',univ.Integer(changeTypes_int))
     p.setComponentByName('changesOnly',univ.Boolean(self.changesOnly))
     p.setComponentByName('returnECs',univ.Boolean(self.returnECs))
-    return encoder.encode(p)
+    return encoder.encode(p)  # type: ignore
 
 
-class ChangeType(univ.Enumerated):
+class ChangeType(univ.Enumerated):  # type: ignore
   namedValues = namedval.NamedValues(
     ('add',1),
     ('delete',2),
@@ -85,7 +94,7 @@ class ChangeType(univ.Enumerated):
   subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(1,2,4,8)
 
 
-class EntryChangeNotificationValue(univ.Sequence):
+class EntryChangeNotificationValue(univ.Sequence):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('changeType',ChangeType()),
     namedtype.OptionalNamedType('previousDN', LDAPDN()),
@@ -110,17 +119,17 @@ class EntryChangeNotificationControl(ResponseControl):
 
   controlType = "2.16.840.1.113730.3.4.7"
 
-  def decodeControlValue(self,encodedControlValue):
+  def decodeControlValue(self, encodedControlValue: bytes) -> None:
     ecncValue,_ = decoder.decode(encodedControlValue,asn1Spec=EntryChangeNotificationValue())
     self.changeType = int(ecncValue.getComponentByName('changeType'))
     previousDN = ecncValue.getComponentByName('previousDN')
     if previousDN.hasValue():
-      self.previousDN = str(previousDN)
+      self.previousDN: Optional[str] = str(previousDN)
     else:
       self.previousDN = None
     changeNumber = ecncValue.getComponentByName('changeNumber')
     if changeNumber.hasValue():
-      self.changeNumber = int(changeNumber)
+      self.changeNumber: Optional[int] = int(changeNumber)
     else:
       self.changeNumber = None
 

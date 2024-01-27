@@ -18,6 +18,7 @@ from pyasn1.type import namedtype,univ,tag
 from pyasn1.codec.ber import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPDN,AttributeDescription,AttributeDescriptionList,AttributeValue
 
+from typing import Dict, List, Tuple, Optional
 
 DEREF_CONTROL_OID = '1.3.6.1.4.1.4203.666.5.16'
 
@@ -28,7 +29,7 @@ DEREF_CONTROL_OID = '1.3.6.1.4.1.4203.666.5.16'
 # For compatibility with ASN.1 declaration in I-D
 AttributeList = AttributeDescriptionList
 
-class DerefSpec(univ.Sequence):
+class DerefSpec(univ.Sequence):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.NamedType(
       'derefAttr',
@@ -40,32 +41,32 @@ class DerefSpec(univ.Sequence):
     ),
   )
 
-class DerefSpecs(univ.SequenceOf):
+class DerefSpecs(univ.SequenceOf):  # type: ignore
   componentType = DerefSpec()
 
 # Response types
 #---------------------------------------------------------------------------
 
 
-class AttributeValues(univ.SetOf):
+class AttributeValues(univ.SetOf):  # type: ignore
     componentType = AttributeValue()
 
 
-class PartialAttribute(univ.Sequence):
+class PartialAttribute(univ.Sequence):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('type', AttributeDescription()),
     namedtype.NamedType('vals', AttributeValues()),
   )
 
 
-class PartialAttributeList(univ.SequenceOf):
+class PartialAttributeList(univ.SequenceOf):  # type: ignore
   componentType = PartialAttribute()
   tagSet = univ.Sequence.tagSet.tagImplicitly(
     tag.Tag(tag.tagClassContext,tag.tagFormatConstructed,0)
   )
 
 
-class DerefRes(univ.Sequence):
+class DerefRes(univ.Sequence):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('derefAttr', AttributeDescription()),
     namedtype.NamedType('derefVal', LDAPDN()),
@@ -73,18 +74,22 @@ class DerefRes(univ.Sequence):
   )
 
 
-class DerefResultControlValue(univ.SequenceOf):
+class DerefResultControlValue(univ.SequenceOf):  # type: ignore
     componentType = DerefRes()
 
 
 class DereferenceControl(LDAPControl):
   controlType = DEREF_CONTROL_OID
 
-  def __init__(self,criticality=False,derefSpecs=None):
+  def __init__(
+    self,
+    criticality: bool = False,
+    derefSpecs: Optional[Dict[str, List[str]]] = None,
+  ) -> None:
     LDAPControl.__init__(self,self.controlType,criticality)
     self.derefSpecs = derefSpecs or {}
 
-  def _derefSpecs(self):
+  def _derefSpecs(self) -> DerefSpecs:
     deref_specs = DerefSpecs()
     i = 0
     for deref_attr,deref_attribute_names in self.derefSpecs.items():
@@ -98,12 +103,17 @@ class DereferenceControl(LDAPControl):
       i += 1
     return deref_specs
 
-  def encodeControlValue(self):
-    return encoder.encode(self._derefSpecs())
+  def encodeControlValue(self) -> bytes:
+    return encoder.encode(self._derefSpecs())  # type: ignore
 
-  def decodeControlValue(self,encodedControlValue):
+  def decodeControlValue(self, encodedControlValue: bytes) -> None:
     decodedValue,_ = decoder.decode(encodedControlValue,asn1Spec=DerefResultControlValue())
-    self.derefRes = {}
+    # Starting from the inside out:
+    #   The innermost dict maps attribute names to lists of attribute values
+    #       (note: the attribute values are encoded as str, not bytes)
+    #   The tuple pairs a DN and one of the above dicts.
+    #   The outermost dict maps the dereferenced attribute to a list of the above tuples
+    self.derefRes: Dict[str, List[Tuple[str, Dict[str, List[str]]]]] = {}
     for deref_res in decodedValue:
       deref_attr,deref_val,deref_vals = deref_res[0],deref_res[1],deref_res[2]
       partial_attrs_dict = {

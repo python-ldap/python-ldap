@@ -21,6 +21,7 @@ from ldap.controls import (RequestControl, ResponseControl,
 from pyasn1.type import univ, namedtype, tag, namedval, constraint
 from pyasn1.codec.ber import encoder, decoder
 
+from typing import List, Union
 
 #    SortKeyList ::= SEQUENCE OF SEQUENCE {
 #                     attributeType   AttributeDescription,
@@ -28,7 +29,7 @@ from pyasn1.codec.ber import encoder, decoder
 #                     reverseOrder    [1] BOOLEAN DEFAULT FALSE }
 
 
-class SortKeyType(univ.Sequence):
+class SortKeyType(univ.Sequence):  # type: ignore
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('attributeType', univ.OctetString()),
             namedtype.OptionalNamedType('orderingRule',
@@ -40,7 +41,7 @@ class SortKeyType(univ.Sequence):
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1))))
 
 
-class SortKeyListType(univ.SequenceOf):
+class SortKeyListType(univ.SequenceOf):  # type: ignore
     componentType = SortKeyType()
 
 
@@ -53,8 +54,8 @@ class SSSRequestControl(RequestControl):
 
     def __init__(
         self,
-        criticality=False,
-        ordering_rules=[],
+        criticality: bool = False,
+        ordering_rules: Union[List[str], str] = [],
     ):
         RequestControl.__init__(self,self.controlType,criticality)
         self.ordering_rules = ordering_rules
@@ -64,7 +65,7 @@ class SSSRequestControl(RequestControl):
             rule_parts = rule.split(':')
             assert len(rule_parts) < 3, 'syntax for ordering rule: [-]<attribute-type>[:ordering-rule]'
 
-    def asn1(self):
+    def asn1(self) -> SortKeyListType:
         p = SortKeyListType()
         for i, rule in enumerate(self.ordering_rules):
             q = SortKeyType()
@@ -83,11 +84,11 @@ class SSSRequestControl(RequestControl):
             p.setComponentByPosition(i, q)
         return p
 
-    def encodeControlValue(self):
-        return encoder.encode(self.asn1())
+    def encodeControlValue(self) -> bytes:
+        return encoder.encode(self.asn1())  # type: ignore
 
 
-class SortResultType(univ.Sequence):
+class SortResultType(univ.Sequence):  # type: ignore
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('sortResult', univ.Enumerated().subtype(
                 namedValues=namedval.NamedValues(
@@ -114,10 +115,10 @@ class SortResultType(univ.Sequence):
 class SSSResponseControl(ResponseControl):
     controlType = '1.2.840.113556.1.4.474'
 
-    def __init__(self,criticality=False):
+    def __init__(self, criticality: bool = False):
         ResponseControl.__init__(self,self.controlType,criticality)
 
-    def decodeControlValue(self, encoded):
+    def decodeControlValue(self, encoded: bytes) -> None:
         p, rest = decoder.decode(encoded, asn1Spec=SortResultType())
         assert not rest, 'all data could not be decoded'
         sort_result = p.getComponentByName('sortResult')

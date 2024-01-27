@@ -36,7 +36,7 @@ class SessionTrackingControl(RequestControl):
     String containing a specific tracking ID
   """
 
-  class SessionIdentifierControlValue(univ.Sequence):
+  class SessionIdentifierControlValue(univ.Sequence):  # type: ignore
     componentType = namedtype.NamedTypes(
       namedtype.NamedType('sessionSourceIp',LDAPString()),
       namedtype.NamedType('sessionSourceName',LDAPString()),
@@ -46,16 +46,22 @@ class SessionTrackingControl(RequestControl):
 
   controlType = SESSION_TRACKING_CONTROL_OID
 
-  def __init__(self,sessionSourceIp,sessionSourceName,formatOID,sessionTrackingIdentifier):
+  def __init__(
+    self,
+    sessionSourceIp: str,
+    sessionSourceName: str,
+    formatOID: str,
+    sessionTrackingIdentifier:str,
+  ) -> None:
     # criticality MUST be false for this control
     self.criticality = False
     self.sessionSourceIp,self.sessionSourceName,self.formatOID,self.sessionTrackingIdentifier = \
       sessionSourceIp,sessionSourceName,formatOID,sessionTrackingIdentifier
 
-  def encodeControlValue(self):
+  def encodeControlValue(self) -> bytes:
     s = self.SessionIdentifierControlValue()
     s.setComponentByName('sessionSourceIp',LDAPString(self.sessionSourceIp))
     s.setComponentByName('sessionSourceName',LDAPString(self.sessionSourceName))
     s.setComponentByName('formatOID',LDAPOID(self.formatOID))
     s.setComponentByName('sessionTrackingIdentifier',LDAPString(self.sessionTrackingIdentifier))
-    return encoder.encode(s)
+    return encoder.encode(s)  # type: ignore
