@@ -5,6 +5,8 @@ ldap.extop.passwd - Classes for Password Modify extended operation
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import annotations
+
 from ldap.extop import ExtendedResponse
 
 # Imports from pyasn1
@@ -15,7 +17,7 @@ from pyasn1.codec.der import decoder
 class PasswordModifyResponse(ExtendedResponse):
     responseName = None
 
-    class PasswordModifyResponseValue(univ.Sequence):
+    class PasswordModifyResponseValue(univ.Sequence):  # type: ignore
         componentType = namedtype.NamedTypes(
             namedtype.OptionalNamedType(
                 'genPasswd',
@@ -26,7 +28,7 @@ class PasswordModifyResponse(ExtendedResponse):
             )
         )
 
-    def decodeResponseValue(self, value):
+    def decodeResponseValue(self, value: bytes | None) -> bytes:
         respValue, _ = decoder.decode(value, asn1Spec=self.PasswordModifyResponseValue())
         self.genPasswd = bytes(respValue.getComponentByName('genPasswd'))
         return self.genPasswd

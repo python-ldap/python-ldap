@@ -4,8 +4,19 @@ ldap.schema.tokenizer - Low-level parsing functions for schema element strings
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import annotations
+
 import re
 import warnings
+
+from typing import Any, Mapping, Union
+
+LDAPTokenDictValue = Union[tuple[()], tuple[str, ...]]
+"""The kind of values which may be found in a token dict."""
+
+LDAPTokenDict = Mapping[str, LDAPTokenDictValue]
+"""The type of the dict used to keep track of tokens while parsing schema
+(Mapping because of variance)."""
 
 TOKENS_FINDALL = re.compile(
     r"(\()"           # opening parenthesis
@@ -25,7 +36,7 @@ TOKENS_FINDALL = re.compile(
 UNESCAPE_PATTERN = re.compile(r"\\(.)")
 
 
-def split_tokens(s):
+def split_tokens(s: str) -> list[str]:
     """
     Returns list of syntax elements with quotes and spaces stripped.
     """
@@ -52,7 +63,10 @@ def split_tokens(s):
     return parts
 
 
-def parse_tokens(tokens, known_tokens):
+def parse_tokens(
+    tokens: list[str],
+    known_tokens: list[str]
+) -> tuple[str, LDAPTokenDict]:
     """
     Process a list of tokens and return a dictionary of known tokens with all
     values
@@ -94,7 +108,7 @@ def parse_tokens(tokens, known_tokens):
 
         if next_token in known_tokens:
             # non-valued
-            value: Union[Tuple[()], Tuple[str, ...]] = (())
+            value: LDAPTokenDictValue = (())
 
         elif next_token == "(":
             # multi-valued
@@ -115,7 +129,10 @@ def parse_tokens(tokens, known_tokens):
     return oid, result
 
 
-def extract_tokens(l,known_tokens):
+def extract_tokens(
+    l: list[str],
+    known_tokens: Mapping[str, Any],
+) -> dict[str, Any]:
     """
     Returns dictionary of known tokens with all values
 
