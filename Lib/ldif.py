@@ -25,6 +25,8 @@ import warnings
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
+from typing import BinaryIO, TextIO, cast
+
 attrtype_pattern = r'[\w;.-]+(;[\w_-]+)*'
 attrvalue_pattern = r'(([^,]|\\,)+|".*?")'
 attrtypeandvalue_pattern = attrtype_pattern + r'[ ]*=[ ]*' + attrvalue_pattern
@@ -46,9 +48,7 @@ MOD_OP_STR = {
 }
 
 CHANGE_TYPES = ['add','delete','modify','modrdn']
-valid_changetype_dict = {}
-for c in CHANGE_TYPES:
-  valid_changetype_dict[c]=None
+valid_changetype_set = set(CHANGE_TYPES)
 
 
 def is_dn(s):
@@ -58,7 +58,12 @@ def is_dn(s):
   if s=='':
     return 1
   rm = dn_regex.match(s)
-  return rm!=None and rm.group(0)==s
+  if rm is None:
+    return 0
+  elif rm.group(0)!=s:
+    return 0
+  else:
+    return 1
 
 
 SAFE_STRING_PATTERN = b'(^(\000|\n|\r| |:|<)|[\000\n\r\200-\377]+|[ ]+$)'
@@ -115,7 +120,6 @@ class LDIFWriter:
         self._output_file.write(line[pos:min(line_len,pos+self._cols-1)])
         self._output_file.write(self._last_line_sep)
         pos = pos+self._cols-1
-    return # _unfold_lines()
 
   def _needs_base64_encoding(self,attr_type,attr_value):
     """
@@ -141,7 +145,6 @@ class LDIFWriter:
       self._unfold_lines(':: '.join([attr_type, encoded]))
     else:
       self._unfold_lines(': '.join([attr_type, attr_value.decode('ascii')]))
-    return # _unparseAttrTypeandValue()
 
   def _unparseEntryRecord(self,entry):
     """
@@ -166,17 +169,21 @@ class LDIFWriter:
       raise ValueError("modlist item of wrong length: %d" % (mod_len))
     self._unparseAttrTypeandValue('changetype',changetype.encode('ascii'))
     for mod in modlist:
-      if mod_len==2:
-        mod_type,mod_vals = mod
-      elif mod_len==3:
+      # Note: the following order will give mod_vals the right type
+      if mod_len==3:
         mod_op,mod_type,mod_vals = mod
         self._unparseAttrTypeandValue(MOD_OP_STR[mod_op],
                                       mod_type.encode('ascii'))
+      elif mod_len==2:
+        mod_type,mod_vals = mod
       else:
         raise ValueError("Subsequent modlist item of wrong length")
       if mod_vals:
-        for mod_val in mod_vals:
-          self._unparseAttrTypeandValue(mod_type,mod_val)
+        if isinstance(mod_vals, bytes):
+          self._unparseAttrTypeandValue(mod_type,mod_vals)
+        else:
+            for mod_val in mod_vals:
+              self._unparseAttrTypeandValue(mod_type,mod_val)
       if mod_len==3:
         self._output_file.write('-'+self._last_line_sep)
 
@@ -189,8 +196,7 @@ class LDIFWriter:
           or a list with a modify list like for LDAPObject.modify().
     """
     # Start with line containing the distinguished name
-    dn = dn.encode('utf-8')
-    self._unparseAttrTypeandValue('dn', dn)
+    self._unparseAttrTypeandValue('dn', dn.encode('utf-8'))
     # Dispatch to record type specific writers
     if isinstance(record,dict):
       self._unparseEntryRecord(record)
@@ -202,7 +208,6 @@ class LDIFWriter:
     self._output_file.write(self._last_line_sep)
     # Count records written
     self.records_written = self.records_written+1
-    return # unparse()
 
 
 def CreateLDIF(dn,record,base64_attrs=None,cols=76):
@@ -270,9 +275,14 @@ class LDIFParser:
     line_sep
         String used as line separator
     """
-    self._input_file = input_file
     # Detect whether the file is open in text or bytes mode.
-    self._file_sends_bytes = isinstance(self._input_file.read(0), bytes)
+    if isinstance(input_file.read(0), bytes):
+      self._binary_input_file = cast(BinaryIO, input_file)
+      self._text_input_file = None
+    else:
+      self._binary_input_file = None
+      self._text_input_file = cast(TextIO, input_file)
+
     self._max_entries = max_entries
     self._process_url_schemes = list_dict([s.lower() for s in (process_url_schemes or [])])
     self._ignored_attr_types = list_dict([a.lower() for a in (ignored_attr_types or [])])
@@ -299,11 +309,15 @@ class LDIFParser:
     pass
 
   def _readline(self):
-    s = self._input_file.readline()
-    if self._file_sends_bytes:
+    if self._text_input_file is not None:
+      s = self._text_input_file.readline()
+    elif self._binary_input_file is not None:
       # The RFC does not allow UTF-8 values; we support it as a
       # non-official, backwards compatibility layer
-      s = s.decode('utf-8')
+      s = self._binary_input_file.readline().decode('utf-8')
+    else:
+      return None
+
     self.line_counter = self.line_counter + 1
     self.byte_counter = self.byte_counter + len(s)
     if not s:
@@ -356,16 +370,15 @@ class LDIFParser:
     # if needed attribute value is BASE64 decoded
     value_spec = unfolded_line[colon_pos:colon_pos+2]
     if value_spec==': ':
-      attr_value = unfolded_line[colon_pos+2:].lstrip()
       # All values should be valid ascii; we support UTF-8 as a
       # non-official, backwards compatibility layer.
-      attr_value = attr_value.encode('utf-8')
+      attr_value_str = unfolded_line[colon_pos+2:].lstrip()
+      attr_value = attr_value_str.encode('utf-8')
     elif value_spec=='::':
       # attribute value needs base64-decoding
-      # base64 makes sens only for ascii
-      attr_value = unfolded_line[colon_pos+2:]
-      attr_value = attr_value.encode('ascii')
-      attr_value = self._b64decode(attr_value)
+      # base64 makes sense only for ascii
+      attr_value_str = unfolded_line[colon_pos+2:]
+      attr_value = self._b64decode(attr_value_str.encode('ascii'))
     elif value_spec==':<':
       # fetch attribute value from URL
       url = unfolded_line[colon_pos+2:].strip()
@@ -410,7 +423,8 @@ class LDIFParser:
       k,v = self._consume_empty_lines()
       # Consume 'version' line
       if k=='version':
-        self.version = int(v.decode('ascii'))
+        if v is not None:
+          self.version = int(v.decode('ascii'))
         k,v = self._consume_empty_lines()
     except EOFError:
       return
@@ -423,40 +437,44 @@ class LDIFParser:
         raise ValueError('Line %d: First line of record does not start with "dn:": %s' % (self.line_counter,repr(k)))
       # Value of a 'dn' field *has* to be valid UTF-8
       # k is text, v is bytes.
-      v = v.decode('utf-8')
-      if not is_dn(v):
+      if v is None:
+        raise ValueError('Line %d: DN has None value.' % (self.line_counter))
+      dn = v.decode('utf-8')
+      if not is_dn(dn):
         raise ValueError('Line %d: Not a valid string-representation for dn: %s.' % (self.line_counter,repr(v)))
-      dn = v
+
       entry = {}
-      # Consume second line of record
-      k,v = next_key_and_value()
 
       # Loop for reading the attributes
-      while k!=None:
+      while True:
+        try:
+          k,v = next_key_and_value()
+        except EOFError:
+          break
+
+        if k is None:
+          break
+        elif v is None:
+          continue
+
         # Add the attribute to the entry if not ignored attribute
         if not k.lower() in self._ignored_attr_types:
           try:
             entry[k].append(v)
           except KeyError:
             entry[k]=[v]
-        # Read the next line within the record
-        try:
-          k,v = next_key_and_value()
-        except EOFError:
-          k,v = None,None
 
       # handle record
       self.handle(dn,entry)
       self.records_read = self.records_read + 1
       # Consume empty separator line(s)
       k,v = self._consume_empty_lines()
-    return # parse_entry_records()
 
   def parse(self):
     """
     Invokes LDIFParser.parse_entry_records() for backward compatibility
     """
-    return self.parse_entry_records() # parse()
+    self.parse_entry_records()
 
   def handle_modify(self,dn,modops,controls=None):
     """
@@ -473,7 +491,8 @@ class LDIFParser:
     k,v = self._consume_empty_lines()
     # Consume 'version' line
     if k=='version':
-      self.version = int(v)
+      if v is not None:
+        self.version = int(v.decode('ascii'))
       k,v = self._consume_empty_lines()
 
     # Loop for processing whole records
@@ -484,60 +503,71 @@ class LDIFParser:
         raise ValueError('Line %d: First line of record does not start with "dn:": %s' % (self.line_counter,repr(k)))
       # Value of a 'dn' field *has* to be valid UTF-8
       # k is text, v is bytes.
-      v = v.decode('utf-8')
-      if not is_dn(v):
+      if v is None:
+        raise ValueError('Line %d: DN has None value.' % (self.line_counter))
+      dn = v.decode('utf-8')
+      if not is_dn(dn):
         raise ValueError('Line %d: Not a valid string-representation for dn: %s.' % (self.line_counter,repr(v)))
-      dn = v
+
       # Consume second line of record
       k,v = next_key_and_value()
       # Read "control:" lines
       controls = []
       while k!=None and k=='control':
+        if v is None:
+          raise ValueError('Line %d: control has None value.' % (self.line_counter))
         # v is still bytes, spec says it should be valid utf-8; decode it.
-        v = v.decode('utf-8')
+        control = v.decode('utf-8')
         try:
-          control_type,criticality,control_value = v.split(' ',2)
+          control_type,criticality,control_value = control.split(' ',2)
         except ValueError:
           control_value = None
-          control_type,criticality = v.split(' ',1)
+          control_type,criticality = control.split(' ',1)
         controls.append((control_type,criticality,control_value))
         k,v = next_key_and_value()
 
       # Determine changetype first
-      changetype = None
+      changetype = ''
       # Consume changetype line of record
       if k=='changetype':
+        if v is None:
+          raise ValueError('Line %d: changetype has None value.' % (self.line_counter))
         # v is still bytes, spec says it should be valid utf-8; decode it.
-        v = v.decode('utf-8')
-        if not v in valid_changetype_dict:
+        changetype = v.decode('utf-8')
+        if not changetype in valid_changetype_set:
           raise ValueError('Invalid changetype: %s' % repr(v))
-        changetype = v
         k,v = next_key_and_value()
 
       if changetype=='modify':
-
         # From here we assume a change record is read with changetype: modify
         modops = []
 
         try:
           # Loop for reading the list of modifications
-          while k!=None:
+          while True:
+            if k is None:
+              break
+
             # Extract attribute mod-operation (add, delete, replace)
             try:
               modop = MOD_OP_INTEGER[k]
             except KeyError:
               raise ValueError('Line %d: Invalid mod-op string: %s' % (self.line_counter,repr(k)))
+
+            if v is None:
+              raise ValueError('Line %d: mod-op has None value.' % (self.line_counter))
+
             # we now have the attribute name to be modified
             # v is still bytes, spec says it should be valid utf-8; decode it.
-            v = v.decode('utf-8')
-            modattr = v
+            modattr = v.decode('utf-8')
             modvalues = []
             try:
               k,v = next_key_and_value()
             except EOFError:
               k,v = None,None
             while k==modattr:
-              modvalues.append(v)
+              if v is not None:
+                modvalues.append(v)
               try:
                 k,v = next_key_and_value()
               except EOFError:
@@ -569,8 +599,6 @@ class LDIFParser:
       except KeyError:
         self.changetype_counter[changetype] = 1
       self.records_read = self.records_read + 1
-
-    return # parse_change_records()
 
 
 class LDIFRecordList(LDIFParser):
@@ -644,7 +672,7 @@ def ParseLDIF(f,ignore_attrs=None,maxentries=0):
     stacklevel=2,
   )
   ldif_parser = LDIFRecordList(
-    f,ignored_attr_types=ignore_attrs,max_entries=maxentries,process_url_schemes=0
+    f,ignored_attr_types=ignore_attrs,max_entries=maxentries
   )
   ldif_parser.parse()
   return ldif_parser.all_records
