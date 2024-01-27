@@ -11,6 +11,9 @@ from collections import UserDict
 
 from ldap.schema.tokenizer import split_tokens,extract_tokens
 
+from ldap.schema.subentry import SCHEMA_CLASS_MAPPING, SCHEMA_ATTR_MAPPING
+
+
 NOT_HUMAN_READABLE_LDAP_SYNTAXES = {
   '1.3.6.1.4.1.1466.115.121.1.4',  # Audio
   '1.3.6.1.4.1.1466.115.121.1.5',  # Binary
@@ -45,6 +48,7 @@ class SchemaElement:
   token_defaults = {
     'DESC':(None,),
   }
+  schema_attribute = 'SchemaElement (base class)'
 
   def __init__(self,schema_element_str=None):
     if isinstance(schema_element_str, bytes):
@@ -179,6 +183,8 @@ class ObjectClass(SchemaElement):
     result.append(self.key_list('X-ORIGIN',self.x_origin,quoted=1))
     return '( %s )' % ''.join(result)
 
+SCHEMA_CLASS_MAPPING[ObjectClass.schema_attribute] = ObjectClass
+SCHEMA_ATTR_MAPPING[ObjectClass] = ObjectClass.schema_attribute
 
 AttributeUsage = ldap.cidict.cidict({
   'userApplication':0, # work-around for non-compliant schema
@@ -321,6 +327,9 @@ class AttributeType(SchemaElement):
     result.append(self.key_attr('X-ORDERED',self.x_ordered,quoted=1))
     return '( %s )' % ''.join(result)
 
+SCHEMA_CLASS_MAPPING[AttributeType.schema_attribute] = AttributeType
+SCHEMA_ATTR_MAPPING[AttributeType] = AttributeType.schema_attribute
+
 
 class LDAPSyntax(SchemaElement):
   """
@@ -359,6 +368,9 @@ class LDAPSyntax(SchemaElement):
       {0:'',1:" X-NOT-HUMAN-READABLE 'TRUE'"}[self.not_human_readable]
     )
     return '( %s )' % ''.join(result)
+
+SCHEMA_CLASS_MAPPING[LDAPSyntax.schema_attribute] = LDAPSyntax
+SCHEMA_ATTR_MAPPING[LDAPSyntax] = LDAPSyntax.schema_attribute
 
 
 class MatchingRule(SchemaElement):
@@ -406,6 +418,9 @@ class MatchingRule(SchemaElement):
     result.append(self.key_attr('SYNTAX',self.syntax))
     return '( %s )' % ''.join(result)
 
+SCHEMA_CLASS_MAPPING[MatchingRule.schema_attribute] = MatchingRule
+SCHEMA_ATTR_MAPPING[MatchingRule] = MatchingRule.schema_attribute
+
 
 class MatchingRuleUse(SchemaElement):
   """
@@ -451,6 +466,9 @@ class MatchingRuleUse(SchemaElement):
     result.append({0:'',1:' OBSOLETE'}[self.obsolete])
     result.append(self.key_list('APPLIES',self.applies,sep=' $ '))
     return '( %s )' % ''.join(result)
+
+SCHEMA_CLASS_MAPPING[MatchingRuleUse.schema_attribute] = MatchingRuleUse
+SCHEMA_ATTR_MAPPING[MatchingRuleUse] = MatchingRuleUse.schema_attribute
 
 
 class DITContentRule(SchemaElement):
@@ -521,6 +539,9 @@ class DITContentRule(SchemaElement):
     result.append(self.key_list('NOT',self.nots,sep=' $ '))
     return '( %s )' % ''.join(result)
 
+SCHEMA_CLASS_MAPPING[DITContentRule.schema_attribute] = DITContentRule
+SCHEMA_ATTR_MAPPING[DITContentRule] = DITContentRule.schema_attribute
+
 
 class DITStructureRule(SchemaElement):
   """
@@ -580,6 +601,9 @@ class DITStructureRule(SchemaElement):
     result.append(self.key_list('SUP',self.sup,sep=' $ '))
     return '( %s )' % ''.join(result)
 
+SCHEMA_CLASS_MAPPING[DITStructureRule.schema_attribute] = DITStructureRule
+SCHEMA_ATTR_MAPPING[DITStructureRule] = DITStructureRule.schema_attribute
+
 
 class NameForm(SchemaElement):
   """
@@ -638,6 +662,9 @@ class NameForm(SchemaElement):
     result.append(self.key_list('MUST',self.must,sep=' $ '))
     result.append(self.key_list('MAY',self.may,sep=' $ '))
     return '( %s )' % ''.join(result)
+
+SCHEMA_CLASS_MAPPING[NameForm.schema_attribute] = NameForm
+SCHEMA_ATTR_MAPPING[NameForm] = NameForm.schema_attribute
 
 
 class Entry(UserDict):
