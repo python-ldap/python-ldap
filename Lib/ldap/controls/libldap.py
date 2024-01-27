@@ -33,7 +33,8 @@ class AssertionControl(RequestControl):
   def encodeControlValue(self):
     return _ldap.encode_assertion_control(self.filterstr)
 
-KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_ASSERT] = AssertionControl
+# FIXME: This is a request control though?
+#KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_ASSERT] = AssertionControl
 
 
 class MatchedValuesControl(RequestControl):
@@ -54,7 +55,8 @@ class MatchedValuesControl(RequestControl):
   def encodeControlValue(self):
     return _ldap.encode_valuesreturnfilter_control(self.filterstr)
 
-KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_VALUESRETURNFILTER] = MatchedValuesControl
+# FIXME: This is a request control though?
+#KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_VALUESRETURNFILTER] = MatchedValuesControl
 
 
 class SimplePagedResultsControl(LDAPControl):

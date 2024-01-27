@@ -88,7 +88,8 @@ class VLVRequestControl(RequestControl):
         p.setComponentByName('target', target)
         return encoder.encode(p)
 
-KNOWN_RESPONSE_CONTROLS[VLVRequestControl.controlType] = VLVRequestControl
+# FIXME: This is a request control though?
+#KNOWN_RESPONSE_CONTROLS[VLVRequestControl.controlType] = VLVRequestControl
 
 
 class VirtualListViewResultType(univ.Enumerated):
