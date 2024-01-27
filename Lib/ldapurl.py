@@ -4,6 +4,7 @@ ldapurl - handling of LDAP URLs as described in RFC 4516
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import annotations
 __version__ = '3.4.7'
 
 __all__ = [
@@ -19,6 +20,8 @@ __all__ = [
 import html
 from collections.abc import MutableMapping
 from urllib.parse import quote, unquote
+
+from typing import Iterator
 
 LDAP_SCOPE_BASE = 0
 LDAP_SCOPE_ONELEVEL = 1
@@ -44,13 +47,13 @@ SEARCH_SCOPE = {
 }
 
 
-def isLDAPUrl(s):
+def isLDAPUrl(s: str) -> bool:
   """Returns True if s is a LDAP URL, else False
   """
   return s.lower().startswith(('ldap://', 'ldaps://', 'ldapi://'))
 
 
-def ldapUrlEscape(s):
+def ldapUrlEscape(s: str) -> str:
   """Returns URL encoding of string s"""
   return quote(s).replace(',','%2C').replace('/','%2F')
 
@@ -69,14 +72,20 @@ class LDAPUrlExtension:
           Value of extension
   """
 
-  def __init__(self,extensionStr=None,critical=0,extype=None,exvalue=None):
+  def __init__(
+    self,
+    extensionStr: str | None = None,
+    critical: int = 0,
+    extype: str | None = None,
+    exvalue: str | None = None
+  ) -> None:
     self.critical = critical
     self.extype = extype
     self.exvalue = exvalue
     if extensionStr:
       self._parse(extensionStr)
 
-  def _parse(self,extension):
+  def _parse(self, extension: str) -> None:
     extension = extension.strip()
     if not extension:
       # Don't parse empty strings
@@ -94,7 +103,7 @@ class LDAPUrlExtension:
       self.exvalue = unquote(self.exvalue.strip())
     self.extype = self.extype.strip()
 
-  def unparse(self):
+  def unparse(self) -> str:
     if self.exvalue is None:
       return '{}{}'.format('!'*(self.critical>0),self.extype)
     else:
@@ -103,10 +112,10 @@ class LDAPUrlExtension:
         self.extype,quote(self.exvalue or '')
       )
 
-  def __str__(self):
+  def __str__(self) -> str:
     return self.unparse()
 
-  def __repr__(self):
+  def __repr__(self) -> str:
     return '<{}.{} instance at {}: {}>'.format(
       self.__class__.__module__,
       self.__class__.__name__,
@@ -114,9 +123,9 @@ class LDAPUrlExtension:
       self.__dict__
     )
 
-  def __eq__(self,other):
-    if not isinstance(other, LDAPUrlExtension):
-      return False
+  def __eq__(self, other: object) -> bool:
+    if not isinstance(other, self.__class__):
+      return NotImplemented
     elif self.critical != other.critical:
       return False
     elif self.extype != other.extype:
@@ -126,25 +135,27 @@ class LDAPUrlExtension:
     else:
       return True
 
-  def __ne__(self,other):
+  def __ne__(self, other: object) -> bool:
     if not isinstance(other, self.__class__):
       return NotImplemented
     return not self.__eq__(other)
 
 
-class LDAPUrlExtensions(MutableMapping):
+LDAPUrlExtensionsBase = MutableMapping[str, LDAPUrlExtension]
+
+class LDAPUrlExtensions(LDAPUrlExtensionsBase):
     """
     Models a collection of LDAP URL extensions as
     a mapping type
     """
     __slots__ = ('_data', )
 
-    def __init__(self, default=None):
-        self._data = {}
+    def __init__(self, default: dict[str, LDAPUrlExtension] | None = None) -> None:
+        self._data: dict[str, LDAPUrlExtension] = {}
         if default is not None:
             self.update(default)
 
-    def __setitem__(self, name, value):
+    def __setitem__(self, name: str, value: LDAPUrlExtension) -> None:
         """Store an extension
 
         name
@@ -161,22 +172,22 @@ class LDAPUrlExtensions(MutableMapping):
                     name, value.extype))
         self._data[name] = value
 
-    def __getitem__(self, name):
+    def __getitem__(self, name: str) -> LDAPUrlExtension:
         return self._data[name]
 
-    def __delitem__(self, name):
+    def __delitem__(self, name: str) -> None:
         del self._data[name]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str]:
         return iter(self._data)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._data)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return ','.join(str(v) for v in self.values())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<{}.{} instance at {}: {}>'.format(
             self.__class__.__module__,
             self.__class__.__name__,
@@ -184,19 +195,19 @@ class LDAPUrlExtensions(MutableMapping):
             self._data
         )
 
-    def __eq__(self,other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return NotImplemented
         return self._data == other._data
 
-    def parse(self,extListStr):
+    def parse(self, extListStr: str) -> None:
         for extension_str in extListStr.strip().split(','):
             if extension_str:
                 e = LDAPUrlExtension(extension_str)
                 if e.extype is not None:
                   self[e.extype] = e
 
-    def unparse(self):
+    def unparse(self) -> str:
         return ','.join(v.unparse() for v in self.values())
 
 
@@ -231,19 +242,25 @@ class LDAPUrl:
 
   def __init__(
     self,
-    ldapUrl=None,
-    urlscheme='ldap',
-    hostport='',dn='',attrs=None,scope=None,filterstr=None,
-    extensions=None,
-    who=None,cred=None
-  ):
+    ldapUrl: str | None = None,
+    urlscheme: str = 'ldap',
+    hostport: str = '',
+    dn: str = '',
+    attrs: list[str] | None = None,
+    scope: int | None = None,
+    filterstr: str | None = None,
+    extensions: LDAPUrlExtensions | None = None,
+    who: str | None = None,
+    cred: str | None = None
+  ) -> None:
+
     self.urlscheme=urlscheme.lower()
     self.hostport=hostport
     self.dn=dn
     self.attrs=attrs
     self.scope=scope
     self.filterstr=filterstr
-    self.extensions=(extensions or LDAPUrlExtensions({}))
+    self.extensions: LDAPUrlExtensions | None = (extensions or LDAPUrlExtensions({}))
 
     if ldapUrl is not None:
       self._parse(ldapUrl)
@@ -252,11 +269,9 @@ class LDAPUrl:
     if cred!=None:
       self.cred = cred
 
-  def __eq__(self,other):
-    if not isinstance(other, LDAPUrl):
-      return False
-    elif self.urlscheme != other.urlscheme:
-      return False
+  def __eq__(self, other: object) -> bool:
+    if not isinstance(other, self.__class__):
+      return NotImplemented
     elif self.urlscheme != other.urlscheme:
       return False
     elif self.hostport != other.hostport:
@@ -274,12 +289,12 @@ class LDAPUrl:
     else:
       return True
 
-  def __ne__(self,other):
+  def __ne__(self, other: object) -> bool:
     if not isinstance(other, self.__class__):
       return NotImplemented
     return not self.__eq__(other)
 
-  def _parse(self,ldap_url):
+  def _parse(self, ldap_url: str) -> None:
     """
     parse a LDAP URL and set the class attributes
     urlscheme,host,dn,attrs,scope,filterstr,extensions
@@ -334,7 +349,7 @@ class LDAPUrl:
         self.extensions = None
     return
 
-  def applyDefaults(self,defaults):
+  def applyDefaults(self, defaults: dict[str, str]) -> None:
     """
     Apply defaults to all class attributes which are None.
 
@@ -346,7 +361,7 @@ class LDAPUrl:
       if getattr(self,k) is None:
         setattr(self, k, value)
 
-  def initializeUrl(self):
+  def initializeUrl(self) -> str:
     """
     Returns LDAP URL suitable to be passed to ldap.initialize()
     """
@@ -357,7 +372,7 @@ class LDAPUrl:
       hostport = self.hostport
     return f'{self.urlscheme}://{hostport}'
 
-  def unparse(self):
+  def unparse(self) -> str:
     """
     Returns LDAP URL depending on class attributes set.
     """
@@ -384,7 +399,12 @@ class LDAPUrl:
       ldap_url += '?' + self.extensions.unparse()
     return ldap_url
 
-  def htmlHREF(self,urlPrefix='',hrefText=None,hrefTarget=None):
+  def htmlHREF(
+    self,
+    urlPrefix: str = '',
+    hrefText: str | None = None,
+    hrefTarget: str | None = None
+  ) -> str:
     """
     Returns a string with HTML link for this LDAP URL.
 
@@ -414,10 +434,10 @@ class LDAPUrl:
         target, html.escape(urlPrefix, quote=True), html.escape(self.unparse(), quote=True), html.escape(hrefText, quote=False)
     )
 
-  def __str__(self):
+  def __str__(self) -> str:
     return self.unparse()
 
-  def __repr__(self):
+  def __repr__(self) -> str:
     return '<{}.{} instance at {}: {}>'.format(
       self.__class__.__module__,
       self.__class__.__name__,
@@ -425,7 +445,7 @@ class LDAPUrl:
       self.__dict__
     )
 
-  def __getattr__(self,name):
+  def __getattr__(self, name: str) -> str | None:
     if name not in self.attr2extype:
       raise AttributeError('{} has no attribute {}'.format(
         self.__class__.__name__,name
@@ -443,7 +463,7 @@ class LDAPUrl:
     else:
       return unquote(exvalue)
 
-  def __setattr__(self,name,value):
+  def __setattr__(self, name: str, value: str) -> None:
     if name in self.attr2extype:
       extype = self.attr2extype[name]
       if value is None:
@@ -459,7 +479,7 @@ class LDAPUrl:
     else:
       self.__dict__[name] = value
 
-  def __delattr__(self,name):
+  def __delattr__(self, name: str) -> None:
     if name in self.attr2extype:
       extype = self.attr2extype[name]
       if self.extensions:

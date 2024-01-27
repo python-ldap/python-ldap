@@ -9,6 +9,8 @@ The information serves two purposes:
 - Provide support for building documentation without compiling python-ldap
 
 """
+from __future__ import annotations
+from typing import Any, Sequence
 
 # This module cannot import anything from ldap.
 # When building documentation, it is used to initialize ldap.__init__.
@@ -18,9 +20,15 @@ class Constant:
     """Base class for a definition of an OpenLDAP constant
     """
 
-    c_template = None
+    c_template: str | None = None
 
-    def __init__(self, name, optional=False, requirements=(), doc=None):
+    def __init__(
+        self,
+        name: str,
+        optional: bool = False,
+        requirements: Sequence[str] = (),
+        doc: str | None = None,
+    ) -> None:
         self.name = name
         if optional:
             self_requirement = f'defined(LDAP_{self.name})'
@@ -48,7 +56,7 @@ class Int(Constant):
 class TLSInt(Int):
     """Definition for a TLS integer constant -- requires HAVE_TLS"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         requirements = list(kwargs.get('requirements', ()))
         kwargs['requirements'] = ['HAVE_TLS'] + requirements
         super().__init__(*args, **kwargs)
@@ -70,7 +78,7 @@ class Feature(Constant):
     ])
 
 
-    def __init__(self, name, c_feature, **kwargs):
+    def __init__(self, name: str, c_feature: str, **kwargs: Any) -> None:
         super().__init__(name, **kwargs)
         self.c_feature = c_feature
 
@@ -380,7 +388,7 @@ CONSTANTS = (
 )
 
 
-def print_header():  # pragma: no cover
+def print_header() -> None:  # pragma: no cover
     """Print the C header file to standard output"""
 
     print('/*')
@@ -391,9 +399,9 @@ def print_header():  # pragma: no cover
     print(' */')
     print('')
 
-    current_requirements = []
+    current_requirements: list[str] = []
 
-    def pop_requirement():
+    def pop_requirement() -> None:
         popped = current_requirements.pop()
         print('#endif')
         print()

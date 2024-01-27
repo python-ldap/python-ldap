@@ -4,6 +4,7 @@ ldap.schema.subentry -  subschema subentry handling
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import annotations
 import copy
 from urllib.request import urlopen
 import warnings
@@ -14,12 +15,15 @@ from ldap.cidict import cidict
 import ldapurl
 import ldif
 
+from ldap._types import LDAPEntryDict
+from typing import Any, Iterable, MutableMapping, Type, TypeVar, Union
+
 # Maps schema element description (from class.schema_attribute,
 # e.g. 'ObjectClass') to the schema class.
-SCHEMA_CLASS_MAPPING = cidict()
+SCHEMA_CLASS_MAPPING: cidict[Type["SchemaElement"]] = cidict()
 
 # The reverse of SCHEMA_CLASS_MAPPING
-SCHEMA_ATTR_MAPPING = {}
+SCHEMA_ATTR_MAPPING: dict[Type["SchemaElement"], str] = {}
 
 # Note: this cannot be moved up due to circular imports:
 #       ldap.schema.models imports the two dicts above
@@ -30,6 +34,8 @@ from ldap.schema.models import (
     DITContentRule,
 )
 
+SchemaElementSubclass = TypeVar('SchemaElementSubclass', bound=SchemaElement)
+
 SCHEMA_ATTRS = list(SCHEMA_CLASS_MAPPING)
 
 
@@ -39,19 +45,19 @@ class SubschemaError(ValueError):
 
 class OIDNotUnique(SubschemaError):
 
-  def __init__(self,desc):
+  def __init__(self, desc: str) -> None:
     self.desc = desc
 
-  def __str__(self):
+  def __str__(self) -> str:
     return 'OID not unique for %s' % (self.desc)
 
 
 class NameNotUnique(SubschemaError):
 
-  def __init__(self,desc):
+  def __init__(self, desc: str) -> None:
     self.desc = desc
 
-  def __str__(self):
+  def __str__(self) -> str:
     return 'NAME not unique for %s' % (self.desc)
 
 
@@ -87,22 +93,26 @@ class SubSchema:
     List of NAMEs used at least twice in the subschema for the same schema element
   """
 
-  def __init__(self,sub_schema_sub_entry,check_uniqueness=1):
+  def __init__(
+    self,
+    sub_schema_sub_entry: LDAPEntryDict,
+    check_uniqueness: int = 1,
+  ) -> None:
 
     # SchemaElement class -> Element name -> Element OID
-    self.name2oid: Dict[Type[SchemaElement], cidict[str]] = {}
+    self.name2oid: dict[Type[SchemaElement], cidict[str]] = {}
 
     # SchemaElement class -> Element OID -> Element object instance
-    self.sed: Dict[Type[SchemaElement], Dict[str, SchemaElement]] = {}
+    self.sed: dict[Type[SchemaElement], dict[str, SchemaElement]] = {}
 
     # Temporary set to hold OIDs which are not unique
-    non_unique_oids: Set[str] = set()
+    non_unique_oids: set[str] = set()
 
     # Dict mapping schema element class to a cidict where keys are used to
     # indicate OIDs with duplicate names (values are not used)
     # FIXME: this seems incomplete (cf. class docstring above and
     # compare to how non_unique_oids is handled at the end)
-    self.non_unique_names: Dict[Type[SchemaElement], cidict[None]] = {}
+    self.non_unique_names: dict[Type[SchemaElement], cidict[None]] = {}
 
     for c in SCHEMA_CLASS_MAPPING.values():
       self.name2oid[c] = ldap.cidict.cidict()
@@ -110,7 +120,7 @@ class SubSchema:
       self.non_unique_names[c] = ldap.cidict.cidict()
 
     # Transform entry dict to case-insensitive dict
-    e = ldap.cidict.cidict(sub_schema_sub_entry)
+    e: LDAPEntryDict = ldap.cidict.cidict(sub_schema_sub_entry)
 
     # Build the schema registry in dictionaries
     for attr_type in SCHEMA_ATTRS:
@@ -153,7 +163,7 @@ class SubSchema:
     return # subSchema.__init__()
 
 
-  def ldap_entry(self):
+  def ldap_entry(self) -> dict[str, list[str]]:
     """
     Returns a dictionary containing the sub schema sub entry
 
@@ -161,7 +171,7 @@ class SubSchema:
     the values are lists of schema element definition strings.
     """
     # Initialize the dictionary with empty lists
-    entry = {}
+    entry: dict[str, list[str]] = {}
     # Collect the schema elements and store them in
     # entry's attributes
     for se_class, elements in self.sed.items():
@@ -173,7 +183,11 @@ class SubSchema:
           entry[SCHEMA_ATTR_MAPPING[se_class]] = [ se_str ]
     return entry
 
-  def listall(self,schema_element_class,schema_element_filters=None):
+  def listall(
+    self,
+    schema_element_class: Type[SchemaElement],
+    schema_element_filters: Iterable[tuple[str, Iterable[Union[str, int]]]] | None = None,
+  ) -> list[str]:
     """
     Returns a list of OIDs of all available schema
     elements of a given schema element class.
@@ -204,7 +218,11 @@ class SubSchema:
     return result
 
 
-  def tree(self,schema_element_class,schema_element_filters=None):
+  def tree(
+    self,
+    schema_element_class: Union[Type[ObjectClass], Type[AttributeType]],
+    schema_element_filters: Iterable[tuple[str, Iterable[Union[str, int]]]] | None = None,
+  ) -> cidict[list[str]]:
     """
     Returns a ldap.cidict.cidict dictionary representing the
     tree structure of the schema elements.
@@ -227,7 +245,7 @@ class SubSchema:
     assert schema_element_class in [ObjectClass,AttributeType]
     avail_se = self.listall(schema_element_class,schema_element_filters)
     top_node = '_'
-    tree = ldap.cidict.cidict({top_node:[]})
+    tree: cidict[list[str]] = ldap.cidict.cidict({top_node:[]})
     # 1. Pass: Register all nodes
     for se in avail_se:
       tree[se] = []
@@ -252,7 +270,12 @@ class SubSchema:
     return tree
 
 
-  def getoid(self,se_class,nameoroid,raise_keyerror=0):
+  def getoid(
+    self,
+    se_class: Type[SchemaElementSubclass],
+    nameoroid: str,
+    raise_keyerror: int = 0,
+  ) -> str:
     """
     Get an OID by name or OID
     """
@@ -271,7 +294,12 @@ class SubSchema:
     return result_oid
 
 
-  def get_inheritedattr(self,se_class,nameoroid,name):
+  def get_inheritedattr(
+    self,
+    se_class: Type[SchemaElementSubclass],
+    nameoroid: str,
+    name: str,
+  ) -> Any:
     """
     Get a possibly inherited attribute specified by name
     of a schema element specified by nameoroid.
@@ -289,12 +317,18 @@ class SubSchema:
       result = self.get_inheritedattr(se_class,se.sup[0],name)
 
     # The return type could be something like this:
-    # Tuple[str, ...] | Tuple[None] | str | int | None
+    # tuple[str, ...] | tuple[None] | str | int | None
     # But we have no control over what is passed as "name"...
     return result
 
 
-  def get_obj(self,se_class,nameoroid,default=None,raise_keyerror=0):
+  def get_obj(
+    self,
+    se_class: Type[SchemaElementSubclass],
+    nameoroid: str,
+    default: SchemaElementSubclass | None = None,
+    raise_keyerror: int = 0,
+  ) -> SchemaElementSubclass | None:
     """
     Get a schema element by name or OID
     """
@@ -315,11 +349,17 @@ class SubSchema:
     return se_obj
 
 
-  def get_inheritedobj(self,se_class,nameoroid,inherited=None):
+  def get_inheritedobj(
+    self,
+    se_class: Type[SchemaElementSubclass],
+    nameoroid: str,
+    inherited: list[str] | None = None,
+  ) -> SchemaElementSubclass | None:
     """
     Get a schema element by name or OID with all class attributes
     set including inherited class attributes
     """
+    # FIXME: could use a TypeVar to limit the return value to an se_class instance
     inherited = inherited or []
     se = copy.copy(self.sed[se_class].get(self.getoid(se_class,nameoroid)))
     if se is None:
@@ -333,7 +373,7 @@ class SubSchema:
     return se
 
 
-  def get_syntax(self,nameoroid):
+  def get_syntax(self, nameoroid: str) -> str | None:
     """
     Get the syntax of an attribute type specified by name or OID
     """
@@ -349,7 +389,7 @@ class SubSchema:
       return at_obj.syntax
 
 
-  def get_structural_oc(self,oc_list):
+  def get_structural_oc(self, oc_list: Iterable[str]) -> str | None:
     """
     Returns OID of structural object class in oc_list
     if any is present. Returns None else.
@@ -379,7 +419,7 @@ class SubSchema:
     return result
 
 
-  def get_applicable_aux_classes(self,nameoroid):
+  def get_applicable_aux_classes(self, nameoroid: str) -> list[str]:
     """
     Return a list of the applicable AUXILIARY object classes
     for a STRUCTURAL object class specified by 'nameoroid'
@@ -396,8 +436,12 @@ class SubSchema:
       return self.listall(ObjectClass,[('kind',[2])])
 
   def attribute_types(
-    self,object_class_list,attr_type_filter=None,raise_keyerror=1,ignore_dit_content_rule=0
-  ):
+    self,
+    object_class_list: Iterable[str],
+    attr_type_filter: Iterable[tuple[str, Iterable[Union[str, int]]]] | None = None,
+    raise_keyerror: int = 1,
+    ignore_dit_content_rule: int = 0,
+  ) -> tuple[cidict[AttributeType | None], cidict[AttributeType | None]]:
     """
     Returns a 2-tuple of all must and may attributes including
     all inherited attributes of superior object classes
@@ -426,9 +470,11 @@ class SubSchema:
       for o in object_class_list
     ]
     # Initialize
-    oid_cache = {}
+    oid_cache: dict[str, None] = {}
 
-    r_must,r_may = ldap.cidict.cidict(),ldap.cidict.cidict()
+    r_must: cidict[ldap.schema.models.AttributeType | None] = ldap.cidict.cidict()
+    r_may: cidict[ldap.schema.models.AttributeType | None] = ldap.cidict.cidict()
+
     if '1.3.6.1.4.1.1466.101.120.111' in object_class_oids:
       # Object class 'extensibleObject' MAY carry every attribute type
       for at_obj in self.sed[AttributeType].values():
@@ -519,7 +565,10 @@ class SubSchema:
     return r_must,r_may # attribute_types()
 
 
-def urlfetch(uri,trace_level=0):
+def urlfetch(
+    uri: str,
+    trace_level: int = 0,
+  ) -> tuple[str | None, SubSchema | None]:
   """
   Fetches a parsed schema entry by uri.
 
@@ -554,7 +603,7 @@ def urlfetch(uri,trace_level=0):
       subschemasubentry_dn,s_temp = ldif_parser.all_records[0]
 
   # Work-around for mixed-cased attribute names
-  subschemasubentry_entry = ldap.cidict.cidict()
+  subschemasubentry_entry: MutableMapping[str, list[bytes]] = ldap.cidict.cidict()
   s_temp = s_temp or {}
   for at,av in s_temp.items():
     if at in SCHEMA_CLASS_MAPPING:

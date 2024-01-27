@@ -4,7 +4,9 @@ ldap.syncrepl - for implementing syncrepl consumer (see RFC 4533)
 See https://www.python-ldap.org/ for project details.
 """
 
-from typing import AnyStr, Dict, List, Tuple, Union, TYPE_CHECKING
+from __future__ import annotations
+from typing import Any, Union, TYPE_CHECKING
+
 from uuid import UUID
 
 # Imports from pyasn1
@@ -16,26 +18,28 @@ from ldap.controls import RequestControl, ResponseControl, KNOWN_RESPONSE_CONTRO
 from ldap.ldapobject import SimpleLDAPObject
 from ldap import RES_SEARCH_RESULT, RES_SEARCH_ENTRY, RES_INTERMEDIATE
 
+from ldap._types import LDAPEntryDict
+
 __all__ = [
     'OpenLDAPSyncreplCookie',
     'SyncreplConsumer',
 ]
 
 
-class SyncUUID(univ.OctetString):
+class SyncUUID(univ.OctetString):  # type: ignore
     """
     syncUUID ::= OCTET STRING (SIZE(16))
     """
     subtypeSpec = constraint.ValueSizeConstraint(16, 16)
 
 
-class SyncCookie(univ.OctetString):
+class SyncCookie(univ.OctetString):  # type: ignore
     """
     syncCookie ::= OCTET STRING
     """
 
 
-class SyncRequestMode(univ.Enumerated):
+class SyncRequestMode(univ.Enumerated):  # type: ignore
     """
            mode ENUMERATED {
                -- 0 unused
@@ -51,7 +55,7 @@ class SyncRequestMode(univ.Enumerated):
     subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(1, 3)
 
 
-class SyncRequestValue(univ.Sequence):
+class SyncRequestValue(univ.Sequence):  # type: ignore
     """
        syncRequestValue ::= SEQUENCE {
            mode ENUMERATED {
@@ -83,7 +87,13 @@ class SyncRequestControl(RequestControl):
     """
     controlType = '1.3.6.1.4.1.4203.1.9.1.1'
 
-    def __init__(self, criticality=1, cookie=None, mode='refreshOnly', reloadHint=False):
+    def __init__(
+        self,
+        criticality: Union[int, bool] = True,
+        cookie: str | bytes | None = None,
+        mode: str = 'refreshOnly',
+        reloadHint: bool = False,
+    ) -> None:
         if criticality:
             self.criticality = True
         else:
@@ -92,17 +102,17 @@ class SyncRequestControl(RequestControl):
         self.mode = mode
         self.reloadHint = reloadHint
 
-    def encodeControlValue(self):
+    def encodeControlValue(self) -> bytes:
         rcv = SyncRequestValue()
         rcv.setComponentByName('mode', SyncRequestMode(self.mode))
         if self.cookie is not None:
             rcv.setComponentByName('cookie', SyncCookie(self.cookie))
         if self.reloadHint:
             rcv.setComponentByName('reloadHint', univ.Boolean(self.reloadHint))
-        return encoder.encode(rcv)
+        return encoder.encode(rcv)  # type: ignore
 
 
-class SyncStateOp(univ.Enumerated):
+class SyncStateOp(univ.Enumerated):  # type: ignore
     """
            state ENUMERATED {
                present (0),
@@ -120,7 +130,7 @@ class SyncStateOp(univ.Enumerated):
     subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0, 1, 2, 3)
 
 
-class SyncStateValue(univ.Sequence):
+class SyncStateValue(univ.Sequence):  # type: ignore
     """
        syncStateValue ::= SEQUENCE {
            state ENUMERATED {
@@ -153,13 +163,13 @@ class SyncStateControl(ResponseControl):
     controlType = '1.3.6.1.4.1.4203.1.9.1.2'
     opnames = ('present', 'add', 'modify', 'delete')
 
-    def decodeControlValue(self, encodedControlValue):
+    def decodeControlValue(self, encodedControlValue: bytes) -> None:
         d = decoder.decode(encodedControlValue, asn1Spec=SyncStateValue())
         state = d[0].getComponentByName('state')
         uuid = UUID(bytes=bytes(d[0].getComponentByName('entryUUID')))
         cookie = d[0].getComponentByName('cookie')
         if cookie is not None and cookie.hasValue():
-            self.cookie = str(cookie)
+            self.cookie: str | None = str(cookie)
         else:
             self.cookie = None
         self.state = self.__class__.opnames[int(state)]
@@ -168,7 +178,7 @@ class SyncStateControl(ResponseControl):
 KNOWN_RESPONSE_CONTROLS[SyncStateControl.controlType] = SyncStateControl
 
 
-class SyncDoneValue(univ.Sequence):
+class SyncDoneValue(univ.Sequence):  # type: ignore
     """
        syncDoneValue ::= SEQUENCE {
            cookie          syncCookie OPTIONAL,
@@ -193,11 +203,11 @@ class SyncDoneControl(ResponseControl):
     """
     controlType = '1.3.6.1.4.1.4203.1.9.1.3'
 
-    def decodeControlValue(self, encodedControlValue):
+    def decodeControlValue(self, encodedControlValue: bytes) -> None:
         d = decoder.decode(encodedControlValue, asn1Spec=SyncDoneValue())
         cookie = d[0].getComponentByName('cookie')
         if cookie.hasValue():
-            self.cookie = str(cookie)
+            self.cookie: str | None = str(cookie)
         else:
             self.cookie = None
         refresh_deletes = d[0].getComponentByName('refreshDeletes')
@@ -209,7 +219,7 @@ class SyncDoneControl(ResponseControl):
 KNOWN_RESPONSE_CONTROLS[SyncDoneControl.controlType] = SyncDoneControl
 
 
-class RefreshDelete(univ.Sequence):
+class RefreshDelete(univ.Sequence):  # type: ignore
     """
            refreshDelete  [1] SEQUENCE {
                cookie         syncCookie OPTIONAL,
@@ -222,7 +232,7 @@ class RefreshDelete(univ.Sequence):
     )
 
 
-class RefreshPresent(univ.Sequence):
+class RefreshPresent(univ.Sequence):  # type: ignore
     """
            refreshPresent [2] SEQUENCE {
                cookie         syncCookie OPTIONAL,
@@ -235,14 +245,14 @@ class RefreshPresent(univ.Sequence):
     )
 
 
-class SyncUUIDs(univ.SetOf):
+class SyncUUIDs(univ.SetOf):  # type: ignore
     """
     syncUUIDs      SET OF syncUUID
     """
     componentType = SyncUUID()
 
 
-class SyncIdSet(univ.Sequence):
+class SyncIdSet(univ.Sequence):  # type: ignore
     """
      syncIdSet      [3] SEQUENCE {
          cookie         syncCookie OPTIONAL,
@@ -257,7 +267,7 @@ class SyncIdSet(univ.Sequence):
     )
 
 
-class SyncInfoValue(univ.Choice):
+class SyncInfoValue(univ.Choice):  # type: ignore
     """
        syncInfoValue ::= CHOICE {
            newcookie      [0] syncCookie,
@@ -313,7 +323,7 @@ class SyncInfoMessage:
     """
     responseName = '1.3.6.1.4.1.4203.1.9.1.4'
 
-    def __init__(self, encodedMessage):
+    def __init__(self, encodedMessage: bytes) -> None:
         d = decoder.decode(encodedMessage, asn1Spec=SyncInfoValue())
         self.newcookie = None
         self.refreshDelete = None
@@ -331,7 +341,7 @@ class SyncInfoMessage:
                 self.newcookie = str(comp)
                 return
 
-            val = {}
+            val: dict[str, Union[str, bool, list[str]]] = {}
 
             cookie = comp.getComponentByName('cookie')
             if cookie.hasValue():
@@ -362,7 +372,19 @@ class SyncreplConsumer(_Base):
     SyncreplConsumer - LDAP syncrepl consumer object.
     """
 
-    def syncrepl_search(self, base, scope, mode='refreshOnly', cookie=None, **search_args):
+    def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+        if not isinstance(self, SimpleLDAPObject):
+            raise TypeError(f"Expecting to be a subclass of {SimpleLDAPObject}")
+        super().__init__(*args, **kwargs)
+
+    def syncrepl_search(
+        self,
+        base: str,
+        scope: int,
+        mode: str = 'refreshOnly',
+        cookie: str | bytes | None = None,
+        **search_args: Any,
+    ) -> int:
         """
         Starts syncrepl search operation.
 
@@ -397,10 +419,14 @@ class SyncreplConsumer(_Base):
             search_args['serverctrls'] = [syncreq]
 
         self.__refreshDone = False
-        # FIXME: This assumes that we're subclassing LDAPObject
-        return self.search_ext(base, scope, **search_args)
+        return self.search_ext(base, scope, **search_args)  # type: ignore
 
-    def syncrepl_poll(self, msgid=-1, timeout=None, all=0):
+    def syncrepl_poll(
+        self,
+        msgid: int = -1,
+        timeout: int | None = None,
+        all: int = 0,
+    ) -> bool:
         """
         polls for and processes responses to the syncrepl_search() operation.
         Returns False when operation finishes, True if it is in progress, or
@@ -413,8 +439,7 @@ class SyncreplConsumer(_Base):
 
         """
         while True:
-            # FIXME: This assumes that we're subclassing LDAPObject
-            type, msg, mid, ctrls, n, v = self.result4(
+            type, msg, mid, ctrls, n, v = self.result4(  # type: ignore
                 msgid=msgid,
                 timeout=timeout,
                 add_intermediates=1,
@@ -491,21 +516,24 @@ class SyncreplConsumer(_Base):
 
     # virtual methods -- subclass must override these to do useful work
 
-    def syncrepl_set_cookie(self, cookie):
+    def syncrepl_set_cookie(self, cookie: str) -> None:
         """
         Called by syncrepl_poll() to store a new cookie provided by the server.
         """
         # FIXME: The cookie is an opaque octet string, so the type should be bytes?
         pass
 
-    def syncrepl_get_cookie(self):
+    def syncrepl_get_cookie(self) -> str | bytes | None:
         """
         Called by syncrepl_search() to retrieve the cookie stored by syncrepl_set_cookie()
         """
-        # FIXME: The cookie is an opaque octet string, so the type should be bytes?
-        return ''
+        return None
 
-    def syncrepl_present(self, uuids, refreshDeletes=False):
+    def syncrepl_present(
+        self,
+        uuids: list[str] | None,
+        refreshDeletes: bool = False,
+    ) -> None:
         """
         Called by syncrepl_poll() whenever entry UUIDs are presented to the client.
         syncrepl_present() is given a list of entry UUIDs (uuids) and a flag
@@ -525,7 +553,7 @@ class SyncreplConsumer(_Base):
         """
         pass
 
-    def syncrepl_delete(self, uuids):
+    def syncrepl_delete(self, uuids: list[str]) -> None:
         """
         Called by syncrepl_poll() to delete entries. A list
         of UUIDs of the entries to be deleted is given in the
@@ -533,7 +561,7 @@ class SyncreplConsumer(_Base):
         """
         pass
 
-    def syncrepl_entry(self, dn, attrs, uuid):
+    def syncrepl_entry(self, dn: str, attrs: LDAPEntryDict, uuid: str) -> None:
         """
         Called by syncrepl_poll() for any added or modified entries.
 
@@ -543,7 +571,7 @@ class SyncreplConsumer(_Base):
         """
         pass
 
-    def syncrepl_refreshdone(self):
+    def syncrepl_refreshdone(self) -> None:
         """
         Called by syncrepl_poll() between refresh and persist phase.
 
@@ -561,7 +589,7 @@ class OpenLDAPSyncreplCookie:
 
     rid: int = 0
     sid: int = 0
-    _csnset: Dict[int, str]
+    _csnset: dict[str, str]
 
     def __init__(self, cookie: AnyStr = "") -> None:
         self._csnset = {}
@@ -569,15 +597,15 @@ class OpenLDAPSyncreplCookie:
         if cookie:
             self.update(cookie)
 
-    def _parse_csn(self, csn: str) -> Tuple[str, str, str, str]:
+    def _parse_csn(self, csn: str) -> tuple[str, str, str, str]:
         time, order, sid, other = csn.split('#', 3)
         return (time, order, sid, other)
 
-    def _parse_cookie(self, cookie: AnyStr) -> Dict[str, Union[str, List[str]]]:
+    def _parse_cookie(self, cookie: Union[str, bytes]) -> dict[str, Union[str, list[str]]]:
         if isinstance(cookie, bytes):
             cookie = cookie.decode()
 
-        result = {}
+        result: dict[str, Union[str, list[str]]] = {}
         parts = cookie.split(',')
         for part in parts:
             if part.startswith('rid='):

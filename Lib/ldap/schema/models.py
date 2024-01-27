@@ -4,23 +4,24 @@ schema.py - support for subSchemaSubEntry information
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import annotations
 import sys
 
-from typing import (
-    Dict,
-    Iterator,
-    List,
-    Tuple,
-    MutableMapping,
-)
+from typing import ClassVar, Iterator, MutableMapping, TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 from ldap.cidict import cidict
+from ldap._types import LDAPEntryDict
 
+import ldap.schema
 from ldap.schema.subentry import SCHEMA_CLASS_MAPPING, SCHEMA_ATTR_MAPPING
 from ldap.schema.tokenizer import (
     parse_tokens, split_tokens,
     LDAPTokenDict, LDAPTokenDictValue
 )
+
+EntryBase = MutableMapping[str, list[bytes]]
 
 
 NOT_HUMAN_READABLE_LDAP_SYNTAXES = {
@@ -62,9 +63,10 @@ class SchemaElement:
   known_tokens
     List used internally containing the valid tokens
   """
+  schema_attribute: ClassVar[str]
   known_tokens = ['DESC', 'NAME']
 
-  def __init__(self,schema_element_str=None):
+  def __init__(self, schema_element_str: str | bytes | None = None) -> None:
     if isinstance(schema_element_str, bytes):
       schema_element_string = schema_element_str.decode('utf-8')
     elif isinstance(schema_element_str, str):
@@ -82,17 +84,17 @@ class SchemaElement:
     self.set_id(oid)
     self._set_attrs(tokens, schema_element_attributes)
 
-  def _set_attrs(self,l,d):
+  def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     self.desc = d.get('DESC', (None,))[0]
     self.names = d.get('NAME', ())
 
-  def set_id(self,element_id):
+  def set_id(self, element_id: str) -> None:
     self.oid = element_id
 
-  def get_id(self):
+  def get_id(self) -> str:
     return self.oid
 
-  def key_attr(self,key,value,quoted=0):
+  def key_attr(self, key: str, value: str | None, quoted: int = 0) -> str:
     if value is None:
       return ""
     elif not isinstance(value, str):
@@ -104,7 +106,9 @@ class SchemaElement:
     else:
       return f" {key} {value}"
 
-  def key_list(self,key,values,sep=' ',quoted=0):
+  def key_list(
+    self, key: str, values: tuple[str, ...], sep: str = ' ', quoted: int = 0
+  ) -> str:
     assert isinstance(values, tuple),TypeError("values has to be a tuple, was %r" % values)
     if not values:
       return ''
@@ -119,7 +123,7 @@ class SchemaElement:
     else:
       return ' {} ( {} )'.format(key,sep.join(quoted_values))
 
-  def __str__(self):
+  def __str__(self) -> str:
     result = [str(self.oid)]
     result.append(self.key_attr('DESC',self.desc,quoted=1))
     return '( %s )' % ''.join(result)
@@ -178,7 +182,7 @@ class ObjectClass(SchemaElement):
     'X-ORIGIN',
   ]
 
-  def _set_attrs(self, l: List[str], d: LDAPTokenDict) -> None:
+  def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l, d)
     self.obsolete = 'OBSOLETE' in d
     self.must = d.get('MUST', ())
@@ -194,11 +198,11 @@ class ObjectClass(SchemaElement):
 
     if self.kind==0 and len(d.get('SUP', ())) == 0 and self.oid!='2.5.6.0':
       # STRUCTURAL object classes are sub-classes of 'top' by default
-      self.sup = ('top',)
+      self.sup: tuple[str, ...] = ('top',)
     else:
       self.sup = d.get('SUP', ())
 
-  def __str__(self):
+  def __str__(self) -> str:
     result = [str(self.oid)]
     result.append(self.key_list('NAME',self.names,quoted=1))
     result.append(self.key_attr('DESC',self.desc,quoted=1))
@@ -290,7 +294,7 @@ class AttributeType(SchemaElement):
     'X-ORDERED',
   ]
 
-  def _set_attrs(self, l: List[str], d: LDAPTokenDict) -> None:
+  def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l, d)
     self.obsolete = 'OBSOLETE' in d
     self.sup = d.get('SUP', ())
@@ -328,7 +332,7 @@ class AttributeType(SchemaElement):
     if usage is not None:
         self.usage = AttributeUsage.get(usage, 0)
 
-  def __str__(self):
+  def __str__(self) -> str:
     result = [str(self.oid)]
     result.append(self.key_list('NAME',self.names,quoted=1))
     result.append(self.key_attr('DESC',self.desc,quoted=1))
@@ -382,7 +386,7 @@ class LDAPSyntax(SchemaElement):
     'X-SUBST',
   ]
 
-  def _set_attrs(self,l,d):
+  def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l, d)
     self.x_subst = d.get('X-SUBST', (None,))[0]
     self.not_human_readable = \
@@ -390,7 +394,7 @@ class LDAPSyntax(SchemaElement):
       d.get('X-NOT-HUMAN-READABLE', (None,))[0] == 'TRUE'
     self.x_binary_transfer_required = d.get('X-BINARY-TRANSFER-REQUIRED', (None,))[0] == 'TRUE'
 
-  def __str__(self):
+  def __str__(self) -> str:
     result = [str(self.oid)]
     result.append(self.key_attr('DESC',self.desc,quoted=1))
     result.append(self.key_attr('X-SUBST',self.x_subst,quoted=1))
@@ -433,13 +437,13 @@ class MatchingRule(SchemaElement):
     'SYNTAX',
   ]
 
-  def _set_attrs(self,l,d) -> None:
+  def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l, d)
     self.obsolete = 'OBSOLETE' in d
     self.syntax = d.get('SYNTAX', (None,))[0]
     return
 
-  def __str__(self):
+  def __str__(self) -> str:
     result = [str(self.oid)]
     result.append(self.key_list('NAME',self.names,quoted=1))
     result.append(self.key_attr('DESC',self.desc,quoted=1))
@@ -481,13 +485,13 @@ class MatchingRuleUse(SchemaElement):
     'APPLIES',
   ]
 
-  def _set_attrs(self,l,d):
+  def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l, d)
     self.obsolete = 'OBSOLETE' in d
     self.applies = d.get('APPLIES', ())
     return
 
-  def __str__(self):
+  def __str__(self) -> str:
     result = [str(self.oid)]
     result.append(self.key_list('NAME',self.names,quoted=1))
     result.append(self.key_attr('DESC',self.desc,quoted=1))
@@ -546,7 +550,7 @@ class DITContentRule(SchemaElement):
     'NOT',
   ]
 
-  def _set_attrs(self,l,d):
+  def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l ,d)
     self.obsolete = 'OBSOLETE' in d
     self.aux = d.get('AUX', ())
@@ -554,7 +558,7 @@ class DITContentRule(SchemaElement):
     self.may = d.get('MAY', ())
     self.nots = d.get('NOT', ())
 
-  def __str__(self):
+  def __str__(self) -> str:
     result = [str(self.oid)]
     result.append(self.key_list('NAME',self.names,quoted=1))
     result.append(self.key_attr('DESC',self.desc,quoted=1))
@@ -603,20 +607,20 @@ class DITStructureRule(SchemaElement):
     'SUP',
   ]
 
-  def set_id(self,element_id):
+  def set_id(self, element_id: str) -> None:
     self.ruleid = element_id
 
-  def get_id(self):
+  def get_id(self) -> str:
     return self.ruleid
 
-  def _set_attrs(self,l,d):
+  def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l ,d)
     self.obsolete = 'OBSOLETE' in d
     self.form = d.get('FORM', (None,))[0]
     self.sup = d.get('SUP', ())
     return
 
-  def __str__(self):
+  def __str__(self) -> str:
     result = [str(self.ruleid)]
     result.append(self.key_list('NAME',self.names,quoted=1))
     result.append(self.key_attr('DESC',self.desc,quoted=1))
@@ -668,14 +672,14 @@ class NameForm(SchemaElement):
     'MAY',
   ]
 
-  def _set_attrs(self,l,d):
+  def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l ,d)
     self.obsolete = 'OBSOLETE' in d
     self.oc = d.get('OC', (None,))[0]
     self.must = d.get('MUST', ())
     self.may = d.get('MAY', ())
 
-  def __str__(self):
+  def __str__(self) -> str:
     result = [str(self.oid)]
     result.append(self.key_list('NAME',self.names,quoted=1))
     result.append(self.key_attr('DESC',self.desc,quoted=1))
@@ -689,7 +693,7 @@ SCHEMA_CLASS_MAPPING[NameForm.schema_attribute] = NameForm
 SCHEMA_ATTR_MAPPING[NameForm] = NameForm.schema_attribute
 
 
-class Entry(MutableMapping):
+class Entry(EntryBase):
   """
   Schema-aware implementation of an LDAP entry class.
 
@@ -697,16 +701,16 @@ class Entry(MutableMapping):
   the OID as key.
   """
 
-  def __init__(self,schema,dn,entry):
-    self._keytuple2attrtype: Dict[Tuple[str, ...], str] = {}
-    self._attrtype2keytuple: Dict[str, Tuple[str, ...]] = {}
-    self.data: Dict[Tuple[str, ...], List[bytes]] = {}
+  def __init__(self, schema: ldap.schema.subentry.SubSchema, dn: str, entry: LDAPEntryDict) -> None:
+    self._keytuple2attrtype: dict[tuple[str, ...], str] = {}
+    self._attrtype2keytuple: dict[str, tuple[str, ...]] = {}
+    self.data: dict[tuple[str, ...], list[bytes]] = {}
     self._s = schema
     self.dn = dn
     super().__init__()
     self.update(entry)
 
-  def _at2key(self,nameoroid):
+  def _at2key(self, nameoroid: str) -> tuple[str, ...]:
     """
     Return tuple of OID and all sub-types of attribute type specified
     in nameoroid.
@@ -723,29 +727,29 @@ class Entry(MutableMapping):
       self._attrtype2keytuple[nameoroid] = t
       return t
 
-  def update(self,dict):
+  def update(self, dict: MutableMapping[str, list[bytes]]) -> None:  # type: ignore
     for key, value in dict.items():
       self[key] = value
 
-  def __contains__(self,nameoroid):
+  def __contains__(self, nameoroid: object) -> bool:
     if not isinstance(nameoroid, str):
       return False
     return self._at2key(nameoroid) in self.data
 
-  def __getitem__(self,nameoroid):
+  def __getitem__(self, nameoroid: object) -> list[bytes]:
     if not isinstance(nameoroid, str):
       raise KeyError
     k = self._at2key(nameoroid)
     return self.data[k]
 
-  def __setitem__(self,nameoroid,attr_values):
+  def __setitem__(self, nameoroid: object, attr_values: list[bytes]) -> None:
     if not isinstance(nameoroid, str):
       raise KeyError
     k = self._at2key(nameoroid)
     self._keytuple2attrtype[k] = nameoroid
     self.data[k] = attr_values
 
-  def __delitem__(self,nameoroid):
+  def __delitem__(self, nameoroid: object) -> None:
     if not isinstance(nameoroid, str):
       raise KeyError
     k = self._at2key(nameoroid)
@@ -756,14 +760,14 @@ class Entry(MutableMapping):
   def __len__(self) -> int:
       return len(self.data)
 
-  def has_key(self,nameoroid):
+  def has_key(self, nameoroid: str) -> bool:
     k = self._at2key(nameoroid)
     return k in self.data
 
-  def keys(self):
-    return self._keytuple2attrtype.values()
+  def keys(self) -> list[str]:  # type: ignore
+    return self._keytuple2attrtype.values()  # type: ignore
 
-  def items(self):
+  def items(self) -> list[tuple[str, list[bytes]]]:  # type: ignore
     return [
       (k,self[k])
       for k in self.keys()
@@ -772,7 +776,7 @@ class Entry(MutableMapping):
   def __iter__(self) -> Iterator[str]:
     return iter(self.keys())
 
-  def copy(self):
+  def copy(self) -> Self:
     inst = self.__class__.__new__(self.__class__)
     inst._keytuple2attrtype = self._keytuple2attrtype.copy()
     inst._attrtype2keytuple = self._attrtype2keytuple.copy()
@@ -784,14 +788,16 @@ class Entry(MutableMapping):
   __copy__ = copy
 
   def attribute_types(
-    self,attr_type_filter=None,raise_keyerror=1
-  ):
+    self,
+    attr_type_filter: list[tuple[str, list[str]]] | None = None,
+    raise_keyerror: int = 1,
+  ) -> tuple[cidict[AttributeType | None], cidict[AttributeType | None]]:
     """
     Convenience wrapper around SubSchema.attribute_types() which
     passes object classes of this particular entry as argument to
     SubSchema.attribute_types()
     """
     bin_ocs = self.get('objectClass', [])
-    ocs = [oc.decode("utf-8") for oc in bin_ocs]
+    ocs = [oc if isinstance(oc, str) else oc.decode("utf-8") for oc in bin_ocs]
 
     return self._s.attribute_types(ocs,attr_type_filter,raise_keyerror)

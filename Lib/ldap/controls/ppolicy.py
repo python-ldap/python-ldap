@@ -5,6 +5,7 @@ ldap.controls.ppolicy - classes for Password Policy controls
 See https://www.python-ldap.org/ for project details.
 """
 
+from __future__ import annotations
 __all__ = [
   'PasswordPolicyControl'
 ]
@@ -19,7 +20,8 @@ from pyasn1.type import tag,namedtype,namedval,univ,constraint
 from pyasn1.codec.der import decoder
 
 
-class PasswordPolicyWarning(univ.Choice):
+
+class PasswordPolicyWarning(univ.Choice):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('timeBeforeExpiration',univ.Integer().subtype(
       implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,0)
@@ -30,7 +32,7 @@ class PasswordPolicyWarning(univ.Choice):
   )
 
 
-class PasswordPolicyError(univ.Enumerated):
+class PasswordPolicyError(univ.Enumerated):  # type: ignore
   namedValues = namedval.NamedValues(
     ('passwordExpired',0),
     ('accountLocked',1),
@@ -46,7 +48,7 @@ class PasswordPolicyError(univ.Enumerated):
   subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0,1,2,3,4,5,6,7,8,9)
 
 
-class PasswordPolicyResponseValue(univ.Sequence):
+class PasswordPolicyResponseValue(univ.Sequence):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.OptionalNamedType(
       'warning',
@@ -69,24 +71,24 @@ class PasswordPolicyControl(ValueLessRequestControl,ResponseControl):
   Attributes
   ----------
 
-  timeBeforeExpiration : int
+  timeBeforeExpiration : int | None
       The time before the password expires.
 
-  graceAuthNsRemaining : int
+  graceAuthNsRemaining : int | None
       The number of grace authentications remaining.
 
-  error: int
+  error: int | None
       The password and authentication errors.
   """
   controlType = '1.3.6.1.4.1.42.2.27.8.5.1'
 
-  def __init__(self,criticality=False):
+  def __init__(self, criticality: bool = False) -> None:
     self.criticality = criticality
-    self.timeBeforeExpiration = None
-    self.graceAuthNsRemaining = None
-    self.error = None
+    self.timeBeforeExpiration: int | None = None
+    self.graceAuthNsRemaining: int | None = None
+    self.error: int | None = None
 
-  def decodeControlValue(self,encodedControlValue):
+  def decodeControlValue(self, encodedControlValue: bytes) -> None:
     ppolicyValue,_ = decoder.decode(encodedControlValue,asn1Spec=PasswordPolicyResponseValue())
     warning = ppolicyValue.getComponentByName('warning')
     if warning.hasValue():
