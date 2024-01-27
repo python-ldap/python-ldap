@@ -74,8 +74,8 @@ class SearchNoOpMixIn:
     else:
       noop_srch_ctrl = [
         c
-        for c in search_response_ctrls
-        if c.controlType==SearchNoOpControl.controlType
+        for c in search_response_ctrls or []
+        if isinstance(c, SearchNoOpControl)
       ]
       if noop_srch_ctrl:
         return noop_srch_ctrl[0].numSearchResults,noop_srch_ctrl[0].numSearchContinuations
