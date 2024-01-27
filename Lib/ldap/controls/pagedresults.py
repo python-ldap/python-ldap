@@ -22,6 +22,7 @@ from pyasn1_modules.rfc2251 import LDAPString
 class PagedResultsControlValue(univ.Sequence):
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('size',univ.Integer()),
+    # FIXME: This should be univ.OctetString, not LDAPString()?
     namedtype.NamedType('cookie',LDAPString()),
   )
 
@@ -32,7 +33,13 @@ class SimplePagedResultsControl(RequestControl,ResponseControl):
   def __init__(self,criticality=False,size=10,cookie=''):
     self.criticality = criticality
     self.size = size
-    self.cookie = cookie or ''
+
+    if cookie is None:
+      cookie = b''
+    elif isinstance(cookie, str):
+      self.cookie = cookie.encode('utf-8')
+    else:
+      self.cookie = cookie
 
   def encodeControlValue(self):
     pc = PagedResultsControlValue()
