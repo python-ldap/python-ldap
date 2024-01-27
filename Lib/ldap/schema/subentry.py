@@ -374,7 +374,7 @@ class SubSchema:
         if result is not None:
             warnings.warn(
                     f"multiple leaf structural objectclasses: {result}, {oid}",
-                    DeprecationWarning)
+                    category=DeprecationWarning, stacklevel=2)
         result = oid
     return result
 
