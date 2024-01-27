@@ -1,6 +1,8 @@
 include MANIFEST.in Makefile CHANGES INSTALL LICENCE README TODO
 include tox.ini .coveragerc
 include Modules/*.c Modules/*.h
+include Lib/ldap/py.typed
+include Lib/_ldap.pyi
 recursive-include Build *.cfg*
 recursive-include Lib *.py
 recursive-include Demo *.py
