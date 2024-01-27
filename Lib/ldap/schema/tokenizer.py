@@ -6,6 +6,15 @@ See https://www.python-ldap.org/ for details.
 
 import re
 
+from typing import Dict, List, Tuple, Mapping, Union
+from typing_extensions import TypeAlias
+
+LDAPTokenDictValue: TypeAlias = "Tuple[()] | Tuple[str, ...]"
+"""The kind of values which may be found in a token dict."""
+
+LDAPTokenDict: TypeAlias = "Mapping[str, LDAPTokenDictValue]"
+"""The type of the dict used to keep track of tokens while parsing schema (Mapping because of variance)."""
+
 TOKENS_FINDALL = re.compile(
     r"(\()"           # opening parenthesis
     r"|"              # or
@@ -24,7 +33,7 @@ TOKENS_FINDALL = re.compile(
 UNESCAPE_PATTERN = re.compile(r"\\(.)")
 
 
-def split_tokens(s):
+def split_tokens(s: str) -> List[str]:
     """
     Returns list of syntax elements with quotes and spaces stripped.
     """
@@ -51,7 +60,10 @@ def split_tokens(s):
     return parts
 
 
-def parse_tokens(tokens, known_tokens):
+def parse_tokens(
+    tokens: List[str],
+    known_tokens: List[str]
+) -> Tuple[str, LDAPTokenDict]:
     """
     Process a list of tokens and return a dictionary of known tokens with all
     values

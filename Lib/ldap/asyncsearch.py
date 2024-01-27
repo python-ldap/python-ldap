@@ -7,6 +7,19 @@ See https://www.python-ldap.org/ for details.
 import ldap
 
 from ldap.pkginfo import __version__
+from ldap.controls import RequestControl
+from typing import (
+    Any,
+    Dict as DictType,
+    Iterable,
+    List as ListType,
+    Sequence,
+    TextIO,
+    Tuple,
+    Optional,
+    Union,
+)
+from ldap.types import LDAPSearchResult, LDAPEntryDict
 
 import ldif
 
@@ -24,12 +37,16 @@ ENTRY_RESULT_TYPES = {
 
 class WrongResultType(Exception):
 
-  def __init__(self,receivedResultType,expectedResultTypes):
+  def __init__(
+    self,
+    receivedResultType: Optional[int],
+    expectedResultTypes: Iterable[int],
+  ) -> None:
     self.receivedResultType = receivedResultType
     self.expectedResultTypes = expectedResultTypes
     Exception.__init__(self)
 
-  def __str__(self):
+  def __str__(self) -> str:
     return 'Received wrong result type {} (expected one of {}).'.format(
       self.receivedResultType,
       ', '.join([str(x) for x in self.expectedResultTypes]),
@@ -46,23 +63,23 @@ class AsyncSearchHandler:
     LDAPObject instance
   """
 
-  def __init__(self,l):
+  def __init__(self, l: ldap.ldapobject.LDAPObject) -> None:
     self._l = l
-    self._msgId = None
+    self._msgId: Optional[int] = None
     self._afterFirstResult = 1
 
   def startSearch(
     self,
-    searchRoot,
-    searchScope,
-    filterStr,
-    attrList=None,
-    attrsOnly=0,
-    timeout=-1,
-    sizelimit=0,
-    serverctrls=None,
-    clientctrls=None
-  ):
+    searchRoot: str,
+    searchScope: int,
+    filterStr: str,
+    attrList: Optional[ListType[str]] = None,
+    attrsOnly: int = 0,
+    timeout: int = -1,
+    sizelimit: int = 0,
+    serverctrls: Optional[ListType[RequestControl]] = None,
+    clientctrls: Optional[ListType[RequestControl]] = None,
+  ) -> None:
     """
     searchRoot
         See parameter base of method LDAPObject.search()
@@ -89,26 +106,30 @@ class AsyncSearchHandler:
       attrList,attrsOnly,serverctrls,clientctrls,timeout,sizelimit
     )
     self._afterFirstResult = 1
-    return # startSearch()
 
-  def preProcessing(self):
+  def preProcessing(self) -> Any:
     """
     Do anything you want after starting search but
     before receiving and processing results
     """
 
-  def afterFirstResult(self):
+  def afterFirstResult(self) -> Any:
     """
     Do anything you want right after successfully receiving but before
     processing first result
     """
 
-  def postProcessing(self):
+  def postProcessing(self) -> Any:
     """
     Do anything you want after receiving and processing all results
     """
 
-  def processResults(self,ignoreResultsNumber=0,processResultsCount=0,timeout=-1):
+  def processResults(
+    self,
+    ignoreResultsNumber: int = 0,
+    processResultsCount: int = 0,
+    timeout: int = -1,
+  ) -> int:
     """
     ignoreResultsNumber
         Don't process the first ignoreResultsNumber results.
@@ -159,7 +180,11 @@ class AsyncSearchHandler:
     self.postProcessing()
     return partial # processResults()
 
-  def _processSingleResult(self,resultType,resultItem):
+  def _processSingleResult(
+    self,
+    resultType: int,
+    resultItem: LDAPSearchResult,
+  ) -> Any:
     """
     Process single entry
 
@@ -180,11 +205,15 @@ class List(AsyncSearchHandler):
   results.
   """
 
-  def __init__(self,l):
+  def __init__(self, l: ldap.ldapobject.LDAPObject) -> None:
     AsyncSearchHandler.__init__(self,l)
-    self.allResults = []
+    self.allResults: ListType[Tuple[int, LDAPSearchResult]] = []
 
-  def _processSingleResult(self,resultType,resultItem):
+  def _processSingleResult(
+    self,
+    resultType: int,
+    resultItem: LDAPSearchResult,
+  ) -> None:
     self.allResults.append((resultType,resultItem))
 
 
@@ -193,11 +222,15 @@ class Dict(AsyncSearchHandler):
   Class for collecting all search results into a dictionary {dn:entry}
   """
 
-  def __init__(self,l):
+  def __init__(self, l: ldap.ldapobject.LDAPObject) -> None:
     AsyncSearchHandler.__init__(self,l)
-    self.allEntries = {}
+    self.allEntries: DictType[str, LDAPEntryDict] = {}
 
-  def _processSingleResult(self,resultType,resultItem):
+  def _processSingleResult(
+    self,
+    resultType: int,
+    resultItem: LDAPSearchResult,
+  ) -> None:
     if resultType in ENTRY_RESULT_TYPES:
       # Search continuations are ignored
       dn,entry = resultItem
@@ -210,12 +243,20 @@ class IndexedDict(Dict):
   and maintain case-sensitive equality indexes to entries
   """
 
-  def __init__(self,l,indexed_attrs=None):
+  def __init__(
+    self,
+    l: ldap.ldapobject.LDAPObject,
+    indexed_attrs: Optional[Sequence[str]] = None,
+  ) -> None:
     Dict.__init__(self,l)
     self.indexed_attrs = indexed_attrs or ()
-    self.index = {}.fromkeys(self.indexed_attrs,{})
+    self.index: DictType[str, DictType[bytes, ListType[str]]] = {}.fromkeys(self.indexed_attrs,{})
 
-  def _processSingleResult(self,resultType,resultItem):
+  def _processSingleResult(
+    self,
+    resultType: int,
+    resultItem: LDAPSearchResult,
+  ) -> None:
     if resultType in ENTRY_RESULT_TYPES:
       # Search continuations are ignored
       dn,entry = resultItem
@@ -240,20 +281,26 @@ class FileWriter(AsyncSearchHandler):
     File object instance where the LDIF data is written to
   """
 
-  def __init__(self,l,f,headerStr='',footerStr=''):
+  def __init__(
+    self,
+    l: ldap.ldapobject.LDAPObject,
+    f: TextIO,
+    headerStr: str = '',
+    footerStr: str = '',
+  ) -> None:
     AsyncSearchHandler.__init__(self,l)
     self._f = f
     self.headerStr = headerStr
     self.footerStr = footerStr
 
-  def preProcessing(self):
+  def preProcessing(self) -> None:
     """
     The headerStr is written to output after starting search but
     before receiving and processing results.
     """
     self._f.write(self.headerStr)
 
-  def postProcessing(self):
+  def postProcessing(self) -> None:
     """
     The footerStr is written to output after receiving and
     processing results.
@@ -273,14 +320,24 @@ class LDIFWriter(FileWriter):
     Either a file-like object or a ldif.LDIFWriter instance used for output
   """
 
-  def __init__(self,l,writer_obj,headerStr='',footerStr=''):
+  def __init__(
+    self,
+    l: ldap.ldapobject.LDAPObject,
+    writer_obj: Union[TextIO, ldif.LDIFWriter],
+    headerStr: str = '',
+    footerStr: str = '',
+  ) -> None:
     if isinstance(writer_obj,ldif.LDIFWriter):
       self._ldif_writer = writer_obj
     else:
       self._ldif_writer = ldif.LDIFWriter(writer_obj)
     FileWriter.__init__(self,l,self._ldif_writer._output_file,headerStr,footerStr)
 
-  def _processSingleResult(self,resultType,resultItem):
+  def _processSingleResult(
+    self,
+    resultType: int,
+    resultItem: LDAPSearchResult,
+  ) -> None:
     if resultType in ENTRY_RESULT_TYPES:
       # Search continuations are ignored
       dn,entry = resultItem

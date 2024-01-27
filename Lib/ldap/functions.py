@@ -23,12 +23,20 @@ from ldap.dn import explode_dn,explode_rdn
 
 from ldap.ldapobject import LDAPObject
 
+from typing import Any, BinaryIO, Callable, TextIO, Optional, Union
+
+
 if __debug__:
   # Tracing is only supported in debugging mode
   import traceback
 
 
-def _ldap_function_call(lock,func,*args,**kwargs):
+def _ldap_function_call(
+    lock: Optional[ldap.LDAPLock],
+    func: Callable[..., Any],
+    *args: Any,
+    **kwargs: Any,
+  ) -> Any:
   """
   Wrapper function which locks and logs calls to function
 
@@ -63,9 +71,14 @@ def _ldap_function_call(lock,func,*args,**kwargs):
 
 
 def initialize(
-    uri, trace_level=0, trace_file=sys.stdout, trace_stack_limit=None,
-    bytes_mode=None, fileno=None, **kwargs
-):
+    uri: str,
+    trace_level: int = 0,
+    trace_file: TextIO = sys.stdout,
+    trace_stack_limit: int = 5,
+    bytes_mode: Optional[Any] = None,
+    fileno: Optional[Union[int, BinaryIO]] = None,
+    **kwargs: Any,
+) -> LDAPObject:
   """
   Return LDAPObject instance by opening LDAP connection to
   LDAP host specified by LDAP URL
@@ -94,7 +107,7 @@ def initialize(
   )
 
 
-def get_option(option):
+def get_option(option: int) -> Any:
   """
   get_option(name) -> value
 
@@ -103,16 +116,16 @@ def get_option(option):
   return _ldap_function_call(None,_ldap.get_option,option)
 
 
-def set_option(option,invalue):
+def set_option(option: int, invalue: Any) -> int:
   """
   set_option(name, value)
 
   Set the value of an LDAP global option.
   """
-  return _ldap_function_call(None,_ldap.set_option,option,invalue)
+  return _ldap_function_call(None,_ldap.set_option,option,invalue)  # type: ignore
 
 
-def escape_str(escape_func,s,*args):
+def escape_str(escape_func: Callable[[str], str], s: str, *args: str) -> str:
   """
   Applies escape_func() to all items of `args' and returns a string based
   on format string `s'.
@@ -120,14 +133,14 @@ def escape_str(escape_func,s,*args):
   return s % tuple(escape_func(v) for v in args)
 
 
-def strf_secs(secs):
+def strf_secs(secs: float) -> str:
     """
     Convert seconds since epoch to a string compliant to LDAP syntax GeneralizedTime
     """
     return time.strftime('%Y%m%d%H%M%SZ', time.gmtime(secs))
 
 
-def strp_secs(dt_str):
+def strp_secs(dt_str: str) -> int:
     """
     Convert LDAP syntax GeneralizedTime to seconds since epoch
     """
