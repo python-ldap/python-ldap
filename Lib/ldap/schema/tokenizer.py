@@ -50,35 +50,65 @@ def split_tokens(s):
         raise ValueError("Unbalanced parenthesis in %r" % (s))
     return parts
 
-def extract_tokens(l,known_tokens):
-  """
-  Returns dictionary of known tokens with all values
-  """
-  assert l[0].strip()=="(" and l[-1].strip()==")",ValueError(l)
-  result = {}
-  result.update(known_tokens)
-  i = 0
-  l_len = len(l)
-  while i<l_len:
-    if l[i] in result:
-      token = l[i]
-      i += 1 # Consume token
-      if i<l_len:
-        if l[i] in result:
-          # non-valued
-          result[token] = (())
-        elif l[i]=="(":
-          # multi-valued
-          i += 1 # Consume left parentheses
-          start = i
-          while i<l_len and l[i]!=")":
-            i += 1
-          result[token] = tuple(filter(lambda v:v!='$',l[start:i]))
-          i += 1 # Consume right parentheses
+
+def parse_tokens(tokens, known_tokens):
+    """
+    Process a list of tokens and return a dictionary of known tokens with all
+    values
+
+    Arguments:
+
+    tokens
+        A list of tokens to process.
+
+    known_tokens
+        A list of known tokens, unknown tokens will be ignored
+
+    Returns:
+
+    A tuple of the oid of the schema element and a dictionary mapping the
+    found tokens to their value(s).
+    """
+
+    assert len(tokens) > 2, ValueError(tokens)
+    assert tokens[0].strip() == "(", ValueError(tokens)
+    assert tokens[-1].strip() == ")", ValueError(tokens)
+
+    oid = tokens[1]
+    result = {}
+
+    i = 2
+    while i < len(tokens):
+        token = tokens[i]
+        i += 1
+
+        if token not in known_tokens:
+            # Skip unrecognized token
+            continue
+
+        if i >= len(tokens):
+            break
+
+        next_token = tokens[i]
+
+        if next_token in known_tokens:
+            # non-valued
+            value: Union[Tuple[()], Tuple[str, ...]] = (())
+
+        elif next_token == "(":
+            # multi-valued
+            i += 1 # Consume left parentheses
+            start = i
+            while i < len(tokens) and tokens[i] != ")":
+                i += 1
+            value = tuple(filter(lambda v: v != '$', tokens[start:i]))
+            i += 1 # Consume right parentheses
+
         else:
-          # single-valued
-          result[token] = l[i],
-          i += 1 # Consume single value
-    else:
-      i += 1 # Consume unrecognized item
-  return result
+            # single-valued
+            value = (next_token,)
+            i += 1 # Consume single value
+
+        result[token] = value
+
+    return oid, result
