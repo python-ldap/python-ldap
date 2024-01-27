@@ -42,10 +42,6 @@ SEARCH_SCOPE = {
   'subordinates':LDAP_SCOPE_SUBORDINATES,
 }
 
-# Some widely used types
-StringType = type('')
-TupleType=type(())
-
 
 def isLDAPUrl(s):
   """Returns True if s is a LDAP URL, else False
@@ -56,6 +52,7 @@ def isLDAPUrl(s):
 def ldapUrlEscape(s):
   """Returns URL encoding of string s"""
   return quote(s).replace(',','%2C').replace('/','%2F')
+
 
 class LDAPUrlExtension:
   """
@@ -117,10 +114,16 @@ class LDAPUrlExtension:
     )
 
   def __eq__(self,other):
-    return \
-      (self.critical==other.critical) and \
-      (self.extype==other.extype) and \
-      (self.exvalue==other.exvalue)
+    if not isinstance(other, LDAPUrlExtension):
+      return False
+    elif self.critical != other.critical:
+      return False
+    elif self.extype != other.extype:
+      return False
+    elif self.exvalue != other.exvalue:
+      return False
+    else:
+      return True
 
   def __ne__(self,other):
     return not self.__eq__(other)
@@ -187,7 +190,8 @@ class LDAPUrlExtensions(MutableMapping):
         for extension_str in extListStr.strip().split(','):
             if extension_str:
                 e = LDAPUrlExtension(extension_str)
-                self[e.extype] = e
+                if e.extype is not None:
+                  self[e.extype] = e
 
     def unparse(self):
         return ','.join(v.unparse() for v in self.values())
@@ -237,7 +241,8 @@ class LDAPUrl:
     self.scope=scope
     self.filterstr=filterstr
     self.extensions=(extensions or LDAPUrlExtensions({}))
-    if ldapUrl!=None:
+
+    if ldapUrl is not None:
       self._parse(ldapUrl)
     if who!=None:
       self.who = who
@@ -245,14 +250,26 @@ class LDAPUrl:
       self.cred = cred
 
   def __eq__(self,other):
-    return \
-      self.urlscheme==other.urlscheme and \
-      self.hostport==other.hostport and \
-      self.dn==other.dn and \
-      self.attrs==other.attrs and \
-      self.scope==other.scope and \
-      self.filterstr==other.filterstr and \
-      self.extensions==other.extensions
+    if not isinstance(other, LDAPUrl):
+      return False
+    elif self.urlscheme != other.urlscheme:
+      return False
+    elif self.urlscheme != other.urlscheme:
+      return False
+    elif self.hostport != other.hostport:
+      return False
+    elif self.dn != other.dn:
+      return False
+    elif self.attrs != other.attrs:
+      return False
+    elif self.scope != other.scope:
+      return False
+    elif self.filterstr != other.filterstr:
+      return False
+    elif self.extensions != other.extensions:
+      return False
+    else:
+      return True
 
   def __ne__(self,other):
     return not self.__eq__(other)
@@ -404,19 +421,22 @@ class LDAPUrl:
     )
 
   def __getattr__(self,name):
-    if name in self.attr2extype:
-      extype = self.attr2extype[name]
-      if self.extensions and \
-         extype in self.extensions and \
-         not self.extensions[extype].exvalue is None:
-        result = unquote(self.extensions[extype].exvalue)
-      else:
-        return None
-    else:
+    if name not in self.attr2extype:
       raise AttributeError('{} has no attribute {}'.format(
         self.__class__.__name__,name
       ))
-    return result # __getattr__()
+
+    extype = self.attr2extype[name]
+    if self.extensions is None:
+      return None
+    elif extype not in self.extensions:
+      return None
+
+    exvalue = self.extensions[extype].exvalue
+    if exvalue is None:
+      return None
+    else:
+      return unquote(exvalue)
 
   def __setattr__(self,name,value):
     if name in self.attr2extype:
@@ -424,8 +444,10 @@ class LDAPUrl:
       if value is None:
         # A value of None means that extension is deleted
         delattr(self,name)
-      elif value!=None:
+      else:
         # Add appropriate extension
+        if self.extensions is None:
+          self.extensions = LDAPUrlExtensions()
         self.extensions[extype] = LDAPUrlExtension(
           extype=extype,exvalue=unquote(value)
         )
