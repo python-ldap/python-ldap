@@ -18,8 +18,10 @@ from pyasn1.type import tag,namedtype,univ,constraint
 from pyasn1.codec.ber import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPString
 
+from typing import Union
 
-class PagedResultsControlValue(univ.Sequence):
+
+class PagedResultsControlValue(univ.Sequence):  # type: ignore
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('size',univ.Integer()),
     # FIXME: This should be univ.OctetString, not LDAPString()?
@@ -30,7 +32,12 @@ class PagedResultsControlValue(univ.Sequence):
 class SimplePagedResultsControl(RequestControl,ResponseControl):
   controlType = '1.2.840.113556.1.4.319'
 
-  def __init__(self,criticality=False,size=10,cookie=''):
+  def __init__(
+    self,
+    criticality: bool = False,
+    size: int = 10,
+    cookie: Union[str, bytes] = '',
+  ) -> None:
     self.criticality = criticality
     self.size = size
 
@@ -41,13 +48,13 @@ class SimplePagedResultsControl(RequestControl,ResponseControl):
     else:
       self.cookie = cookie
 
-  def encodeControlValue(self):
+  def encodeControlValue(self) -> bytes:
     pc = PagedResultsControlValue()
     pc.setComponentByName('size',univ.Integer(self.size))
     pc.setComponentByName('cookie',LDAPString(self.cookie))
-    return encoder.encode(pc)
+    return encoder.encode(pc)  # type: ignore
 
-  def decodeControlValue(self,encodedControlValue):
+  def decodeControlValue(self, encodedControlValue: bytes) -> None:
     decodedValue,_ = decoder.decode(encodedControlValue,asn1Spec=PagedResultsControlValue())
     self.size = int(decodedValue.getComponentByName('size'))
     self.cookie = bytes(decodedValue.getComponentByName('cookie'))

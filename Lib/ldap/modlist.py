@@ -8,8 +8,19 @@ from ldap.pkginfo import __version__
 
 import ldap
 
+from typing import List, Optional
+from ldap.types import (
+    LDAPEntryDict,
+    LDAPAddModList,
+    LDAPModifyModList,
+    LDAPModListModifyEntry,
+)
 
-def addModlist(entry,ignore_attr_types=None):
+
+def addModlist(
+    entry: LDAPEntryDict,
+    ignore_attr_types: Optional[List[str]] = None,
+  ) -> LDAPAddModList:
   """Build modify list for call of method LDAPObject.add()"""
   ignore_attr_types_set = {v.lower() for v in ignore_attr_types or []}
   modlist = []
@@ -25,8 +36,12 @@ def addModlist(entry,ignore_attr_types=None):
 
 
 def modifyModlist(
-  old_entry,new_entry,ignore_attr_types=None,ignore_oldexistent=0,case_ignore_attr_types=None
-):
+  old_entry: LDAPEntryDict,
+  new_entry: LDAPEntryDict,
+  ignore_attr_types: Optional[List[str]] = None,
+  ignore_oldexistent:int = 0,
+  case_ignore_attr_types: Optional[List[str]] = None,
+) -> LDAPModifyModList:
   """
   Build differential modify list for calling LDAPObject.modify()/modify_s()
 

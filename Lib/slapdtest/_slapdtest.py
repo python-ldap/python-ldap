@@ -15,6 +15,10 @@ import unittest
 from shutil import which
 from urllib.parse import quote_plus
 
+from typing import Any, Callable, Iterable, List, Optional, Type, TypeVar, Tuple
+from types import TracebackType
+from typing_extensions import Self
+
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
@@ -60,14 +64,16 @@ else:
     HAVE_LDAPI = hasattr(socket, 'AF_UNIX')
 
 
-def identity(test_item):
+T = TypeVar('T', bound=Any)
+
+def identity(test_item: T) -> T:
     """Identity decorator
 
     """
     return test_item
 
 
-def skip_unless_ci(reason, feature=None):
+def skip_unless_ci(reason: str, feature: Optional[str] = None) -> Callable[..., Any]:
     """Skip test unless test case is executed on CI like Travis CI
     """
     if not os.environ.get('CI', False):
@@ -79,7 +85,7 @@ def skip_unless_ci(reason, feature=None):
         return identity
 
 
-def requires_tls():
+def requires_tls() -> Callable[..., Any]:
     """Decorator for TLS tests
 
     Tests are not skipped on CI (e.g. Travis CI)
@@ -90,7 +96,7 @@ def requires_tls():
         return identity
 
 
-def requires_sasl():
+def requires_sasl() -> Callable[..., Any]:
     if not ldap.SASL_AVAIL:
         return skip_unless_ci(
             "test needs ldap.SASL_AVAIL", feature='SASL')
@@ -98,14 +104,14 @@ def requires_sasl():
         return identity
 
 
-def requires_ldapi():
+def requires_ldapi() -> Callable[..., Any]:
     if not HAVE_LDAPI:
         return skip_unless_ci(
             "test needs ldapi support (AF_UNIX)", feature='LDAPI')
     else:
         return identity
 
-def requires_init_fd():
+def requires_init_fd() -> Callable[..., Any]:
     if not ldap.INIT_FD_AVAIL:
         return skip_unless_ci(
             "test needs ldap.INIT_FD", feature='INIT_FD')
@@ -113,7 +119,7 @@ def requires_init_fd():
         return identity
 
 
-def _add_sbin(path):
+def _add_sbin(path: str) -> str:
     """Add /sbin and related directories to a command search path"""
     directories = path.split(os.pathsep)
     if sys.platform != 'win32':
@@ -123,11 +129,11 @@ def _add_sbin(path):
     return os.pathsep.join(directories)
 
 def combined_logger(
-        log_name,
-        log_level=logging.WARN,
-        sys_log_format='%(levelname)s %(message)s',
-        console_log_format='%(asctime)s %(levelname)s %(message)s',
-    ):
+        log_name: str,
+        log_level: int = logging.WARN,
+        sys_log_format: str = '%(levelname)s %(message)s',
+        console_log_format: str = '%(asctime)s %(levelname)s %(message)s',
+    ) -> logging.Logger:
     """
     Returns a combined SysLogHandler/StreamHandler logging instance
     with formatters
@@ -210,8 +216,8 @@ class SlapdObject:
     # create loggers once, multiple calls mess up refleak tests
     _log = combined_logger('python-ldap-test')
 
-    def __init__(self):
-        self._proc = None
+    def __init__(self) -> None:
+        self._proc: Optional[subprocess.Popen[bytes]] = None
         self._port = self._avail_tcp_port()
         self.server_id = self._port % 4096
         self.testrundir = os.path.join(self.TMPDIR, 'python-ldap-test-%d' % self._port)
@@ -220,7 +226,7 @@ class SlapdObject:
         self.ldap_uri = "ldap://%s:%d/" % (self.local_host, self._port)
         if HAVE_LDAPI:
             ldapi_path = os.path.join(self.testrundir, 'ldapi')
-            self.ldapi_uri = "ldapi://%s" % quote_plus(ldapi_path)
+            self.ldapi_uri: Optional[str] = "ldapi://%s" % quote_plus(ldapi_path)
             self.default_ldap_uri = self.ldapi_uri
             # use SASL/EXTERNAL via LDAPI when invoking OpenLDAP CLI tools
             self.cli_sasl_external = ldap.SASL_AVAIL
@@ -243,18 +249,18 @@ class SlapdObject:
         self.clientkey = os.path.join(HERE, 'certs/client.key')
 
     @property
-    def root_dn(self):
+    def root_dn(self) -> str:
         return 'cn={self.root_cn},{self.suffix}'.format(self=self)
 
     @property
-    def hostname(self):
+    def hostname(self) -> str:
         return self.local_host
 
     @property
-    def port(self):
+    def port(self) -> int:
         return self._port
 
-    def _find_commands(self):
+    def _find_commands(self) -> None:
         self.PATH_LDAPADD = self._find_command('ldapadd')
         self.PATH_LDAPDELETE = self._find_command('ldapdelete')
         self.PATH_LDAPMODIFY = self._find_command('ldapmodify')
@@ -267,7 +273,7 @@ class SlapdObject:
         else:
             self.PATH_SLAPD = self._find_command('slapd', in_sbin=True)
 
-    def _find_command(self, cmd, in_sbin=False):
+    def _find_command(self, cmd: str, in_sbin: bool = False) -> str:
         if in_sbin:
             path = self.SBIN_PATH
             var_name = 'SBIN'
@@ -282,7 +288,7 @@ class SlapdObject:
             )
         return command
 
-    def setup_rundir(self):
+    def setup_rundir(self) -> None:
         """
         creates rundir structure
 
@@ -293,7 +299,7 @@ class SlapdObject:
         os.mkdir(self._db_directory)
         self._create_sub_dirs(self.testrunsubdirs)
 
-    def _cleanup_rundir(self):
+    def _cleanup_rundir(self) -> None:
         """
         Recursively delete whole directory specified by `path'
         """
@@ -316,7 +322,7 @@ class SlapdObject:
         os.rmdir(self.testrundir)
         self._log.info('cleaned-up %s', self.testrundir)
 
-    def _avail_tcp_port(self):
+    def _avail_tcp_port(self) -> int:
         """
         find an available port for TCP connection
         """
@@ -329,7 +335,7 @@ class SlapdObject:
         self._log.info('Found available port %d', port)
         return port
 
-    def gen_config(self):
+    def gen_config(self) -> str:
         """
         generates a slapd.conf and returns it as one string
 
@@ -352,7 +358,7 @@ class SlapdObject:
         }
         return self.slapd_conf_template % config_dict
 
-    def _create_sub_dirs(self, dir_names):
+    def _create_sub_dirs(self, dir_names: Iterable[str]) -> None:
         """
         create sub-directories beneath self.testrundir
         """
@@ -361,7 +367,7 @@ class SlapdObject:
             self._log.debug('Create directory %s', dir_name)
             os.mkdir(dir_name)
 
-    def _write_config(self):
+    def _write_config(self) -> None:
         """Loads the slapd.d configuration."""
         self._log.debug("importing configuration: %s", self._slapd_conf)
 
@@ -377,7 +383,7 @@ class SlapdObject:
 
         self._log.debug("import ok: %s", self._slapd_conf)
 
-    def _test_config(self):
+    def _test_config(self) -> None:
         self._log.debug('testing config %s', self._slapd_conf)
         popen_list = [
             self.PATH_SLAPD,
@@ -397,7 +403,7 @@ class SlapdObject:
             raise RuntimeError("configuration test failed")
         self._log.info("config ok: %s", self._slapd_conf)
 
-    def _start_slapd(self):
+    def _start_slapd(self) -> None:
         """
         Spawns/forks the slapd process
         """
@@ -436,7 +442,7 @@ class SlapdObject:
                 return
         raise RuntimeError("slapd did not start properly")
 
-    def start(self):
+    def start(self) -> None:
         """
         Starts the slapd server process running, and waits for it to come up.
         """
@@ -456,7 +462,7 @@ class SlapdObject:
                 self._proc.pid, self.ldap_uri, self.ldapi_uri
             )
 
-    def stop(self):
+    def stop(self) -> None:
         """
         Stops the slapd server, and waits for it to terminate and cleans up
         """
@@ -467,7 +473,7 @@ class SlapdObject:
         self._cleanup_rundir()
         atexit.unregister(self.stop)
 
-    def restart(self):
+    def restart(self) -> None:
         """
         Restarts the slapd server with same data
         """
@@ -484,19 +490,19 @@ class SlapdObject:
         """Start slapd server"""
         self._start_slapd()
 
-    def wait(self):
+    def wait(self) -> None:
         """Waits for the slapd process to terminate by itself."""
         if self._proc is not None:
             self._proc.wait()
             self._stopped()
 
-    def _stopped(self):
+    def _stopped(self) -> None:
         """Called when the slapd server is known to have terminated"""
         if self._proc is not None:
             self._log.info('slapd[%d] terminated', self._proc.pid)
             self._proc = None
 
-    def _cli_auth_args(self):
+    def _cli_auth_args(self) -> List[str]:
         if self.cli_sasl_external:
             authc_args = [
                 '-Y', 'EXTERNAL',
@@ -512,8 +518,13 @@ class SlapdObject:
         return authc_args
 
     # no cover to avoid spurious coverage changes
-    def _cli_popen(self, ldapcommand, extra_args=None, ldap_uri=None,
-                   stdin_data=None):  # pragma: no cover
+    def _cli_popen(
+        self,
+        ldapcommand: str,
+        extra_args: Optional[List[str]] = None,
+        ldap_uri: Optional[str] = None,
+        stdin_data: Optional[bytes] = None,
+    ) -> Tuple[bytes, bytes]:  # pragma: no cover
         if ldap_uri is None:
             ldap_uri = self.default_ldap_uri
 
@@ -543,27 +554,32 @@ class SlapdObject:
             )
         return stdout_data, stderr_data
 
-    def ldapwhoami(self, extra_args=None):
+    def ldapwhoami(self, extra_args: Optional[List[str]] = None) -> None:
         """
         Runs ldapwhoami on this slapd instance
         """
         self._cli_popen(self.PATH_LDAPWHOAMI, extra_args=extra_args)
 
-    def ldapadd(self, ldif, extra_args=None):
+    def ldapadd(self, ldif: str, extra_args: Optional[List[str]] = None) -> None:
         """
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
         self._cli_popen(self.PATH_LDAPADD, extra_args=extra_args,
                         stdin_data=ldif.encode('utf-8'))
 
-    def ldapmodify(self, ldif, extra_args=None):
+    def ldapmodify(self, ldif: str, extra_args: Optional[List[str]] = None) -> None:
         """
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
         self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args,
                         stdin_data=ldif.encode('utf-8'))
 
-    def ldapdelete(self, dn, recursive=False, extra_args=None):
+    def ldapdelete(
+        self,
+        dn: str,
+        recursive: bool = False,
+        extra_args: Optional[List[str]] = None
+    ) -> None:
         """
         Runs ldapdelete on this slapd instance, deleting 'dn'
         """
@@ -574,7 +590,11 @@ class SlapdObject:
         extra_args.append(dn)
         self._cli_popen(self.PATH_LDAPDELETE, extra_args=extra_args)
 
-    def slapadd(self, ldif, extra_args=None):
+    def slapadd(
+        self,
+        ldif: Optional[str],
+        extra_args: Optional[List[str]] = None
+    ) -> None:
         """
         Runs slapadd on this slapd instance, passing it the ldif content
         """
@@ -584,11 +604,16 @@ class SlapdObject:
             extra_args=extra_args,
         )
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         self.start()
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
         self.stop()
 
 
@@ -601,7 +626,12 @@ class SlapdTestCase(unittest.TestCase):
     server = None
     ldap_object_class = None
 
-    def _open_ldap_conn(self, who=None, cred=None, **kwargs):
+    def _open_ldap_conn(
+        self,
+        who: Optional[str] = None,
+        cred: Optional[str] = None,
+        **kwargs: Any,
+    ) -> ldap.ldapobject.LDAPObject:
         """
         return a LDAPObject instance after simple bind
         """
@@ -617,11 +647,11 @@ class SlapdTestCase(unittest.TestCase):
         return ldap_conn
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         cls.server = cls.server_class()
         cls.server.start()
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDownClass(cls) -> None:
         if cls.server is not None:
             cls.server.stop()
