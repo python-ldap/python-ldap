@@ -133,9 +133,9 @@ def combined_logger(
     with formatters
     """
     if 'LOGLEVEL' in os.environ:
-        log_level = os.environ['LOGLEVEL']
+        log_level_str = os.environ['LOGLEVEL']
         try:
-            log_level = int(log_level)
+            log_level = int(log_level_str)
         except ValueError:
             pass
     # for writing to syslog
@@ -261,8 +261,10 @@ class SlapdObject:
         self.PATH_LDAPWHOAMI = self._find_command('ldapwhoami')
         self.PATH_SLAPADD = self._find_command('slapadd')
 
-        self.PATH_SLAPD = os.environ.get('SLAPD', None)
-        if not self.PATH_SLAPD:
+        env_path_slapd = os.environ.get('SLAPD', None)
+        if env_path_slapd is not None:
+            self.PATH_SLAPD = env_path_slapd
+        else:
             self.PATH_SLAPD = self._find_command('slapd', in_sbin=True)
 
     def _find_command(self, cmd, in_sbin=False):
@@ -321,7 +323,7 @@ class SlapdObject:
         sock = socket.socket()
         try:
             sock.bind((self.local_host, 0))
-            port = sock.getsockname()[1]
+            port = int(sock.getsockname()[1])
         finally:
             sock.close()
         self._log.info('Found available port %d', port)
@@ -447,6 +449,8 @@ class SlapdObject:
             self._write_config()
             self._test_config()
             self._start_slapd()
+            if self._proc is None:
+                raise RuntimeError("started slapd but self._proc is None")
             self._log.debug(
                 'slapd with pid=%d listening on %s and %s',
                 self._proc.pid, self.ldap_uri, self.ldapi_uri
@@ -471,17 +475,18 @@ class SlapdObject:
         self.wait()
         self.resume()
 
-    def terminate(self):
+    def terminate(self) -> None:
         """Terminate slapd server"""
-        self._proc.terminate()
+        if self._proc is not None:
+            self._proc.terminate()
 
-    def resume(self):
+    def resume(self) -> None:
         """Start slapd server"""
         self._start_slapd()
 
     def wait(self):
         """Waits for the slapd process to terminate by itself."""
-        if self._proc:
+        if self._proc is not None:
             self._proc.wait()
             self._stopped()
 
@@ -600,6 +605,11 @@ class SlapdTestCase(unittest.TestCase):
         """
         return a LDAPObject instance after simple bind
         """
+        if self.server is None:
+            raise RuntimeError("_open_ldap_conn: self.server is None")
+        elif self.ldap_object_class is None:
+            raise RuntimeError("_open_ldap_conn: self.ldap_object_class is None")
+
         ldap_conn = self.ldap_object_class(self.server.ldap_uri, **kwargs)
         ldap_conn.protocol_version = 3
         #ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
@@ -613,4 +623,5 @@ class SlapdTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.server.stop()
+        if cls.server is not None:
+            cls.server.stop()
