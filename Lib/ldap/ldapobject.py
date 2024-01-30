@@ -1,5 +1,5 @@
 """
-ldapobject.py - wraps class _ldap.LDAPObject
+ldapobject.py - wraps class ldap._ldap.LDAPObject
 
 See https://www.python-ldap.org/ for details.
 """
@@ -36,7 +36,9 @@ if __debug__:
   # Tracing is only supported in debugging mode
   import traceback
 
-import sys,time,pprint,_ldap,ldap,ldap.sasl,ldap.functions
+import sys,time,pprint
+import ldap._ldap as _ldap
+import ldap, ldap.sasl, ldap.functions
 import warnings
 
 from ldap.schema import SCHEMA_ATTRS
