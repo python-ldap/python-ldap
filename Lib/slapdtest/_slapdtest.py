@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 from types import TracebackType
 
-# Switch off processing .ldaprc or ldap.conf before importing _ldap
+# Switch off processing .ldaprc or ldap.conf before importing ldap._ldap
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
