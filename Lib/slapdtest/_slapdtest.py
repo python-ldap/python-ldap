@@ -19,7 +19,7 @@ from typing import Any, Callable, Iterable, List, Optional, Type, TypeVar, Tuple
 from types import TracebackType
 from typing_extensions import Self
 
-# Switch off processing .ldaprc or ldap.conf before importing _ldap
+# Switch off processing .ldaprc or ldap.conf before importing ldap._ldap
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap

@@ -5,7 +5,7 @@ See https://www.python-ldap.org/ for details.
 """
 from ldap.pkginfo import __version__
 
-import _ldap
+import ldap._ldap as _ldap
 assert _ldap.__version__==__version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 

@@ -7,9 +7,10 @@ Compatibility:
 - Tested with Python 2.0+
 """
 
-import _ldap
+from __future__ import annotations
 from ldap.pkginfo import __version__
 
+import ldap._ldap as _ldap
 from ldap.functions import strf_secs
 
 from typing import Iterable, Optional, Union

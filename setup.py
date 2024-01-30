@@ -60,7 +60,7 @@ if os.environ.get('WITH_GCOV'):
 setup(
   ext_modules = [
     Extension(
-      '_ldap',
+      'ldap._ldap',
       [
         'Modules/LDAPObject.c',
         'Modules/ldapcontrol.c',
