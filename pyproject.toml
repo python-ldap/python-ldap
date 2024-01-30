@@ -64,7 +64,7 @@ Issues = "https://github.com/python-ldap/python-ldap/issues"
 zip-safe = false
 include-package-data = true
 # Explicitly list all Python modules
-py-modules = ["ldapurl", "ldif"]
+py-modules = ["ldapurl", "ldif", "_ldap"]
 
 [tool.setuptools.package-data]
 ldap = ["py.typed"]

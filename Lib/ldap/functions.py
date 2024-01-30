@@ -1,5 +1,5 @@
 """
-functions.py - wraps functions of module _ldap
+functions.py - wraps functions of module ldap._ldap
 
 See https://www.python-ldap.org/ for details.
 """
@@ -15,7 +15,9 @@ __all__ = [
   'strf_secs','strp_secs',
 ]
 
-import sys,pprint,time,_ldap,ldap
+import sys,pprint,time
+from ldap import _ldap
+import ldap
 from calendar import timegm
 
 from ldap import LDAPError

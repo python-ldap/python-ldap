@@ -7,9 +7,9 @@ __pycache__/
 /.pytest_cache
 
 # shared libs installed by 'setup.py test'
-/Lib/*.so*
-/Lib/*.dylib
-/Lib/*.pyd
+/Lib/ldap/*.so*
+/Lib/ldap/*.dylib
+/Lib/ldap/*.pyd
 
 # Build related
 *.egg-info
