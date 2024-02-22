@@ -19,7 +19,7 @@ Communication
 
 Always keep in mind that python-ldap is developed and maintained by volunteers.
 We're happy to share our work, and to work with you to make the library better,
-but (until you pay someone), there's obligation to provide assistance.
+but (until you pay someone), there's no obligation to provide assistance.
 
 So, keep it friendly, respectful, and supportive!
 
