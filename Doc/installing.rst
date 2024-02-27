@@ -143,10 +143,15 @@ Packages for building::
 Debian
 ------
 
+Packages for building::
+
+   # apt-get install build-essential ldap-utils \
+       libldap2-dev libsasl2-dev
+
 Packages for building and testing::
 
-   # apt-get install build-essential python3-dev \
-       libldap2-dev libsasl2-dev slapd ldap-utils tox \
+   # apt-get install build-essential ldap-utils \
+       libldap2-dev libsasl2-dev slapd python3-dev tox \
        lcov valgrind
 
 .. note::
