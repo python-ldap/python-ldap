@@ -11,16 +11,19 @@ from ldap.pkginfo import __version__, __author__, __license__
 import os
 import sys
 
+from typing import Any, Type, Optional, Union
+
+
 if __debug__:
   # Tracing is only supported in debugging mode
   import atexit
   import traceback
   _trace_level = int(os.environ.get("PYTHON_LDAP_TRACE_LEVEL", 0))
-  _trace_file = os.environ.get("PYTHON_LDAP_TRACE_FILE")
-  if _trace_file is None:
+  _trace_file_path = os.environ.get("PYTHON_LDAP_TRACE_FILE")
+  if _trace_file_path is None:
     _trace_file = sys.stderr
   else:
-    _trace_file = open(_trace_file, 'a')
+    _trace_file = open(_trace_file_path, 'a')
     atexit.register(_trace_file.close)
   _trace_stack_limit = None
 else:
@@ -31,10 +34,10 @@ else:
   _trace_file = sys.stderr
   _trace_stack_limit = None
 
-import _ldap
+import ldap._ldap as _ldap
 assert _ldap.__version__==__version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
-from _ldap import *
+from ldap._ldap import *
 # call into libldap to initialize it right now
 LIBLDAP_API_INFO = _ldap.get_option(_ldap.OPT_API_INFO)
 
@@ -45,18 +48,21 @@ for k,v in vars(_ldap).items():
 
 class DummyLock:
   """Define dummy class with methods compatible to threading.Lock"""
-  def __init__(self):
+  def __init__(self) -> None:
     pass
-  def acquire(self):
-    pass
-  def release(self):
+
+  def acquire(self) -> bool:
+    return True
+
+  def release(self) -> None:
     pass
 
 try:
   # Check if Python installation was build with thread support
+  # FIXME: This can be simplified, from Python 3.7 this module is mandatory
   import threading
 except ImportError:
-  LDAPLockBaseClass = DummyLock
+  LDAPLockBaseClass: Union[Type[DummyLock], Type[threading.Lock]] = DummyLock
 else:
   LDAPLockBaseClass = threading.Lock
 
@@ -69,7 +75,11 @@ class LDAPLock:
   """
   _min_trace_level = 3
 
-  def __init__(self,lock_class=None,desc=''):
+  def __init__(
+    self,
+    lock_class: Optional[Type[Any]] = None,
+    desc: str = ''
+  ) -> None:
     """
     lock_class
         Class compatible to threading.Lock
@@ -79,19 +89,19 @@ class LDAPLock:
     self._desc = desc
     self._lock = (lock_class or LDAPLockBaseClass)()
 
-  def acquire(self):
+  def acquire(self) -> bool:
     if __debug__:
       global _trace_level
       if _trace_level>=self._min_trace_level:
         _trace_file.write('***{}.acquire() {} {}\n'.format(self.__class__.__name__,repr(self),self._desc))
     return self._lock.acquire()
 
-  def release(self):
+  def release(self) -> None:
     if __debug__:
       global _trace_level
       if _trace_level>=self._min_trace_level:
         _trace_file.write('***{}.release() {} {}\n'.format(self.__class__.__name__,repr(self),self._desc))
-    return self._lock.release()
+    self._lock.release()
 
 
 # Create module-wide lock for serializing all calls into underlying LDAP lib

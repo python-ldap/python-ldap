@@ -7,13 +7,15 @@ See https://www.python-ldap.org/ for details.
 
 from ldap.pkginfo import __version__
 
-import _ldap
+import ldap._ldap as _ldap
 assert _ldap.__version__==__version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 
 import ldap
 
 from ldap.controls import RequestControl,LDAPControl,KNOWN_RESPONSE_CONTROLS
+
+from typing import Optional, Union
 
 
 class AssertionControl(RequestControl):
@@ -26,14 +28,18 @@ class AssertionControl(RequestControl):
   """
 
   controlType = ldap.CONTROL_ASSERT
-  def __init__(self,criticality=True,filterstr='(objectClass=*)'):
+
+  def __init__(
+    self, criticality: bool = True, filterstr: str = '(objectClass=*)'
+  ) -> None:
     self.criticality = criticality
     self.filterstr = filterstr
 
-  def encodeControlValue(self):
-    return _ldap.encode_assertion_control(self.filterstr)
+  def encodeControlValue(self) -> bytes:
+    return _ldap.encode_assertion_control(self.filterstr)  # type: ignore
 
-KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_ASSERT] = AssertionControl
+# FIXME: This is a request control though?
+#KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_ASSERT] = AssertionControl
 
 
 class MatchedValuesControl(RequestControl):
@@ -47,14 +53,19 @@ class MatchedValuesControl(RequestControl):
 
   controlType = ldap.CONTROL_VALUESRETURNFILTER
 
-  def __init__(self,criticality=False,filterstr='(objectClass=*)'):
+  def __init__(
+    self,
+    criticality: bool = False,
+    filterstr: str = '(objectClass=*)',
+  ) -> None:
     self.criticality = criticality
     self.filterstr = filterstr
 
-  def encodeControlValue(self):
-    return _ldap.encode_valuesreturnfilter_control(self.filterstr)
+  def encodeControlValue(self) -> bytes:
+    return _ldap.encode_valuesreturnfilter_control(self.filterstr)  # type: ignore
 
-KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_VALUESRETURNFILTER] = MatchedValuesControl
+# FIXME: This is a request control though?
+#KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_VALUESRETURNFILTER] = MatchedValuesControl
 
 
 class SimplePagedResultsControl(LDAPControl):
@@ -68,14 +79,19 @@ class SimplePagedResultsControl(LDAPControl):
   """
   controlType = ldap.CONTROL_PAGEDRESULTS
 
-  def __init__(self,criticality=False,size=None,cookie=None):
+  def __init__(
+    self,
+    criticality: bool = False,
+    size: Optional[int] = None,
+    cookie: Optional[Union[str, bytes]] = None
+  ) -> None:
     self.criticality = criticality
     self.size,self.cookie = size,cookie
 
-  def encodeControlValue(self):
-    return _ldap.encode_page_control(self.size,self.cookie)
+  def encodeControlValue(self) -> bytes:
+    return _ldap.encode_page_control(self.size,self.cookie)  # type: ignore
 
-  def decodeControlValue(self,encodedControlValue):
+  def decodeControlValue(self,encodedControlValue: bytes) -> None:
     self.size,self.cookie = _ldap.decode_page_control(encodedControlValue)
 
 KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_PAGEDRESULTS] = SimplePagedResultsControl
