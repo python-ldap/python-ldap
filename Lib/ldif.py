@@ -3,7 +3,7 @@ ldif - generate and parse LDIF data (see RFC 2849)
 
 See https://www.python-ldap.org/ for details.
 """
-__version__ = '3.4.4-dev1'
+__version__ = '3.4.4'
 
 __all__ = [
   # constants
@@ -469,7 +469,7 @@ class LDIFParser:
   def handle_add(self,dn, entry):
     """
     Process a single LDIF record representing a single add operation.
-    This method should be implemented by applicatins using LDIFParser.
+    This method should be implemented by applications using LDIFParser.
 
     Args:
         dn (str): DN of the new object to be created
