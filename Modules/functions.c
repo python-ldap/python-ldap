@@ -12,7 +12,7 @@ l_ldap_initialize(PyObject *unused, PyObject *args)
     int ret;
     PyThreadState *save;
 
-    if (!PyArg_ParseTuple(args, "s:initialize", &uri))
+    if (!PyArg_ParseTuple(args, "z:initialize", &uri))
         return NULL;
 
     save = PyEval_SaveThread();
