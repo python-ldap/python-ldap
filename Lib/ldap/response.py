@@ -77,6 +77,10 @@ class Response:
         return (f"{self.__class__.__name__}(msgid={self.msgid}, "
                 f"msgtype={self.msgtype}{optional})")
 
+    def __rich_repr__(self):
+        yield "msgid", self.msgid
+        yield "controls", self.controls, None
+
 
 class Result(Response):
     result: int
@@ -109,6 +113,13 @@ class Result(Response):
         return (f"{self.__class__.__name__}"
                 f"(msgid={self.msgid}, result={self.result}{optional})")
 
+    def __rich_repr__(self):
+        super().__rich_repr__()
+        yield "result", self.result
+        yield "matcheddn", self.matcheddn, ""
+        yield "message", self.message, ""
+        yield "referrals", self.referrals, None
+
 
 class SearchEntry(Response):
     msgtype = ldap.RES_SEARCH_ENTRY
@@ -125,6 +136,11 @@ class SearchEntry(Response):
 
         return instance
 
+    def __rich_repr__(self):
+        super().__rich_repr__()
+        yield "dn", self.dn
+        yield "attrs", self.attrs
+
 
 class SearchReference(Response):
     msgtype = ldap.RES_SEARCH_REFERENCE
@@ -138,6 +154,10 @@ class SearchReference(Response):
         instance.referrals = referrals
 
         return instance
+
+    def __rich_repr__(self):
+        super().__rich_repr__()
+        yield "referrals", self.referrals
 
 
 class SearchResult(Result):
@@ -184,11 +204,22 @@ class IntermediateResponse(Response):
         return (f"{self.__class__.__name__}"
                 f"(msgid={self.msgid}{optional})")
 
+    def __rich_repr__(self):
+        # No super(), we put our values between msgid and controls
+        yield "msgid", self.msgid
+        yield "name", self.name, None
+        yield "value", self.value, None
+        yield "controls", self.controls, None
+
 
 class BindResult(Result):
     msgtype = ldap.RES_BIND
 
     servercreds: Optional[bytes]
+
+    def __rich_repr__(self):
+        super().__rich_repr__()
+        yield "servercreds", self.servercreds, None
 
 
 class ModifyResult(Result):
@@ -266,6 +297,13 @@ class ExtendedResult(Result):
             optional += f", controls={self.controls}"
         return (f"{self.__class__.__name__}"
                 f"(msgid={self.msgid}, result={self.result}{optional})")
+
+    def __rich_repr__(self):
+        # No super(), we put our values between msgid and controls
+        yield "msgid", self.msgid
+        yield "name", self.name, None
+        yield "value", self.value, None
+        yield "controls", self.controls, None
 
 
 class UnsolicitedNotification(ExtendedResult):
