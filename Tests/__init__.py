@@ -21,3 +21,4 @@ from . import t_ldap_schema_subentry
 from . import t_untested_mods
 from . import t_ldap_controls_libldap
 from . import t_ldap_options
+from . import t_ldap_syncrepl
