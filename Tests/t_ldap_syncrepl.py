@@ -13,7 +13,8 @@ os.environ['LDAPNOINIT'] = '1'
 
 import ldap
 from ldap.ldapobject import SimpleLDAPObject
-from ldap.syncrepl import SyncreplConsumer, SyncInfoMessage
+from ldap.syncrepl import SyncreplConsumer, SyncInfoMessage, \
+        OpenLDAPSyncreplCookie
 
 from slapdtest import SlapdObject, SlapdTestCase
 
@@ -36,6 +37,10 @@ objectClass: olcModuleList
 cn: module
 olcModuleLoad: back_%(database)s
 olcModuleLoad: syncprov
+
+dn: olcDatabase=config,cn=config
+objectClass: olcDatabaseConfig
+olcRootDN: %(rootdn)s
 
 dn: olcDatabase=%(database)s,cn=config
 objectClass: olcDatabaseConfig
@@ -440,6 +445,174 @@ class TestSyncrepl(BaseSyncreplTests, SlapdTestCase):
             bytes_mode=False
         )
         self.suffix = self.server.suffix
+
+
+class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
+    class MPRClient(SyncreplClient):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.cookie = OpenLDAPSyncreplCookie()
+
+        def syncrepl_set_cookie(self, cookie):
+            self.cookie.update(cookie)
+            super().syncrepl_set_cookie(self.cookie.unparse())
+
+    def setUp(self):
+        super().setUp()
+        self.tester = self.MPRClient(
+            self.server.ldap_uri,
+            self.server.root_dn,
+            self.server.root_pw,
+            bytes_mode=False
+        )
+        self.suffix = self.server.suffix
+
+        # An active MPR should not have a sid=000 server in it
+        if self.server.server_id == 0:
+            self.skip("Server got serverid 0 assigned")
+
+    def test_mpr_refresh_and_persist(self):
+        """
+        Make sure we process cookie updates from a live MPR cluster correctly
+        """
+        # Assumes that server_id is not used before the call to start()
+        self.server2 = self.server_class()
+        if self.server.server_id == self.server2.server_id:
+            self.server2.server_id += 1
+            if self.server2.server_id % 4096 == 0:
+                self.server2.server_id = 1
+
+        with self.server2 as server2:
+            tester2 = self.MPRClient(
+                self.server2.ldap_uri,
+                self.server2.root_dn,
+                self.server2.root_pw,
+                bytes_mode=False
+            )
+            self.addCleanup(tester2.unbind_s)
+
+            self.tester.search(
+                self.suffix,
+                'refreshAndPersist',
+            )
+
+            # Run a quick refresh, that shouldn't have any changes.
+            while self.tester.refresh_done is not True:
+                poll_result = self.tester.poll(
+                    all=0,
+                    timeout=None
+                )
+                self.assertTrue(poll_result)
+
+            # Again, server data should not have changed.
+            self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
+
+            # set up replication between both
+            coords = [(1, self.server.ldap_uri, self.suffix,
+                       self.server.root_dn, self.server.root_pw),
+                      (2, self.server2.ldap_uri, self.suffix,
+                       self.server2.root_dn, self.server2.root_pw),
+            ]
+            modifications = [
+                (ldap.MOD_ADD, "olcSyncrepl", [
+                    ('rid=%d provider=%s searchbase="%s" type=refreshAndPersist '
+                     'bindmethod=simple binddn="%s" credentials="%s" '
+                     'retry="1 +"' % coord).encode() for coord in coords]),
+                # do we still support 2.4.x? Change to olcMultiProvider if not
+                (ldap.MOD_REPLACE, "olcMirrorMode", [b"TRUE"]),
+            ]
+
+            self.tester.modify_s(
+                "olcDatabase={1}%s,cn=config" % (self.server.database),
+                modifications)
+            tester2.modify_s(
+                "olcDatabase={1}%s,cn=config" % (self.server.database),
+                modifications)
+
+            tester2.search(
+                self.suffix,
+                'refreshAndPersist',
+            )
+
+            # Wait till server2 catches up
+            while tester2.refresh_done is not True or \
+                    tester2.cookie.unparse() != self.tester.cookie.unparse():
+                try:
+                    poll_result = tester2.poll(
+                        all=0,
+                        timeout=None
+                    )
+                    self.assertTrue(poll_result)
+                except ldap.NO_SUCH_OBJECT:
+                    # 2.6+ Allows a refreshAndPersist against an empty DB, but
+                    # with older ones we need to retry until there's at least
+                    # one entry
+                    tester2.search(
+                        self.suffix,
+                        'refreshAndPersist',
+                    )
+
+            # Again, server data should not have changed.
+            self.assertEqual(tester2.dn_attrs, LDAP_ENTRIES)
+
+            # From here on, things get little hairy, server1 might not have
+            # finished its refresh from 2 and we can't easily confirm this
+            # without cn=monitor. We just read back our CSNs and make sure
+            # we've seen both.
+
+            # send some mods to both
+            modification = [('objectClass', [b'device'])]
+            self.tester.add_s("cn=server1,%s" % self.suffix, modification)
+
+            csn1 = self.tester.read_s("cn=server1,%s" % self.suffix,
+                                      attrlist=['entryCSN']
+                                      )['entryCSN'][0].decode('utf8')
+
+            tester2.add_s("cn=server2,%s" % self.suffix, modification)
+            csn2 = tester2.read_s("cn=server2,%s" % self.suffix,
+                                  attrlist=['entryCSN']
+                                  )['entryCSN'][0].decode('utf8')
+
+            new_state = LDAP_ENTRIES.copy()
+            new_state["cn=server1,%s" % self.suffix] = {
+                "objectClass": [b"device"],
+                "cn": [b"server1"],
+            }
+            new_state["cn=server2,%s" % self.suffix] = {
+                "objectClass": [b"device"],
+                "cn": [b"server2"],
+            }
+
+            # Wait for the cookie to sync up, a failure would be that this
+            # doesn't happen, so impose a timeout
+            while csn1 not in self.tester.cookie.unparse() or \
+                    csn2 not in self.tester.cookie.unparse() or \
+                    csn1 not in tester2.cookie.unparse() or \
+                    csn2 not in tester2.cookie.unparse():
+                if csn1 not in self.tester.cookie.unparse() or \
+                        csn2 not in self.tester.cookie.unparse():
+                    poll_result = self.tester.poll(
+                        all=0,
+                        timeout=5
+                    )
+                    self.assertTrue(poll_result)
+                if csn1 not in tester2.cookie.unparse() or \
+                        csn2 not in tester2.cookie.unparse():
+                    poll_result = tester2.poll(
+                        all=0,
+                        timeout=5
+                    )
+                    self.assertTrue(poll_result)
+
+            self.assertEqual(self.tester.cookie.unparse(),
+                             tester2.cookie.unparse())
+            self.assertEqual(self.tester.dn_attrs, new_state)
+            self.assertEqual(tester2.dn_attrs, new_state)
+
+            # self.tester seems to have been unbound by the time
+            # self.addCleanup callbacks get called? Cleanup manually...
+            self.tester.delete_s("cn=server1,%s" % self.suffix)
+            self.tester.delete_s("cn=server2,%s" % self.suffix)
 
 
 class DecodeSyncreplProtoTests(unittest.TestCase):
