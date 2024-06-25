@@ -20,3 +20,6 @@ This module defines the following classes:
 
 .. autoclass:: ldap.syncrepl.SyncreplConsumer
    :members:
+
+.. autoclass:: ldap.syncrepl.OpenLDAPSyncreplCookie
+   :members:
