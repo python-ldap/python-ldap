@@ -9,7 +9,7 @@ jobs:
   tox_test:
     name: Tox env "${{matrix.tox_env}}" on Fedora
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Run Tox tests
       uses: fedora-python/tox-github-action@main
       with:
@@ -17,7 +17,7 @@ jobs:
         dnf_install: >
             @c-development openldap-devel python3-devel
             openldap-servers openldap-clients lcov clang-analyzer valgrind
-            enchant
+            enchant python3-setuptools
     strategy:
       matrix:
         tox_env:
@@ -28,6 +28,7 @@ jobs:
         - py310
         - py311
         - py312
+        - py313
         - c90-py36
         - c90-py37
         - py3-nosasltls
