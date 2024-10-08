@@ -72,9 +72,6 @@ If you're used to open-source Python development with Git, here's the gist:
 .. _the bug tracker: https://github.com/python-ldap/python-ldap/issues
 .. _tox: https://tox.readthedocs.io/en/latest/
 
-Or, if you prefer to avoid closed-source services:
-
-* ``git clone https://pagure.io/python-ldap``
 * Send bug reports and patches to the mailing list.
 * Run tests with `tox`_; ignore Python interpreters you don't have locally.
 * Read the documentation directly at `Read the Docs`_.
@@ -203,8 +200,6 @@ remember:
   * Consider making the summary line suitable for the CHANGES document,
     and starting it with a prefix like ``Lib:`` or ``Tests:``.
 
-* Push to Pagure as well.
-
 If you have good reason to break the “rules”, go ahead and break them,
 but mention why.
 
@@ -224,7 +219,7 @@ If you are tasked with releasing python-ldap, remember to:
 * Run ``python setup.py sdist``, and smoke-test the resulting package
   (install in a clean virtual environment, import ``ldap``).
 * Create GPG-signed Git tag: ``git tag -s python-ldap-{version}``.
-  Push it to GitHub and Pagure.
+  Push it to GitHub.
 * Release the ``sdist`` on PyPI.
 * Announce the release on the mailing list.
   Mention the Git hash.

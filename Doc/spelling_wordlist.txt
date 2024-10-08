@@ -100,7 +100,6 @@ oc
 oid
 oids
 OpenLDAP
-Pagure
 postalAddress
 pre
 previousDN
