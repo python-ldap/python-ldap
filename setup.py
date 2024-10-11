@@ -93,6 +93,7 @@ setup(
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
     # Note: when updating Python versions, also change tox.ini and .github/workflows/*
 
     'Topic :: Database',
