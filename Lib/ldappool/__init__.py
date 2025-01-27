@@ -82,10 +82,8 @@ class Connection(object):
                 try:
                     self.__enter__()
                 except:
-                    pass
-            raise ldap.SERVER_DOWN(
-                f"max retries {self.params.get('retries', 3)} reached"
-            )
+                    continue
+        raise ldap.SERVER_DOWN(f"max retries {self.params.get('retries', 3)} reached")
 
     @property
     def conn(self):
@@ -188,6 +186,7 @@ class Connection(object):
             )
             try:
                 self._conn = ldap.initialize(self.uri.initializeUrl())
+                self.__set_connection_parameters__()
                 if self.params.get("autoBind", False):
                     (
                         f"ConnectionPool {self} autoBind with {self.binddn} password {'x'*len(self.bindpw)}"
@@ -199,8 +198,19 @@ class Connection(object):
         self.established = True
         return self.conn
 
-    def giveback(self):
+    def giveback(self, force=False):
         try:
+            if force:
+                try:
+                    self._conn.unbind_s()
+                except Exception as ldaperr:
+                    logging.error(
+                        "ConnectionPool unbind connection"
+                        + f"{self} exception {ldaperr}"
+                    )
+                self.inUse = False
+                return
+
             if self.params.get("autoBind", False):
                 if not self.params.get("keep", False):
                     logging.debug(f"ConnectionPool unbind connection {self}")
@@ -227,7 +237,7 @@ class Connection(object):
             self._pool.delete(self)
 
     def __cmp__(self, other):
-        if isinstance(other, LDAPUrl):
+        if isinstance(other, Connection):
             return self.uri.initializeUrl() == other.uri.initializeUrl()
         return False
 
@@ -293,27 +303,33 @@ class ConnectionPool(object):
         if not isinstance(uri, LDAPUrl):
             uri = LDAPUrl(uri)
         if len(self._pool) > 0:
-            map(
-                lambda c: (c.set_uri(uri), c.giveback(force=True)),
-                filter(lambda cp: cp.uri != uri, self._pool),
+            list(
+                map(
+                    lambda c: (c.set_uri(uri), c.giveback(force=True)),
+                    filter(lambda cp: cp.uri != uri, self._pool),
+                )
             )
         self.uri = uri
         return True
 
     def set_binddn(self, binddn: str):
         if len(self._pool) > 0:
-            map(
-                lambda c: (c.set_binddn(binddn), c.giveback(force=True)),
-                filter(lambda cp: cp.binddn != binddn, self._pool),
+            list(
+                map(
+                    lambda c: (c.set_binddn(binddn), c.giveback(force=True)),
+                    filter(lambda cp: cp.binddn != binddn, self._pool),
+                )
             )
         self.binddn = binddn
         return True
 
     def set_bindpw(self, bindpw: str):
         if len(self._pool) > 0:
-            map(
-                lambda c: (c.set_bindpw(bindpw), c.giveback(force=True)),
-                filter(lambda cp: cp.bindpw != bindpw, self._pool),
+            list(
+                map(
+                    lambda c: (c.set_bindpw(bindpw), c.giveback(force=True)),
+                    filter(lambda cp: cp.bindpw != bindpw, self._pool),
+                )
             )
         self.bindpw = bindpw
         return True
@@ -365,7 +381,7 @@ class ConnectionPool(object):
     def get(self, binddn: str = "", bindpw: str = ""):
         if len(self._pool) == 0:
             self.scale
-        self._lock.acquire()
+        self._lock.acquire(timeout=1)
         if len(self._pool) == 0:
             self._lock.release()
             logging.warning(
@@ -395,7 +411,7 @@ class ConnectionPool(object):
         return con
 
     def put(self, connection):
-        self._lock.acquire()
+        self._lock.acquire(timeout=1)
         if connection.inUse:
             connection.giveback()
         if not connection in self._pool:
@@ -405,7 +421,7 @@ class ConnectionPool(object):
         return True
 
     def status(self):
-        self._lock.acquire()
+        self._lock.acquire(timeout=1)
         for p in self._pool:
             if p.inUse:
                 if sys.getrefcount(p) < 4:
@@ -414,9 +430,12 @@ class ConnectionPool(object):
         self._lock.release()
 
     def delete(self, connection, force=True):
-        return
-        self._lock.acquire()
+        self._lock.acquire(timeout=1)
         if connection in self._pool:
             if any([not self.params.get("keep", False), force]):
                 self._pool.remove(connection)
+                del connection
         self._lock.release()
+
+    def __len__(self):
+        return len(self._pool)
