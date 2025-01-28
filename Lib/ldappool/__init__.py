@@ -1,4 +1,8 @@
-import dataclasses
+try:
+    import dataclasses
+except ImportError:
+    # we are on python < 3.7 so ignore
+    pass
 import logging
 import sys
 import threading
@@ -28,8 +32,12 @@ class LDAPLockTimeout(Exception):
 
 
 def e2c(entry):
-    cls = dataclasses.make_dataclass("", ["dn"] + list(entry[1].keys()), frozen=True)
-    return cls(**dict(list([("dn", entry[0])] + list(entry[1].items()))))
+    try:
+        cls = dataclasses.make_dataclass("", ["dn"] + list(entry[1].keys()), frozen=True)
+        return cls(**dict(list([("dn", entry[0])] + list(entry[1].items()))))
+    except NameError as dcerror:
+        print(f"dataclasses not supported")
+        return entry
 
 
 class Connection(object):
