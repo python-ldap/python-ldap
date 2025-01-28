@@ -142,7 +142,6 @@ setup(
   py_modules = [
     'ldapurl',
     'ldif',
-    'ldappool',
 
   ],
   packages = [
@@ -152,6 +151,7 @@ setup(
     'ldap.schema',
     'slapdtest',
     'slapdtest.certs',
+    'ldappool',
   ],
   package_dir = {'': 'Lib',},
   data_files = LDAP_CLASS.extra_files,
