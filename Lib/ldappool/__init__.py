@@ -33,7 +33,9 @@ class LDAPLockTimeout(Exception):
 
 def e2c(entry):
     try:
-        cls = dataclasses.make_dataclass("", ["dn"] + list(entry[1].keys()), frozen=True)
+        cls = dataclasses.make_dataclass(
+            "", ["dn"] + list(entry[1].keys()), frozen=True
+        )
         return cls(**dict(list([("dn", entry[0])] + list(entry[1].items()))))
     except NameError as dcerror:
         print(f"dataclasses not supported")
@@ -166,25 +168,29 @@ class Connection(object):
             raise ldap.INVALID_CREDENTIALS
 
     def __set_connection_parameters__(self):
-        self._conn.set_option(ldap.OPT_REFERRALS, self.params.get("referrals", False))
-        self._conn.set_option(
-            ldap.OPT_NETWORK_TIMEOUT, self.params.get("network_timeout", 10.0)
-        )
-        self._conn.set_option(ldap.OPT_TIMEOUT, self.params.get("timeout", 10.0))
-        self._conn.set_option(
-            ldap.OPT_X_KEEPALIVE_IDLE, self.params.get("keepalive_idle", 10)
-        )
-        self._conn.set_option(
-            ldap.OPT_X_KEEPALIVE_INTERVAL, self.params.get("keepalive_interval", 5)
-        )
-        self._conn.set_option(
-            ldap.OPT_X_KEEPALIVE_PROBES, self.params.get("keepalive_probes", 3)
-        )
-        self._conn.set_option(ldap.OPT_RESTART, ldap.OPT_ON)
-        if self.params.get("allow_tls_fallback", False):
-            logging.debug("TLS Fallback enabled in LDAP")
-            self._conn.set_option(ldap.OPT_X_TLS_TRY, 1)
-        self._conn.set_option(ldap.OPT_X_TLS_NEWCTX, ldap.OPT_OFF)
+        try:
+            self._conn.set_option(
+                ldap.OPT_REFERRALS, self.params.get("referrals", False)
+            )
+            self._conn.set_option(
+                ldap.OPT_NETWORK_TIMEOUT, self.params.get("network_timeout", 10.0)
+            )
+            self._conn.set_option(ldap.OPT_TIMEOUT, self.params.get("timeout", 10.0))
+            self._conn.set_option(
+                ldap.OPT_X_KEEPALIVE_IDLE, self.params.get("keepalive_idle", 10)
+            )
+            self._conn.set_option(
+                ldap.OPT_X_KEEPALIVE_INTERVAL, self.params.get("keepalive_interval", 5)
+            )
+            self._conn.set_option(
+                ldap.OPT_X_KEEPALIVE_PROBES, self.params.get("keepalive_probes", 3)
+            )
+            self._conn.set_option(ldap.OPT_RESTART, ldap.OPT_ON)
+            if self.params.get("allow_tls_fallback", False):
+                self._conn.set_option(ldap.OPT_X_TLS_TRY, 1)
+            self._conn.set_option(ldap.OPT_X_TLS_NEWCTX, ldap.OPT_OFF)
+        except Exception as connerr:
+            logging.error(f"cannot set LDAP option {connerr}")
 
     def __enter__(self):
         self.inUse = True
