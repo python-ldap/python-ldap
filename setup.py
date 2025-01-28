@@ -142,6 +142,7 @@ setup(
   py_modules = [
     'ldapurl',
     'ldif',
+    'ldappool',
 
   ],
   packages = [
