@@ -21,20 +21,15 @@ jobs:
     strategy:
       matrix:
         tox_env:
-        - py36
-        - py37
-        - py38
         - py39
         - py310
         - py311
         - py312
         - py313
-        - c90-py36
-        - c90-py37
         - py3-nosasltls
         - py3-trace
         - pypy3
         - doc
 
     # Use GitHub's Linux Docker host
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04

@@ -1,7 +1,7 @@
 ---
 name: CI
 
-on: 
+on:
   push:
   pull_request:
   schedule:
@@ -20,8 +20,6 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.7"
-          - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
@@ -29,11 +27,8 @@ jobs:
           - "3.13"
           - "pypy3.9"
           - "pypy3.10"
-        image: 
+        image:
           - "ubuntu-22.04"
-        include:
-          - python-version: "3.6"
-            image: "ubuntu-20.04"
     steps:
       - name: Checkout
         uses: "actions/checkout@v4"
