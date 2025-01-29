@@ -36,7 +36,7 @@ class LDAPLockTimeout(Exception):
     pass
 
 
-if sys.version_info >= 3.8:
+if sys.version_info.minor >= 3.8:
 
     def e2c(entry):
         try:
