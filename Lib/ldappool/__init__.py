@@ -1,13 +1,18 @@
-try:
+import sys
+
+if sys.version_info.minor >= 3.8:
     import dataclasses
-except ImportError:
-    # we are on python < 3.7 so ignore
-    pass
 import logging
 import sys
 import threading
-import time
 from urllib.parse import urlparse
+
+import sys
+
+if sys.version_info.minor > 6:
+    from time import perf_counter_ns as perf_counter
+elif sys.version_info.minor == 6:
+    from time import perf_counter
 
 import ldap
 from ldapurl import LDAPUrl
@@ -31,15 +36,22 @@ class LDAPLockTimeout(Exception):
     pass
 
 
-def e2c(entry):
-    try:
-        cls = dataclasses.make_dataclass(
-            "", ["dn"] + list(entry[1].keys()), frozen=True
-        )
-        return cls(**dict(list([("dn", entry[0])] + list(entry[1].items()))))
-    except NameError as dcerror:
-        print(f"dataclasses not supported")
-        return entry
+if sys.version_info >= 3.8:
+
+    def e2c(entry):
+        try:
+            cls = dataclasses.make_dataclass(
+                "", ["dn"] + list(entry[1].keys()), frozen=True
+            )
+            return cls(**dict(list([("dn", entry[0])] + list(entry[1].items()))))
+        except NameError as dcerror:
+            print(f"dataclasses not supported")
+            return entry
+
+else:
+
+    def e2c(entry):
+        return f"dataclasses not support on python < {sys.version_info.minor}"
 
 
 class Connection(object):
@@ -67,9 +79,9 @@ class Connection(object):
 
     def __locktime(self):
         if self._health == 0.0:
-            self._health = time.perf_counter_ns()
+            self._health = perf_counter()
             return True
-        if (time.perf_counter_ns() - self._health) / ns < ns_locktimeout:
+        if (perf_counter() - self._health) / ns < ns_locktimeout:
             return False
         return True
 
