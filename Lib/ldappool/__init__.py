@@ -1,6 +1,6 @@
 import sys
 
-if sys.version_info.minor >= 3.8:
+if sys.version_info.minor >= 8:
     import dataclasses
 import logging
 import sys
@@ -36,7 +36,7 @@ class LDAPLockTimeout(Exception):
     pass
 
 
-if sys.version_info.minor >= 3.8:
+if sys.version_info.minor >= 8:
 
     def e2c(entry):
         try:
