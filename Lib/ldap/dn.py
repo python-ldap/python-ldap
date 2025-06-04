@@ -122,3 +122,8 @@ def is_dn(s,flags=0):
     return False
   else:
     return True
+
+
+def normalize(s, flags=0):
+  """Returns a normalized distinguished name (DN)"""
+  return dn2str(str2dn(s, flags), flags)
