@@ -222,7 +222,6 @@ class TestDN(unittest.TestCase):
             ], ldap.DN_FORMAT_DCE),
             '/dc=com/dc=example/ou=Testing/uid=test42,cn=test42'
         )
-
         self.assertEqual(
             ldap.dn.dn2str([
                 [('cn', 'äöüÄÖÜß', ldap.AVA_BINARY)],
@@ -444,6 +443,35 @@ class TestDN(unittest.TestCase):
         self.assertEqual(
             ldap.dn.explode_rdn('cn=\\c3\\a4\\c3\\b6\\c3\\bc\\c3\\84\\c3\\96\\c3\\9c\\c3\\9f', flags=0),
             ['cn=äöüÄÖÜß']
+        )
+
+    def test_normalize(self):
+        """
+        test function normalize()
+        """
+        self.assertEqual(
+            ldap.dn.normalize('uid = test42 , ou = Testing , dc = example , dc = com', flags=ldap.DN_FORMAT_LDAPV3),
+            'uid=test42,ou=Testing,dc=example,dc=com'
+        )
+        self.assertEqual(
+            ldap.dn.normalize('cn=äöüÄÖÜß,dc=example,dc=com', flags=0),
+            'cn=äöüÄÖÜß,dc=example,dc=com'
+        )
+        self.assertEqual(
+            ldap.dn.normalize('cn=#C3A4C3B6C3BCC384C396C39CC39F,dc=example,dc=com', flags=0),
+            'cn=äöüÄÖÜß,dc=example,dc=com'
+        )
+        self.assertEqual(
+            ldap.dn.normalize('cn=#C3A4C3B6C3BCC384C396C39CC39F,dc=example,dc=com', flags=ldap.DN_FORMAT_LDAPV3),
+            'cn=#C3A4C3B6C3BCC384C396C39CC39F,dc=example,dc=com'
+        )
+        self.assertEqual(
+            ldap.dn.normalize('cn=äöüÄÖÜß,dc=example,dc=com', flags=ldap.DN_FORMAT_LDAPV3),
+            r'cn=\C3\A4\C3\B6\C3\BC\C3\84\C3\96\C3\9C\C3\9F,dc=example,dc=com'
+        )
+        self.assertEqual(
+            ldap.dn.normalize('/ dc = com / dc = example / ou = Testing / uid = test42 , cn = test42', flags=ldap.DN_FORMAT_DCE),
+            '/dc=com/dc=example/ou=Testing/uid=test42,cn=test42'
         )
 
 
