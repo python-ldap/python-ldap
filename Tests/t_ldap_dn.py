@@ -40,17 +40,17 @@ class TestDN(unittest.TestCase):
         test function escape_dn_chars()
         """
         self.assertEqual(ldap.dn.escape_dn_chars('foobar'), 'foobar')
-        self.assertEqual(ldap.dn.escape_dn_chars('foo,bar'), 'foo\\,bar')
-        self.assertEqual(ldap.dn.escape_dn_chars('foo=bar'), 'foo\\=bar')
+        self.assertEqual(ldap.dn.escape_dn_chars('foo,bar'), r'foo\,bar')
+        self.assertEqual(ldap.dn.escape_dn_chars('foo=bar'), r'foo\=bar')
         self.assertEqual(ldap.dn.escape_dn_chars('foo#bar'), 'foo#bar')
-        self.assertEqual(ldap.dn.escape_dn_chars('#foobar'), '\\#foobar')
+        self.assertEqual(ldap.dn.escape_dn_chars('#foobar'), r'\#foobar')
         self.assertEqual(ldap.dn.escape_dn_chars('foo bar'), 'foo bar')
-        self.assertEqual(ldap.dn.escape_dn_chars(' foobar'), '\\ foobar')
-        self.assertEqual(ldap.dn.escape_dn_chars(' '), '\\ ')
-        self.assertEqual(ldap.dn.escape_dn_chars('  '), '\\ \\ ')
-        self.assertEqual(ldap.dn.escape_dn_chars('foobar '), 'foobar\\ ')
+        self.assertEqual(ldap.dn.escape_dn_chars(' foobar'), r'\ foobar')
+        self.assertEqual(ldap.dn.escape_dn_chars(' '), r'\ ')
+        self.assertEqual(ldap.dn.escape_dn_chars('  '), r'\ \ ')
+        self.assertEqual(ldap.dn.escape_dn_chars('foobar '), r'foobar\ ')
         self.assertEqual(ldap.dn.escape_dn_chars('f+o>o,b<a;r="\00"'), 'f\\+o\\>o\\,b\\<a\\;r\\=\\"\\\x00\\"')
-        self.assertEqual(ldap.dn.escape_dn_chars('foo\\,bar'), 'foo\\\\\\,bar')
+        self.assertEqual(ldap.dn.escape_dn_chars(r'foo\,bar'), r'foo\\\,bar')
 
     def test_str2dn(self):
         """
@@ -95,7 +95,7 @@ class TestDN(unittest.TestCase):
             ]
         )
         self.assertEqual(
-            ldap.dn.str2dn('uid=test\\, 42,ou=Testing,dc=example,dc=com', flags=0),
+            ldap.dn.str2dn(r'uid=test\, 42,ou=Testing,dc=example,dc=com', flags=0),
             [
                 [('uid', 'test, 42', 1)],
                 [('ou', 'Testing', 1)],
@@ -112,7 +112,7 @@ class TestDN(unittest.TestCase):
             ]
         )
         self.assertEqual(
-            ldap.dn.str2dn('cn=\\c3\\a4\\c3\\b6\\c3\\bc\\c3\\84\\c3\\96\\c3\\9c\\c3\\9f,dc=example,dc=com', flags=0),
+            ldap.dn.str2dn(r'cn=\c3\a4\c3\b6\c3\bc\c3\84\c3\96\c3\9c\c3\9f,dc=example,dc=com', flags=0),
             [
                 [('cn', 'äöüÄÖÜß', ldap.AVA_NONPRINTABLE)],
                 [('dc', 'example', 1)],
@@ -168,7 +168,7 @@ class TestDN(unittest.TestCase):
                 [('dc', 'example', 1)],
                 [('dc', 'com', 1)]
             ]),
-            'uid=test\\, 42,ou=Testing,dc=example,dc=com'
+            r'uid=test\, 42,ou=Testing,dc=example,dc=com'
         )
         self.assertEqual(
             ldap.dn.dn2str([
@@ -391,15 +391,15 @@ class TestDN(unittest.TestCase):
             ['test42', 'Testing', 'example', 'com']
         )
         self.assertEqual(
-            ldap.dn.explode_dn('uid=test\\, 42,ou=Testing,dc=example,dc=com', flags=0),
-            ['uid=test\\, 42', 'ou=Testing', 'dc=example', 'dc=com']
+            ldap.dn.explode_dn(r'uid=test\, 42,ou=Testing,dc=example,dc=com', flags=0),
+            [r'uid=test\, 42', 'ou=Testing', 'dc=example', 'dc=com']
         )
         self.assertEqual(
             ldap.dn.explode_dn('cn=äöüÄÖÜß,dc=example,dc=com', flags=0),
             ['cn=äöüÄÖÜß', 'dc=example', 'dc=com']
         )
         self.assertEqual(
-            ldap.dn.explode_dn('cn=\\c3\\a4\\c3\\b6\\c3\\bc\\c3\\84\\c3\\96\\c3\\9c\\c3\\9f,dc=example,dc=com', flags=0),
+            ldap.dn.explode_dn(r'cn=\c3\a4\c3\b6\c3\bc\c3\84\c3\96\c3\9c\c3\9f,dc=example,dc=com', flags=0),
             ['cn=äöüÄÖÜß', 'dc=example', 'dc=com']
         )
 
@@ -433,15 +433,15 @@ class TestDN(unittest.TestCase):
             ['test42']
         )
         self.assertEqual(
-            ldap.dn.explode_rdn('uid=test\\+ 42', flags=0),
-            ['uid=test\\+ 42']
+            ldap.dn.explode_rdn(r'uid=test\+ 42', flags=0),
+            [r'uid=test\+ 42']
         )
         self.assertEqual(
             ldap.dn.explode_rdn('cn=äöüÄÖÜß', flags=0),
             ['cn=äöüÄÖÜß']
         )
         self.assertEqual(
-            ldap.dn.explode_rdn('cn=\\c3\\a4\\c3\\b6\\c3\\bc\\c3\\84\\c3\\96\\c3\\9c\\c3\\9f', flags=0),
+            ldap.dn.explode_rdn(r'cn=\c3\a4\c3\b6\c3\bc\c3\84\c3\96\c3\9c\c3\9f', flags=0),
             ['cn=äöüÄÖÜß']
         )
 
