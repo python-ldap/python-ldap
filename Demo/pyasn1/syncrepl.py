@@ -76,7 +76,7 @@ class SyncReplClient(ReconnectLDAPObject, SyncreplConsumer):
         logger.debug('Detected %s of entry %r', change_type, dn)
         # If we have a cookie then this is not our first time being run,
         # so it must be a change
-        if 'ldap_cookie' in self.__data:
+        if 'cookie' in self.__data:
             self.perform_application_sync(dn, attributes, previous_attributes)
 
     def syncrepl_delete(self,uuids):
@@ -98,7 +98,7 @@ class SyncReplClient(ReconnectLDAPObject, SyncreplConsumer):
                 deletedEntries = [
                     uuid
                     for uuid in self.__data.keys()
-                    if uuid not in self.__presentUUIDs and uuid != 'ldap_cookie'
+                    if uuid not in self.__presentUUIDs and uuid != 'cookie'
                 ]
                 self.syncrepl_delete( deletedEntries )
             # Phase is now completed, reset the list
