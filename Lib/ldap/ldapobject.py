@@ -521,7 +521,7 @@ class SimpleLDAPObject:
         The method returns a tuple of the form (result_type,
         result_data).  The result_type is one of the constants RES_*.
 
-        See search() for a description of the search result's
+        See search_ext() for a description of the search result's
         result_data, otherwise the result_data is normally meaningless.
 
         The result() method will block for timeout seconds, or
@@ -588,7 +588,7 @@ class SimpleLDAPObject:
         values are stored in a list as dictionary value.
 
         The DN in dn is extracted using the underlying ldap_get_dn(),
-        which may raise an exception of the DN is malformed.
+        which may raise an exception if the DN is malformed.
 
         If attrsonly is non-zero, the values of attrs will be
         meaningless (they are not transmitted in the result).
