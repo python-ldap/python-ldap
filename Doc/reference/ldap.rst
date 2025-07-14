@@ -605,13 +605,13 @@ The module defines the following exceptions:
 .. py:exception:: COMPARE_FALSE
 
    A compare operation returned false.
-   (This exception should only be seen asynchronous operations, because
+   (This exception should only be seen in asynchronous operations, because
    :py:meth:`~LDAPObject.compare_s()` returns a boolean result.)
 
 .. py:exception:: COMPARE_TRUE
 
    A compare operation returned true.
-   (This exception should only be seen asynchronous operations, because
+   (This exception should only be seen in asynchronous operations, because
    :py:meth:`~LDAPObject.compare_s()` returns a boolean result.)
 
 .. py:exception:: CONFIDENTIALITY_REQUIRED
