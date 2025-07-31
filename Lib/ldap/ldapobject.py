@@ -877,7 +877,10 @@ class ReconnectLDAPObject(SimpleLDAPObject):
         for k,v in self.__dict__.items()
         if k not in self.__transient_attrs__
     }
-    state['_last_bind'] = self._last_bind[0].__name__, self._last_bind[1], self._last_bind[2]
+    if self._last_bind is None:
+        state['_last_bind'] = None
+    else:
+        state['_last_bind'] = self._last_bind[0].__name__, self._last_bind[1], self._last_bind[2]
     return state
 
   def __setstate__(self,d):
@@ -888,7 +891,8 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     else:
         d.setdefault('bytes_strictness', 'warn')
     self.__dict__.update(d)
-    self._last_bind = getattr(SimpleLDAPObject, self._last_bind[0]), self._last_bind[1], self._last_bind[2]
+    if self._last_bind is not None:
+        self._last_bind = getattr(SimpleLDAPObject, self._last_bind[0]), self._last_bind[1], self._last_bind[2]
     self._ldap_object_lock = self._ldap_lock()
     self._reconnect_lock = ldap.LDAPLock(desc='reconnect lock within %s' % (repr(self)))
     # XXX cannot pickle file, use default trace file
