@@ -1364,7 +1364,7 @@ and wait for and return with the server's result, or with
    This synchronous method implements the LDAP "Who Am I?"
    extended operation.
 
-   It is useful for finding out to find out which identity
+   It is useful for finding out which identity
    is assumed by the LDAP server after a SASL bind.
 
    .. seealso::
