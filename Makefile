@@ -20,7 +20,6 @@ Modules/constants_generated.h: Lib/ldap/constants.py
 .PHONY: clean
 clean:
 	rm -rf build dist *.egg-info .tox MANIFEST
-	rm -f .coverage .coverage.*
 	find . \( -name '*.py[co]' -or -name '*.so*' -or -name '*.dylib' \) \
 	    -delete
 	find . -depth -name __pycache__ -exec rm -rf {} \;

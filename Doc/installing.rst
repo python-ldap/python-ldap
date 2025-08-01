@@ -76,12 +76,23 @@ The CVS repository of FreeBSD contains the package
 macOS
 -----
 
-You can install directly with pip::
+You can install directly with pip. First install Xcode command line tools::
 
     $ xcode-select --install
-    $ pip install python-ldap \
-        --global-option=build_ext \
-        --global-option="-I$(xcrun --show-sdk-path)/usr/include/sasl"
+
+Then install python-ldap::
+
+    $ pip install python-ldap
+
+For custom installations, you may need to set environment variables::
+
+    $ export CPPFLAGS="-I$(xcrun --show-sdk-path)/usr/include/sasl"
+    $ pip install python-ldap
+
+If using Homebrew::
+
+    $ brew install openldap
+    $ pip install python-ldap
 
 
 .. _install-source:
@@ -90,11 +101,14 @@ Installing from Source
 ======================
 
 
-python-ldap is built and installed using the Python setuptools.
-From a source repository::
+python-ldap is built and installed using modern Python packaging standards
+with pyproject.toml configuration. From a source repository::
 
-    $ python -m pip install setuptools
-    $ python setup.py install
+    $ pip install .
+
+For development installation with editable mode::
+
+    $ pip install -e .
 
 If you have more than one Python interpreter installed locally, you should
 use the same one you plan to use python-ldap with.
