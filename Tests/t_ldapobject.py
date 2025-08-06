@@ -617,12 +617,20 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
         )
 
     def test104_reconnect_restore(self):
-        l1 = self.ldap_object_class(self.server.ldap_uri)
+        l0 = self.ldap_object_class(self.server.ldap_uri)
+
+        l0_state = pickle.dumps(l0)
+        del l0
+        l1 = pickle.loads(l0_state)
+        self.assertEqual(l1.whoami_s(), '')
+
         bind_dn = 'cn=user1,'+self.server.suffix
         l1.simple_bind_s(bind_dn, 'user1_pw')
+
         self.assertEqual(l1.whoami_s(), 'dn:'+bind_dn)
         l1_state = pickle.dumps(l1)
         del l1
+
         l2 = pickle.loads(l1_state)
         self.assertEqual(l2.whoami_s(), 'dn:'+bind_dn)
 
