@@ -10,13 +10,34 @@ import unittest
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
-from ldap.filter import escape_filter_chars
+from ldap.filter import escape_filter_chars, is_filter, filter_format
 
 
 class TestDN(unittest.TestCase):
     """
     test ldap.functions
     """
+
+    def test_is_filter(self):
+        """
+        test function is_filter()
+        """
+        self.assertEqual(is_filter(''), True)
+        self.assertEqual(is_filter('foo='), True)
+        self.assertEqual(is_filter('foo=bar'), True)
+        self.assertEqual(is_filter('foo=*'), True)
+        self.assertEqual(is_filter(filter_format('foo=%s', ['*'])), True)
+        self.assertEqual(is_filter('(foo=bar)'), True)
+        self.assertEqual(is_filter('(&(foo=bar))'), True)
+        self.assertEqual(is_filter('(|(foo=bar))'), True)
+        self.assertEqual(is_filter('foo>='), True)
+        self.assertEqual(is_filter('(foo>=)'), True)
+        self.assertEqual(is_filter('foo==bar'), True)
+        self.assertEqual(is_filter('foobar'), False)
+        self.assertEqual(is_filter('(foo='), False)
+        self.assertEqual(is_filter('foo=)'), False)
+        self.assertEqual(is_filter('=bar'), False)
+        self.assertEqual(is_filter('foo=\x00'), False)
 
     def test_escape_filter_chars_mode0(self):
         """
