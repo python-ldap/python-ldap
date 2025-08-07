@@ -51,6 +51,7 @@ class SearchNoOpMixIn:
   """
 
   def noop_search_st(self,base,scope=ldap.SCOPE_SUBTREE,filterstr='(objectClass=*)',timeout=-1):
+    msg_id = None
     try:
       msg_id = self.search_ext(
         base,
@@ -66,9 +67,10 @@ class SearchNoOpMixIn:
       ldap.TIMELIMIT_EXCEEDED,
       ldap.SIZELIMIT_EXCEEDED,
       ldap.ADMINLIMIT_EXCEEDED
-    ) as e:
-      self.abandon(msg_id)
-      raise e
+    ):
+      if msg_id is not None:
+        self.abandon(msg_id)
+      raise
     else:
       noop_srch_ctrl = [
         c
