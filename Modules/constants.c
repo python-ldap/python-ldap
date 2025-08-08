@@ -229,6 +229,14 @@ LDAPinit_constants(PyObject *m)
     if (PyModule_AddIntConstant(m, "LIBLDAP_R", thread_safe) != 0)
         return -1;
 
+    if (ldap_get_option(NULL, LDAP_OPT_API_INFO, &ldap_version_info) != LDAP_SUCCESS) {
+        PyErr_SetString(PyExc_ImportError, "unrecognised libldap version");
+        return -1;
+    }
+    if (PyModule_AddIntConstant(m, "_VENDOR_VERSION_RUNTIME",
+                ldap_version_info.ldapai_vendor_version ) != 0)
+        return -1;
+
     /* Generated constants -- see Lib/ldap/constants.py */
 
 #define add_err(n) do {  \
