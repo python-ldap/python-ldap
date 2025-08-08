@@ -60,6 +60,7 @@ func
 Gohlke
 GPG
 Heimdal
+Homebrew
 hostport
 hrefTarget
 hrefText
@@ -106,6 +107,7 @@ previousDN
 processResultsCount
 Proxied
 py
+pyproject
 pytest
 rdn
 readthedocs
@@ -146,6 +148,7 @@ syncrepl
 syntaxes
 timelimit
 TLS
+toml
 tracebacks
 tuple
 tuples
@@ -162,5 +165,6 @@ userPassword
 usr
 uuids
 Valgrind
+Xcode
 whitespace
 workflow
