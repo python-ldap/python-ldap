@@ -955,6 +955,12 @@ class TestLdapCExtension(SlapdTestCase):
             _ldap.OPT_X_TLS_TRY
         )
 
+    def test_str2dn(self):
+        self.assertEqual(_ldap.str2dn(""), [])
+        self.assertEqual(_ldap.str2dn(None), [])
+        with self.assertRaises(TypeError):
+            _ldap.str2dn(object)
+
 
 if __name__ == '__main__':
     unittest.main()
