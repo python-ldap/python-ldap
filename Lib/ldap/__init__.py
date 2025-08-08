@@ -35,6 +35,7 @@ import _ldap
 assert _ldap.__version__==__version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 from _ldap import *
+from _ldap import _exceptions
 # call into libldap to initialize it right now
 LIBLDAP_API_INFO = _ldap.get_option(_ldap.OPT_API_INFO)
 
@@ -42,6 +43,12 @@ OPT_NAMES_DICT = {}
 for k,v in vars(_ldap).items():
   if k.startswith('OPT_'):
     OPT_NAMES_DICT[v]=k
+
+# OID to class registries
+KNOWN_RESPONSE_CONTROLS = {}
+KNOWN_INTERMEDIATE_RESPONSES = {}
+KNOWN_EXTENDED_RESPONSES = {}
+
 
 class DummyLock:
   """Define dummy class with methods compatible to threading.Lock"""
