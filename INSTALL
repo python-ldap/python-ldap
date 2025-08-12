@@ -1,8 +1,7 @@
 Quick build instructions:
 
     edit setup.cfg (see Build/ for platform-specific examples)
-    python setup.py build
-    python setup.py install
+    pip install .
 
 Detailed instructions are in Doc/installing.rst, or online at:
 

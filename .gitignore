@@ -3,8 +3,6 @@
 *.pyc
 __pycache__/
 .tox
-.coverage*
-!.coveragerc
 /.cache
 /.pytest_cache
 
