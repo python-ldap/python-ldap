@@ -1,7 +1,6 @@
 Quick build instructions:
 
     edit setup.cfg (see Build/ for platform-specific examples)
-    python -m build
     pip install .
 
 Detailed instructions are in Doc/installing.rst, or online at:

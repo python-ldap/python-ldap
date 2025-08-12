@@ -1,7 +1,6 @@
 [build-system]
 requires = [
     "setuptools",
-    "wheel",
     "setuptools-scm",
 ]
 build-backend = "setuptools.build_meta"
@@ -54,20 +53,7 @@ Repository = "https://github.com/python-ldap/python-ldap"
 Download = "https://pypi.org/project/python-ldap/"
 Changelog = "https://github.com/python-ldap/python-ldap/blob/main/CHANGES"
 
-[project.optional-dependencies]
-dev = [
-    "tox",
-    "pytest",
-    "coverage",
-    "black",
-    "isort",
-]
-doc = [
-    "docutils",
-    "markdown",
-    "sphinx",
-    "sphinxcontrib-spelling",
-]
+
 
 [tool.setuptools]
 zip-safe = false
