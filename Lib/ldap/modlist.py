@@ -4,17 +4,28 @@ ldap.modlist - create add/modify modlist's
 See https://www.python-ldap.org/ for details.
 """
 
-from ldap import __version__
+from ldap.pkginfo import __version__
 
 import ldap
 
+from typing import List, Optional
+from ldap.types import (
+    LDAPEntryDict,
+    LDAPAddModList,
+    LDAPModifyModList,
+    LDAPModListModifyEntry,
+)
 
-def addModlist(entry,ignore_attr_types=None):
+
+def addModlist(
+    entry: LDAPEntryDict,
+    ignore_attr_types: Optional[List[str]] = None,
+  ) -> LDAPAddModList:
   """Build modify list for call of method LDAPObject.add()"""
-  ignore_attr_types = {v.lower() for v in ignore_attr_types or []}
+  ignore_attr_types_set = {v.lower() for v in ignore_attr_types or []}
   modlist = []
   for attrtype, value in entry.items():
-    if attrtype.lower() in ignore_attr_types:
+    if attrtype.lower() in ignore_attr_types_set:
       # This attribute type is ignored
       continue
     # Eliminate empty attr value strings in list
@@ -25,8 +36,12 @@ def addModlist(entry,ignore_attr_types=None):
 
 
 def modifyModlist(
-  old_entry,new_entry,ignore_attr_types=None,ignore_oldexistent=0,case_ignore_attr_types=None
-):
+  old_entry: LDAPEntryDict,
+  new_entry: LDAPEntryDict,
+  ignore_attr_types: Optional[List[str]] = None,
+  ignore_oldexistent:int = 0,
+  case_ignore_attr_types: Optional[List[str]] = None,
+) -> LDAPModifyModList:
   """
   Build differential modify list for calling LDAPObject.modify()/modify_s()
 
@@ -46,15 +61,15 @@ def modifyModlist(
       List of attribute type names for which comparison will be made
       case-insensitive
   """
-  ignore_attr_types = {v.lower() for v in ignore_attr_types or []}
-  case_ignore_attr_types = {v.lower() for v in case_ignore_attr_types or []}
-  modlist = []
+  ignore_attr_types_set = {v.lower() for v in ignore_attr_types or []}
+  case_ignore_attr_types_set = {v.lower() for v in case_ignore_attr_types or []}
+  modlist: List[LDAPModListModifyEntry] = []
   attrtype_lower_map = {}
   for a in old_entry:
     attrtype_lower_map[a.lower()]=a
   for attrtype, value in new_entry.items():
     attrtype_lower = attrtype.lower()
-    if attrtype_lower in ignore_attr_types:
+    if attrtype_lower in ignore_attr_types_set:
       # This attribute type is ignored
       continue
     # Filter away null-strings
@@ -72,7 +87,7 @@ def modifyModlist(
       # Replace existing attribute
       replace_attr_value = len(old_value)!=len(new_value)
       if not replace_attr_value:
-        if attrtype_lower in case_ignore_attr_types:
+        if attrtype_lower in case_ignore_attr_types_set:
           old_value_set = {v.lower() for v in old_value}
           new_value_set = {v.lower() for v in new_value}
         else:
@@ -89,7 +104,7 @@ def modifyModlist(
     # Remove all attributes of old_entry which are not present
     # in new_entry at all
     for a, val in attrtype_lower_map.items():
-      if a in ignore_attr_types:
+      if a in ignore_attr_types_set:
         # This attribute type is ignored
         continue
       attrtype = val
