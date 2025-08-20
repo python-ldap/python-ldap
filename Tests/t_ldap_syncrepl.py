@@ -13,7 +13,8 @@ os.environ['LDAPNOINIT'] = '1'
 
 import ldap
 from ldap.ldapobject import SimpleLDAPObject
-from ldap.syncrepl import SyncreplConsumer, SyncInfoMessage
+from ldap.syncrepl import SyncreplConsumer
+from ldap.controls.syncrepl import SyncInfoMessage
 
 from slapdtest import SlapdObject, SlapdTestCase
 
