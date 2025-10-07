@@ -1,4 +1,108 @@
+[build-system]
+requires = [
+    "setuptools",
+    "setuptools-scm",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-ldap"
+license.text = "python-ldap"  # Replace with 'license' once Python 3.8 is dropped
+dynamic = ["version"]
+description = "Python modules for implementing LDAP clients"
+authors = [
+    {name = "python-ldap project", email = "python-ldap@python.org"},
+]
+readme = "README"
+requires-python = ">=3.6"
+keywords = ["ldap", "directory", "authentication"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Programming Language :: C",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Systems Administration :: Authentication/Directory :: LDAP",
+    "License :: OSI Approved :: Python Software Foundation License",
+]
+dependencies = [
+    "pyasn1 >= 0.3.7",
+    "pyasn1_modules >= 0.1.5",
+]
+
+[project.urls]
+Homepage = "https://www.python-ldap.org/"
+Documentation = "https://python-ldap.readthedocs.io/"
+Repository = "https://github.com/python-ldap/python-ldap"
+Download = "https://pypi.org/project/python-ldap/"
+Changelog = "https://github.com/python-ldap/python-ldap/blob/main/CHANGES"
+
+
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+license-files = ["LICENCE", "LICENCE.MIT"]
+# Explicitly list all Python modules
+py-modules = ["ldapurl", "ldif"]
+
+[tool.setuptools.dynamic]
+version = {attr = "ldap.pkginfo.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["Lib"]
+
+[tool.setuptools.package-dir]
+"" = "Lib"
+
 [tool.isort]
-line_length=88
-known_first_party=['ldap', '_ldap', 'ldapurl', 'ldif', 'slapdtest']
-sections=['FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER']
+line_length = 88
+known_first_party = ["ldap", "_ldap", "ldapurl", "ldif", "slapdtest"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
+[tool.coverage.run]
+branch = true
+source = [
+    "ldap",
+    "ldif",
+    "ldapurl",
+    "slapdtest",
+]
+
+[tool.coverage.paths]
+source = [
+    "Lib/",
+    ".tox/*/lib/python*/site-packages/",
+]
+
+[tool.coverage.report]
+ignore_errors = false
+precision = 1
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "if PY2",
+    "if not PY2",
+]
+
+[tool.coverage.html]
+directory = "build/htmlcov"
+title = "python-ldap coverage report"
