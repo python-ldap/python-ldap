@@ -85,7 +85,7 @@ def strlist_minus(a,b):
   a,b are supposed to be lists of case-insensitive strings.
   """
   warnings.warn(
-    "strlist functions are deprecated and will be removed in 3.5",
+    "strlist functions are deprecated and will be removed in 4.0",
     category=DeprecationWarning,
     stacklevel=2,
   )
@@ -105,7 +105,7 @@ def strlist_intersection(a,b):
   Return intersection of two lists of case-insensitive strings a,b.
   """
   warnings.warn(
-    "strlist functions are deprecated and will be removed in 3.5",
+    "strlist functions are deprecated and will be removed in 4.0",
     category=DeprecationWarning,
     stacklevel=2,
   )
@@ -125,7 +125,7 @@ def strlist_union(a,b):
   Return union of two lists of case-insensitive strings a,b.
   """
   warnings.warn(
-    "strlist functions are deprecated and will be removed in 3.5",
+    "strlist functions are deprecated and will be removed in 4.0",
     category=DeprecationWarning,
     stacklevel=2,
   )

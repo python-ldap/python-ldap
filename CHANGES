@@ -1,3 +1,32 @@
+Released 3.4.5 2025-10-10
+
+Security fixes:
+* CVE-2025-61911 (GHSA-r7r6-cc7p-4v5m): Enforce ``str`` input in
+  ``ldap.filter.escape_filter_chars`` with ``escape_mode=1``; ensure proper
+  escaping. (thanks to lukas-eu)
+* CVE-2025-61912 (GHSA-p34h-wq7j-h5v6): Correct NUL escaping in
+  ``ldap.dn.escape_dn_chars`` to ``\00`` per RFC 4514. (thanks to aradona91)
+
+Fixes:
+* ReconnectLDAPObject now properly reconnects on UNAVAILABLE, CONNECT_ERROR
+  and TIMEOUT exceptions (previously only SERVER_DOWN), fixing reconnection
+  issues especially during server restarts
+* Fixed syncrepl.py to use named constants instead of raw decimal values
+  for result types
+* Fixed error handling in SearchNoOpMixIn to prevent a undefined variable error
+
+Tests:
+* Added comprehensive reconnection test cases including concurrent operation
+  handling and server restart scenarios
+
+Doc/
+* Updated installation docs and fixed various documentation typos
+* Added ReadTheDocs configuration file
+
+Infrastructure:
+* Add testing and document support for Python 3.13
+
+----------------------------------------------------------------
 Released 3.4.4 2022-11-17
 
 Fixes:
