@@ -1,7 +1,9 @@
 """
-setup.py - Setup package with the help Python's DistUtils
+setup.py - C extension module configuration for python-ldap
 
 See https://www.python-ldap.org/ for details.
+This file handles only the C extension modules (_ldap) configuration,
+while pyproject.toml handles all project metadata, dependencies, and other settings.
 """
 
 import sys,os
@@ -54,55 +56,8 @@ if os.environ.get('WITH_GCOV'):
   LDAP_CLASS.extra_link_args.append('-pg')
   LDAP_CLASS.libs.append('gcov')
 
-#-- Let distutils/setuptools do the rest
-name = 'python-ldap'
-
+#-- C extension modules configuration only
 setup(
-  #-- Package description
-  name = name,
-  license=pkginfo.__license__,
-  version=pkginfo.__version__,
-  description = 'Python modules for implementing LDAP clients',
-  long_description = """python-ldap:
-  python-ldap provides an object-oriented API to access LDAP directory servers
-  from Python programs. Mainly it wraps the OpenLDAP 2.x libs for that purpose.
-  Additionally the package contains modules for other LDAP-related stuff
-  (e.g. processing LDIF, LDAPURLs, LDAPv3 schema, LDAPv3 extended operations
-  and controls, etc.).
-  """,
-  author = 'python-ldap project',
-  author_email = 'python-ldap@python.org',
-  url = 'https://www.python-ldap.org/',
-  download_url = 'https://pypi.org/project/python-ldap/',
-  classifiers = [
-    'Development Status :: 5 - Production/Stable',
-    'Intended Audience :: Developers',
-    'Intended Audience :: System Administrators',
-    'Operating System :: OS Independent',
-    'Operating System :: MacOS :: MacOS X',
-    'Operating System :: Microsoft :: Windows',
-    'Operating System :: POSIX',
-    'Programming Language :: C',
-
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
-    'Programming Language :: Python :: 3.11',
-    'Programming Language :: Python :: 3.12',
-    'Programming Language :: Python :: 3.13',
-    # Note: when updating Python versions, also change tox.ini and .github/workflows/*
-
-    'Topic :: Database',
-    'Topic :: Internet',
-    'Topic :: Software Development :: Libraries :: Python Modules',
-    'Topic :: System :: Systems Administration :: Authentication/Directory :: LDAP',
-    'License :: OSI Approved :: Python Software Foundation License',
-  ],
-  #-- C extension modules
   ext_modules = [
     Extension(
       '_ldap',
@@ -145,28 +100,4 @@ setup(
         ]
     ),
   ],
-  #-- Python "stand alone" modules
-  py_modules = [
-    'ldapurl',
-    'ldif',
-
-  ],
-  packages = [
-    'ldap',
-    'ldap.controls',
-    'ldap.extop',
-    'ldap.schema',
-    'slapdtest',
-    'slapdtest.certs',
-  ],
-  package_dir = {'': 'Lib',},
-  data_files = LDAP_CLASS.extra_files,
-  include_package_data=True,
-  install_requires=[
-    'pyasn1 >= 0.3.7',
-    'pyasn1_modules >= 0.1.5',
-  ],
-  zip_safe=False,
-  python_requires='>=3.6',
-  test_suite = 'Tests',
 )
