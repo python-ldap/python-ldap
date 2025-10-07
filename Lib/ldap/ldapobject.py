@@ -833,7 +833,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
 
   This class also implements the pickle protocol.
 
-  .. versionadded:: 3.5
+  .. versionadded:: 3.4.5
     The exceptions :py:exc:`ldap.SERVER_DOWN`, :py:exc:`ldap.UNAVAILABLE`, :py:exc:`ldap.CONNECT_ERROR` and
     :py:exc:`ldap.TIMEOUT` (configurable via :py:attr:`_reconnect_exceptions`) now trigger a reconnect.
   """
