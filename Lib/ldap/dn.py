@@ -26,7 +26,8 @@ def escape_dn_chars(s):
     s = s.replace('>' ,'\\>')
     s = s.replace(';' ,'\\;')
     s = s.replace('=' ,'\\=')
-    s = s.replace('\000' ,'\\\000')
+    # RFC 4514 requires NULL (U+0000) to be escaped as hex pair "\00"
+    s = s.replace('\x00' ,'\\00')
     if s[-1]==' ':
       s = ''.join((s[:-1],'\\ '))
     if s[0]=='#' or s[0]==' ':
