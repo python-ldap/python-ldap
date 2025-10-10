@@ -24,6 +24,8 @@ def escape_filter_chars(assertion_value,escape_mode=0):
       If 1 all NON-ASCII chars are escaped.
       If 2 all chars are escaped.
   """
+  if not isinstance(assertion_value, str):
+    raise TypeError("assertion_value must be of type str.")
   if escape_mode:
     r = []
     if escape_mode==1:
