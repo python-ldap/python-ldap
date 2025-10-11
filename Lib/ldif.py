@@ -465,7 +465,28 @@ class LDIFParser:
     """
     controls = [] or None
     pass
+  
+  def handle_add(self,dn, entry):
+    """
+    Process a single LDIF record representing a single add operation.
+    This method should be implemented by applications using LDIFParser.
 
+    Args:
+        dn (str): DN of the new object to be created
+        entry (dict): Data of the new object to be created
+    """
+    pass
+
+  def handle_delete(self, dn):
+    """
+    Process a single LDIF record representing a single delete operation.
+    This method should be implemented by applications using LDIFParser.
+
+    Args:
+        dn (str): DN of the existing object to be deleted
+    """
+    pass
+    
   def parse_change_records(self):
     # Local symbol for better performance
     next_key_and_value = self._next_key_and_value
@@ -554,6 +575,30 @@ class LDIFParser:
           # append entry to result list
           self.handle_modify(dn,modops,controls)
 
+      elif changetype == 'add':
+        entry = {}
+        while k!=None:
+          k,v = next_key_and_value()
+          # Add the attribute to the entry if not ignored attribute
+          if not k.lower() in self._ignored_attr_types:
+            try:
+              entry[k].append(v)
+            except KeyError:
+              entry[k]=[v]
+          # Read the next line within the record
+          try:
+            k,v = next_key_and_value()
+          except EOFError:
+            k,v = None,None
+
+        # handle record
+        self.handle_add(dn,entry)
+      elif changetype == 'delete':
+        while k!=None:
+          k,v = next_key_and_value()
+        
+        # handle record
+        self.handle_delete(dn)
       else:
 
         # Consume the unhandled change record
