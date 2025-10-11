@@ -11,7 +11,7 @@ __all__ = [
 
 # Imports from python-ldap 2.4+
 import ldap.controls
-from ldap.controls import RequestControl,ResponseControl,KNOWN_RESPONSE_CONTROLS
+from ldap.controls import RequestControl,ResponseControl
 
 # Imports from pyasn1
 from pyasn1.type import tag,namedtype,univ,constraint
@@ -44,6 +44,3 @@ class SimplePagedResultsControl(RequestControl,ResponseControl):
     decodedValue,_ = decoder.decode(encodedControlValue,asn1Spec=PagedResultsControlValue())
     self.size = int(decodedValue.getComponentByName('size'))
     self.cookie = bytes(decodedValue.getComponentByName('cookie'))
-
-
-KNOWN_RESPONSE_CONTROLS[SimplePagedResultsControl.controlType] = SimplePagedResultsControl
