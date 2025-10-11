@@ -160,9 +160,18 @@ LDAPraise_for_message(LDAP *l, LDAPMessage *m)
         }
 
         if (errnum == LDAP_REFERRAL && refs != NULL && refs[0] != NULL) {
+            /* Return all referrals as a list in "reflist" */
+            PyObject *referralList = PyList_New(0);
+            int i = 0;
+            while (refs[i] != NULL) {
+                PyObject *referralURL = Py_BuildValue("s", refs[i++]);
+                PyList_Append(referralList, referralURL);
+                Py_XDECREF(referralURL);
+            }
+            PyDict_SetItemString(info, "reflist", referralList);
+            Py_XDECREF(referralList);
             /* Keep old behaviour, overshadow error message */
             char err[1024];
-
             snprintf(err, sizeof(err), "Referral:\n%s", refs[0]);
             str = PyUnicode_FromString(err);
             PyDict_SetItemString(info, "info", str);
