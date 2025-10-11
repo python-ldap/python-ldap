@@ -1472,6 +1472,38 @@ l_ldap_extended_operation(LDAPObject *self, PyObject *args)
     return PyLong_FromLong(msgid);
 }
 
+/* ldap_connect */
+
+static PyObject *
+l_ldap_connect(LDAPObject *self, PyObject Py_UNUSED(args))
+{
+#if LDAP_VENDOR_VERSION >= 20500
+    int ldaperror;
+
+    if (ldap_version_info.ldapai_vendor_version < 20500)
+#endif
+    {
+        PyErr_SetString(PyExc_NotImplementedError,
+            "loaded libldap doesn't support this feature");
+        return NULL;
+    }
+
+#if LDAP_VENDOR_VERSION >= 20500
+    if (not_valid(self))
+        return NULL;
+
+    LDAP_BEGIN_ALLOW_THREADS(self);
+    ldaperror = ldap_connect(self->ldap);
+    LDAP_END_ALLOW_THREADS(self);
+
+    if ( ldaperror != LDAP_SUCCESS )
+        return LDAPerror(self->ldap);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+#endif
+}
+
 /* methods */
 
 static PyMethodDef methods[] = {
@@ -1501,6 +1533,7 @@ static PyMethodDef methods[] = {
     {"cancel", (PyCFunction)l_ldap_cancel, METH_VARARGS},
 #endif
     {"extop", (PyCFunction)l_ldap_extended_operation, METH_VARARGS},
+    {"connect", (PyCFunction)l_ldap_connect, METH_NOARGS},
     {NULL, NULL}
 };
 
