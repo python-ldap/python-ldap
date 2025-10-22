@@ -59,9 +59,6 @@ class ExtendedResponse:
     self.responseName = responseName
     self.responseValue = self.decodeResponseValue(encodedResponseValue)
 
-  def __repr__(self):
-    return f'{self.__class__.__name__}({self.responseName},{self.responseValue})'
-
   def decodeResponseValue(self,value):
     """
     decodes the BER-encoded ASN.1 extended operation response value and
@@ -85,9 +82,6 @@ class IntermediateResponse:
       return
 
     KNOWN_INTERMEDIATE_RESPONSES.setdefault(cls.responseName, cls)
-
-  def __repr__(self):
-    return f'{self.__class__.__name__}({self.responseName},{self.responseValue})'
 
   def decodeResponseValue(self,value):
     """
