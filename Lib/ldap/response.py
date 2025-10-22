@@ -180,9 +180,9 @@ class IntermediateResponse(Response):
     def __repr__(self):
         optional = ""
         if self.name is not None:
-            optional += f", name={self.name}"
+            optional += f", name={self.name!r}"
         if self.value is not None:
-            optional += f", value={self.value}"
+            optional += f", value={self.value!r}"
         if self.controls is not None:
             optional += f", controls={self.controls}"
         return (f"{self.__class__.__name__}"
