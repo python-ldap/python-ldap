@@ -51,7 +51,11 @@ class Response:
         if not hasattr(cls, 'msgtype'):
             return
         c = __class__.__subclasses.setdefault(cls.msgtype, cls)
-        assert issubclass(cls, c)
+        if not issubclass(cls, c):
+            msgtype = cls.msgtype
+            raise TypeError(f"Attempt to register a default for {msgtype=} "
+                            f"that's incompatible with the existing default: "
+                            f"{c.__module__}.{c.__qualname__}")
 
     def __new__(cls, msgid, msgtype, controls=None, **kwargs):
         if cls is not __class__:
