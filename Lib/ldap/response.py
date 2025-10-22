@@ -225,7 +225,7 @@ class CompareResult(Result):
 class ExtendedResult(Result):
     msgtype = ldap.RES_EXTENDED
 
-    responseName: Optional[str]
+    name: Optional[str]
     value: Optional[bytes]
 
     def __new__(cls, msgid, msgtype, controls=None, *,
