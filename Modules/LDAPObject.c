@@ -10,6 +10,33 @@
 #include <sasl/sasl.h>
 #endif
 
+PyStructSequence_Field message_fields[] = {
+    {
+        .name = "msgid",
+    },
+    {
+        .name = "type",
+    },
+    {
+        .name = "controls",
+    },
+    {
+        .name = "data",
+    },
+    {
+        .name = NULL,
+    }
+};
+
+PyStructSequence_Desc message_tuple_desc = {
+    .name = "_ldap._RawLDAPMessage",
+    .doc = "LDAP Message returned from native code",
+    .fields = message_fields,
+    .n_in_sequence = 4,
+};
+
+PyTypeObject message_tuple_type;
+
 static void free_attrs(char ***);
 
 /* constructor */
@@ -1035,6 +1062,436 @@ l_ldap_rename(LDAPObject *self, PyObject *args)
     return PyLong_FromLong(msgid);
 }
 
+/* Connection.result() */
+
+static PyObject *
+l_ldap_result(LDAPObject *self, PyObject *args)
+{
+    PyObject *retval = NULL, *pytmp = NULL;
+    LDAPMessage *result = NULL, *msg;
+    BerElement *ber = NULL;
+    int rc = LDAP_SUCCESS, res_type, msgid = LDAP_RES_ANY;
+    int count, msg_index = 0, all = 1;
+    double timeout = -1.0;
+    struct timeval tv, *tvp = NULL;
+
+    if (!PyArg_ParseTuple
+            (args, "|iid:result", &msgid, &all, &timeout))
+        return NULL;
+    if (not_valid(self))
+        return NULL;
+
+    if (timeout >= 0) {
+        tvp = &tv;
+        set_timeval_from_double(tvp, timeout);
+    }
+
+    LDAP_BEGIN_ALLOW_THREADS(self);
+    res_type = ldap_result(self->ldap, msgid, all, tvp, &result);
+    LDAP_END_ALLOW_THREADS(self);
+
+    /* LDAP or system error */
+    if ( res_type < 0 ) {
+        result = NULL;
+        rc = res_type;
+        goto error;
+    }
+
+    if ( res_type == 0 ) {
+        /* Polls return None, timeouts raise an exception */
+        if ( timeout == 0 ) {
+            Py_RETURN_NONE;
+        } else {
+            rc = LDAP_TIMEOUT;
+            goto error;
+        }
+    }
+
+    count = ldap_count_messages( self->ldap, result );
+    if ( (retval = PyList_New(count)) == NULL ) {
+        goto error;
+    }
+
+    for ( msg = ldap_first_message( self->ldap, result );
+            msg;
+            msg = ldap_next_message( self->ldap, msg ) ) {
+        PyObject *msgtuple, *data;
+        LDAPControl **controls = NULL;
+
+        msgid = ldap_msgid( msg );
+        res_type = ldap_msgtype( msg );
+
+        if ( (pytmp = PyStructSequence_New( &message_tuple_type )) == NULL ) {
+            goto error;
+        }
+        PyList_SET_ITEM( retval, msg_index++, pytmp );
+        msgtuple = pytmp;
+
+        if ( (pytmp = PyLong_FromUnsignedLong( msgid )) == NULL ) {
+            goto error;
+        }
+        PyStructSequence_SET_ITEM( msgtuple, 0, pytmp );
+
+        if ( (pytmp = PyLong_FromUnsignedLong( res_type )) == NULL ) {
+            goto error;
+        }
+        PyStructSequence_SET_ITEM( msgtuple, 1, pytmp );
+
+        if ( (pytmp = PyDict_New()) == NULL ) {
+            goto error;
+        }
+        PyStructSequence_SET_ITEM( msgtuple, 3, pytmp );
+        data = pytmp;
+
+        if ( res_type == LDAP_RES_SEARCH_ENTRY ) {
+            struct berval dn, attr, *values = NULL;
+            PyObject *attrdict;
+
+            if ( (rc = ldap_get_dn_ber( self->ldap, msg, &ber, &dn )) != LDAP_SUCCESS ) {
+                goto error;
+            }
+            pytmp = PyUnicode_FromString( dn.bv_val );
+            if ( !pytmp || PyDict_SetItemString( data, "dn", pytmp ) ) {
+                goto error;
+            }
+            Py_DECREF( pytmp );
+
+            pytmp = PyDict_New();
+            if ( !pytmp || PyDict_SetItemString( data, "attrs", pytmp ) ) {
+                goto error;
+            }
+            Py_DECREF( pytmp );
+            attrdict = pytmp;
+            pytmp = NULL;
+
+            while ( (rc = ldap_get_attribute_ber( self->ldap, msg, ber,
+                        &attr, &values )) == LDAP_SUCCESS ) {
+                PyObject *value_list = NULL;
+                struct berval *bv;
+                int index = 0;
+
+                if ( attr.bv_val == NULL ) {
+                    break;
+                }
+
+                /*
+                 * Some servers will send multiple attribute entries with same
+                 * name, be prepared for that and just merge them.
+                 * https://github.com/python-ldap/python-ldap/issues/218
+                 */
+                value_list = PyDict_GetItemString( attrdict, attr.bv_val );
+                if ( value_list == NULL ) {
+                    count = 0;
+                    if ( values ) {
+                        for ( bv = values; bv->bv_val != NULL; bv++ ) count++;
+                    }
+                    value_list = PyList_New( count );
+                    if ( value_list == NULL ) {
+                        ldap_memfree( values );
+                        goto error;
+                    }
+                } else {
+                    Py_INCREF(value_list);
+                    index = PyList_Size( value_list );
+                }
+                /*
+                 * At this point we have our own reference on value_list
+                 * independent on the one in attrdict, we'll release it after
+                 * assignment.
+                 */
+
+                if ( values ) {
+                    for ( bv = values; bv->bv_val != NULL; bv++, index++ ) {
+                        pytmp = LDAPberval_to_object( bv );
+                        if ( !pytmp || PyList_SetItem( value_list, index, pytmp ) ) {
+                            ldap_memfree( values );
+                            Py_DECREF(value_list);
+                            goto error;
+                        }
+                    }
+                    pytmp = NULL;
+                    ldap_memfree( values );
+                }
+
+                if ( PyDict_SetItemString( attrdict, attr.bv_val, value_list ) ) {
+                    Py_DECREF(value_list);
+                    goto error;
+                }
+                Py_DECREF(value_list);
+            }
+
+            if ( (rc = ldap_get_entry_controls( self->ldap, msg,
+                        &controls )) != LDAP_SUCCESS ) {
+                goto error;
+            }
+            pytmp = LDAPControls_to_List( controls, 0 );
+            ldap_controls_free( controls );
+            if ( pytmp == NULL ) {
+                goto error;
+            }
+            PyStructSequence_SET_ITEM( msgtuple, 2, pytmp );
+
+            pytmp = NULL;
+            if ( ber != NULL ) {
+                ber_free( ber, 0 );
+                ber = NULL;
+            }
+        } else if ( res_type == LDAP_RES_SEARCH_REFERENCE ) {
+            PyObject *refs_list = NULL;
+            char **refs = NULL;
+            int index;
+
+            if ( (rc = ldap_parse_reference( self->ldap, msg, &refs,
+                        &controls, 0 )) != LDAP_SUCCESS ) {
+                goto error;
+            }
+
+            count = 0;
+            if ( refs ) {
+                char **p;
+                for ( p = refs; *p; p++ ) count++;
+            }
+
+            pytmp = PyList_New( count );
+            if ( !pytmp || PyDict_SetItemString( data, "referrals", pytmp ) ) {
+                ldap_memvfree( (void **)refs );
+                ldap_controls_free( controls );
+                goto error;
+            }
+            Py_DECREF( pytmp );
+            refs_list = pytmp;
+
+            pytmp = LDAPControls_to_List( controls, 0 );
+            ldap_controls_free( controls );
+            if ( pytmp == NULL ) {
+                ldap_memvfree( (void **)refs );
+                goto error;
+            }
+            PyStructSequence_SET_ITEM( msgtuple, 2, pytmp );
+
+            for ( index = 0; refs[index]; index++ ) {
+                if ( (pytmp = PyUnicode_FromString( refs[index] )) == NULL ) {
+                    ldap_memvfree( (void **)refs );
+                    goto error;
+                }
+                PyList_SET_ITEM( refs_list, index, pytmp );
+            }
+            ldap_memvfree( (void **)refs );
+        } else if ( res_type == LDAP_RES_INTERMEDIATE ) {
+            char *oid = NULL;
+            struct berval *value = NULL;
+
+            if ( (rc = ldap_parse_intermediate( self->ldap, msg, &oid,
+                        &value, &controls, 0 )) != LDAP_SUCCESS ) {
+                goto error;
+            }
+            /*
+             * Given Python 3.6 supports ordered dict, be nice and store the
+             * fields in order
+             */
+
+            if ( oid ) {
+                pytmp = PyUnicode_FromString( oid );
+                ldap_memfree( oid );
+                if ( !pytmp || PyDict_SetItemString( data, "name", pytmp ) ) {
+                    ber_bvfree( value );
+                    ldap_controls_free( controls );
+                    goto error;
+                }
+                Py_DECREF( pytmp );
+            } else {
+                pytmp = NULL;
+                if ( PyDict_SetItemString( data, "name", Py_None ) ) {
+                    ber_bvfree( value );
+                    ldap_controls_free( controls );
+                    goto error;
+                }
+            }
+
+            if ( value ) {
+                pytmp = LDAPberval_to_object( value );
+                ber_bvfree( value );
+                if ( !pytmp || PyDict_SetItemString( data, "value", pytmp ) ) {
+                    ldap_controls_free( controls );
+                    goto error;
+                }
+                Py_DECREF( pytmp );
+            } else {
+                pytmp = NULL;
+                if ( PyDict_SetItemString( data, "value", Py_None ) ) {
+                    ldap_controls_free( controls );
+                    goto error;
+                }
+            }
+
+            pytmp = LDAPControls_to_List( controls, 0 );
+            ldap_controls_free( controls );
+            if ( pytmp == NULL ) {
+                goto error;
+            }
+            PyStructSequence_SET_ITEM( msgtuple, 2, pytmp );
+        } else {
+            int index, error = LDAP_SUCCESS;
+            char *matcheddn = NULL, *errmsg = NULL, **referrals = NULL;
+            PyObject *refs_list = NULL;
+
+            if ( (rc = ldap_parse_result( self->ldap, msg, &error, &matcheddn,
+                        &errmsg, &referrals, &controls, 0 )) != LDAP_SUCCESS ) {
+                goto error;
+            }
+
+            pytmp = PyLong_FromLong( error );
+            if ( !pytmp || PyDict_SetItemString( data, "result", pytmp ) ) {
+                ldap_memfree( matcheddn );
+                ldap_memfree( errmsg );
+                ldap_memvfree( (void **)referrals );
+                ldap_controls_free( controls );
+                goto error;
+            }
+            Py_DECREF( pytmp );
+
+            if ( matcheddn ) {
+                pytmp = PyUnicode_FromString( matcheddn );
+                ldap_memfree( matcheddn );
+            } else {
+                pytmp = Py_None;
+                Py_INCREF(pytmp);
+            }
+            if ( !pytmp || PyDict_SetItemString( data, "matcheddn", pytmp ) ) {
+                ldap_memfree( errmsg );
+                ldap_memvfree( (void **)referrals );
+                ldap_controls_free( controls );
+                goto error;
+            }
+            Py_DECREF( pytmp );
+
+            if ( errmsg ) {
+                pytmp = PyUnicode_FromString( errmsg );
+                ldap_memfree( errmsg );
+            } else {
+                pytmp = Py_None;
+                Py_INCREF(pytmp);
+            }
+            if ( !pytmp || PyDict_SetItemString( data, "message", pytmp ) ) {
+                ldap_memvfree( (void **)referrals );
+                ldap_controls_free( controls );
+                goto error;
+            }
+            Py_DECREF( pytmp );
+
+            count = 0;
+            if ( referrals ) {
+                char **p;
+                for ( p = referrals; *p; p++ ) count++;
+                pytmp = PyList_New( count );
+            } else {
+                pytmp = Py_None;
+                Py_INCREF(pytmp);
+            }
+            if ( !pytmp || PyDict_SetItemString( data, "referrals", pytmp ) ) {
+                ldap_memvfree( (void **)referrals );
+                ldap_controls_free( controls );
+                goto error;
+            }
+            Py_DECREF( pytmp );
+            refs_list = pytmp;
+
+            for ( index = 0; index < count; index++ ) {
+                if ( (pytmp = PyUnicode_FromString( referrals[index] )) == NULL ) {
+                    ldap_memvfree( (void **)referrals );
+                    ldap_controls_free( controls );
+                    goto error;
+                }
+                PyList_SET_ITEM( refs_list, index, pytmp );
+            }
+            ldap_memvfree( (void **)referrals );
+
+            pytmp = LDAPControls_to_List( controls, 0 );
+            ldap_controls_free( controls );
+            if ( pytmp == NULL ) {
+                goto error;
+            }
+            PyStructSequence_SET_ITEM( msgtuple, 2, pytmp );
+            pytmp = NULL;
+
+            if ( res_type == LDAP_RES_EXTENDED ) {
+                char *oid = NULL;
+                struct berval *value = NULL;
+                if ( (rc = ldap_parse_extended_result( self->ldap, msg,
+                            &oid, &value, 0 )) != LDAP_SUCCESS ) {
+                    goto error;
+                }
+
+                if ( oid ) {
+                    pytmp = PyUnicode_FromString( oid );
+                    ldap_memfree( oid );
+                    if ( !pytmp || PyDict_SetItemString( data, "name", pytmp ) ) {
+                        ber_bvfree( value );
+                        goto error;
+                    }
+                    Py_DECREF( pytmp );
+                } else {
+                    pytmp = NULL;
+                    if ( PyDict_SetItemString( data, "name", Py_None ) ) {
+                        ber_bvfree( value );
+                        goto error;
+                    }
+                }
+
+                if ( value ) {
+                    pytmp = LDAPberval_to_object( value );
+                    ber_bvfree( value );
+                    if ( !pytmp || PyDict_SetItemString( data, "value", pytmp ) ) {
+                        goto error;
+                    }
+                    Py_DECREF( pytmp );
+                } else {
+                    pytmp = NULL;
+                    if ( PyDict_SetItemString( data, "value", Py_None ) ) {
+                        goto error;
+                    }
+                }
+            } else if ( res_type == LDAP_RES_BIND ) {
+                struct berval *servercred = NULL;
+                if ( (rc = ldap_parse_sasl_bind_result( self->ldap, msg,
+                            &servercred, 0 )) != LDAP_SUCCESS ) {
+                    goto error;
+                }
+
+                if ( servercred ) {
+                    pytmp = LDAPberval_to_object( servercred );
+                    ber_bvfree( servercred );
+                    if ( !pytmp || PyDict_SetItemString( data, "servercred", pytmp ) ) {
+                        goto error;
+                    }
+                    Py_DECREF( pytmp );
+                } else {
+                    pytmp = NULL;
+                    if ( PyDict_SetItemString( data, "servercred", Py_None ) ) {
+                        goto error;
+                    }
+                }
+            }
+        }
+        pytmp = NULL;
+    }
+
+    /* Free all messages now */
+    ldap_msgfree( result );
+    return retval;
+
+error:
+    if ( ber != NULL ) {
+        ber_free( ber, 0 );
+    }
+    ldap_msgfree( result );
+    Py_XDECREF(pytmp);
+    Py_XDECREF(retval);
+    if ( rc != LDAP_SUCCESS )
+        return LDAPerr(rc);
+    Py_RETURN_NONE;
+}
+
 /* ldap_result4 */
 
 static PyObject *
@@ -1136,7 +1593,7 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
         return LDAPraise_for_message(self->ldap, msg);
     }
 
-    if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
+    if (!(pyctrls = LDAPControls_to_List(serverctrls, 1))) {
         int err = LDAP_NO_MEMORY;
 
         LDAP_BEGIN_ALLOW_THREADS(self);
@@ -1488,6 +1945,7 @@ static PyMethodDef methods[] = {
     {"delete_ext", (PyCFunction)l_ldap_delete_ext, METH_VARARGS},
     {"modify_ext", (PyCFunction)l_ldap_modify_ext, METH_VARARGS},
     {"rename", (PyCFunction)l_ldap_rename, METH_VARARGS},
+    {"result", (PyCFunction)l_ldap_result, METH_VARARGS},
     {"result4", (PyCFunction)l_ldap_result4, METH_VARARGS},
     {"search_ext", (PyCFunction)l_ldap_search_ext, METH_VARARGS},
 #ifdef HAVE_TLS

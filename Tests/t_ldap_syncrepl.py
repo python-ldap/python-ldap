@@ -13,7 +13,9 @@ os.environ['LDAPNOINIT'] = '1'
 
 import ldap
 from ldap.ldapobject import SimpleLDAPObject
-from ldap.syncrepl import SyncreplConsumer, SyncInfoMessage
+from ldap.syncrepl import SyncreplConsumer
+from ldap.extop.syncrepl import SyncInfoMessage, SyncInfoIDSet
+from ldap.response import IntermediateResponse
 
 from slapdtest import SlapdObject, SlapdTestCase
 
@@ -471,17 +473,15 @@ class DecodeSyncreplProtoTests(unittest.TestCase):
         """.replace(' ', '').replace('\n', '')
 
         msgraw = binascii.unhexlify(msg)
-        sim = SyncInfoMessage(msgraw)
-        self.assertEqual(sim.refreshDelete, None)
-        self.assertEqual(sim.refreshPresent, None)
-        self.assertEqual(sim.newcookie, None)
-        self.assertEqual(sim.syncIdSet,
-            {
-                'cookie': 'ldapkdc.example.com:38901#cn=directory manager:dc=example,dc=com:(objectClass=*)#3',
-                'syncUUIDs': ['8dc44601-a936-11ea-8aaf-f248c5fa5780'],
-                'refreshDeletes': True
-            }
-        )
+        sim = IntermediateResponse(1, ldap.RES_INTERMEDIATE,
+                       name=SyncInfoMessage.responseName, value=msgraw)
+        self.assertIsInstance(sim, SyncInfoIDSet)
+        self.assertEqual(sim.cookie,
+                (b'ldapkdc.example.com:38901#cn=directory manager'
+                 b':dc=example,dc=com:(objectClass=*)#3'))
+        self.assertEqual(sim.syncUUIDs,
+                         ['8dc44601-a936-11ea-8aaf-f248c5fa5780'])
+        self.assertEqual(sim.refreshDeletes, True)
 
 
 if __name__ == '__main__':

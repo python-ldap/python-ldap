@@ -5,7 +5,7 @@ See https://www.python-ldap.org/ for details.
 """
 
 import struct,ldap
-from ldap.controls import RequestControl,ResponseControl,LDAPControl,KNOWN_RESPONSE_CONTROLS
+from ldap.controls import RequestControl,ResponseControl
 
 from pyasn1.type import univ
 from pyasn1.codec.ber import encoder,decoder
@@ -31,7 +31,7 @@ class ValueLessRequestControl(RequestControl):
     return None
 
 
-class OctetStringInteger(LDAPControl):
+class OctetStringInteger:
   """
   Base class with controlValue being unsigend integer values
 
@@ -51,7 +51,7 @@ class OctetStringInteger(LDAPControl):
     self.integerValue = struct.unpack('!Q',encodedControlValue)[0]
 
 
-class BooleanControl(LDAPControl):
+class BooleanControl:
   """
   Base class for simple request controls with boolean control value.
 
@@ -82,8 +82,6 @@ class ManageDSAITControl(ValueLessRequestControl):
   def __init__(self,criticality=False):
     ValueLessRequestControl.__init__(self,ldap.CONTROL_MANAGEDSAIT,criticality=False)
 
-KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_MANAGEDSAIT] = ManageDSAITControl
-
 
 class RelaxRulesControl(ValueLessRequestControl):
   """
@@ -92,8 +90,6 @@ class RelaxRulesControl(ValueLessRequestControl):
 
   def __init__(self,criticality=False):
     ValueLessRequestControl.__init__(self,ldap.CONTROL_RELAX,criticality=False)
-
-KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_RELAX] = RelaxRulesControl
 
 
 class ProxyAuthzControl(RequestControl):
@@ -132,9 +128,6 @@ class AuthorizationIdentityResponseControl(ResponseControl):
 
   def decodeControlValue(self,encodedControlValue):
     self.authzId = encodedControlValue
-
-
-KNOWN_RESPONSE_CONTROLS[AuthorizationIdentityResponseControl.controlType] = AuthorizationIdentityResponseControl
 
 
 class GetEffectiveRightsControl(RequestControl):

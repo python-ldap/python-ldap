@@ -15,12 +15,12 @@ assert _ldap.__version__==__version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 
 import ldap
+from ldap import KNOWN_RESPONSE_CONTROLS
 
 from pyasn1.error import PyAsn1Error
 
 
 __all__ = [
-  'KNOWN_RESPONSE_CONTROLS',
   # Classes
   'AssertionControl',
   'BooleanControl',
@@ -36,9 +36,6 @@ __all__ = [
   'RequestControlTuples',
   'DecodeControlTuples',
 ]
-
-# response control OID to class registry
-KNOWN_RESPONSE_CONTROLS = {}
 
 
 class RequestControl:
@@ -76,6 +73,12 @@ class ResponseControl:
   criticality
       sets the criticality of the received control (boolean)
   """
+
+  def __init_subclass__(cls):
+    if not getattr(cls, 'controlType', None):
+      return
+
+    KNOWN_RESPONSE_CONTROLS.setdefault(cls.controlType, cls)
 
   def __init__(self,controlType=None,criticality=False):
     self.controlType = controlType

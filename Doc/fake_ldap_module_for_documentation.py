@@ -28,3 +28,5 @@ def get_option(num):
 
 class LDAPError:
     pass
+
+_exceptions = {}
