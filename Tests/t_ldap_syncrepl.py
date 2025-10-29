@@ -473,7 +473,7 @@ class DecodeSyncreplProtoTests(unittest.TestCase):
         """.replace(' ', '').replace('\n', '')
 
         msgraw = binascii.unhexlify(msg)
-        sim = IntermediateResponse(1, ldap.RES_INTERMEDIATE,
+        sim = IntermediateResponse.from_message(1, ldap.RES_INTERMEDIATE,
                        name=SyncInfoMessage.responseName, value=msgraw)
         self.assertIsInstance(sim, SyncInfoIDSet)
         self.assertEqual(sim.cookie,

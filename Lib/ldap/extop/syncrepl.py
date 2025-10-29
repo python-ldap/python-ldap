@@ -121,12 +121,9 @@ class SyncInfoMessage(IntermediateResponse):
     """
     responseName = '1.3.6.1.4.1.4203.1.9.1.4'
 
-    def __new__(cls, msgid, msgtype, controls=None, *,
-                name=None, value=None,
-                **kwargs):
-        if cls is not __class__:
-            return super().__new__(cls, msgid, msgtype, controls,
-                                   name=name, value=value)
+    @classmethod
+    def from_message(cls, msgid, msgtype, controls=None, *,
+                     name=None, value=None, **kwargs):
         syncinfo, _ = decoder.decode(value, asn1Spec=SyncInfoValue())
         choice = syncinfo.getName()
         if choice == 'newcookie':
@@ -139,8 +136,7 @@ class SyncInfoMessage(IntermediateResponse):
             klass = SyncInfoIDSet
         else:
             raise ValueError
-        return klass.__new__(klass, msgid, msgtype, controls,
-                             name=name, value=value)
+        return klass(msgid, msgtype, controls, name=name, value=value)
 
     def decode(self, value: bytes):
         self.syncinfo, _ = decoder.decode(

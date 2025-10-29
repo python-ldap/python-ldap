@@ -107,7 +107,7 @@ class Connection(SimpleLDAPObject):
                 data['defaultClass'] = defaultIntermediateClass
             if msgtype == ldap.RES_EXTENDED:
                 data['defaultClass'] = defaultExtendedClass
-            m = Response(msgid, msgtype, controls, **data)
+            m = Response.from_message(msgid, msgtype, controls, **data)
             results.append(m)
 
         return results
@@ -170,7 +170,8 @@ class Connection(SimpleLDAPObject):
         return result
 
     def passwd_s(self, user: Optional[str] = None,
-                 oldpw: Optional[bytes] = None, newpw: Optional[bytes] = None,
+                 oldpw: Optional[bytes] = None,
+                 newpw: Optional[bytes] = None, *,
                  ctrls: RequestControls = None) -> PasswordModifyResponse:
         msgid = self.passwd(user, oldpw, newpw, serverctrls=ctrls)
         res, = self.result(msgid, defaultExtendedClass=PasswordModifyResponse)

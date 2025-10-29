@@ -56,23 +56,18 @@ class Response:
                             f"that's incompatible with the existing default: "
                             f"{c.__module__}.{c.__qualname__}")
 
-    def __new__(cls, msgid, msgtype, controls=None, **kwargs):
-        if cls is not __class__:
-            instance = super().__new__(cls)
-            instance.msgid = msgid
-            instance.msgtype = msgtype
-            instance.controls = controls
-            return instance
+    def __init__(self, msgid, msgtype, controls=None):
+        self.msgid = msgid
+        self.msgtype = msgtype
+        self.controls = controls
 
-        c = __class__.__subclasses.get(msgtype)
-        if c:
-            return c.__new__(c, msgid, msgtype, controls, **kwargs)
+    @classmethod
+    def from_message(cls, msgid, msgtype, controls=None, **kwargs):
+        c = cls.__subclasses.get(msgtype)
+        if c and c is not cls:
+            return c.from_message(msgid, msgtype, controls, **kwargs)
 
-        instance = super().__new__(cls, **kwargs)
-        instance.msgid = msgid
-        instance.msgtype = msgtype
-        instance.controls = controls
-        return instance
+        return cls(msgid, msgtype, controls, **kwargs)
 
     def __repr__(self):
         optional = ""
@@ -92,16 +87,15 @@ class Result(Response):
     message: str
     referrals: Optional[list[str]]
 
-    def __new__(cls, msgid, msgtype, controls=None, *,
-                result, matcheddn, message, referrals, **kwargs):
-        instance = super().__new__(cls, msgid, msgtype, controls, **kwargs)
+    def __init__(self, msgid, msgtype, controls=None, *,
+                 result: int, matcheddn: str, message: str,
+                 referrals: Optional[list[str]]):
+        super().__init__(msgid, msgtype, controls)
 
-        instance.result = result
-        instance.matcheddn = matcheddn
-        instance.message = message
-        instance.referrals = referrals
-
-        return instance
+        self.result = result
+        self.matcheddn = matcheddn
+        self.message = message
+        self.referrals = referrals
 
     def raise_for_result(self) -> 'Result':
         if self.result in _SUCCESS_CODES:
@@ -131,14 +125,12 @@ class SearchEntry(Response):
     dn: str
     attrs: dict[str, Optional[list[bytes]]]
 
-    def __new__(cls, msgid, msgtype, controls=None, *,
-                dn: str, attrs: dict[str, Optional[list[bytes]]], **kwargs):
-        instance = super().__new__(cls, msgid, msgtype, controls, **kwargs)
+    def __init__(self, msgid, msgtype, controls=None, *,
+                 dn: str, attrs: dict[str, Optional[list[bytes]]]):
+        super().__init__(msgid, msgtype, controls)
 
-        instance.dn = dn
-        instance.attrs = attrs
-
-        return instance
+        self.dn = dn
+        self.attrs = attrs
 
     def __rich_repr__(self):
         yield from super().__rich_repr__()
@@ -151,13 +143,10 @@ class SearchReference(Response):
 
     referrals: list[str]
 
-    def __new__(cls, msgid, msgtype, controls=None, *,
-                referrals, **kwargs):
-        instance = super().__new__(cls, msgid, msgtype, controls, **kwargs)
+    def __init__(self, msgid, msgtype, controls=None, *, referrals):
+        super().__init__(msgid, msgtype, controls)
 
-        instance.referrals = referrals
-
-        return instance
+        self.referrals = referrals
 
     def __rich_repr__(self):
         yield from super().__rich_repr__()
@@ -174,28 +163,27 @@ class IntermediateResponse(Response):
     name: Optional[str]
     value: Optional[bytes]
 
-    def __new__(cls, msgid, msgtype, controls=None, *,
-                name=None, value=None,
-                defaultClass: Optional[type['IntermediateResponse']] = None,
-                **kwargs):
-        if cls is not __class__:
-            instance = super().__new__(cls, msgid, msgtype, controls, **kwargs)
-            instance.name = name
-            instance.value = value
-            return instance
+    def __init__(self, msgid: int, msgtype: int,
+                 controls: ResponseControl = None, *,
+                 name: Optional[str] = None, value: Optional[bytes] = None):
+        super().__init__(msgid, msgtype, controls)
+        self.name = name
+        self.value = value
 
+        if hasattr(self, 'decode'):
+            self.decode(value)
+
+    @classmethod
+    def from_message(cls, msgid, msgtype, controls=None, *,
+                     name=None, value=None, defaultClass:
+                        Optional[type['IntermediateResponse']] = None,
+                     **kwargs):
         c = ldap.KNOWN_INTERMEDIATE_RESPONSES.get(name, defaultClass)
-        if c:
-            instance = c.__new__(c, msgid, msgtype, controls,
-                                 name=name, value=value, **kwargs)
-            if hasattr(instance, 'decode'):
-                instance.decode(value)
-            return instance
+        if c and c is not cls:
+            return c.from_message(msgid, msgtype, controls,
+                                  name=name, value=value, **kwargs)
 
-        instance = super().__new__(cls, msgid, msgtype, controls, **kwargs)
-        instance.name = name
-        instance.value = value
-        return instance
+        return cls(msgid, msgtype, controls, name=name, value=value, **kwargs)
 
     def __repr__(self):
         optional = ""
@@ -218,6 +206,15 @@ class BindResult(Result):
     msgtype = ldap.RES_BIND
 
     credentials: Optional[bytes]
+
+    def __init__(self, msgid: int, msgtype: int,
+                 controls: ResponseControl = None, *,
+                 result, matcheddn, message, referrals,
+                 credentials: Optional[bytes] = None):
+        super().__init__(msgid, msgtype, controls, result=result,
+                         matcheddn=matcheddn, message=message,
+                         referrals=referrals)
+        self.credentials = credentials
 
     def __rich_repr__(self):
         yield from super().__rich_repr__()
@@ -257,35 +254,31 @@ class ExtendedResult(Result):
     name: Optional[str]
     value: Optional[bytes]
 
-    def __new__(cls, msgid, msgtype, controls=None, *,
-                result, matcheddn, message, referrals,
-                name=None, value=None,
-                defaultClass: Optional[type['ExtendedResult']] = None,
-                **kwargs):
-        if cls is not __class__:
-            instance = super().__new__(cls, msgid, msgtype, controls,
-                                       result=result, matcheddn=matcheddn,
-                                       message=message, referrals=referrals)
-            instance.name = name
-            instance.value = value
-            return instance
+    def __init__(self, msgid: int, msgtype: int,
+                 controls: ResponseControl = None, *,
+                 result: int, matcheddn: str, message: str,
+                 referrals: Optional[list[str]],
+                 name: Optional[str] = None, value: Optional[bytes] = None):
+        super().__init__(msgid, msgtype, controls, result=result,
+                         matcheddn=matcheddn, message=message,
+                         referrals=referrals)
+        self.name = name
+        self.value = value
 
+        if hasattr(self, 'decode'):
+            self.decode(value)
+
+    @classmethod
+    def from_message(cls, msgid, msgtype, controls=None, *,
+                     name=None, value=None, defaultClass:
+                        Optional[type['ExtendedResult']] = None,
+                     **kwargs):
         c = ldap.KNOWN_EXTENDED_RESPONSES.get(name, defaultClass)
-        if not c and msgid == ldap.RES_UNSOLICITED:
-            c = UnsolicitedNotification
+        if c and c is not cls:
+            return c.from_message(msgid, msgtype, controls,
+                                  name=name, value=value, **kwargs)
 
-        if c:
-            return c.__new__(c, msgid, msgtype, controls,
-                             result=result, matcheddn=matcheddn,
-                             message=message, referrals=referrals,
-                             name=name, value=value, **kwargs)
-
-        instance = super().__new__(cls, msgid, msgtype, controls,
-                                   result=result, matcheddn=matcheddn,
-                                   message=message, referrals=referrals)
-        instance.name = name
-        instance.value = value
-        return instance
+        return cls(msgid, msgtype, controls, name=name, value=value, **kwargs)
 
     def __repr__(self):
         optional = ""

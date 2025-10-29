@@ -68,7 +68,6 @@ class ExtendedResponse(ldap.response.ExtendedResult):
                         controls=None, *,
                         result=_NOTSET, matcheddn=_NOTSET, message=_NOTSET,
                         referrals=_NOTSET, name=None, value=None,
-                        defaultClass: Optional[type['ExtendedResult']] = None,
                         msgid=_NOTSET, msgtype=_NOTSET,
                         responseName=_NOTSET, encodedResponseValue=_NOTSET,
                         **kwargs):
@@ -76,9 +75,8 @@ class ExtendedResponse(ldap.response.ExtendedResult):
     Implements both old and new API:
     __init__(self, responseName, encodedResponseValue)
     and
-    __init__/__new__(self, msgid, msgtype, controls=None, *,
-                     result, matcheddn, message, referrals,
-                     defaultClass=None, **kwargs)
+    __init__(self, msgid, msgtype, controls=None, *,
+             result, matcheddn, message, referrals, **kwargs)
     """
     if responseName is not _NOTSET:
         name = responseName
@@ -127,28 +125,9 @@ class ExtendedResponse(ldap.response.ExtendedResult):
          'referrals': referrals,
          'name': name,
          'value': value,
-         'defaultClass': defaultClass,
          **kwargs
          }
     )
-
-  def __new__(cls, *args, **kwargs):
-    """
-    Has to support both old and new API:
-    __new__(cls, responseName: Optional[str],
-            encodedResponseValue: Optional[bytes])
-    and
-    __new__(cls, msgid: int, msgtype: int, controls: Controls = None, *,
-            result: int, matcheddn: str, message: str, referrals: List[str],
-            defaultClass: Optional[type[ExtendedResponse]] = None,
-            **kwargs)
-
-    The old API is deprecated and will be removed in 4.0.
-    """
-    # TODO: retire polymorhpism when old API is removed (4.0?)
-    _, _, args, kwargs = __class__.__convert_old_api(*args, **kwargs)
-
-    return super().__new__(cls, *args, **kwargs)
 
   def __init__(self, *args, **kwargs):
     """
@@ -158,14 +137,14 @@ class ExtendedResponse(ldap.response.ExtendedResult):
     and
     __init__(self, msgid: int, msgtype: int, controls: Controls = None, *,
              result: int, matcheddn: str, message: str, referrals: List[str],
-             defaultClass: Optional[type[ExtendedResponse]] = None,
              **kwargs)
 
     The old API is deprecated and will be removed in 5.0.
     """
     # TODO: retire polymorhpism when old API is removed (5.0?)
-    responseName, encodedResponseValue, _, _ = \
+    responseName, encodedResponseValue, args, kwargs = \
         __class__.__convert_old_api(*args, **kwargs)
+    super().__init__(*args, **kwargs)
 
     self.responseName = responseName
     if encodedResponseValue is not None:

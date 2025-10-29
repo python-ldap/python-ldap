@@ -122,8 +122,9 @@ class SyncreplConsumer:
                 # Intermediate message, process any that are SyncInfoMessage
                 for m in msg:
                     name, value, controls = m
-                    m = Response(mid, type, name=name, value=value,
-                                 controls=controls)
+                    m = Response.from_message(mid, type,
+                                              name=name, value=value,
+                                              controls=controls)
                     if isinstance(m, SyncInfoNewCookie):
                         self.syncrepl_set_cookie(m.cookie)
                     elif isinstance(m, (SyncInfoRefreshPresent, SyncInfoRefreshDelete)):
