@@ -412,12 +412,17 @@ class SlapdObject:
             '-F', self._slapd_conf,
             '-h', ' '.join(urls),
         ]
+        stderr = None
         if self._log.isEnabledFor(logging.DEBUG):
             slapd_args.extend(['-d', '-1'])
+            stderr = os.open(os.path.join(self.testrundir, 'slapd.log'), os.O_WRONLY|os.O_CREAT)
         else:
             slapd_args.extend(['-d', '0'])
         self._log.info('starting slapd: %r', ' '.join(slapd_args))
-        self._proc = subprocess.Popen(slapd_args)
+        self._proc = subprocess.Popen(slapd_args, stderr=stderr)
+        if stderr is not None:
+            os.close(stderr)
+            stderr = None
         # Waits until the LDAP server socket is open, or slapd crashed
         deadline = time.monotonic() + 10
         # no cover to avoid spurious coverage changes, see
@@ -457,7 +462,7 @@ class SlapdObject:
                 self._proc.pid, self.ldap_uri, self.ldapi_uri
             )
 
-    def stop(self):
+    def stop(self, cleanup=True):
         """
         Stops the slapd server, and waits for it to terminate and cleans up
         """
@@ -465,7 +470,8 @@ class SlapdObject:
             self._log.debug('stopping slapd with pid %d', self._proc.pid)
             self._proc.terminate()
             self.wait()
-        self._cleanup_rundir()
+        if cleanup:
+            self._cleanup_rundir()
         atexit.unregister(self.stop)
 
     def restart(self):
@@ -593,7 +599,7 @@ class SlapdObject:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.stop()
+        self.stop(exc_type is None)
 
 
 class SlapdTestCase(unittest.TestCase):
@@ -622,4 +628,4 @@ class SlapdTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.server.stop()
+        cls.server.stop(False)
