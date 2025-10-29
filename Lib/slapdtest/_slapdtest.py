@@ -264,7 +264,6 @@ class SlapdObject:
         self.PATH_LDAPDELETE = self._find_command('ldapdelete')
         self.PATH_LDAPMODIFY = self._find_command('ldapmodify')
         self.PATH_LDAPWHOAMI = self._find_command('ldapwhoami')
-        self.PATH_SLAPADD = self._find_command('slapadd')
 
         self.PATH_SLAPD = os.environ.get('SLAPD', None)
         if not self.PATH_SLAPD:
@@ -281,7 +280,7 @@ class SlapdObject:
         if command is None:
             raise ValueError(
                 "Command '{}' not found. Set the {} environment variable to "
-                "override slapdtest's search path.".format(cmd, var_name)
+                "override slapdtest's search path: {}.".format(cmd, var_name, path)
             )
         return command
 
@@ -352,6 +351,7 @@ class SlapdObject:
             'cafile': self.cafile,
             'servercert': self.servercert,
             'serverkey': self.serverkey,
+            'slapd_path': self.SBIN_PATH,
         }
         return self.slapd_conf_template % config_dict
 
@@ -513,14 +513,17 @@ class SlapdObject:
 
     # no cover to avoid spurious coverage changes
     def _cli_popen(self, ldapcommand, extra_args=None, ldap_uri=None,
-                   stdin_data=None):  # pragma: no cover
+                   stdin_data=None, tool=None):  # pragma: no cover
         if ldap_uri is None:
             ldap_uri = self.default_ldap_uri
 
         if ldapcommand.split("/")[-1].startswith("ldap"):
             args = [ldapcommand, '-H', ldap_uri] + self._cli_auth_args()
         else:
-            args = [ldapcommand, '-F', self._slapd_conf]
+            if tool:
+                args = [ldapcommand, '-T', tool, '-F', self._slapd_conf]
+            else:
+                args = [ldapcommand, '-F', self._slapd_conf]
 
         args += (extra_args or [])
 
@@ -579,9 +582,10 @@ class SlapdObject:
         Runs slapadd on this slapd instance, passing it the ldif content
         """
         self._cli_popen(
-            self.PATH_SLAPADD,
+            self.PATH_SLAPD,
             stdin_data=ldif.encode("utf-8") if ldif else None,
             extra_args=extra_args,
+            tool='add'
         )
 
     def __enter__(self):
