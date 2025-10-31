@@ -4,6 +4,7 @@ ldap.syncrepl - for implementing syncrepl consumer (see RFC 4533)
 See https://www.python-ldap.org/ for project details.
 """
 
+from typing import AnyStr, Dict, List, Tuple, Union
 from uuid import UUID
 
 # Imports from pyasn1
@@ -535,3 +536,71 @@ class SyncreplConsumer:
         follows.
         """
         pass
+
+
+class OpenLDAPSyncreplCookie:
+    """
+    OpenLDAPSyncreplCookie - allows a consumer to track a cookie across a
+    refreshAndPersist syncrepl session against a multi-provider OpenLDAP cluster
+    """
+
+    rid: int = 0
+    sid: int = 0
+    _csnset: Dict[int, str]
+
+    def __init__(self, cookie: AnyStr = "") -> None:
+        self._csnset = {}
+
+        if cookie:
+            self.update(cookie)
+
+    def _parse_csn(self, csn: str) -> Tuple[str, str, str, str]:
+        time, order, sid, other = csn.split('#', 3)
+        return (time, order, sid, other)
+
+    def _parse_cookie(self, cookie: AnyStr) -> Dict[str, Union[str, List[str]]]:
+        if isinstance(cookie, bytes):
+            cookie = cookie.decode()
+
+        result = {}
+        parts = cookie.split(',')
+        for part in parts:
+            if part.startswith('rid='):
+                result['rid'] = part[4:]
+            elif part.startswith('sid='):
+                result['sid'] = part[4:]
+            elif part.startswith('csn='):
+                result['csn'] = part[4:].split(';')
+            elif part.startswith('delcsn='):
+                result['delcsn'] = part[7:]
+            else:
+                # Did not recognize this cookie part
+                pass
+        return result
+
+    def update(self, cookie: str):
+        """
+        Update the CSN set based on a cookie we just received, use in
+        syncrepl_set_cookie() to track the session state.
+        """
+        components = self._parse_cookie(cookie)
+        for csn in components.get('csn', []):
+            _, _, sid, _ = self._parse_csn(csn)
+            if sid not in self._csnset or self._csnset[sid] < csn:
+                self._csnset[sid] = csn
+
+        return self
+
+    def unparse(self) -> str:
+        """
+        Return the cookie as a string, use in syncrepl_get_cookie() or when
+        storing the state for later use.
+        """
+        cookie = 'rid={:03},sid={:03x}'.format(self.rid or 0, self.sid or 0)
+        if self._csnset:
+            cookie += ',csn='
+            cookie += ';'.join(csn for sid, csn in sorted(self._csnset.items()))
+        return cookie
+
+    def __str__(self):
+        return self.unparse()
