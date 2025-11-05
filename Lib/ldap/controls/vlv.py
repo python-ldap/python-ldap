@@ -12,8 +12,7 @@ __all__ = [
 
 import ldap
 from ldap.ldapobject import LDAPObject
-from ldap.controls import (RequestControl, ResponseControl,
-        KNOWN_RESPONSE_CONTROLS, DecodeControlTuples)
+from ldap.controls import RequestControl, ResponseControl
 
 from pyasn1.type import univ, namedtype, tag, namedval, constraint
 from pyasn1.codec.ber import encoder, decoder
@@ -88,8 +87,6 @@ class VLVRequestControl(RequestControl):
         p.setComponentByName('target', target)
         return encoder.encode(p)
 
-KNOWN_RESPONSE_CONTROLS[VLVRequestControl.controlType] = VLVRequestControl
-
 
 class VirtualListViewResultType(univ.Enumerated):
     namedValues = namedval.NamedValues(
@@ -138,5 +135,3 @@ class VLVResponseControl(ResponseControl):
         self.content_count = self.contentCount
         self.result = self.virtualListViewResult
         self.context_id = self.contextID
-
-KNOWN_RESPONSE_CONTROLS[VLVResponseControl.controlType] = VLVResponseControl

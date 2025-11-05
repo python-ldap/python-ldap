@@ -8,7 +8,7 @@ See https://www.python-ldap.org/ for project details.
 import ldap
 
 from pyasn1.codec.ber import encoder,decoder
-from ldap.controls import LDAPControl,KNOWN_RESPONSE_CONTROLS
+from ldap.controls import LDAPControl
 
 from pyasn1_modules.rfc2251 import AttributeDescriptionList,SearchResultEntry
 
@@ -63,8 +63,6 @@ class PreReadControl(ReadEntryControl):
   """
   controlType = ldap.CONTROL_PRE_READ
 
-KNOWN_RESPONSE_CONTROLS[PreReadControl.controlType] = PreReadControl
-
 
 class PostReadControl(ReadEntryControl):
   """
@@ -83,5 +81,3 @@ class PostReadControl(ReadEntryControl):
       after the operation was done by the server
   """
   controlType = ldap.CONTROL_POST_READ
-
-KNOWN_RESPONSE_CONTROLS[PostReadControl.controlType] = PostReadControl

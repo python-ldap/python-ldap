@@ -14,9 +14,7 @@ __all__ = [
 import sys
 
 import ldap
-from ldap.ldapobject import LDAPObject
-from ldap.controls import (RequestControl, ResponseControl,
-        KNOWN_RESPONSE_CONTROLS, DecodeControlTuples)
+from ldap.controls import RequestControl, ResponseControl
 
 from pyasn1.type import univ, namedtype, tag, namedval, constraint
 from pyasn1.codec.ber import encoder, decoder
@@ -130,5 +128,3 @@ class SSSResponseControl(ResponseControl):
         # backward compatibility class attributes
         self.result = self.sortResult
         self.attribute_type_error = self.attributeType
-
-KNOWN_RESPONSE_CONTROLS[SSSResponseControl.controlType] = SSSResponseControl

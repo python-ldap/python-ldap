@@ -13,7 +13,7 @@ assert _ldap.__version__==__version__, \
 
 import ldap
 
-from ldap.controls import RequestControl,LDAPControl,KNOWN_RESPONSE_CONTROLS
+from ldap.controls import RequestControl,LDAPControl
 
 
 class AssertionControl(RequestControl):
@@ -33,8 +33,6 @@ class AssertionControl(RequestControl):
   def encodeControlValue(self):
     return _ldap.encode_assertion_control(self.filterstr)
 
-KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_ASSERT] = AssertionControl
-
 
 class MatchedValuesControl(RequestControl):
   """
@@ -53,8 +51,6 @@ class MatchedValuesControl(RequestControl):
 
   def encodeControlValue(self):
     return _ldap.encode_valuesreturnfilter_control(self.filterstr)
-
-KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_VALUESRETURNFILTER] = MatchedValuesControl
 
 
 class SimplePagedResultsControl(LDAPControl):
@@ -77,5 +73,3 @@ class SimplePagedResultsControl(LDAPControl):
 
   def decodeControlValue(self,encodedControlValue):
     self.size,self.cookie = _ldap.decode_page_control(encodedControlValue)
-
-KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_PAGEDRESULTS] = SimplePagedResultsControl

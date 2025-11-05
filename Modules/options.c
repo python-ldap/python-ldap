@@ -481,7 +481,7 @@ LDAP_get_option(LDAPObject *self, int option)
         if (res != LDAP_OPT_SUCCESS)
             return option_error(res, "ldap_get_option");
 
-        v = LDAPControls_to_List(lcs);
+        v = LDAPControls_to_List(lcs, 1);
         ldap_controls_free(lcs);
         return v;
 

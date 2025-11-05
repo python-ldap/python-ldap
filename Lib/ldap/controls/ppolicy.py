@@ -11,7 +11,7 @@ __all__ = [
 
 # Imports from python-ldap 2.4+
 from ldap.controls import (
-  ResponseControl, ValueLessRequestControl, KNOWN_RESPONSE_CONTROLS
+  ResponseControl, ValueLessRequestControl
 )
 
 # Imports from pyasn1
@@ -100,6 +100,3 @@ class PasswordPolicyControl(ValueLessRequestControl,ResponseControl):
     error = ppolicyValue.getComponentByName('error')
     if error.hasValue():
       self.error = int(error)
-
-
-KNOWN_RESPONSE_CONTROLS[PasswordPolicyControl.controlType] = PasswordPolicyControl
