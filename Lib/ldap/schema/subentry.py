@@ -476,10 +476,10 @@ def urlfetch(uri,trace_level=0):
     l.unbind_s()
     del l
   else:
-    ldif_file = urlopen(uri)
-    ldif_parser = ldif.LDIFRecordList(ldif_file,max_entries=1)
-    ldif_parser.parse()
-    subschemasubentry_dn,s_temp = ldif_parser.all_records[0]
+    with urlopen(uri) as ldif_file:
+      ldif_parser = ldif.LDIFRecordList(ldif_file,max_entries=1)
+      ldif_parser.parse()
+      subschemasubentry_dn,s_temp = ldif_parser.all_records[0]
   # Work-around for mixed-cased attribute names
   subschemasubentry_entry = ldap.cidict.cidict()
   s_temp = s_temp or {}
