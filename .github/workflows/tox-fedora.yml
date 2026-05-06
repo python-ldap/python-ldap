@@ -9,7 +9,7 @@ jobs:
   tox_test:
     name: Tox env "${{matrix.tox_env}}" on Fedora
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Run Tox tests
       uses: fedora-python/tox-github-action@main
       with:
