@@ -98,7 +98,7 @@ l_ldap_str2dn(PyObject *unused, PyObject *args)
      * ((('a','b',1),('c','d',1)),(('e','f',1),))
      * The integers are a bit combination of the AVA_* flags
      */
-    if (!PyArg_ParseTuple(args, "z#|i:str2dn", &str.bv_val, &str_len, &flags))
+    if (!PyArg_ParseTuple(args, "s#|i:str2dn", &str.bv_val, &str_len, &flags))
         return NULL;
     str.bv_len = (ber_len_t) str_len;
 
@@ -110,7 +110,7 @@ l_ldap_str2dn(PyObject *unused, PyObject *args)
     if (!tmp)
         goto failed;
 
-    for (i = 0; dn[i]; i++) {
+    for (i = 0; dn && dn[i]; i++) {
         LDAPRDN rdn;
         PyObject *rdnlist;
 

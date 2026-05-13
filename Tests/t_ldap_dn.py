@@ -21,6 +21,7 @@ class TestDN(unittest.TestCase):
         """
         test function is_dn()
         """
+        self.assertEqual(ldap.dn.is_dn(''), True)
         self.assertEqual(ldap.dn.is_dn('foobar,ou=ae-dir'), False)
         self.assertEqual(ldap.dn.is_dn('-cn=foobar,ou=ae-dir'), False)
         self.assertEqual(ldap.dn.is_dn(';cn=foobar,ou=ae-dir'), False)
@@ -57,7 +58,10 @@ class TestDN(unittest.TestCase):
         test function str2dn()
         """
         self.assertEqual(ldap.dn.str2dn(''), [])
+        self.assertEqual(ldap.dn.str2dn('', flags=ldap.DN_FORMAT_LDAPV3), [])
         self.assertEqual(ldap.dn.str2dn(None), [])
+        self.assertEqual(ldap.dn.str2dn(None, flags=ldap.DN_FORMAT_LDAPV3), [])
+
         self.assertEqual(
             ldap.dn.str2dn('uid=test42,ou=Testing,dc=example,dc=com'),
             [
@@ -134,6 +138,8 @@ class TestDN(unittest.TestCase):
         test function dn2str()
         """
         self.assertEqual(ldap.dn.dn2str([]), '')
+        self.assertEqual(ldap.dn.dn2str([], ldap.DN_FORMAT_LDAPV3), '')
+
         self.assertEqual(
             ldap.dn.dn2str([
                 [('uid', 'test42', 1)],
@@ -373,7 +379,11 @@ class TestDN(unittest.TestCase):
         """
         test function explode_dn()
         """
+        self.assertEqual(ldap.dn.explode_dn(None), [])
+        self.assertEqual(ldap.dn.explode_dn(None, flags=ldap.DN_FORMAT_LDAPV3), [])
+
         self.assertEqual(ldap.dn.explode_dn(''), [])
+        self.assertEqual(ldap.dn.explode_dn('', flags=ldap.DN_FORMAT_LDAPV3), [])
         self.assertEqual(
             ldap.dn.explode_dn('uid=test42,ou=Testing,dc=example,dc=com'),
             ['uid=test42', 'ou=Testing', 'dc=example', 'dc=com']
@@ -407,7 +417,11 @@ class TestDN(unittest.TestCase):
         """
         test function explode_rdn()
         """
+        self.assertEqual(ldap.dn.explode_rdn(None), [])
+        self.assertEqual(ldap.dn.explode_rdn(None, flags=ldap.DN_FORMAT_LDAPV3), [])
+
         self.assertEqual(ldap.dn.explode_rdn(''), [])
+        self.assertEqual(ldap.dn.explode_rdn('', flags=ldap.DN_FORMAT_LDAPV3), [])
         self.assertEqual(
             ldap.dn.explode_rdn('uid=test42'),
             ['uid=test42']
