@@ -1,3 +1,16 @@
+Released 3.4.6 2026-05-14
+
+Fixes:
+* ``attrlist`` parameter is now properly checked before use, avoiding memory
+  errors due to type mismatches
+* Fixed errors with requestName/requestValue in ``extop.dds``
+* ``ldif`` and ``ldap.schema`` modules now actively close sockets as they're
+  finished with them
+
+Infrastructure:
+* Package no longer requires setuptools-scm
+
+----------------------------------------------------------------
 Released 3.4.5 2025-10-10
 
 Security fixes:
