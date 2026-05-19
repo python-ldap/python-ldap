@@ -1,3 +1,9 @@
+Released 3.4.7 2026-05-19
+
+No code changes, correcting for the fact that the previous release artifacts
+uploaded to PyPI contained unintended files.
+
+----------------------------------------------------------------
 Released 3.4.6 2026-05-14
 
 Fixes:
