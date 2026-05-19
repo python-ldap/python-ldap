@@ -13,7 +13,7 @@ authors = [
     {name = "python-ldap project", email = "python-ldap@python.org"},
 ]
 readme = "README"
-requires-python = ">=3.6"
+requires-python = ">=3.9"
 keywords = ["ldap", "directory", "authentication"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -26,9 +26,6 @@ classifiers = [
     "Programming Language :: C",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
