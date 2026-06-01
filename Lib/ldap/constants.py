@@ -10,7 +10,10 @@ The information serves two purposes:
 
 """
 from __future__ import annotations
-from typing import Any, Sequence
+from typing import Any, Sequence, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import pathlib
 
 # This module cannot import anything from ldap.
 # When building documentation, it is used to initialize ldap.__init__.
@@ -423,5 +426,93 @@ def print_header() -> None:  # pragma: no cover
         pop_requirement()
 
 
+def _pyi_path() -> pathlib.Path:  # pragma: no cover
+    import pathlib
+
+    return pathlib.Path(__file__).parent / '_ldap.pyi'
+
+
+def render_pyi() -> str:  # pragma: no cover
+    """Return what Lib/ldap/_ldap.pyi should contain.
+
+    The generated section is delimited by '# BEGIN GENERATED' and
+    '# END GENERATED' markers in that file.  Everything outside those
+    markers (hand-written imports, C-only constants, LDAPError base
+    class, function stubs, etc.) is carried over untouched.
+    """
+    BEGIN = '# BEGIN GENERATED\n'
+    END = '# END GENERATED\n'
+
+    seen: set[str] = set()
+    int_names: list[str] = []
+    str_names: list[str] = []
+    error_names: list[str] = []
+
+    for definition in CONSTANTS:
+        if definition.name in seen:
+            continue
+        seen.add(definition.name)
+        if isinstance(definition, Error):
+            error_names.append(definition.name)
+        elif isinstance(definition, Str):
+            str_names.append(definition.name)
+        else:
+            int_names.append(definition.name)
+
+    lines: list[str] = [
+        BEGIN,
+        '# Regenerate with: python Lib/ldap/constants.py --pyi\n',
+    ]
+    for name in sorted(int_names + str_names, key=str.casefold):
+        typ = 'str' if name in str_names else 'int'
+        lines.append(f'{name}: {typ}\n')
+    lines.append('\n\n')
+    for name in sorted(error_names, key=str.casefold):
+        lines.append(f'class {name}(LDAPError):\n')
+        lines.append('    errnum: ClassVar[int] = ...\n')
+        lines.append('\n\n')
+    lines.append(END)
+
+    pyi = _pyi_path().read_text()
+    begin_idx = pyi.index(BEGIN)
+    end_idx = pyi.index(END) + len(END)
+    return pyi[:begin_idx] + ''.join(lines) + pyi[end_idx:]
+
+
+def generate_pyi() -> None:  # pragma: no cover
+    """Update the generated section of Lib/ldap/_ldap.pyi in place."""
+    _pyi_path().write_text(render_pyi())
+
+
+def check_pyi() -> int:  # pragma: no cover
+    """Report whether Lib/ldap/_ldap.pyi matches Lib/ldap/constants.py."""
+    import difflib
+    import sys
+
+    path = _pyi_path()
+    on_disk = path.read_text()
+    expected = render_pyi()
+    if on_disk == expected:
+        return 0
+
+    sys.stderr.writelines(difflib.unified_diff(
+        on_disk.splitlines(keepends=True),
+        expected.splitlines(keepends=True),
+        fromfile='%s (on disk)' % path,
+        tofile='%s (expected)' % path,
+    ))
+    sys.stderr.write(
+        '\n_ldap.pyi is out of date, regenerate it with:\n'
+        '    python Lib/ldap/constants.py --pyi\n'
+    )
+    return 1
+
+
 if __name__ == '__main__':
-    print_header()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == '--pyi':
+        generate_pyi()
+    elif len(sys.argv) > 1 and sys.argv[1] == '--check-pyi':
+        sys.exit(check_pyi())
+    else:
+        print_header()
