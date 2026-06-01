@@ -1,4 +1,5 @@
 """Compatibility wrappers for Py2/Py3."""
+from __future__ import annotations
 import warnings
 
 from types import TracebackType

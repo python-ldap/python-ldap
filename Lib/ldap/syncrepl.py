@@ -249,7 +249,7 @@ class SyncUUIDs(univ.SetOf):
     """
     syncUUIDs      SET OF syncUUID
     """
-    componentType = SyncUUID()
+    componentType = SyncUUID()  # type: ignore[assignment]
 
 
 class SyncIdSet(univ.Sequence):
@@ -419,7 +419,7 @@ class SyncreplConsumer(_Base):
             search_args['serverctrls'] = [syncreq]
 
         self.__refreshDone = False
-        return self.search_ext(base, scope, **search_args)  # type: ignore
+        return self.search_ext(base, scope, **search_args)
 
     def syncrepl_poll(
         self,
@@ -439,7 +439,7 @@ class SyncreplConsumer(_Base):
 
         """
         while True:
-            type, msg, mid, ctrls, n, v = self.result4(  # type: ignore
+            type, msg, mid, ctrls, n, v = self.result4(
                 msgid=msgid,
                 timeout=timeout,
                 add_intermediates=1,
