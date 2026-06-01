@@ -5,6 +5,7 @@ by OpenLDAP functions
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import annotations
 from ldap.pkginfo import __version__
 
 import ldap._ldap as _ldap
@@ -15,7 +16,7 @@ import ldap
 
 from ldap.controls import RequestControl,LDAPControl,KNOWN_RESPONSE_CONTROLS
 
-from typing import Optional, Union
+from typing import Union
 
 
 class AssertionControl(RequestControl):
@@ -76,8 +77,8 @@ class SimplePagedResultsControl(LDAPControl):
   def __init__(
     self,
     criticality: bool = False,
-    size: Optional[int] = None,
-    cookie: Optional[Union[str, bytes]] = None
+    size: int | None = None,
+    cookie: Union[str, bytes] | None = None
   ) -> None:
     self.criticality = criticality
     self.size,self.cookie = size,cookie

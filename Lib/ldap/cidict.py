@@ -5,6 +5,7 @@ names of variable case.
 
 See https://www.python-ldap.org/ for details.
 """
+from __future__ import annotations
 import warnings
 
 from collections.abc import MutableMapping
@@ -18,7 +19,6 @@ from typing import (
     Mapping,
     MutableMapping as MutableMappingType,
     TypeVar,
-    Optional,
 )
 
 T = TypeVar('T', bound=Any)
@@ -32,7 +32,7 @@ class cidict(MutableMappingType[str, T]):
     """
     __slots__ = ('_keys', '_data')
 
-    def __init__(self, default: Optional[Mapping[str, T]] = None) -> None:
+    def __init__(self, default: Mapping[str, T] | None = None) -> None:
         self._keys: Dict[str, str] = {}
         self._data: Dict[str, T] = {}
         if default:

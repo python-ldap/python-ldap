@@ -6,6 +6,7 @@ See https://www.python-ldap.org/ for details.
 
 # This is also the overall release version number
 
+from __future__ import annotations
 from ldap.pkginfo import __version__, __author__, __license__
 
 import os
@@ -13,7 +14,7 @@ import sys
 
 import threading
 
-from typing import Any, Type, Optional
+from typing import Any, Type
 
 
 if __debug__:
@@ -61,7 +62,7 @@ class LDAPLock:
 
   def __init__(
     self,
-    lock_class: Optional[Type[Any]] = None,
+    lock_class: Type[Any] | None = None,
     desc: str = ''
   ) -> None:
     """

@@ -8,6 +8,7 @@ The ldap.controls module provides LDAPControl classes.
 Each class provides support for a certain control.
 """
 
+from __future__ import annotations
 from ldap.pkginfo import __version__
 
 import ldap._ldap as _ldap
@@ -18,7 +19,7 @@ import ldap
 
 from pyasn1.error import PyAsn1Error
 
-from typing import Dict, List, Tuple, Type, Optional
+from typing import Dict, List, Tuple, Type
 
 
 __all__ = [
@@ -58,15 +59,15 @@ class RequestControl:
 
   def __init__(
     self,
-    controlType: Optional[str] = None,
+    controlType: str | None = None,
     criticality: bool = False,
-    encodedControlValue: Optional[bytes] = None
+    encodedControlValue: bytes | None = None
   ) -> None:
     self.controlType = controlType
     self.criticality = criticality
     self.encodedControlValue = encodedControlValue
 
-  def encodeControlValue(self) -> Optional[bytes]:
+  def encodeControlValue(self) -> bytes | None:
     """
     sets class attribute encodedControlValue to the BER-encoded ASN.1
     control value composed by class attributes set before
@@ -86,7 +87,7 @@ class ResponseControl:
 
   def __init__(
     self,
-    controlType: Optional[str] = None,
+    controlType: str | None = None,
     criticality: bool = False
   ) -> None:
     self.controlType = controlType
@@ -98,7 +99,7 @@ class ResponseControl:
     class attributes
     """
     # The type hint can be removed once class LDAPControl is removed
-    self.encodedControlValue: Optional[bytes] = encodedControlValue
+    self.encodedControlValue: bytes | None = encodedControlValue
 
 
 class LDAPControl(RequestControl, ResponseControl):
@@ -109,10 +110,10 @@ class LDAPControl(RequestControl, ResponseControl):
 
   def __init__(
     self,
-    controlType: Optional[str] = None,
+    controlType: str | None = None,
     criticality: bool = False,
-    controlValue: Optional[str] = None,
-    encodedControlValue: Optional[bytes] = None
+    controlValue: str | None = None,
+    encodedControlValue: bytes | None = None
   ) -> None:
     self.controlType = controlType
     self.criticality = criticality
@@ -121,8 +122,8 @@ class LDAPControl(RequestControl, ResponseControl):
 
 
 def RequestControlTuples(
-    ldapControls: Optional[List[RequestControl]]
-  ) -> Optional[List[Tuple[Optional[str], bool, Optional[bytes]]]]:
+    ldapControls: List[RequestControl] | None
+  ) -> List[Tuple[str | None, bool, bytes | None]] | None:
   """
   Return list of readily encoded 3-tuples which can be directly
   passed to C module _ldap
@@ -141,8 +142,8 @@ def RequestControlTuples(
 
 
 def DecodeControlTuples(
-    ldapControlTuples: Optional[List[Tuple[str, bool, bytes]]],
-    knownLDAPControls: Optional[Dict[str, Type[ResponseControl]]] = None,
+    ldapControlTuples: List[Tuple[str, bool, bytes]] | None,
+    knownLDAPControls: Dict[str, Type[ResponseControl]] | None = None,
   ) -> List[ResponseControl]:
   """
   Returns list of readily decoded ResponseControl objects

@@ -3,6 +3,7 @@ types - type annotations which are shared across modules
 
 See https://www.python-ldap.org/ for details.
 """
+from __future__ import annotations
 from ldap.pkginfo import __version__
 
 from typing import (
@@ -10,7 +11,6 @@ from typing import (
     MutableMapping,
     Tuple,
     Sequence,
-    Optional,
     Union,
 )
 from typing_extensions import TypeAlias
@@ -31,7 +31,7 @@ __all__ = [
 LDAPModListAddEntry: TypeAlias = "Tuple[str, List[bytes]]"
 """The type of an addition entry in a modlist."""
 
-LDAPModListModifyEntry: TypeAlias = "Tuple[int, str, Optional[Union[bytes, List[bytes]]]]"
+LDAPModListModifyEntry: TypeAlias = "Tuple[int, str, Union[bytes, List[bytes]] | None]"
 """The type of a modification entry in a modlist."""
 
 LDAPModListEntry: TypeAlias = "LDAPModListAddEntry | LDAPModListModifyEntry"
@@ -49,7 +49,7 @@ LDAPModList: TypeAlias = "Sequence[LDAPModListEntry]"
 LDAPEntryDict: TypeAlias = "MutableMapping[str, List[bytes]]"
 """The type used to store attribute-value mappings for a given LDAP entry (attribute name, list of binary values)."""
 
-LDAPControl: TypeAlias = "Tuple[str, str, Optional[str]]"
+LDAPControl: TypeAlias = "Tuple[str, str, str | None]"
 """The type used to store controls (type, criticality, value)."""
 
 LDAPControls: TypeAlias = "List[LDAPControl]"

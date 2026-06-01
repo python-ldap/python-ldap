@@ -5,6 +5,7 @@ ldap.controls.psearch - classes for Persistent Search Control
 See https://www.python-ldap.org/ for project details.
 """
 
+from __future__ import annotations
 __all__ = [
   'PersistentSearchControl',
   'EntryChangeNotificationControl',
@@ -21,7 +22,7 @@ from pyasn1.type import namedtype,namedval,univ,constraint
 from pyasn1.codec.ber import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPDN
 
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
 
 
 #---------------------------------------------------------------------------
@@ -63,7 +64,7 @@ class PersistentSearchControl(RequestControl):
   def __init__(
     self,
     criticality: bool = True,
-    changeTypes: Optional[List[str]] = None,
+    changeTypes: List[str] | None = None,
     changesOnly: bool = False,
     returnECs: bool = True
   ) -> None:
@@ -124,12 +125,12 @@ class EntryChangeNotificationControl(ResponseControl):
     self.changeType = int(ecncValue.getComponentByName('changeType'))
     previousDN = ecncValue.getComponentByName('previousDN')
     if previousDN.hasValue():
-      self.previousDN: Optional[str] = str(previousDN)
+      self.previousDN: str | None = str(previousDN)
     else:
       self.previousDN = None
     changeNumber = ecncValue.getComponentByName('changeNumber')
     if changeNumber.hasValue():
-      self.changeNumber: Optional[int] = int(changeNumber)
+      self.changeNumber: int | None = int(changeNumber)
     else:
       self.changeNumber = None
 

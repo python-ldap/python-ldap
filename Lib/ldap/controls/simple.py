@@ -4,13 +4,13 @@ ldap.controls.simple - classes for some very simple LDAP controls
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import annotations
 import struct,ldap
 from ldap.controls import RequestControl,ResponseControl,LDAPControl,KNOWN_RESPONSE_CONTROLS
 
 from pyasn1.type import univ
 from pyasn1.codec.ber import encoder,decoder
 
-from typing import Optional
 
 
 class ValueLessRequestControl(RequestControl):
@@ -26,7 +26,7 @@ class ValueLessRequestControl(RequestControl):
   """
 
   def __init__(
-    self, controlType: Optional[str] = None, criticality: bool = False
+    self, controlType: str | None = None, criticality: bool = False
   ) -> None:
     self.controlType = controlType
     self.criticality = criticality
@@ -45,9 +45,9 @@ class OctetStringInteger(LDAPControl):
 
   def __init__(
     self,
-    controlType: Optional[str] = None,
+    controlType: str | None = None,
     criticality: bool = False,
-    integerValue: Optional[int] = None
+    integerValue: int | None = None
   ) -> None:
     self.controlType = controlType
     self.criticality = criticality
@@ -72,7 +72,7 @@ class BooleanControl(LDAPControl):
 
   def __init__(
     self,
-    controlType: Optional[str] = None,
+    controlType: str | None = None,
     criticality: bool = False,
     booleanValue: bool = False
   ) -> None:
