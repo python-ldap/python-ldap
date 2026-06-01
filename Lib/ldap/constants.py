@@ -424,5 +424,59 @@ def print_header() -> None:  # pragma: no cover
         pop_requirement()
 
 
+def generate_pyi() -> None:  # pragma: no cover
+    """Update the generated section of Lib/ldap/_ldap.pyi in place.
+
+    The generated section is delimited by '# BEGIN GENERATED' and
+    '# END GENERATED' markers in that file.  Everything outside those
+    markers (hand-written imports, C-only constants, LDAPError base
+    class, function stubs, etc.) is left untouched.
+    """
+    import pathlib
+
+    BEGIN = '# BEGIN GENERATED\n'
+    END = '# END GENERATED\n'
+
+    seen: set[str] = set()
+    int_names: List[str] = []
+    str_names: List[str] = []
+    error_names: List[str] = []
+
+    for definition in CONSTANTS:
+        if definition.name in seen:
+            continue
+        seen.add(definition.name)
+        if isinstance(definition, Error):
+            error_names.append(definition.name)
+        elif isinstance(definition, Str):
+            str_names.append(definition.name)
+        else:
+            int_names.append(definition.name)
+
+    lines: List[str] = [
+        BEGIN,
+        '# Regenerate with: python Lib/ldap/constants.py --pyi\n',
+    ]
+    for name in sorted(int_names + str_names, key=str.casefold):
+        typ = 'str' if name in str_names else 'int'
+        lines.append(f'{name}: {typ}\n')
+    lines.append('\n')
+    for name in sorted(error_names, key=str.casefold):
+        lines.append(f'class {name}(LDAPError):\n')
+        lines.append(f'    errnum: ClassVar[int] = ...\n')
+        lines.append('\n')
+    lines.append(END)
+
+    pyi_path = pathlib.Path(__file__).parent / '_ldap.pyi'
+    pyi = pyi_path.read_text()
+    begin_idx = pyi.index(BEGIN)
+    end_idx = pyi.index(END) + len(END)
+    pyi_path.write_text(pyi[:begin_idx] + ''.join(lines) + pyi[end_idx:])
+
+
 if __name__ == '__main__':
-    print_header()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == '--pyi':
+        generate_pyi()
+    else:
+        print_header()
