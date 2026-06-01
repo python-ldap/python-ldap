@@ -3,6 +3,15 @@ from typing import Any, ClassVar
 __version__: str
 __license__: str
 __author__: str
+LIBLDAP_R: int
+OPT_OFF: int
+OPT_ON: int
+
+class LDAPError(Exception): ...
+class error(Exception): ...
+
+# BEGIN GENERATED
+# Regenerate with: python Lib/ldap/constants.py --pyi
 API_VERSION: int
 AUTH_NONE: int
 AUTH_SIMPLE: int
@@ -37,13 +46,12 @@ DN_FORMAT_LDAPV2: int
 DN_FORMAT_LDAPV3: int
 DN_FORMAT_MASK: int
 DN_FORMAT_UFN: int
-DN_PEDANTIC: int
-DN_PRETTY: int
 DN_P_NOLEADTRAILSPACES: int
 DN_P_NOSPACEAFTERRDN: int
+DN_PEDANTIC: int
+DN_PRETTY: int
 DN_SKIP: int
 INIT_FD_AVAIL: int
-LIBLDAP_R: int
 MOD_ADD: int
 MOD_BVALUES: int
 MOD_DELETE: int
@@ -67,8 +75,6 @@ OPT_ERROR_STRING: int
 OPT_HOST_NAME: int
 OPT_MATCHED_DN: int
 OPT_NETWORK_TIMEOUT: int
-OPT_OFF: int
-OPT_ON: int
 OPT_PROTOCOL_VERSION: int
 OPT_REFERRALS: int
 OPT_REFHOPLIMIT: int
@@ -102,11 +108,11 @@ OPT_X_TLS_CACERTFILE: int
 OPT_X_TLS_CERTFILE: int
 OPT_X_TLS_CIPHER: int
 OPT_X_TLS_CIPHER_SUITE: int
-OPT_X_TLS_CRLCHECK: int
-OPT_X_TLS_CRLFILE: int
 OPT_X_TLS_CRL_ALL: int
 OPT_X_TLS_CRL_NONE: int
 OPT_X_TLS_CRL_PEER: int
+OPT_X_TLS_CRLCHECK: int
+OPT_X_TLS_CRLFILE: int
 OPT_X_TLS_CTX: int
 OPT_X_TLS_DEMAND: int
 OPT_X_TLS_DHFILE: int
@@ -184,8 +190,6 @@ VERSION2: int
 VERSION3: int
 VERSION_MAX: int
 VERSION_MIN: int
-
-class LDAPError(Exception): ...
 
 class ADMINLIMIT_EXCEEDED(LDAPError):
     errnum: ClassVar[int] = ...
@@ -283,15 +287,6 @@ class MORE_RESULTS_TO_RETURN(LDAPError):
 class NAMING_VIOLATION(LDAPError):
     errnum: ClassVar[int] = ...
 
-class NOT_ALLOWED_ON_NONLEAF(LDAPError):
-    errnum: ClassVar[int] = ...
-
-class NOT_ALLOWED_ON_RDN(LDAPError):
-    errnum: ClassVar[int] = ...
-
-class NOT_SUPPORTED(LDAPError):
-    errnum: ClassVar[int] = ...
-
 class NO_MEMORY(LDAPError):
     errnum: ClassVar[int] = ...
 
@@ -308,6 +303,15 @@ class NO_SUCH_OBJECT(LDAPError):
     errnum: ClassVar[int] = ...
 
 class NO_SUCH_OPERATION(LDAPError):
+    errnum: ClassVar[int] = ...
+
+class NOT_ALLOWED_ON_NONLEAF(LDAPError):
+    errnum: ClassVar[int] = ...
+
+class NOT_ALLOWED_ON_RDN(LDAPError):
+    errnum: ClassVar[int] = ...
+
+class NOT_SUPPORTED(LDAPError):
     errnum: ClassVar[int] = ...
 
 class OBJECT_CLASS_VIOLATION(LDAPError):
@@ -391,7 +395,7 @@ class VLV_ERROR(LDAPError):
 class X_PROXY_AUTHZ_FAILURE(LDAPError):
     errnum: ClassVar[int] = ...
 
-class error(Exception): ...
+# END GENERATED
 
 def decode_page_control(*args: Any, **kwargs: Any) -> Any: ...
 def encode_assertion_control(*args: Any, **kwargs: Any) -> Any: ...
