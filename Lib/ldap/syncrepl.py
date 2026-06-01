@@ -4,7 +4,8 @@ ldap.syncrepl - for implementing syncrepl consumer (see RFC 4533)
 See https://www.python-ldap.org/ for project details.
 """
 
-from typing import Any, Dict, List, Tuple, Type, Optional, Union
+from __future__ import annotations
+from typing import Any, Dict, List, Tuple, Type, Union
 from uuid import UUID
 
 # Imports from pyasn1
@@ -87,7 +88,7 @@ class SyncRequestControl(RequestControl):
     def __init__(
         self,
         criticality: Union[int, bool] = True,
-        cookie: Optional[str] = None,
+        cookie: str | None = None,
         mode: str = 'refreshOnly',
         reloadHint: bool = False,
     ) -> None:
@@ -166,7 +167,7 @@ class SyncStateControl(ResponseControl):
         uuid = UUID(bytes=bytes(d[0].getComponentByName('entryUUID')))
         cookie = d[0].getComponentByName('cookie')
         if cookie is not None and cookie.hasValue():
-            self.cookie: Optional[str] = str(cookie)
+            self.cookie: str | None = str(cookie)
         else:
             self.cookie = None
         self.state = self.__class__.opnames[int(state)]
@@ -204,7 +205,7 @@ class SyncDoneControl(ResponseControl):
         d = decoder.decode(encodedControlValue, asn1Spec=SyncDoneValue())
         cookie = d[0].getComponentByName('cookie')
         if cookie.hasValue():
-            self.cookie: Optional[str] = str(cookie)
+            self.cookie: str | None = str(cookie)
         else:
             self.cookie = None
         refresh_deletes = d[0].getComponentByName('refreshDeletes')
@@ -369,7 +370,7 @@ class SyncreplConsumer():
         base: str,
         scope: int,
         mode: str = 'refreshOnly',
-        cookie: Optional[str] = None,
+        cookie: str | None = None,
         **search_args: Any,
     ) -> int:
         """
@@ -412,7 +413,7 @@ class SyncreplConsumer():
     def syncrepl_poll(
         self,
         msgid: int = -1,
-        timeout: Optional[int] = None,
+        timeout: int | None = None,
         all: int = 0,
     ) -> bool:
         """
@@ -521,7 +522,7 @@ class SyncreplConsumer():
 
     def syncrepl_present(
         self,
-        uuids: Optional[List[str]],
+        uuids: List[str] | None,
         refreshDeletes: bool = False,
     ) -> None:
         """

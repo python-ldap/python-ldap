@@ -5,6 +5,7 @@ ldap.extop.dds - Classes for Dynamic Entries extended operations
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import annotations
 from ldap.extop import ExtendedRequest,ExtendedResponse
 
 # Imports from pyasn1
@@ -12,7 +13,6 @@ from pyasn1.type import namedtype,univ,tag
 from pyasn1.codec.der import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPDN
 
-from typing import Optional
 
 
 class RefreshRequest(ExtendedRequest):
@@ -38,9 +38,9 @@ class RefreshRequest(ExtendedRequest):
 
   def __init__(
     self,
-    requestName: Optional[str] = None,
-    entryName: Optional[str] = None,
-    requestTtl: Optional[int] = None
+    requestName: str | None = None,
+    entryName: str | None = None,
+    requestTtl: int | None = None
   ) -> None:
     super().__init__(requestName or self.requestName, b'')
     self.entryName = entryName

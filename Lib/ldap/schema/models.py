@@ -4,6 +4,7 @@ schema.py - support for subSchemaSubEntry information
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import annotations
 import sys
 
 import collections
@@ -20,7 +21,6 @@ from typing import (
     List,
     Tuple,
     MutableMapping,
-    Optional,
     Union,
 )
 
@@ -78,7 +78,7 @@ class SchemaElement:
   schema_attribute = 'SchemaElement (base class)'
   known_tokens = ['DESC', 'NAME']
 
-  def __init__(self, schema_element_str: Optional[Union[str, bytes]] = None) -> None:
+  def __init__(self, schema_element_str: Union[str, bytes] | None = None) -> None:
     if isinstance(schema_element_str, bytes):
       schema_element_string = schema_element_str.decode('utf-8')
     elif isinstance(schema_element_str, str):
@@ -106,7 +106,7 @@ class SchemaElement:
   def get_id(self) -> str:
     return self.oid
 
-  def key_attr(self, key: str, value: Optional[str], quoted: int = 0) -> str:
+  def key_attr(self, key: str, value: str | None, quoted: int = 0) -> str:
     if value is None:
       return ""
     elif not isinstance(value, str):
@@ -787,9 +787,9 @@ class Entry(EntryBase):
 
   def attribute_types(
     self,
-    attr_type_filter: Optional[List[Tuple[str, List[str]]]] = None,
+    attr_type_filter: List[Tuple[str, List[str]]] | None = None,
     raise_keyerror: int = 1,
-  ) -> Tuple[cidict[Optional[AttributeType]], cidict[Optional[AttributeType]]]:
+  ) -> Tuple[cidict[AttributeType | None], cidict[AttributeType | None]]:
     """
     Convenience wrapper around SubSchema.attribute_types() which
     passes object classes of this particular entry as argument to

@@ -9,9 +9,10 @@ Each class provides support for a certain extended operation request and
 response.
 """
 
+from __future__ import annotations
 from ldap.pkginfo import __version__
 
-from typing import Any, Optional
+from typing import Any
 
 
 __all__ = [
@@ -59,11 +60,11 @@ class ExtendedResponse:
       BER-encoded ASN.1 value of the LDAPv3 extended operation response
   """
 
-  responseName: Optional[str]
+  responseName: str | None
 
   def __init__(
     self,
-    responseName: Optional[str],
+    responseName: str | None,
     encodedResponseValue: bytes
   ) -> None:
     self.responseName = responseName

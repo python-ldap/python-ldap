@@ -12,9 +12,10 @@ Implementing support for new sasl mechanism is very easy --- see
 the examples of digest_md5 and gssapi.
 """
 
+from __future__ import annotations
 from ldap.pkginfo import __version__
 
-from typing import Dict, Optional, Union
+from typing import Dict, Union
 
 if __debug__:
     # Tracing is only supported in debugging mode
@@ -58,7 +59,7 @@ class sasl:
         cb_id: int,
         challenge: Union[str, bytes],
         prompt: Union[str, bytes],
-        defresult: Optional[Union[str, bytes]],
+        defresult: Union[str, bytes] | None,
     ) -> bytes:
         """
         The callback method will be called by the sasl_bind_s()
@@ -81,7 +82,7 @@ class sasl:
 
         # The following print command might be useful for debugging
         # new sasl mechanisms. So it is left here
-        cb_result: Optional[Union[str, bytes]] = self.cb_value_dict.get(cb_id)
+        cb_result: Union[str, bytes] | None = self.cb_value_dict.get(cb_id)
         if cb_result is None:
             cb_result = defresult or ''
 
