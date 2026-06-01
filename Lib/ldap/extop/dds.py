@@ -20,7 +20,7 @@ class RefreshRequest(ExtendedRequest):
   requestName = '1.3.6.1.4.1.1466.101.119.1'
   defaultRequestTtl = 86400
 
-  class RefreshRequestValue(univ.Sequence):  # type: ignore
+  class RefreshRequestValue(univ.Sequence):
     componentType = namedtype.NamedTypes(
       namedtype.NamedType(
         'entryName',
@@ -30,7 +30,7 @@ class RefreshRequest(ExtendedRequest):
       ),
       namedtype.NamedType(
         'requestTtl',
-        univ.Integer().subtype(
+        univ.Integer().subtype(  # type: ignore[no-untyped-call]
           implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,1)
         )
       ),
@@ -56,7 +56,7 @@ class RefreshRequest(ExtendedRequest):
     )
     p.setComponentByName(
       'requestTtl',
-      univ.Integer(self.requestTtl).subtype(
+      univ.Integer(self.requestTtl).subtype(  # type: ignore[no-untyped-call]
         implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,1)
       )
     )
@@ -66,11 +66,11 @@ class RefreshRequest(ExtendedRequest):
 class RefreshResponse(ExtendedResponse):
   responseName = '1.3.6.1.4.1.1466.101.119.1'
 
-  class RefreshResponseValue(univ.Sequence):  # type: ignore
+  class RefreshResponseValue(univ.Sequence):
     componentType = namedtype.NamedTypes(
       namedtype.NamedType(
         'responseTtl',
-        univ.Integer().subtype(
+        univ.Integer().subtype(  # type: ignore[no-untyped-call]
           implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,1)
         )
       )
