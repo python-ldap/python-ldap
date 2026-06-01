@@ -42,7 +42,7 @@ class SortKeyType(univ.Sequence):
 
 
 class SortKeyListType(univ.SequenceOf):
-    componentType = SortKeyType()
+    componentType = SortKeyType()  # type: ignore[assignment]
 
 
 class SSSRequestControl(RequestControl):

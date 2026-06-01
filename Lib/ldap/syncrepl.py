@@ -247,7 +247,7 @@ class SyncUUIDs(univ.SetOf):
     """
     syncUUIDs      SET OF syncUUID
     """
-    componentType = SyncUUID()
+    componentType = SyncUUID()  # type: ignore[assignment]
 
 
 class SyncIdSet(univ.Sequence):
