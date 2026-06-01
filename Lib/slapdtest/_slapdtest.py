@@ -206,6 +206,7 @@ class SlapdObject:
     )
 
     TMPDIR = os.environ.get('TMP', os.getcwd())
+    SCHEMADIR: Optional[str]
     if 'SCHEMA' in os.environ:
         SCHEMADIR = os.environ['SCHEMA']
     elif os.path.isdir("/etc/openldap/schema"):
@@ -380,7 +381,7 @@ class SlapdObject:
         ldif_paths = [
             schema
             if os.path.exists(schema)
-            else os.path.join(self.SCHEMADIR, schema)
+            else os.path.join(self.SCHEMADIR or '', schema)
             for schema in self.openldap_schema_files
         ]
         for ldif_path in ldif_paths:

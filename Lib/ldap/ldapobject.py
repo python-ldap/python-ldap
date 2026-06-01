@@ -204,7 +204,7 @@ class SimpleLDAPObject:
     connect() -> None
         Establishes LDAP connection if needed.
     """
-    return self._ldap_call(self._l.connect)
+    self._ldap_call(self._l.connect)
 
   def abandon_ext(
     self,
@@ -1292,7 +1292,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
 
   def reconnect(
     self,
-    uri: str,
+    uri: Optional[str],
     retry_max: int = 1,
     retry_delay: float = 60.0,
     force: bool = True

@@ -21,23 +21,23 @@ from pyasn1.codec.ber import encoder, decoder
 from typing import Optional
 
 
-class ByOffsetType(univ.Sequence):  # type: ignore
-    tagSet = univ.Sequence.tagSet.tagImplicitly(
+class ByOffsetType(univ.Sequence):
+    tagSet = univ.Sequence.tagSet.tagImplicitly(  # type: ignore[no-untyped-call]
             tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0))
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('offset', univ.Integer()),
             namedtype.NamedType('contentCount', univ.Integer()))
 
 
-class TargetType(univ.Choice):  # type: ignore
+class TargetType(univ.Choice):
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('byOffset', ByOffsetType()),
-            namedtype.NamedType('greaterThanOrEqual', univ.OctetString().subtype(
+            namedtype.NamedType('greaterThanOrEqual', univ.OctetString().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext,
                     tag.tagFormatSimple, 1))))
 
 
-class VirtualListViewRequestType(univ.Sequence):  # type: ignore
+class VirtualListViewRequestType(univ.Sequence):
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('beforeCount', univ.Integer()),
             namedtype.NamedType('afterCount', univ.Integer()),
@@ -91,7 +91,7 @@ class VLVRequestControl(RequestControl):
         return encoder.encode(p)  # type: ignore
 
 
-class VirtualListViewResultType(univ.Enumerated):  # type: ignore
+class VirtualListViewResultType(univ.Enumerated):
     namedValues = namedval.NamedValues(
                ('success', 0),
                ('operationsError', 1),
@@ -106,7 +106,7 @@ class VirtualListViewResultType(univ.Enumerated):  # type: ignore
     )
 
 
-class VirtualListViewResponseType(univ.Sequence):  # type: ignore
+class VirtualListViewResponseType(univ.Sequence):
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('targetPosition', univ.Integer()),
             namedtype.NamedType('contentCount', univ.Integer()),

@@ -59,6 +59,8 @@ class ExtendedResponse:
       BER-encoded ASN.1 value of the LDAPv3 extended operation response
   """
 
+  responseName: Optional[str]
+
   def __init__(
     self,
     responseName: Optional[str],
