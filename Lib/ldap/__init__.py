@@ -12,7 +12,8 @@ from ldap.pkginfo import __version__, __author__, __license__
 import os
 import sys
 
-from typing import Any, Type, Union
+import threading
+from typing import Any, Type
 from ldap._types import *
 
 
@@ -48,25 +49,7 @@ for k,v in vars(_ldap).items():
   if k.startswith('OPT_'):
     OPT_NAMES_DICT[v]=k
 
-class DummyLock:
-  """Define dummy class with methods compatible to threading.Lock"""
-  def __init__(self) -> None:
-    pass
-
-  def acquire(self) -> bool:
-    return True
-
-  def release(self) -> None:
-    pass
-
-try:
-  # Check if Python installation was build with thread support
-  # FIXME: This can be simplified, from Python 3.7 this module is mandatory
-  import threading
-except ImportError:
-  LDAPLockBaseClass: Union[Type[DummyLock], Type[threading.Lock]] = DummyLock
-else:
-  LDAPLockBaseClass = threading.Lock
+LDAPLockBaseClass = threading.Lock
 
 
 class LDAPLock:
