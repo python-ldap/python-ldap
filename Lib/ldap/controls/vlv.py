@@ -5,6 +5,7 @@ ldap.controls.vlv - classes for Virtual List View
 See https://www.python-ldap.org/ for project details.
 """
 
+from __future__ import annotations
 __all__ = [
   'VLVRequestControl',
   'VLVResponseControl',
@@ -19,8 +20,9 @@ from pyasn1.type import univ, namedtype, tag, namedval, constraint
 from pyasn1.codec.ber import encoder, decoder
 
 
+
 class ByOffsetType(univ.Sequence):
-    tagSet = univ.Sequence.tagSet.tagImplicitly(
+    tagSet = univ.Sequence.tagSet.tagImplicitly(  # type: ignore[no-untyped-call]
             tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0))
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('offset', univ.Integer()),
@@ -30,7 +32,7 @@ class ByOffsetType(univ.Sequence):
 class TargetType(univ.Choice):
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('byOffset', ByOffsetType()),
-            namedtype.NamedType('greaterThanOrEqual', univ.OctetString().subtype(
+            namedtype.NamedType('greaterThanOrEqual', univ.OctetString().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext,
                     tag.tagFormatSimple, 1))))
 
@@ -48,13 +50,13 @@ class VLVRequestControl(RequestControl):
 
     def __init__(
         self,
-        criticality=False,
-        before_count=0,
-        after_count=0,
-        offset=None,
-        content_count=None,
-        greater_than_or_equal=None,
-        context_id=None,
+        criticality: bool = False,
+        before_count: int = 0,
+        after_count: int = 0,
+        offset: int | None = None,
+        content_count: int | None = None,
+        greater_than_or_equal: str | None = None,
+        context_id: str | None = None,
     ):
         RequestControl.__init__(self,self.controlType,criticality)
         assert (offset is not None and content_count is not None) or \
@@ -69,7 +71,7 @@ class VLVRequestControl(RequestControl):
         self.greater_than_or_equal = greater_than_or_equal
         self.context_id = context_id
 
-    def encodeControlValue(self):
+    def encodeControlValue(self) -> bytes:
         p = VirtualListViewRequestType()
         p.setComponentByName('beforeCount', self.before_count)
         p.setComponentByName('afterCount', self.after_count)
@@ -86,9 +88,7 @@ class VLVRequestControl(RequestControl):
         else:
             raise NotImplementedError
         p.setComponentByName('target', target)
-        return encoder.encode(p)
-
-KNOWN_RESPONSE_CONTROLS[VLVRequestControl.controlType] = VLVRequestControl
+        return encoder.encode(p)  # type: ignore
 
 
 class VirtualListViewResultType(univ.Enumerated):
@@ -118,10 +118,10 @@ class VirtualListViewResponseType(univ.Sequence):
 class VLVResponseControl(ResponseControl):
     controlType = '2.16.840.1.113730.3.4.10'
 
-    def __init__(self,criticality=False):
+    def __init__(self, criticality: bool = False) -> None:
         ResponseControl.__init__(self,self.controlType,criticality)
 
-    def decodeControlValue(self,encoded):
+    def decodeControlValue(self, encoded: bytes) -> None:
         p, rest = decoder.decode(encoded, asn1Spec=VirtualListViewResponseType())
         assert not rest, 'all data could not be decoded'
         self.targetPosition = int(p.getComponentByName('targetPosition'))
@@ -130,7 +130,7 @@ class VLVResponseControl(ResponseControl):
         self.virtualListViewResult = int(virtual_list_view_result)
         context_id = p.getComponentByName('contextID')
         if context_id.hasValue():
-            self.contextID = str(context_id)
+            self.contextID: str | None = str(context_id)
         else:
             self.contextID = None
         # backward compatibility class attributes

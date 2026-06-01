@@ -13,7 +13,7 @@ authors = [
     {name = "python-ldap project", email = "python-ldap@python.org"},
 ]
 readme = "README"
-requires-python = ">=3.6"
+requires-python = ">=3.9"
 keywords = ["ldap", "directory", "authentication"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -43,6 +43,7 @@ classifiers = [
 dependencies = [
     "pyasn1 >= 0.3.7",
     "pyasn1_modules >= 0.1.5",
+    "typing_extensions >= 0.4.1",
 ]
 
 [project.urls]
@@ -60,6 +61,9 @@ include-package-data = true
 license-files = ["LICENCE", "LICENCE.MIT"]
 # Explicitly list all Python modules
 py-modules = ["ldapurl", "ldif"]
+
+[tool.setuptools.package-data]
+ldap = ["py.typed"]
 
 [tool.setuptools.dynamic]
 version = {attr = "ldap.pkginfo.__version__"}
