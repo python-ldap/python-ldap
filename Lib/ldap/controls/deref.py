@@ -41,7 +41,7 @@ class DerefSpec(univ.Sequence):
   )
 
 class DerefSpecs(univ.SequenceOf):
-  componentType = DerefSpec()
+  componentType = DerefSpec()  # type: ignore[assignment]
 
 # Response types
 #---------------------------------------------------------------------------
@@ -59,7 +59,7 @@ class PartialAttribute(univ.Sequence):
 
 
 class PartialAttributeList(univ.SequenceOf):
-  componentType = PartialAttribute()
+  componentType = PartialAttribute()  # type: ignore[assignment]
   tagSet = univ.Sequence.tagSet.tagImplicitly(  # type: ignore[no-untyped-call]
     tag.Tag(tag.tagClassContext,tag.tagFormatConstructed,0)
   )
@@ -74,7 +74,7 @@ class DerefRes(univ.Sequence):
 
 
 class DerefResultControlValue(univ.SequenceOf):
-    componentType = DerefRes()
+    componentType = DerefRes()  # type: ignore[assignment]
 
 
 class DereferenceControl(LDAPControl):
