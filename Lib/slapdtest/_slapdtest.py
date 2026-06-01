@@ -383,7 +383,7 @@ class SlapdObject:
         ldif_paths = [
             schema
             if os.path.exists(schema)
-            else os.path.join(self.SCHEMADIR, schema)
+            else os.path.join(self.SCHEMADIR or '', schema)
             for schema in self.openldap_schema_files
         ]
         for ldif_path in ldif_paths:

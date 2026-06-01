@@ -26,20 +26,20 @@ __all__ = [
 ]
 
 
-class SyncUUID(univ.OctetString):  # type: ignore
+class SyncUUID(univ.OctetString):
     """
     syncUUID ::= OCTET STRING (SIZE(16))
     """
-    subtypeSpec = constraint.ValueSizeConstraint(16, 16)
+    subtypeSpec = constraint.ValueSizeConstraint(16, 16)  # type: ignore[assignment]
 
 
-class SyncCookie(univ.OctetString):  # type: ignore
+class SyncCookie(univ.OctetString):
     """
     syncCookie ::= OCTET STRING
     """
 
 
-class SyncRequestMode(univ.Enumerated):  # type: ignore
+class SyncRequestMode(univ.Enumerated):
     """
            mode ENUMERATED {
                -- 0 unused
@@ -55,7 +55,7 @@ class SyncRequestMode(univ.Enumerated):  # type: ignore
     subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(1, 3)
 
 
-class SyncRequestValue(univ.Sequence):  # type: ignore
+class SyncRequestValue(univ.Sequence):
     """
        syncRequestValue ::= SEQUENCE {
            mode ENUMERATED {
@@ -112,7 +112,7 @@ class SyncRequestControl(RequestControl):
         return encoder.encode(rcv)  # type: ignore
 
 
-class SyncStateOp(univ.Enumerated):  # type: ignore
+class SyncStateOp(univ.Enumerated):
     """
            state ENUMERATED {
                present (0),
@@ -130,7 +130,7 @@ class SyncStateOp(univ.Enumerated):  # type: ignore
     subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0, 1, 2, 3)
 
 
-class SyncStateValue(univ.Sequence):  # type: ignore
+class SyncStateValue(univ.Sequence):
     """
        syncStateValue ::= SEQUENCE {
            state ENUMERATED {
@@ -178,7 +178,7 @@ class SyncStateControl(ResponseControl):
 KNOWN_RESPONSE_CONTROLS[SyncStateControl.controlType] = SyncStateControl
 
 
-class SyncDoneValue(univ.Sequence):  # type: ignore
+class SyncDoneValue(univ.Sequence):
     """
        syncDoneValue ::= SEQUENCE {
            cookie          syncCookie OPTIONAL,
@@ -219,7 +219,7 @@ class SyncDoneControl(ResponseControl):
 KNOWN_RESPONSE_CONTROLS[SyncDoneControl.controlType] = SyncDoneControl
 
 
-class RefreshDelete(univ.Sequence):  # type: ignore
+class RefreshDelete(univ.Sequence):
     """
            refreshDelete  [1] SEQUENCE {
                cookie         syncCookie OPTIONAL,
@@ -232,7 +232,7 @@ class RefreshDelete(univ.Sequence):  # type: ignore
     )
 
 
-class RefreshPresent(univ.Sequence):  # type: ignore
+class RefreshPresent(univ.Sequence):
     """
            refreshPresent [2] SEQUENCE {
                cookie         syncCookie OPTIONAL,
@@ -245,14 +245,14 @@ class RefreshPresent(univ.Sequence):  # type: ignore
     )
 
 
-class SyncUUIDs(univ.SetOf):  # type: ignore
+class SyncUUIDs(univ.SetOf):
     """
     syncUUIDs      SET OF syncUUID
     """
     componentType = SyncUUID()
 
 
-class SyncIdSet(univ.Sequence):  # type: ignore
+class SyncIdSet(univ.Sequence):
     """
      syncIdSet      [3] SEQUENCE {
          cookie         syncCookie OPTIONAL,
@@ -267,7 +267,7 @@ class SyncIdSet(univ.Sequence):  # type: ignore
     )
 
 
-class SyncInfoValue(univ.Choice):  # type: ignore
+class SyncInfoValue(univ.Choice):
     """
        syncInfoValue ::= CHOICE {
            newcookie      [0] syncCookie,
@@ -289,25 +289,25 @@ class SyncInfoValue(univ.Choice):  # type: ignore
     componentType = namedtype.NamedTypes(
         namedtype.NamedType(
             'newcookie',
-            SyncCookie().subtype(
+            SyncCookie().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
             )
         ),
         namedtype.NamedType(
             'refreshDelete',
-            RefreshDelete().subtype(
+            RefreshDelete().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1)
             )
         ),
         namedtype.NamedType(
             'refreshPresent',
-            RefreshPresent().subtype(
+            RefreshPresent().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 2)
             )
         ),
         namedtype.NamedType(
             'syncIdSet',
-            SyncIdSet().subtype(
+            SyncIdSet().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 3)
             )
         )
@@ -591,7 +591,7 @@ class OpenLDAPSyncreplCookie:
     sid: int = 0
     _csnset: dict[str, str]
 
-    def __init__(self, cookie: AnyStr = "") -> None:
+    def __init__(self, cookie: Union[str, bytes] = "") -> None:
         self._csnset = {}
 
         if cookie:
@@ -621,16 +621,16 @@ class OpenLDAPSyncreplCookie:
                 pass
         return result
 
-    def update(self, cookie: AnyStr):
+    def update(self, cookie: Union[str, bytes]) -> 'OpenLDAPSyncreplCookie':
         """
         Update the CSN set based on a cookie we just received, use in
         syncrepl_set_cookie() to track the session state.
         """
         components = self._parse_cookie(cookie)
         for csn in components.get('csn', []):
-            _, _, sid, _ = self._parse_csn(csn)
+            _, _, sid, _ = self._parse_csn(str(csn))
             if sid not in self._csnset or self._csnset[sid] < csn:
-                self._csnset[sid] = csn
+                self._csnset[sid] = str(csn)
 
         return self
 
@@ -645,5 +645,5 @@ class OpenLDAPSyncreplCookie:
             cookie += ';'.join(csn for sid, csn in sorted(self._csnset.items()))
         return cookie
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.unparse()
