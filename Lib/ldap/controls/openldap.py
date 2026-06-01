@@ -30,7 +30,7 @@ class SearchNoOpControl(ValueLessRequestControl,ResponseControl):
   def __init__(self, criticality: bool = False) -> None:
     self.criticality = criticality
 
-  class SearchNoOpControlValue(univ.Sequence):  # type: ignore
+  class SearchNoOpControlValue(univ.Sequence):
     pass
 
   def decodeControlValue(self, encodedControlValue: bytes) -> None:

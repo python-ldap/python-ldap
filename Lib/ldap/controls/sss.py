@@ -29,19 +29,19 @@ from typing import List, Union
 #                     reverseOrder    [1] BOOLEAN DEFAULT FALSE }
 
 
-class SortKeyType(univ.Sequence):  # type: ignore
+class SortKeyType(univ.Sequence):
     componentType = namedtype.NamedTypes(
             namedtype.NamedType('attributeType', univ.OctetString()),
             namedtype.OptionalNamedType('orderingRule',
-                  univ.OctetString().subtype(
+                  univ.OctetString().subtype(  # type: ignore[no-untyped-call]
                     implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
                   )
                 ),
-            namedtype.DefaultedNamedType('reverseOrder', univ.Boolean(False).subtype(
+            namedtype.DefaultedNamedType('reverseOrder', univ.Boolean(False).subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1))))
 
 
-class SortKeyListType(univ.SequenceOf):  # type: ignore
+class SortKeyListType(univ.SequenceOf):
     componentType = SortKeyType()
 
 
@@ -88,9 +88,9 @@ class SSSRequestControl(RequestControl):
         return encoder.encode(self.asn1())  # type: ignore
 
 
-class SortResultType(univ.Sequence):  # type: ignore
+class SortResultType(univ.Sequence):
     componentType = namedtype.NamedTypes(
-            namedtype.NamedType('sortResult', univ.Enumerated().subtype(
+            namedtype.NamedType('sortResult', univ.Enumerated().subtype(  # type: ignore[no-untyped-call]
                 namedValues=namedval.NamedValues(
                         ('success', 0),
                         ('operationsError', 1),
@@ -106,7 +106,7 @@ class SortResultType(univ.Sequence):  # type: ignore
                 subtypeSpec=univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(
                         0, 1, 3, 8, 11, 16, 18, 50, 51, 53, 80))),
             namedtype.OptionalNamedType('attributeType',
-                  univ.OctetString().subtype(
+                  univ.OctetString().subtype(  # type: ignore[no-untyped-call]
                     implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
                   )
                 ))

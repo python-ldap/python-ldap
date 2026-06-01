@@ -51,7 +51,7 @@ class PersistentSearchControl(RequestControl):
     Entry Change Notification response control
   """
 
-  class PersistentSearchControlValue(univ.Sequence):  # type: ignore
+  class PersistentSearchControlValue(univ.Sequence):
     componentType = namedtype.NamedTypes(
       namedtype.NamedType('changeTypes',univ.Integer()),
       namedtype.NamedType('changesOnly',univ.Boolean()),
@@ -81,10 +81,10 @@ class PersistentSearchControl(RequestControl):
     p.setComponentByName('changeTypes',univ.Integer(changeTypes_int))
     p.setComponentByName('changesOnly',univ.Boolean(self.changesOnly))
     p.setComponentByName('returnECs',univ.Boolean(self.returnECs))
-    return encoder.encode(p)  # type: ignore
+    return encoder.encode(p)  # type: ignore[no-any-return]
 
 
-class ChangeType(univ.Enumerated):  # type: ignore
+class ChangeType(univ.Enumerated):
   namedValues = namedval.NamedValues(
     ('add',1),
     ('delete',2),
@@ -94,7 +94,7 @@ class ChangeType(univ.Enumerated):  # type: ignore
   subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(1,2,4,8)
 
 
-class EntryChangeNotificationValue(univ.Sequence):  # type: ignore
+class EntryChangeNotificationValue(univ.Sequence):
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('changeType',ChangeType()),
     namedtype.OptionalNamedType('previousDN', LDAPDN()),

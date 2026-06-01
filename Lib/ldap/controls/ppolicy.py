@@ -21,18 +21,18 @@ from pyasn1.codec.der import decoder
 from typing import Optional
 
 
-class PasswordPolicyWarning(univ.Choice):  # type: ignore
+class PasswordPolicyWarning(univ.Choice):
   componentType = namedtype.NamedTypes(
-    namedtype.NamedType('timeBeforeExpiration',univ.Integer().subtype(
+    namedtype.NamedType('timeBeforeExpiration',univ.Integer().subtype(  # type: ignore[no-untyped-call]
       implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,0)
     )),
-    namedtype.NamedType('graceAuthNsRemaining',univ.Integer().subtype(
+    namedtype.NamedType('graceAuthNsRemaining',univ.Integer().subtype(  # type: ignore[no-untyped-call]
       implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,1)
     )),
   )
 
 
-class PasswordPolicyError(univ.Enumerated):  # type: ignore
+class PasswordPolicyError(univ.Enumerated):
   namedValues = namedval.NamedValues(
     ('passwordExpired',0),
     ('accountLocked',1),
@@ -48,16 +48,16 @@ class PasswordPolicyError(univ.Enumerated):  # type: ignore
   subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0,1,2,3,4,5,6,7,8,9)
 
 
-class PasswordPolicyResponseValue(univ.Sequence):  # type: ignore
+class PasswordPolicyResponseValue(univ.Sequence):
   componentType = namedtype.NamedTypes(
     namedtype.OptionalNamedType(
       'warning',
-      PasswordPolicyWarning().subtype(
+      PasswordPolicyWarning().subtype(  # type: ignore[no-untyped-call]
         implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,0)
       ),
     ),
     namedtype.OptionalNamedType(
-      'error',PasswordPolicyError().subtype(
+      'error',PasswordPolicyError().subtype(  # type: ignore[no-untyped-call]
         implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,1)
       )
     ),

@@ -21,7 +21,7 @@ from pyasn1_modules.rfc2251 import LDAPString
 from typing import Union
 
 
-class PagedResultsControlValue(univ.Sequence):  # type: ignore
+class PagedResultsControlValue(univ.Sequence):
   componentType = namedtype.NamedTypes(
     namedtype.NamedType('size',univ.Integer()),
     # FIXME: This should be univ.OctetString, not LDAPString()?

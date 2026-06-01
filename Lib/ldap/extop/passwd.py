@@ -15,11 +15,11 @@ from pyasn1.codec.der import decoder
 class PasswordModifyResponse(ExtendedResponse):
     responseName = None
 
-    class PasswordModifyResponseValue(univ.Sequence):  # type: ignore
+    class PasswordModifyResponseValue(univ.Sequence):
         componentType = namedtype.NamedTypes(
             namedtype.OptionalNamedType(
                 'genPasswd',
-                univ.OctetString().subtype(
+                univ.OctetString().subtype(  # type: ignore[no-untyped-call]
                     implicitTag=tag.Tag(tag.tagClassContext,
                                         tag.tagFormatSimple, 0)
                 )
