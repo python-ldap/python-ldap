@@ -88,10 +88,11 @@ PYLDAP_FUNC(PyObject *) LDAPberval_to_unicode_object(const struct berval *bv);
 /* *** constants *** */
 PYLDAP_FUNC(int) LDAPMod_init_constants(PyObject *m);
 
-PYLDAP_DATA(PyObject *) LDAPexception_class;
-PYLDAP_FUNC(PyObject *) LDAPerror(LDAP *);
-PYLDAP_FUNC(PyObject *) LDAPraise_for_message(LDAP *, LDAPMessage *m);
-PYLDAP_FUNC(PyObject *) LDAPerr(int errnum);
+struct LDAPModState;
+
+PYLDAP_FUNC(PyObject *) LDAPerror(PyObject *module, LDAP *l);
+PYLDAP_FUNC(PyObject *) LDAPraise_for_message(PyObject *module, LDAP *l, LDAPMessage *m);
+PYLDAP_FUNC(PyObject *) LDAPerr(PyObject *module, int errnum);
 
 PYLDAP_DATA(struct PyModuleDef *) LDAPMod_moduledef;
 PYLDAP_DATA(LDAPAPIInfo) LDAPMod_version_info;
@@ -105,6 +106,12 @@ PYLDAP_DATA(int) LDAPMod_thread_safe;
 #define LDAP_CONTROL_VALUESRETURNFILTER "1.2.826.0.1.3344810.2.3"       /* RFC 3876 */
 #endif /* !LDAP_CONTROL_VALUESRETURNFILTER */
 
+/* *** module level state *** */
+typedef struct LDAPModState {
+    PyTypeObject *ldap_type;
+    PyObject *exception_class;
+    PyObject *errobjects[LDAP_ERROR_MAX - LDAP_ERROR_MIN + 1];
+} LDAPModState;
 
 /* *** ldapcontrol *** */
 PYLDAP_FUNC(void) LDAPControl_List_DEL(LDAPControl **);
@@ -122,8 +129,7 @@ typedef struct {
     int valid;
 } LDAPObject;
 
-PYLDAP_DATA(PyTypeObject *) LDAP_Type;
-PYLDAP_FUNC(LDAPObject *) newLDAPObject(LDAP *);
+PYLDAP_FUNC(LDAPObject *) newLDAPObject(PyObject *, LDAP *);
 PYLDAP_FUNC(int) LDAPMod_init_type(PyObject *module);
 
 /* macros to allow thread saving in the context of an LDAP connection */
@@ -146,8 +152,8 @@ PYLDAP_FUNC(int) LDAPMod_init_type(PyObject *module);
 
 /* *** messages *** */
 PYLDAP_FUNC(PyObject *)
-LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
-                      int add_intermediates);
+LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
+                      int add_ctrls, int add_intermediates);
 
 /* *** options *** */
 PYLDAP_FUNC(int) LDAP_optionval_by_name(const char *name);
