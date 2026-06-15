@@ -58,7 +58,7 @@ static PyModuleDef_Slot ldap_slots[] = {
 static struct PyModuleDef ldap_moduledef = {
     .m_base = PyModuleDef_HEAD_INIT,
     .m_name = "_ldap",
-    .m_size = 0,
+    .m_size = sizeof(LDAPModState),
     .m_methods = ldap_functions,
     .m_slots = ldap_slots,
 };

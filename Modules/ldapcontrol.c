@@ -209,19 +209,19 @@ LDAPMod_encode_rfc3876(PyObject *module, PyObject *args)
     }
 
     if (!(vrber = ber_alloc_t(LBER_USE_DER))) {
-        LDAPerr(LDAP_NO_MEMORY);
+        LDAPerr(module, LDAP_NO_MEMORY);
         goto endlbl;
     }
 
     err = ldap_put_vrFilter(vrber, vrFilter);
     if (err == -1) {
-        LDAPerr(LDAP_FILTER_ERROR);
+        LDAPerr(module, LDAP_FILTER_ERROR);
         goto endlbl;
     }
 
     err = ber_flatten(vrber, &ctrl_val);
     if (err == -1) {
-        LDAPerr(LDAP_NO_MEMORY);
+        LDAPerr(module, LDAP_NO_MEMORY);
         goto endlbl;
     }
 
@@ -252,13 +252,13 @@ LDAPMod_encode_rfc2696(PyObject *module, PyObject *args)
     cookie.bv_len = (ber_len_t) cookie_len;
 
     if (!(ber = ber_alloc_t(LBER_USE_DER))) {
-        LDAPerr(LDAP_NO_MEMORY);
+        LDAPerr(module, LDAP_NO_MEMORY);
         goto endlbl;
     }
 
     tag = ber_printf(ber, "{i", size);
     if (tag == LBER_ERROR) {
-        LDAPerr(LDAP_ENCODING_ERROR);
+        LDAPerr(module, LDAP_ENCODING_ERROR);
         goto endlbl;
     }
 
@@ -267,18 +267,18 @@ LDAPMod_encode_rfc2696(PyObject *module, PyObject *args)
     else
         tag = ber_printf(ber, "O", &cookie);
     if (tag == LBER_ERROR) {
-        LDAPerr(LDAP_ENCODING_ERROR);
+        LDAPerr(module, LDAP_ENCODING_ERROR);
         goto endlbl;
     }
 
     tag = ber_printf(ber, /*{ */ "N}");
     if (tag == LBER_ERROR) {
-        LDAPerr(LDAP_ENCODING_ERROR);
+        LDAPerr(module, LDAP_ENCODING_ERROR);
         goto endlbl;
     }
 
     if (-1 == ber_flatten(ber, &ctrl_val)) {
-        LDAPerr(LDAP_NO_MEMORY);
+        LDAPerr(module, LDAP_NO_MEMORY);
         goto endlbl;
     }
 
@@ -309,13 +309,13 @@ LDAPMod_decode_rfc2696(PyObject *module, PyObject *args)
     ldctl_value.bv_len = (ber_len_t) ldctl_value_len;
 
     if (!(ber = ber_init(&ldctl_value))) {
-        LDAPerr(LDAP_NO_MEMORY);
+        LDAPerr(module, LDAP_NO_MEMORY);
         goto endlbl;
     }
 
     tag = ber_scanf(ber, "{iO", &count, &cookiep);
     if (tag == LBER_ERROR) {
-        LDAPerr(LDAP_DECODING_ERROR);
+        LDAPerr(module, LDAP_DECODING_ERROR);
         goto endlbl;
     }
 
@@ -350,13 +350,13 @@ LDAPMod_encode_assertion_control(PyObject *module, PyObject *args)
     err = ldap_create(&ld);
     PyEval_RestoreThread(save);
     if (err != LDAP_SUCCESS)
-        return LDAPerror(ld);
+        return LDAPerror(module, ld);
 
     err = ldap_create_assertion_control_value(ld, assertion_filterstr,
                                               &ctrl_val);
 
     if (err != LDAP_SUCCESS) {
-        LDAPerror(ld);
+        LDAPerror(module, ld);
         save = PyEval_SaveThread();
         ldap_unbind_ext(ld, NULL, NULL);
         PyEval_RestoreThread(save);
