@@ -22,9 +22,9 @@ LDAPMod_initialize(PyObject *module, PyObject *args)
     PyEval_RestoreThread(save);
 
     if (ret != LDAP_SUCCESS)
-        return LDAPerror(ld);
+        return LDAPerror(module, ld);
 
-    return (PyObject *)newLDAPObject(ld);
+    return (PyObject *)newLDAPObject(module, ld);
 }
 
 #ifdef HAVE_LDAP_INIT_FD
@@ -48,7 +48,7 @@ LDAPMod_initialize_fd(PyObject *module, PyObject *args)
     /* Get LDAP protocol from scheme */
     ret = ldap_url_parse(url, &lud);
     if (ret != LDAP_SUCCESS)
-        return LDAPerr(ret);
+        return LDAPerr(module, ret);
 
     if (strcmp(lud->lud_scheme, "ldap") == 0) {
         proto = LDAP_PROTO_TCP;
@@ -76,9 +76,9 @@ LDAPMod_initialize_fd(PyObject *module, PyObject *args)
     PyEval_RestoreThread(save);
 
     if (ret != LDAP_SUCCESS)
-        return LDAPerror(ld);
+        return LDAPerror(module, ld);
 
-    return (PyObject *)newLDAPObject(ld);
+    return (PyObject *)newLDAPObject(module, ld);
 }
 #endif
 
@@ -106,7 +106,7 @@ LDAPMod_str2dn(PyObject *module, PyObject *args)
 
     res = ldap_bv2dn(&str, &dn, flags);
     if (res != LDAP_SUCCESS)
-        return LDAPerr(res);
+        return LDAPerr(module, res);
 
     tmp = PyList_New(0);
     if (!tmp)
