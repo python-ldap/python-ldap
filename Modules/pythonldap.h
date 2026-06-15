@@ -53,6 +53,21 @@ LDAP_F(int) ldap_init_fd(ber_socket_t fd, int proto, LDAP_CONST char *url,
 LDAP_F(int) ldap_pvt_put_filter LDAP_P((BerElement *ber, const char *str));
 #endif
 
+/* list of exception classes */
+#define LDAP_ERROR_MIN          LDAP_REFERRAL_LIMIT_EXCEEDED
+
+#ifdef LDAP_PROXIED_AUTHORIZATION_DENIED
+#define LDAP_ERROR_MAX          LDAP_PROXIED_AUTHORIZATION_DENIED
+#else
+#ifdef LDAP_ASSERTION_FAILED
+#define LDAP_ERROR_MAX          LDAP_ASSERTION_FAILED
+#else
+#define LDAP_ERROR_MAX          LDAP_OTHER
+#endif
+#endif
+
+#define LDAP_ERROR_OFFSET       -LDAP_ERROR_MIN
+
 #if defined(MS_WINDOWS)
 #include <winsock.h>
 #else /* unix */

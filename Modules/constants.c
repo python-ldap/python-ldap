@@ -8,24 +8,6 @@
 
 /* the base exception class */
 
-PyObject *LDAPexception_class;
-
-/* list of exception classes */
-
-#define LDAP_ERROR_MIN          LDAP_REFERRAL_LIMIT_EXCEEDED
-
-#ifdef LDAP_PROXIED_AUTHORIZATION_DENIED
-#define LDAP_ERROR_MAX          LDAP_PROXIED_AUTHORIZATION_DENIED
-#else
-#ifdef LDAP_ASSERTION_FAILED
-#define LDAP_ERROR_MAX          LDAP_ASSERTION_FAILED
-#else
-#define LDAP_ERROR_MAX          LDAP_OTHER
-#endif
-#endif
-
-#define LDAP_ERROR_OFFSET       -LDAP_ERROR_MIN
-
 static PyObject *errobjects[LDAP_ERROR_MAX - LDAP_ERROR_MIN + 1];
 
 /* Convert a bare LDAP error number into an exception */
