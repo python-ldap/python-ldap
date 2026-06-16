@@ -2,6 +2,8 @@
 
 #include "pythonldap.h"
 
+#include <stdlib.h>
+
 /* ldap_initialize */
 
 static PyObject *
