@@ -113,10 +113,15 @@ LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
                  * tests. 389-DS sometimes triggeres it, see
                  * https://github.com/python-ldap/python-ldap/issues/218
                  */
+#if PY_VERSION_HEX >= 0x030D0000
+                PyDict_GetItemRef(attrdict, pyattr, &valuelist);
+#else
+                /* <3.13 compat, GIL always exists, so no race */
                 valuelist = PyDict_GetItem(attrdict, pyattr);
                 /* Turn borrowed reference into owned reference */
                 if (valuelist != NULL)
                     Py_INCREF(valuelist);
+#endif
             }
             else {
                 valuelist = PyList_New(0);

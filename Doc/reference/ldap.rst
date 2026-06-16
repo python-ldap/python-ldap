@@ -1472,6 +1472,38 @@ These attributes are mutable unless described as read-only.
    This option is used in the wrapper module.
 
 
+.. _ldap-thread-safety:
+
+Thread safety
+=============
+
+On platforms that support it, the :py:mod:`_ldap` C extension declares itself
+compatible with the free-threaded (no-GIL) CPython builds (`PEP 703`_) and with
+per-interpreter GIL.
+
+.. _PEP 703: https://www.python.org/dev/peps/pep-0703/
+
+Caveats to observe:
+
+* Concurrent access to the same connection object is still limited on the Python
+  side (by a lock).
+* While rare now, the underlying library might not be compiled thread-safe
+  itself. Whether that is the case is detected at runtime and exposed as
+  :py:data:`ldap.LIBLDAP_R`. If ``0``, it is not safe to use the module across
+  several concurrent threads. The module does *not* try to change its behaviour
+  to compensate for this.
+* :py:func:`ldap.set_option` sets the global library state and it is shared
+  across all copies of the module. This is also the state largely inherited by
+  most :class:`~ldap.ldapobject.LDAPObject` instances on creation. It is advised
+  users rely on :py:meth:`LDAPObject.set_option` in most circumstances if using
+  multiple interpreters.
+
+.. versionchanged:: 3.5.0
+
+   The :py:mod:`_ldap` extension was ported to the Limited API and as a result
+   all types belong to the module object they were instantiated with (heap
+   types). This release is also the first to declare free-threading support.
+
 .. _ldap-example:
 
 Example
