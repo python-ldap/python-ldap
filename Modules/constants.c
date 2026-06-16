@@ -3,6 +3,9 @@
 
 #include "pythonldap.h"
 
+#include <stdio.h>
+#include <errno.h>
+
 /* the base exception class */
 
 PyObject *LDAPexception_class;
