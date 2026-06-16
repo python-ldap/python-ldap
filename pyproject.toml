@@ -45,6 +45,8 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 
+    "Programming Language :: Python :: Free Threading :: 2 - Beta",
+
     "Topic :: Database",
     "Topic :: Internet",
     "Topic :: Software Development :: Libraries :: Python Modules",
