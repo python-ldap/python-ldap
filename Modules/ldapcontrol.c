@@ -95,7 +95,7 @@ Tuple_to_LDAPControl(PyObject *tup)
     memcpy(lc->ldctl_oid, oid, len + 1);
 
     /* The berval can either be None or a String */
-    if (PyNone_Check(bytes)) {
+    if (Py_IsNone(bytes)) {
         berbytes.bv_len = 0;
         berbytes.bv_val = NULL;
     }
