@@ -17,8 +17,7 @@ LDAPberval_to_object(const struct berval *bv)
     PyObject *ret = NULL;
 
     if (!bv || !bv->bv_val) {
-        ret = Py_None;
-        Py_INCREF(ret);
+        ret = Py_NewRef(Py_None);
     }
     else {
         ret = PyBytes_FromStringAndSize(bv->bv_val, bv->bv_len);
@@ -39,8 +38,7 @@ LDAPberval_to_unicode_object(const struct berval *bv)
     PyObject *ret = NULL;
 
     if (!bv) {
-        ret = Py_None;
-        Py_INCREF(ret);
+        ret = Py_NewRef(Py_None);
     }
     else {
         ret = PyUnicode_FromStringAndSize(bv->bv_val, bv->bv_len);

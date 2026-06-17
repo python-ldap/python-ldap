@@ -437,8 +437,7 @@ LDAP_get_option(LDAPObject *self, int option)
         if (res != LDAP_OPT_SUCCESS)
             return option_error(res, "ldap_get_option");
         if (strval == NULL) {
-            Py_INCREF(Py_None);
-            return Py_None;
+            return Py_NewRef(Py_None);
         }
         v = PyUnicode_FromString(strval);
         ldap_memfree(strval);
@@ -464,8 +463,7 @@ LDAP_get_option(LDAPObject *self, int option)
         if (res != LDAP_OPT_SUCCESS)
             return option_error(res, "ldap_get_option");
         if (tv == NULL) {
-            Py_INCREF(Py_None);
-            return Py_None;
+            return Py_NewRef(Py_None);
         }
         v = PyFloat_FromDouble((double)tv->tv_sec +
                                ((double)tv->tv_usec / 1000000.0)

@@ -386,8 +386,7 @@ l_ldap_set_option(PyObject *self, PyObject *args)
         return NULL;
     if (!LDAP_set_option(NULL, option, value))
         return NULL;
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_NewRef(Py_None);
 }
 
 /* ldap_get_option (global options) */

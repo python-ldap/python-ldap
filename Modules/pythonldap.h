@@ -68,8 +68,6 @@ PYLDAP_FUNC(PyObject *) LDAPerror_TypeError(const char *, PyObject *);
 
 PYLDAP_FUNC(void) LDAPadd_methods(PyObject *d, PyMethodDef *methods);
 
-#define PyNone_Check(o) ((o) == Py_None)
-
 /* *** berval *** */
 PYLDAP_FUNC(PyObject *) LDAPberval_to_object(const struct berval *bv);
 PYLDAP_FUNC(PyObject *) LDAPberval_to_unicode_object(const struct berval *bv);
