@@ -399,6 +399,31 @@ l_ldap_get_option(PyObject *self, PyObject *args)
     return LDAP_get_option(NULL, option);
 }
 
+
+#ifdef HAVE_LDAP_PUT_FILTER
+/* ldap_is_filter */
+static PyObject *l_ldap_is_filter(PyObject *self, PyObject *args)
+{
+    const char *filter;
+    if(!PyArg_ParseTuple(args, "s", &filter))
+        return NULL;
+
+    BerElement *ber = ber_alloc_t(LBER_USE_DER);
+    if(!ber) {
+        Py_RETURN_FALSE;
+    }
+
+    int rc = ldap_pvt_put_filter(ber, filter);
+    ber_free(ber, 1);
+
+    if (rc == 0) {
+        Py_RETURN_TRUE;
+    }
+    Py_RETURN_FALSE;
+}
+#endif
+
+
 /* methods */
 
 static PyMethodDef methods[] = {
@@ -410,6 +435,9 @@ static PyMethodDef methods[] = {
     {"dn2str", (PyCFunction)l_ldap_dn2str, METH_VARARGS},
     {"set_option", (PyCFunction)l_ldap_set_option, METH_VARARGS},
     {"get_option", (PyCFunction)l_ldap_get_option, METH_VARARGS},
+#ifdef HAVE_LDAP_PUT_FILTER
+    {"is_filter", (PyCFunction)l_ldap_is_filter, METH_VARARGS},
+#endif
     {NULL, NULL}
 };
 

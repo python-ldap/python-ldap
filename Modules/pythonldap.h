@@ -42,6 +42,13 @@ LDAP_F(int) ldap_init_fd(ber_socket_t fd, int proto, LDAP_CONST char *url,
                          LDAP **ldp);
 #endif
 
+#if LDAP_VENDOR_VERSION >= 20700
+  /* openldap.h made ldap_pvt_put_filter() public in 2.7.x
+   * see https://bugs.openldap.org/show_bug.cgi?id=9393
+   */
+#define HAVE_LDAP_PUT_FILTER 1
+#endif
+
 #if defined(MS_WINDOWS)
 #include <winsock.h>
 #else /* unix */

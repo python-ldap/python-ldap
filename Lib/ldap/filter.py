@@ -7,6 +7,7 @@ Compatibility:
 - Tested with Python 2.0+
 """
 
+import _ldap
 from ldap import __version__
 
 from ldap.functions import strf_secs
@@ -89,3 +90,27 @@ def time_span_filter(
         until_timestr=strf_secs(until_timestamp),
     )
     # end of time_span_filter()
+
+
+def is_filter(ldap_filter):
+    """
+    Returns True if `ldap_filter' can be parsed as a valid LDAP filter, otherwise False is returned.
+    """
+    if hasattr(_ldap, 'is_filter'):
+        return _ldap.is_filter(ldap_filter)
+
+    # workaround for libldap <= 2.7
+    if '\x00' in ldap_filter:
+        raise ValueError('embedded null character')
+    import ldap
+    lo = ldap.initialize('')
+    try:
+        lo.search_ext_s('', ldap.SCOPE_BASE, ldap_filter)
+    except (ldap.FILTER_ERROR, TypeError, ValueError):
+        return False
+    except ldap.SERVER_DOWN:
+        # the filter syntax is valid, as the connection is not bound we expect SERVER_DOWN here
+        return True
+    finally:
+        lo.unbind()
+    raise RuntimeError('Could not check filter syntax.')  # can not happen
