@@ -86,6 +86,8 @@ class VLVRequestControl(RequestControl):
         else:
             raise NotImplementedError
         p.setComponentByName('target', target)
+        if self.context_id is not None:
+            p.setComponentByName('contextID', self.context_id)
         return encoder.encode(p)
 
 KNOWN_RESPONSE_CONTROLS[VLVRequestControl.controlType] = VLVRequestControl
