@@ -44,13 +44,24 @@ This module defines the following functions:
    connect to an LDAP server. The *fileno* must either be a socket file
    descriptor as :class:`int` or a file-like object with a *fileno()* method
    that returns a socket file descriptor. The socket file descriptor must
-   already be connected. :class:`~ldap.ldapobject.LDAPObject` does not take
-   ownership of the file descriptor. It must be kept open during operations
-   and explicitly closed after the :class:`~ldap.ldapobject.LDAPObject` is
-   unbound. The internal connection type is determined from the URI, ``TCP``
-   for ``ldap://`` / ``ldaps://``, ``IPC`` (``AF_UNIX``) for ``ldapi://``.
-   The parameter is not available on macOS when python-ldap is compiled with system
+   already be connected. :class:`~ldap.ldapobject.LDAPObject` takes ownership of
+   the file descriptor on creation which must be left alone and will be
+   automatically closed after the :class:`~ldap.ldapobject.LDAPObject` is
+   unbound. The internal connection type is determined from the URI, ``TCP`` for
+   ``ldap://`` / ``ldaps://``, ``IPC`` (``AF_UNIX``) for ``ldapi://``. The
+   parameter is not available on macOS when python-ldap is compiled with system
    libldap, see :py:const:`INIT_FD_AVAIL`.
+
+   .. warning::
+
+      The documentation used to suggest (wrongly) that the object would not take
+      ownership of the file descriptor in *fileno*. It does. If using *fileno*,
+      detach the socket it came from as soon as you use it to obtain an instance
+      of :class:`~ldap.ldapobject.LDAPObject`::
+
+         sock = socket.create_connection((host, port))
+         conn = ldap.initialize(uri, fileno=sock.fileno())
+         sock.detach()
 
    Note that internally the OpenLDAP function
    `ldap_initialize(3) <https://www.openldap.org/software/man.cgi?query=ldap_init&sektion=3>`_
