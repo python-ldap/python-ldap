@@ -100,15 +100,13 @@ class TestLdapCExtension(SlapdTestCase):
         )
         try:
             l = _ldap.initialize_fd(sock.fileno(), self.server.ldap_uri)
-            if bind:
-                self._bind_conn(l)
-            yield sock, l
-        finally:
-            try:
-                sock.close()
-            except OSError:
-                # already closed
-                pass
+        except Exception:
+            sock.close()
+            raise
+        fd = sock.detach()
+        if bind:
+            self._bind_conn(l)
+        yield fd, l
 
     def _bind_conn(self, l):
         # Perform a simple bind
@@ -244,27 +242,32 @@ class TestLdapCExtension(SlapdTestCase):
         l = self._open_conn()
 
     def test_simple_bind_fileno(self):
-        with self._open_conn_fd() as (sock, l):
+        with self._open_conn_fd() as (fd, l):
             self.assertEqual(l.whoami_s(), "dn:" + self.server.root_dn)
 
     @requires_init_fd()
     def test_simple_bind_fileno_invalid(self):
-        with open(os.devnull) as f:
-            l = _ldap.initialize_fd(f.fileno(), self.server.ldap_uri)
-            with self.assertRaises(_ldap.SERVER_DOWN):
-                self._bind_conn(l)
+        fd = os.open(os.devnull, os.O_RDWR)
+        l = _ldap.initialize_fd(fd, self.server.ldap_uri)
+        with self.assertRaises(_ldap.SERVER_DOWN):
+            self._bind_conn(l)
+        l.unbind_ext()
 
     @requires_init_fd()
     def test_simple_bind_fileno_closed(self):
-        with self._open_conn_fd() as (sock, l):
+        with self._open_conn_fd() as (fd, l):
             self.assertEqual(l.whoami_s(), "dn:" + self.server.root_dn)
-            sock.close()
+
+            sock = socket.socket(fileno=fd)
+            sock.shutdown(socket.SHUT_RDWR)
+            sock.detach()
+
             with self.assertRaises(_ldap.SERVER_DOWN):
                 l.whoami_s()
 
     @requires_init_fd()
     def test_simple_bind_fileno_rebind(self):
-        with self._open_conn_fd() as (sock, l):
+        with self._open_conn_fd() as (fd, l):
             self.assertEqual(l.whoami_s(), "dn:" + self.server.root_dn)
             l.unbind_ext()
             with self.assertRaises(_ldap.LDAPError):

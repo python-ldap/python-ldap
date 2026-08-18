@@ -83,7 +83,9 @@ def initialize(
         Whether to enable :ref:`bytes_mode` for backwards compatibility under Py2.
   fileno
         If not None the socket file descriptor is used to connect to an
-        LDAP server.
+        LDAP server. The connection takes ownership of the descriptor and
+        closes it when unbound, so nothing else may close it. Detach the
+        socket object it came from.
 
   Additional keyword arguments (such as ``bytes_strictness``) are
   passed to ``LDAPObject``.
