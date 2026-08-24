@@ -94,6 +94,17 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
             struct berval **bvals;
 
             pyattr = PyUnicode_FromString(attr);
+            if (pyattr == NULL) {
+                Py_DECREF(attrdict);
+                Py_DECREF(result);
+                if (ber != NULL)
+                    ber_free(ber, 0);
+                ldap_msgfree(m);
+                ldap_memfree(attr);
+                ldap_memfree(dn);
+                Py_XDECREF(pyctrls);
+                return NULL;
+            }
 
             bvals = ldap_get_values_len(ld, entry, attr);
 
@@ -221,6 +232,14 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
             for (i = 0; refs[i] != NULL; i++) {
                 /* A referal is a distinguishedName => unicode */
                 PyObject *refstr = PyUnicode_FromString(refs[i]);
+                if (refstr == NULL) {
+                    Py_DECREF(reflist);
+                    Py_DECREF(result);
+                    ber_memvfree((void **)refs);
+                    ldap_msgfree(m);
+                    Py_XDECREF(pyctrls);
+                    return NULL;
+                }
 
                 PyList_Append(reflist, refstr);
                 Py_DECREF(refstr);
