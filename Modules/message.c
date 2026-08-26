@@ -148,11 +148,12 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
                     PyObject *valuestr;
 
                     valuestr = LDAPberval_to_object(bvals[i]);
-                    if (PyList_Append(valuelist, valuestr) == -1) {
+                    if (valuestr == NULL ||
+                            PyList_Append(valuelist, valuestr) == -1) {
                         Py_DECREF(pyattr);
                         Py_DECREF(attrdict);
                         Py_DECREF(result);
-                        Py_DECREF(valuestr);
+                        Py_XDECREF(valuestr);
                         Py_DECREF(valuelist);
                         if (ber != NULL)
                             ber_free(ber, 0);
