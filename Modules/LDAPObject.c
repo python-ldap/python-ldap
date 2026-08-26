@@ -638,8 +638,10 @@ interaction(unsigned flags, sasl_interact_t *interact, PyObject *SASLObject)
        fixed sometimes.
      */
     interact->result = strdup(c_result);
-    if (interact->result == NULL)
+    if (interact->result == NULL) {
+        Py_DECREF(result);
         return LDAP_OPERATIONS_ERROR;
+    }
     interact->len = strlen(c_result);
     /* We _should_ overwrite the python string buffer for security
        reasons, however we may not (api/stringObjects.html). Any ideas?
