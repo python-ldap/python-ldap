@@ -170,6 +170,7 @@ Tuple_to_LDAPMod(PyObject *tup, int no_op)
                 LDAPerror_TypeError
                     ("Tuple_to_LDAPMod(): expected a byte string in the list",
                      item);
+                Py_DECREF(item);
                 goto error;
             }
             lm->mod_bvalues[i]->bv_len = PyBytes_Size(item);
