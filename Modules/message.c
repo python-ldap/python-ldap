@@ -67,6 +67,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
         rc = ldap_get_entry_controls(ld, entry, &serverctrls);
         if (rc) {
             Py_DECREF(result);
+            Py_DECREF(attrdict);
             ldap_msgfree(m);
             ldap_memfree(dn);
             return LDAPerror(ld);
@@ -78,6 +79,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
 
             ldap_set_option(ld, LDAP_OPT_ERROR_NUMBER, &err);
             Py_DECREF(result);
+            Py_DECREF(attrdict);
             ldap_msgfree(m);
             ldap_memfree(dn);
             ldap_controls_free(serverctrls);
@@ -176,6 +178,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
         pydn = PyUnicode_FromString(dn);
         if (pydn == NULL) {
             Py_DECREF(result);
+            Py_DECREF(attrdict);
             ldap_msgfree(m);
             ldap_memfree(dn);
             return NULL;
@@ -294,6 +297,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
                 ber_bvfree(retdata);
                 if (valuestr == NULL) {
                     ldap_memfree(retoid);
+                    Py_DECREF(pyctrls);
                     Py_DECREF(result);
                     ldap_msgfree(m);
                     return NULL;
@@ -303,6 +307,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
                 ldap_memfree(retoid);
                 if (pyoid == NULL) {
                     Py_DECREF(valuestr);
+                    Py_DECREF(pyctrls);
                     Py_DECREF(result);
                     ldap_msgfree(m);
                     return NULL;
@@ -310,6 +315,9 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
 
                 valtuple = Py_BuildValue("(NNN)", pyoid, valuestr, pyctrls);
                 if (valtuple == NULL) {
+                    Py_DECREF(pyoid);
+                    Py_DECREF(valuestr);
+                    Py_DECREF(pyctrls);
                     Py_DECREF(result);
                     ldap_msgfree(m);
                     return NULL;
