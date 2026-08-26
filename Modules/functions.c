@@ -139,6 +139,7 @@ l_ldap_str2dn(PyObject *unused, PyObject *args)
 
             if (PyList_Append(rdnlist, tuple) == -1) {
                 Py_DECREF(tuple);
+                Py_DECREF(rdnlist);
                 goto failed;
             }
             Py_DECREF(tuple);
