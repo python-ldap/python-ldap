@@ -16,6 +16,7 @@ __all__ = [
   'LDAPUrlExtension','LDAPUrlExtensions','LDAPUrl'
 ]
 
+import html
 from collections.abc import MutableMapping
 from urllib.parse import quote, unquote
 
@@ -387,9 +388,9 @@ class LDAPUrl:
         if not isinstance(hrefTarget, str):
             raise TypeError("hrefTarget must be str, not "
                             + type(hrefTarget).__name__)
-        target = ' target="%s"' % hrefTarget
+        target = ' target="%s"' % html.escape(hrefTarget, quote=True)
     return '<a{} href="{}{}">{}</a>'.format(
-        target, urlPrefix, self.unparse(), hrefText
+        target, html.escape(urlPrefix, quote=True), html.escape(self.unparse(), quote=True), html.escape(hrefText, quote=False)
     )
 
   def __str__(self):
