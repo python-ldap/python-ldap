@@ -114,7 +114,7 @@ class LDIFWriter:
         self._output_file.write(' ')
         self._output_file.write(line[pos:min(line_len,pos+self._cols-1)])
         self._output_file.write(self._last_line_sep)
-        pos = pos+self._cols-1
+        pos += self._cols - 1
     return # _unfold_lines()
 
   def _needs_base64_encoding(self,attr_type,attr_value):
@@ -201,7 +201,7 @@ class LDIFWriter:
     # Write empty line separating the records
     self._output_file.write(self._last_line_sep)
     # Count records written
-    self.records_written = self.records_written+1
+    self.records_written += 1
     return # unparse()
 
 
@@ -304,8 +304,8 @@ class LDIFParser:
       # The RFC does not allow UTF-8 values; we support it as a
       # non-official, backwards compatibility layer
       s = s.decode('utf-8')
-    self.line_counter = self.line_counter + 1
-    self.byte_counter = self.byte_counter + len(s)
+    self.line_counter += 1
+    self.byte_counter += len(s)
     if not s:
       return None
     elif s[-2:]=='\r\n':
@@ -448,7 +448,7 @@ class LDIFParser:
 
       # handle record
       self.handle(dn,entry)
-      self.records_read = self.records_read + 1
+      self.records_read += 1
       # Consume empty separator line(s)
       k,v = self._consume_empty_lines()
     return # parse_entry_records()
@@ -566,10 +566,10 @@ class LDIFParser:
 
       # Increment record counters
       try:
-        self.changetype_counter[changetype] = self.changetype_counter[changetype] + 1
+        self.changetype_counter[changetype] += 1
       except KeyError:
         self.changetype_counter[changetype] = 1
-      self.records_read = self.records_read + 1
+      self.records_read += 1
 
     return # parse_change_records()
 

@@ -360,7 +360,7 @@ class LDAPUrl:
       hostport,dn,attrs_str,scope_str,filterstr
     )
     if self.extensions:
-      ldap_url = ldap_url+'?'+self.extensions.unparse()
+      ldap_url += '?' + self.extensions.unparse()
     return ldap_url
 
   def htmlHREF(self,urlPrefix='',hrefText=None,hrefTarget=None):

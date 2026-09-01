@@ -67,7 +67,7 @@ class PersistentSearchControl(RequestControl):
       # Assume a sequence type of integers to be OR-ed
       changeTypes_int = 0
       for ct in self.changeTypes:
-        changeTypes_int = changeTypes_int|CHANGE_TYPES_INT.get(ct,ct)
+        changeTypes_int |= CHANGE_TYPES_INT.get(ct, ct)
       self.changeTypes = changeTypes_int
     p = self.PersistentSearchControlValue()
     p.setComponentByName('changeTypes',univ.Integer(self.changeTypes))
