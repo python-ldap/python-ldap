@@ -964,7 +964,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
             self._trace_file.write('*** {} reconnect to {} failed\n'.format(
               counter_text,uri
             ))
-          reconnect_counter = reconnect_counter-1
+          reconnect_counter -= 1
           if not reconnect_counter:
             raise
           if __debug__ and self._trace_level>=1:
@@ -975,7 +975,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
             self._trace_file.write('*** {} reconnect to {} successful => repeat last operation\n'.format(
               counter_text,uri
             ))
-          self._reconnects_done = self._reconnects_done + 1
+          self._reconnects_done += 1
           break
     finally:
       self._reconnect_lock.release()
