@@ -125,8 +125,10 @@ Build prerequisites
 The following software packages are required to be installed
 on the local system when building python-ldap:
 
-- `Python`_ including its development files
-- C compiler corresponding to your Python version (on Linux, it is usually ``gcc``)
+- `Python`_ including its development files for your target Python version
+  (examples below assume you're targeting the **default** version for your
+  distribution)
+- C compiler (on Linux, it is usually ``gcc``)
 - `OpenLDAP`_ client libs version 2.4.11 or later;
   it is not possible and not supported to build with prior versions.
 - `OpenSSL`_ (optional)
@@ -160,17 +162,13 @@ Debian
 Packages for building::
 
    # apt-get install build-essential ldap-utils \
-       libldap2-dev libsasl2-dev
+       libldap2-dev libsasl2-dev python3-dev
 
 Packages for building and testing::
 
    # apt-get install build-essential ldap-utils \
        libldap2-dev libsasl2-dev slapd python3-dev tox \
        lcov valgrind
-
-.. note::
-
-   On older releases ``tox`` was called ``python-tox``.
 
 Fedora
 ------
