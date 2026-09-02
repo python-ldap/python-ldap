@@ -770,6 +770,11 @@ The module defines the following exceptions:
 
    The  LDAP  library  can't  contact the LDAP server.
 
+   N.B., if you're getting ``SERVER_DOWN`` with "Interrupted system call", make
+   sure you have set :py:const:`OPT_RESTART` on::
+
+     ldap.set_option(ldap.OPT_RESTART, ldap.OPT_ON)
+
 .. py:exception:: SIZELIMIT_EXCEEDED
 
    An LDAP size limit was exceeded.
