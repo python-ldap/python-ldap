@@ -5,12 +5,14 @@ ldap.extop.dds - Classes for Dynamic Entries extended operations
 See https://www.python-ldap.org/ for details.
 """
 
+from __future__ import annotations
 from ldap.extop import ExtendedRequest,ExtendedResponse
 
 # Imports from pyasn1
 from pyasn1.type import namedtype,univ,tag
 from pyasn1.codec.der import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPDN
+
 
 
 class RefreshRequest(ExtendedRequest):
@@ -28,18 +30,23 @@ class RefreshRequest(ExtendedRequest):
       ),
       namedtype.NamedType(
         'requestTtl',
-        univ.Integer().subtype(
+        univ.Integer().subtype(  # type: ignore[no-untyped-call]
           implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,1)
         )
       ),
     )
 
-  def __init__(self,requestName=None,entryName=None,requestTtl=None):
+  def __init__(
+    self,
+    requestName: str | None = None,
+    entryName: str | None = None,
+    requestTtl: int | None = None
+  ) -> None:
     super().__init__(requestName or self.requestName, b'')
     self.entryName = entryName
     self.requestTtl = requestTtl or self.defaultRequestTtl
 
-  def encodedRequestValue(self):
+  def encodedRequestValue(self) -> bytes:
     p = self.RefreshRequestValue()
     p.setComponentByName(
       'entryName',
@@ -49,11 +56,11 @@ class RefreshRequest(ExtendedRequest):
     )
     p.setComponentByName(
       'requestTtl',
-      univ.Integer(self.requestTtl).subtype(
+      univ.Integer(self.requestTtl).subtype(  # type: ignore[no-untyped-call]
         implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,1)
       )
     )
-    return encoder.encode(p)
+    return encoder.encode(p)  # type: ignore[no-any-return]
 
 
 class RefreshResponse(ExtendedResponse):
@@ -63,13 +70,13 @@ class RefreshResponse(ExtendedResponse):
     componentType = namedtype.NamedTypes(
       namedtype.NamedType(
         'responseTtl',
-        univ.Integer().subtype(
+        univ.Integer().subtype(  # type: ignore[no-untyped-call]
           implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,1)
         )
       )
     )
 
-  def decodeResponseValue(self,value):
+  def decodeResponseValue(self, value: bytes) -> int:
     respValue,_ = decoder.decode(value,asn1Spec=self.RefreshResponseValue())
     self.responseTtl = int(respValue.getComponentByName('responseTtl'))
     return self.responseTtl

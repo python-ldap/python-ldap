@@ -9,6 +9,8 @@ The information serves two purposes:
 - Provide support for building documentation without compiling python-ldap
 
 """
+from __future__ import annotations
+from typing import Any, List, Sequence
 
 # This module cannot import anything from ldap.
 # When building documentation, it is used to initialize ldap.__init__.
@@ -18,7 +20,15 @@ class Constant:
     """Base class for a definition of an OpenLDAP constant
     """
 
-    def __init__(self, name, optional=False, requirements=(), doc=None):
+    c_template: str | None = None
+
+    def __init__(
+        self,
+        name: str,
+        optional: bool = False,
+        requirements: Sequence[str] = (),
+        doc: str | None = None,
+    ) -> None:
         self.name = name
         if optional:
             self_requirement = f'defined(LDAP_{self.name})'
@@ -46,9 +56,9 @@ class Int(Constant):
 class TLSInt(Int):
     """Definition for a TLS integer constant -- requires HAVE_TLS"""
 
-    def __init__(self, *args, **kwargs):
-        requrements = list(kwargs.get('requirements', ()))
-        kwargs['requirements'] = ['HAVE_TLS'] + requrements
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        requirements = list(kwargs.get('requirements', ()))
+        kwargs['requirements'] = ['HAVE_TLS'] + requirements
         super().__init__(*args, **kwargs)
 
 
@@ -68,7 +78,7 @@ class Feature(Constant):
     ])
 
 
-    def __init__(self, name, c_feature, **kwargs):
+    def __init__(self, name: str, c_feature: str, **kwargs: Any) -> None:
         super().__init__(name, **kwargs)
         self.c_feature = c_feature
 
@@ -379,7 +389,7 @@ CONSTANTS = (
 )
 
 
-def print_header():  # pragma: no cover
+def print_header() -> None:  # pragma: no cover
     """Print the C header file to standard output"""
 
     print('/*')
@@ -390,9 +400,9 @@ def print_header():  # pragma: no cover
     print(' */')
     print('')
 
-    current_requirements = []
+    current_requirements: List[str] = []
 
-    def pop_requirement():
+    def pop_requirement() -> None:
         popped = current_requirements.pop()
         print('#endif')
         print()
@@ -407,11 +417,66 @@ def print_header():  # pragma: no cover
                 print()
                 print(f'#if {requirement}')
 
-        print(definition.c_template.format(self=definition))
+        if definition.c_template is not None:
+            print(definition.c_template.format(self=definition))
 
     while current_requirements:
         pop_requirement()
 
 
+def generate_pyi() -> None:  # pragma: no cover
+    """Update the generated section of Lib/ldap/_ldap.pyi in place.
+
+    The generated section is delimited by '# BEGIN GENERATED' and
+    '# END GENERATED' markers in that file.  Everything outside those
+    markers (hand-written imports, C-only constants, LDAPError base
+    class, function stubs, etc.) is left untouched.
+    """
+    import pathlib
+
+    BEGIN = '# BEGIN GENERATED\n'
+    END = '# END GENERATED\n'
+
+    seen: set[str] = set()
+    int_names: List[str] = []
+    str_names: List[str] = []
+    error_names: List[str] = []
+
+    for definition in CONSTANTS:
+        if definition.name in seen:
+            continue
+        seen.add(definition.name)
+        if isinstance(definition, Error):
+            error_names.append(definition.name)
+        elif isinstance(definition, Str):
+            str_names.append(definition.name)
+        else:
+            int_names.append(definition.name)
+
+    lines: List[str] = [
+        BEGIN,
+        '# Regenerate with: python Lib/ldap/constants.py --pyi\n',
+    ]
+    for name in sorted(int_names + str_names, key=str.casefold):
+        typ = 'str' if name in str_names else 'int'
+        lines.append(f'{name}: {typ}\n')
+    lines.append('\n')
+    for name in sorted(error_names, key=str.casefold):
+        lines.append(f'class {name}(LDAPError):\n')
+        lines.append(f'    errnum: ClassVar[int] = ...\n')
+        lines.append('\n')
+    lines.append(END)
+
+    pyi_path = pathlib.Path(__file__).parent / '_ldap.pyi'
+    pyi = pyi_path.read_text()
+    begin_idx = pyi.index(BEGIN)
+    end_idx = pyi.index(END) + len(END)
+    pyi_path.write_text(pyi[:begin_idx] + ''.join(lines) + pyi[end_idx:])
+
+
 if __name__ == '__main__':
-    print_header()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == '--pyi':
+        generate_pyi()
+    else:
+        print_header()

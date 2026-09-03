@@ -7,15 +7,18 @@ Compatibility:
 - Tested with Python 2.0+
 """
 
-import _ldap
-from ldap import __version__
+from __future__ import annotations
+from ldap.pkginfo import __version__
 
+import ldap._ldap as _ldap
 from ldap.functions import strf_secs
+
+from typing import Iterable, Union
 
 import time
 
 
-def escape_filter_chars(assertion_value,escape_mode=0):
+def escape_filter_chars(assertion_value: str, escape_mode: int = 0) -> str:
   """
   Replace all special characters found in assertion_value
   by quoted notation.
@@ -49,7 +52,7 @@ def escape_filter_chars(assertion_value,escape_mode=0):
   return s
 
 
-def filter_format(filter_template,assertion_values):
+def filter_format(filter_template: str, assertion_values: Iterable[str]) -> str:
   """
   filter_template
         String containing %s as placeholder for assertion values.
@@ -61,11 +64,11 @@ def filter_format(filter_template,assertion_values):
 
 
 def time_span_filter(
-        filterstr='',
-        from_timestamp=0,
-        until_timestamp=None,
-        delta_attr='modifyTimestamp',
-    ):
+        filterstr: str = '',
+        from_timestamp: Union[int, float] = 0,
+        until_timestamp: Union[int, float] | None = None,
+        delta_attr: str = 'modifyTimestamp',
+    ) -> str:
     """
     If last_run_timestr is non-zero filterstr will be extended
     """
@@ -92,6 +95,6 @@ def time_span_filter(
     # end of time_span_filter()
 
 
-def is_filter(ldap_filter: str):
+def is_filter(ldap_filter: str) -> bool:
     """Returns True if `ldap_filter' can be parsed as a valid LDAP filter, otherwise False is returned."""
     return _ldap.is_filter(ldap_filter)
