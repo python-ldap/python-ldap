@@ -1058,8 +1058,8 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
     LDAPMessage *msg = NULL;
     PyObject *retval, *pmsg, *pyctrls = 0;
     int res_msgid = 0;
-    char *retoid = 0;
-    PyObject *valuestr = NULL;
+    struct berval *retdata = NULL;
+    char *retoid = NULL;
     int result = LDAP_SUCCESS;
     int rc = LDAP_SUCCESS;
     LDAPControl **serverctrls = 0;
@@ -1116,17 +1116,10 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
     }
     else {
         if (res_type == LDAP_RES_EXTENDED) {
-            struct berval *retdata = 0;
-
             LDAP_BEGIN_ALLOW_THREADS(self);
             rc = ldap_parse_extended_result(self->ldap, msg, &retoid, &retdata,
                                             0);
             LDAP_END_ALLOW_THREADS(self);
-            /* handle error rc!=0 here? */
-            if (rc == LDAP_SUCCESS) {
-                valuestr = LDAPberval_to_object(retdata);
-            }
-            ber_bvfree(retdata);
         }
 
         if (rc == LDAP_SUCCESS) {
@@ -1139,7 +1132,8 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
 
     if (rc != LDAP_SUCCESS || result != LDAP_SUCCESS) {       /* result error */
         ldap_controls_free(serverctrls);
-        Py_XDECREF(valuestr);
+        ldap_memfree(retoid);
+        ber_bvfree(retdata);
         return LDAPraise_for_message(self->ldap, msg);
     }
 
@@ -1151,7 +1145,8 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
         LDAP_END_ALLOW_THREADS(self);
         ldap_controls_free(serverctrls);
         ldap_msgfree(msg);
-        Py_XDECREF(valuestr);
+        ldap_memfree(retoid);
+        ber_bvfree(retdata);
         return LDAPerror(self->ldap);
     }
     ldap_controls_free(serverctrls);
@@ -1165,9 +1160,9 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
     else {
         /* s handles NULL, but O does not */
         if (add_extop) {
-            retval = Py_BuildValue("(iOiOsO)", res_type, pmsg, res_msgid,
+            retval = Py_BuildValue("(iOiOsO&)", res_type, pmsg, res_msgid,
                                    pyctrls, retoid,
-                                   valuestr ? valuestr : Py_None);
+                                   LDAPberval_to_object, retdata);
         }
         else {
             retval =
@@ -1178,7 +1173,8 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
             Py_DECREF(pmsg);
         }
     }
-    Py_XDECREF(valuestr);
+    ldap_memfree(retoid);
+    ber_bvfree(retdata);
     Py_XDECREF(pyctrls);
     return retval;
 }
