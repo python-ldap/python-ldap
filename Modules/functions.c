@@ -251,6 +251,7 @@ l_ldap_dn2str(PyObject *self, PyObject *args)
             PyErr_NoMemory();
             goto error_cleanup;
         }
+        dn[i] = rdn;
 
         for (j = 0; j < navas; j++) {
             py_ava_item = PySequence_GetItem(py_rdn_seq, j);  /* New reference */
@@ -268,6 +269,7 @@ l_ldap_dn2str(PyObject *self, PyObject *args)
             py_encoding = PyTuple_GetItem(py_ava_item, 2);  /* Borrowed reference */
 
             if (!PyUnicode_Check(py_name) || !PyUnicode_Check(py_value) || !PyLong_Check(py_encoding)) {
+                dn[i] = rdn;
                 PyErr_SetString(PyExc_TypeError, type_error_message);
                 goto error_cleanup;
             }
@@ -286,10 +288,10 @@ l_ldap_dn2str(PyObject *self, PyObject *args)
                 PyErr_NoMemory();
                 goto error_cleanup;
             }
+            rdn[j] = ava;
 
             ava->la_attr.bv_val = (char *)malloc((size_t)name_len + 1);
             if (ava->la_attr.bv_val == NULL) {
-                free(ava);
                 PyErr_NoMemory();
                 goto error_cleanup;
             }
@@ -299,8 +301,6 @@ l_ldap_dn2str(PyObject *self, PyObject *args)
 
             ava->la_value.bv_val = (char *)malloc((size_t)value_len + 1);
             if (ava->la_value.bv_val == NULL) {
-                free(ava->la_attr.bv_val);
-                free(ava);
                 PyErr_NoMemory();
                 goto error_cleanup;
             }
@@ -311,13 +311,9 @@ l_ldap_dn2str(PyObject *self, PyObject *args)
             ava->la_flags = (int)PyLong_AsLong(py_encoding);
             if (PyErr_Occurred()) {
                 /* Encoding conversion failed */
-                free(ava->la_attr.bv_val);
-                free(ava->la_value.bv_val);
-                free(ava);
                 goto error_cleanup;
             }
 
-            rdn[j] = ava;
             Py_DECREF(py_ava_item);
             py_ava_item = NULL;
         }
@@ -325,7 +321,6 @@ l_ldap_dn2str(PyObject *self, PyObject *args)
         /* Null‐terminate the RDN */
         rdn[navas] = NULL;
 
-        dn[i] = rdn;
         Py_DECREF(py_rdn_seq);
         py_rdn_seq = NULL;
     }
