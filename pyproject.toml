@@ -1,6 +1,9 @@
 [build-system]
 requires = [
-    "setuptools",
+    # PEP 621 [project] metadata needs setuptools >= 61; older versions
+    # silently ignore the [project] table and build an sdist whose metadata
+    # name is "unknown" (the broken 3.4.5 release, #616).
+    "setuptools>=61",
 ]
 build-backend = "setuptools.build_meta"
 
