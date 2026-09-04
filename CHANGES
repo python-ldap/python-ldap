@@ -1,3 +1,16 @@
+Released 3.4.8 (unreleased)
+
+Infrastructure:
+* Build requirement pinned to ``setuptools>=61``: older setuptools ignores
+  the PEP 621 ``[project]`` table and produces an sdist with broken metadata
+  (``Name: unknown``), which made pip silently fall back to ancient releases
+  when building 3.4.5 from source (#616). Old environments now fail with a
+  clear resolver error instead.
+* Removed the ``[install]`` section (``compile``/``optimize``) from
+  ``setup.cfg``; it caused ``bdist_wheel`` to embed ``__pycache__``
+  byte-code files in published wheels (#615).
+
+----------------------------------------------------------------
 Released 3.4.7 2026-05-19
 
 No code changes, correcting for the fact that the previous release artifacts
