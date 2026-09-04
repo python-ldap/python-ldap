@@ -54,7 +54,7 @@ LDAPraise_for_message(LDAP *l, LDAPMessage *m)
         return NULL;
     }
     else {
-        int myerrno, errnum, opt_errnum, msgid = -1, msgtype = 0;
+        int myerrno, errnum, opt_errnum, msgid = -1, msgtype = 0, rc = LDAP_SUCCESS;
         PyObject *errobj;
         PyObject *info;
         PyObject *str;
@@ -70,11 +70,13 @@ LDAPraise_for_message(LDAP *l, LDAPMessage *m)
         if (m != NULL) {
             msgid = ldap_msgid(m);
             msgtype = ldap_msgtype(m);
-            ldap_parse_result(l, m, &errnum, &matched, &error, &refs,
-                              &serverctrls, 1);
+            rc = ldap_parse_result(l, m, &errnum, &matched, &error, &refs,
+                    &serverctrls, 1);
         }
 
-        if (msgtype <= 0) {
+        if (rc != LDAP_SUCCESS) {
+            errnum = rc;
+        } else if (msgtype <= 0) {
             opt_errnum = ldap_get_option(l, LDAP_OPT_ERROR_NUMBER, &errnum);
             if (opt_errnum != LDAP_OPT_SUCCESS)
                 errnum = opt_errnum;

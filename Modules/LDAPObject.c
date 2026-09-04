@@ -1061,6 +1061,7 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
     char *retoid = 0;
     PyObject *valuestr = NULL;
     int result = LDAP_SUCCESS;
+    int rc = LDAP_SUCCESS;
     LDAPControl **serverctrls = 0;
 
     if (!PyArg_ParseTuple
@@ -1114,8 +1115,6 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
         /* LDAPmessage_to_python will parse intermediates and controls */
     }
     else {
-        int rc;
-
         if (res_type == LDAP_RES_EXTENDED) {
             struct berval *retdata = 0;
 
@@ -1136,7 +1135,7 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
         LDAP_END_ALLOW_THREADS(self);
     }
 
-    if (result != LDAP_SUCCESS) {       /* result error */
+    if (rc != LDAP_SUCCESS || result != LDAP_SUCCESS) {       /* result error */
         ldap_controls_free(serverctrls);
         Py_XDECREF(valuestr);
         return LDAPraise_for_message(self->ldap, msg);
