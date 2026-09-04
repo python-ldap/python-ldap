@@ -140,14 +140,14 @@ class AsyncSearchHandler:
         # Loop over list of search results
         for result_item in result_list:
           if result_counter<ignoreResultsNumber:
-            self.beginResultsDropped = self.beginResultsDropped+1
+            self.beginResultsDropped += 1
           elif processResultsCount==0 or result_counter<end_result_counter:
             self._processSingleResult(result_type,result_item)
           else:
             go_ahead = 0 # break-out from while go_ahead
             partial = 1
             break # break-out from this for-loop
-          result_counter = result_counter+1
+          result_counter += 1
         result_type,result_list = None,None
         self.endResultBreak = result_counter
     finally:
