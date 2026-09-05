@@ -1,3 +1,12 @@
+Released 3.5.0 (unreleased)
+
+Infrastructure:
+* Building from source now requires setuptools >= 77, needed for the
+  PEP 639 license metadata in ``pyproject.toml``
+* Removed the ``[install]`` byte-compile options from ``setup.cfg``, so
+  locally built wheels no longer contain ``__pycache__`` directories
+
+----------------------------------------------------------------
 Released 3.4.7 2026-05-19
 
 No code changes, correcting for the fact that the previous release artifacts
