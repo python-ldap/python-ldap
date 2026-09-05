@@ -267,7 +267,6 @@ CONSTANTS = (
 
     Int('OPT_DEFBASE', optional=True),
 
-    TLSInt('OPT_X_TLS', optional=True),
     TLSInt('OPT_X_TLS_CTX'),
     TLSInt('OPT_X_TLS_CACERTFILE'),
     TLSInt('OPT_X_TLS_CACERTDIR'),

@@ -1,5 +1,10 @@
 Released 3.5.0 (unreleased)
 
+API changes:
+* The deprecated ``OPT_X_TLS`` option has been removed, as announced in the
+  3.4.3 release notes. The ``OPT_X_TLS_*`` option constants (such as
+  ``OPT_X_TLS_NEWCTX`` and ``OPT_X_TLS_REQUIRE_CERT``) are unaffected.
+
 Infrastructure:
 * Building from source now requires setuptools >= 77, needed for the
   PEP 639 license metadata in ``pyproject.toml``

@@ -82,7 +82,6 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
     case LDAP_OPT_ERROR_NUMBER:
     case LDAP_OPT_DEBUG_LEVEL:
 #ifdef HAVE_TLS
-    case LDAP_OPT_X_TLS:
     case LDAP_OPT_X_TLS_REQUIRE_CERT:
 #ifdef LDAP_OPT_X_TLS_CRLCHECK
     case LDAP_OPT_X_TLS_CRLCHECK:
@@ -334,7 +333,6 @@ LDAP_get_option(LDAPObject *self, int option)
     case LDAP_OPT_DEBUG_LEVEL:
     case LDAP_OPT_DESC:
 #ifdef HAVE_TLS
-    case LDAP_OPT_X_TLS:
     case LDAP_OPT_X_TLS_REQUIRE_CERT:
 #ifdef LDAP_OPT_X_TLS_CRLCHECK
     case LDAP_OPT_X_TLS_CRLCHECK:
