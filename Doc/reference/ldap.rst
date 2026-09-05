@@ -488,12 +488,6 @@ TLS options
 
    get/set path to /dev/urandom (**DO NOT USE**)
 
-.. py:data:: OPT_X_TLS
-
-   .. deprecated:: 3.3.0
-      The option is deprecated in OpenLDAP and should no longer be used. It
-      will be removed in the future.
-
 .. note::
 
    OpenLDAP supports several TLS/SSL libraries. OpenSSL is the most common
