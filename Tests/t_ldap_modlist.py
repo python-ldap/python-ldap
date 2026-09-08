@@ -65,6 +65,7 @@ class TestModlist(unittest.TestCase):
                 'mail':[b'michael@stroeder.com'],
             },
             [],
+            [],
             [
                 (ldap.MOD_DELETE,'objectClass',None),
                 (ldap.MOD_ADD,'objectClass',[b'person',b'inetOrgPerson']),
@@ -78,11 +79,90 @@ class TestModlist(unittest.TestCase):
 
         (
             {
+                'objectClass':[b'person',b'pilotPerson'],
+                'cn':[b'Max Mustermann'],
+                'sn':[b'Mustermann'],
+                'mail':[b'max@example.com'],
+            },
+            {
+                'objectClass':[b'person',b'pilotPerson'],
+                'cn':[b'Max Mustermann'],
+                'sn':[b'Mustermann'],
+                'mail':[b'max@example.com'],
+            },
+            [],
+            ['mail'], # strict_order_attr_types
+            []
+        ),
+
+        (
+            {
+                'objectClass':[b'person',b'pilotPerson'],
+                'cn':[b'Max Mustermann'],
+                'sn':[b'Mustermann'],
+                'mail':[b'max@example.com'],
+            },
+            {
+                'objectClass':[b'person',b'pilotPerson'],
+                'cn':[b'Max Mustermann'],
+                'sn':[b'Mustermann'],
+                'mail':[b'max@example.com', b'max@example.net'],
+            },
+            [],
+            ['mail'], # strict_order_attr_types
+            [
+                (ldap.MOD_DELETE,'mail',None),
+                (ldap.MOD_ADD,'mail',[b'max@example.com', b'max@example.net']),
+            ]
+        ),
+
+        (
+            {
+                'objectClass':[b'person',b'pilotPerson'],
+                'cn':[b'Max Mustermann'],
+                'sn':[b'Mustermann'],
+                'mail':[b'max@example.com', b'max@example.net'],
+            },
+            {
+                'objectClass':[b'person',b'pilotPerson'],
+                'cn':[b'Max Mustermann'],
+                'sn':[b'Mustermann'],
+                'mail':[b'max@example.net', b'max@example.com'],
+            },
+            [],
+            ['mail'], # strict_order_attr_types
+            [
+                (ldap.MOD_DELETE,'mail',None),
+                (ldap.MOD_ADD,'mail',[b'max@example.net', b'max@example.com']),
+            ]
+        ),
+
+        (
+            {
+                'objectClass':[b'person',b'pilotPerson'],
+                'cn':[b'Max Mustermann'],
+                'sn':[b'Mustermann'],
+                'mail':[b'max@example.com', b'max@example.net'],
+            },
+            {
+                'objectClass':[b'person',b'pilotPerson'],
+                'cn':[b'Max Mustermann'],
+                'sn':[b'Mustermann'],
+                'mail':[b'max@example.net', b'max@example.com'],
+            },
+            [],
+            [], # strict_order_attr_types
+            []
+        ),
+
+        (
+            {
                 'c':[b'DE'],
             },
             {
                 'c':[b'FR'],
             },
+            [],
             [],
             [
                 (ldap.MOD_DELETE,'c',None),
@@ -105,6 +185,7 @@ class TestModlist(unittest.TestCase):
                 'sn':[None],
             },
             [],
+            [],
             [
                 (ldap.MOD_DELETE,'c',None),
                 (ldap.MOD_DELETE,'objectClass',None),
@@ -126,6 +207,7 @@ class TestModlist(unittest.TestCase):
                 'enum':[b'a',b'b',b'c'],
             },
             ['objectClass'],
+            [],
             [
                 (ldap.MOD_DELETE,'sn',None),
                 (ldap.MOD_DELETE,'enum',None),
@@ -136,11 +218,13 @@ class TestModlist(unittest.TestCase):
     ]
 
     def test_modifyModlist(self):
-        for old_entry, new_entry, case_ignore_attr_types, test_modlist in self.modifyModlist_tests:
+        for old_entry, new_entry, case_ignore_attr_types, strict_order_attr_types, test_modlist in self.modifyModlist_tests:
             test_modlist.sort()
             result_modlist = modifyModlist(
                 old_entry, new_entry,
-                case_ignore_attr_types=case_ignore_attr_types)
+                case_ignore_attr_types=case_ignore_attr_types,
+                strict_order_attr_types=strict_order_attr_types,
+            )
             result_modlist.sort()
 
             self.assertEqual(

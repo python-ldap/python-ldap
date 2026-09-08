@@ -25,7 +25,7 @@ def addModlist(entry,ignore_attr_types=None):
 
 
 def modifyModlist(
-  old_entry,new_entry,ignore_attr_types=None,ignore_oldexistent=0,case_ignore_attr_types=None
+  old_entry,new_entry,ignore_attr_types=None,ignore_oldexistent=0,case_ignore_attr_types=None, strict_order_attr_types=None,
 ):
   """
   Build differential modify list for calling LDAPObject.modify()/modify_s()
@@ -45,9 +45,13 @@ def modifyModlist(
   case_ignore_attr_types
       List of attribute type names for which comparison will be made
       case-insensitive
+  strict_order_attr_types
+      List of attribute type names for which comparison will be made
+      with strict ordering (by default, value ordering changes will be ignored)
   """
   ignore_attr_types = {v.lower() for v in ignore_attr_types or []}
   case_ignore_attr_types = {v.lower() for v in case_ignore_attr_types or []}
+  strict_order_attr_types = {v.lower() for v in strict_order_attr_types or []}
   modlist = []
   attrtype_lower_map = {}
   for a in old_entry:
@@ -73,11 +77,19 @@ def modifyModlist(
       replace_attr_value = len(old_value)!=len(new_value)
       if not replace_attr_value:
         if attrtype_lower in case_ignore_attr_types:
-          old_value_set = {v.lower() for v in old_value}
-          new_value_set = {v.lower() for v in new_value}
+            if attrtype_lower in strict_order_attr_types:
+                old_value_set = [v.lower() for v in old_value]
+                new_value_set = [v.lower() for v in new_value]
+            else:
+                old_value_set = {v.lower() for v in old_value}
+                new_value_set = {v.lower() for v in new_value}
         else:
-          old_value_set = set(old_value)
-          new_value_set = set(new_value)
+            if attrtype_lower in strict_order_attr_types:
+                old_value_set = [old_value]
+                new_value_set = [new_value]
+            else:
+                old_value_set = set(old_value)
+                new_value_set = set(new_value)
         replace_attr_value = new_value_set != old_value_set
       if replace_attr_value:
         modlist.append((ldap.MOD_DELETE,attrtype,None))
