@@ -180,6 +180,16 @@ the following option identifiers are defined as constants:
 
 .. py:data:: OPT_CLIENT_CONTROLS
 
+   Client-side request controls that libldap attaches to every operation
+   on the connection. :py:meth:`LDAPObject.set_option` takes a list of
+   :py:class:`ldap.controls.RequestControl` instances, the module-level
+   :py:func:`set_option` takes the encoded 3-tuples. Response controls
+   never show up here, they are returned by :py:meth:`LDAPObject.result3`
+   and :py:meth:`LDAPObject.result4`. :py:meth:`LDAPObject.get_option`
+   decodes the stored controls with the response control classes, which
+   only works for controls whose request and response values share a
+   schema, see https://github.com/python-ldap/python-ldap/issues/643.
+
 .. py:data:: OPT_DEBUG_LEVEL
 
    Sets the debug level within the underlying OpenLDAP C lib (libldap).
@@ -219,6 +229,13 @@ the following option identifiers are defined as constants:
 .. py:data:: OPT_RESTART
 
 .. py:data:: OPT_SERVER_CONTROLS
+
+   Server-side request controls that libldap attaches to every operation
+   on the connection, for example
+   :py:class:`ldap.controls.sessiontrack.SessionTrackingControl`.
+   Same rules as :py:data:`OPT_CLIENT_CONTROLS`. Controls meant for a
+   single operation belong in the ``serverctrls`` argument of that
+   operation instead.
 
 .. py:data:: OPT_SIZELIMIT
 
