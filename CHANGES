@@ -1,5 +1,20 @@
 Released 3.4.8 (unreleased)
 
+Fixes:
+* Plugged memory and reference leaks at error-handling time (#40, #617, #619,
+  #620, #621, #622, #632)
+* VLV control now honours contextID passed in (#618)
+* ldapurl now correctly escapes when emitting a HTML anchor (#628)
+* _ldap.str2dn now handles empty string correctly (#549)
+* handle server-sent invalid UTF-8 correctly (by throwing an error) (#624)
+
+Doc:
+* fd ownership has now been clarified - if providing an fd to set up a new
+  LDAPObject, it is now owned and managed by the module, do not close it
+  yourself (#575)
+* clarifications on handling EINTR -> use OPT_RESTART (#242)
+* clarified build dependencies (#569)
+
 Infrastructure:
 * Build requirement pinned to ``setuptools>=61``: older setuptools ignores
   the PEP 621 ``[project]`` table and produces an sdist with broken metadata

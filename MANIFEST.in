@@ -1,10 +1,12 @@
 include MANIFEST.in Makefile CHANGES INSTALL LICENCE README TODO
-include tox.ini
+include SECURITY.md CONTRIBUTING.rst README.rst
+include tox.ini .readthedocs.yaml
+include Misc/python-ldap.supp
 include Modules/*.c Modules/*.h
 recursive-include Build *.cfg*
 recursive-include Lib *.py
 recursive-include Demo *.py
 recursive-include Tests *.py *.ldif
 recursive-include Lib/slapdtest *.pem *.key *.conf *.sh README
-recursive-include Doc *.rst *.py spelling_wordlist.txt Makefile
+recursive-include Doc *.rst *.py spelling_wordlist.txt requirements.txt Makefile
 prune Doc/.build
