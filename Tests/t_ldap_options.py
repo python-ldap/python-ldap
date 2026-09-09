@@ -7,10 +7,12 @@ os.environ['LDAPNOINIT'] = '1'
 from slapdtest import SlapdTestCase, requires_tls
 
 import ldap
-from ldap.controls import RequestControlTuples
+from ldap.controls import RequestControl, RequestControlTuples
 from ldap.controls.pagedresults import SimplePagedResultsControl
 from ldap.controls.openldap import SearchNoOpControl
 from ldap.ldapobject import SimpleLDAPObject
+
+from pyasn1.error import PyAsn1Error
 
 
 SENTINEL = object()
@@ -181,15 +183,46 @@ class TestLDAPObjectOptions(BaseTestOptions, SlapdTestCase):
         finally:
             self.set_option(option, old)
 
-    # test is failing with:
-    # pyasn1.error.SubstrateUnderrunError: Short octet stream on tag decoding
-    @unittest.expectedFailure
-    def test_client_controls(self):
-        self._test_controls(ldap.OPT_CLIENT_CONTROLS)
+    # These options hold request controls, but get_option() decodes them
+    # with the response classes in KNOWN_RESPONSE_CONTROLS, so only
+    # controls with identical request and response schemas round-trip.
+    # Returning raw tuples like the module-level API is a 4.0 question, #643.
+    def _test_controls(self, option):
+        self._check_option(option, [])
 
-    @unittest.expectedFailure
-    def test_server_controls(self):
-        self._test_controls(ldap.OPT_SERVER_CONTROLS)
+        self.set_option(option, [
+            SimplePagedResultsControl(criticality=0, size=5, cookie=b'cookie'),
+        ])
+        try:
+            paged, = self.get_option(option)
+            self.assertIsInstance(paged, SimplePagedResultsControl)
+            self.assertEqual(paged.criticality, 0)
+            self.assertEqual(paged.size, 5)
+            self.assertEqual(paged.cookie, b'cookie')
+        finally:
+            self.set_option(option, [])
+
+        # no request value, SEQUENCE response: critical raises,
+        # non-critical is dropped
+        self.set_option(option, [SearchNoOpControl(criticality=1)])
+        try:
+            with self.assertRaises(PyAsn1Error):
+                self.get_option(option)
+        finally:
+            self.set_option(option, [])
+        self.set_option(option, [SearchNoOpControl(criticality=0)])
+        try:
+            self.assertEqual(self.get_option(option), [])
+        finally:
+            self.set_option(option, [])
+
+        with self.assertRaises(TypeError):
+            self.set_option(option, object)
+        with self.assertRaises(TypeError):
+            # data must be bytes or None
+            self.set_option(option, [
+                RequestControl(TEST_CTRL[0][0], TEST_CTRL[0][1], 'data'),
+            ])
 
 
 if __name__ == '__main__':
