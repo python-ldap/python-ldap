@@ -7,7 +7,7 @@ See https://www.python-ldap.org/ for details.
 from ldap import __version__
 
 __all__ = [
-  'open','initialize','init',
+  'initialize',
   'explode_dn','explode_rdn',
   'get_option','set_option',
   'escape_str',
