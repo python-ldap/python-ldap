@@ -577,6 +577,13 @@ The module defines the following exceptions:
      attached to the error.
    * ``'errno'``: the C ``errno``, usually set by system calls or ``libc``
      rather than the LDAP libraries.
+   * ``'referrals'``: list of referrals (LDAP URIs) attached to the error.
+
+.. versionchanged:: 3.5
+
+   Introduced new ``'referrals'`` field. Relying on the first referral being
+   listed in the ``'info'`` field is now deprecated and will go away in the
+   future.
 
 .. py:exception:: ADMINLIMIT_EXCEEDED
 
