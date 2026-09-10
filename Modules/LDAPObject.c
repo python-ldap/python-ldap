@@ -10,6 +10,11 @@
 #include <sasl/sasl.h>
 #endif
 
+#if PY_VERSION_HEX < 0x030B0000
+#undef PyType_GetModuleByDef
+#define PyType_GetModuleByDef(type, def) PyType_GetModule((type))
+#endif
+
 static void free_attrs(char ***);
 
 /* constructor */

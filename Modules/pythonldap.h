@@ -17,6 +17,12 @@
 #include <ldap.h>
 #include <ldap_features.h>
 
+#if PY_VERSION_HEX < 0x030A0000
+/* We don't pass things with side-effects into Py_NewRef() */
+#define Py_NewRef(obj) (Py_INCREF(obj), (obj))
+#define Py_IsNone(obj) ((obj) == Py_None)
+#endif
+
 #if LDAP_VENDOR_VERSION < 20400
 #error Current python-ldap requires OpenLDAP 2.4.x
 #endif
