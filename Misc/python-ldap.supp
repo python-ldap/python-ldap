@@ -46,7 +46,7 @@
    fun:PyObject_Malloc
    ...
    fun:PyErr_NewException
-   fun:LDAPinit_constants
+   fun:LDAPMod_init_constants
    fun:init_ldap_module
    ...
 }

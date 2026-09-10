@@ -2,10 +2,12 @@
 
 #include "pythonldap.h"
 
+#include <stdlib.h>
+
 /* ldap_initialize */
 
-static PyObject *
-l_ldap_initialize(PyObject *unused, PyObject *args)
+PyObject *
+LDAPMod_initialize(PyObject *module, PyObject *args)
 {
     char *uri;
     LDAP *ld = NULL;
@@ -20,16 +22,16 @@ l_ldap_initialize(PyObject *unused, PyObject *args)
     PyEval_RestoreThread(save);
 
     if (ret != LDAP_SUCCESS)
-        return LDAPerror(ld);
+        return LDAPerror(module, ld);
 
-    return (PyObject *)newLDAPObject(ld);
+    return (PyObject *)newLDAPObject(module, ld);
 }
 
 #ifdef HAVE_LDAP_INIT_FD
 /* initialize_fd(fileno, url) */
 
-static PyObject *
-l_ldap_initialize_fd(PyObject *unused, PyObject *args)
+PyObject *
+LDAPMod_initialize_fd(PyObject *module, PyObject *args)
 {
     char *url;
     LDAP *ld = NULL;
@@ -46,7 +48,7 @@ l_ldap_initialize_fd(PyObject *unused, PyObject *args)
     /* Get LDAP protocol from scheme */
     ret = ldap_url_parse(url, &lud);
     if (ret != LDAP_SUCCESS)
-        return LDAPerr(ret);
+        return LDAPerr(module, ret);
 
     if (strcmp(lud->lud_scheme, "ldap") == 0) {
         proto = LDAP_PROTO_TCP;
@@ -74,16 +76,16 @@ l_ldap_initialize_fd(PyObject *unused, PyObject *args)
     PyEval_RestoreThread(save);
 
     if (ret != LDAP_SUCCESS)
-        return LDAPerror(ld);
+        return LDAPerror(module, ld);
 
-    return (PyObject *)newLDAPObject(ld);
+    return (PyObject *)newLDAPObject(module, ld);
 }
 #endif
 
 /* ldap_str2dn */
 
-static PyObject *
-l_ldap_str2dn(PyObject *unused, PyObject *args)
+PyObject *
+LDAPMod_str2dn(PyObject *module, PyObject *args)
 {
     struct berval str;
     LDAPDN dn;
@@ -104,7 +106,7 @@ l_ldap_str2dn(PyObject *unused, PyObject *args)
 
     res = ldap_bv2dn(&str, &dn, flags);
     if (res != LDAP_SUCCESS)
-        return LDAPerr(res);
+        return LDAPerr(module, res);
 
     tmp = PyList_New(0);
     if (!tmp)
@@ -188,8 +190,8 @@ _free_dn_structure(LDAPDN dn)
  * Python signature: dn2str(dn: list[list[tuple[str, str, int]]], flags: int) -> str
  * Returns the DN string on success, or raises TypeError or RuntimeError on error.
  */
-static PyObject *
-l_ldap_dn2str(PyObject *self, PyObject *args)
+PyObject *
+LDAPMod_dn2str(PyObject *self, PyObject *args)
 {
     PyObject *dn_list = NULL;
     int flags = 0;
@@ -374,8 +376,8 @@ l_ldap_dn2str(PyObject *self, PyObject *args)
 
 /* ldap_set_option (global options) */
 
-static PyObject *
-l_ldap_set_option(PyObject *self, PyObject *args)
+PyObject *
+LDAPMod_set_option(PyObject *module, PyObject *args)
 {
     PyObject *value;
     int option;
@@ -384,14 +386,13 @@ l_ldap_set_option(PyObject *self, PyObject *args)
         return NULL;
     if (!LDAP_set_option(NULL, option, value))
         return NULL;
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_NewRef(Py_None);
 }
 
 /* ldap_get_option (global options) */
 
-static PyObject *
-l_ldap_get_option(PyObject *self, PyObject *args)
+PyObject *
+LDAPMod_get_option(PyObject *module, PyObject *args)
 {
     int option;
 
@@ -400,9 +401,19 @@ l_ldap_get_option(PyObject *self, PyObject *args)
     return LDAP_get_option(NULL, option);
 }
 
+/*
+ * ldap._ldap.is_filter
+ *
+ * Test whether a string is a well formed LDAP Filter string.
+ *
+ * Python signature: is_filter(ldap_filter: str) -> bool
+ *
+ * Returns a bool indicating well-formedness, or raises TypeError or
+ * RuntimeError on error.
+ */
 
-/* ldap_is_filter */
-static PyObject *l_ldap_is_filter(PyObject *self, PyObject *args)
+PyObject *
+LDAPMod_is_filter(PyObject *module, PyObject *args)
 {
     const char *filter;
     BerElement *ber;
@@ -423,28 +434,4 @@ static PyObject *l_ldap_is_filter(PyObject *self, PyObject *args)
         Py_RETURN_TRUE;
     }
     Py_RETURN_FALSE;
-}
-
-
-/* methods */
-
-static PyMethodDef methods[] = {
-    {"initialize", (PyCFunction)l_ldap_initialize, METH_VARARGS},
-#ifdef HAVE_LDAP_INIT_FD
-    {"initialize_fd", (PyCFunction)l_ldap_initialize_fd, METH_VARARGS},
-#endif
-    {"str2dn", (PyCFunction)l_ldap_str2dn, METH_VARARGS},
-    {"dn2str", (PyCFunction)l_ldap_dn2str, METH_VARARGS},
-    {"set_option", (PyCFunction)l_ldap_set_option, METH_VARARGS},
-    {"get_option", (PyCFunction)l_ldap_get_option, METH_VARARGS},
-    {"is_filter", (PyCFunction)l_ldap_is_filter, METH_VARARGS},
-    {NULL, NULL}
-};
-
-/* initialisation */
-
-void
-LDAPinit_functions(PyObject *d)
-{
-    LDAPadd_methods(d, methods);
 }
