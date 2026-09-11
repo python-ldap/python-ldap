@@ -352,7 +352,7 @@ class SyncreplConsumer:
     SyncreplConsumer - LDAP syncrepl consumer object.
     """
 
-    def syncrepl_search(self, base, scope, mode='refreshOnly', cookie=None, **search_args):
+    def syncrepl_search(self, base, scope, mode='refreshOnly', cookie=None, reloadHint=False, **search_args):
         """
         Starts syncrepl search operation.
 
@@ -371,6 +371,10 @@ class SyncreplConsumer:
         methods to store the cookie appropriately, rather than
         passing it.
 
+        reloadHint: if True, ask the server to send the full
+        content when it cannot resume synchronization from the given
+        cookie, rather than returning an error.
+
         Only a single syncrepl search may be active on a SyncreplConsumer
         object.  Multiple concurrent syncrepl searches require multiple
         separate SyncreplConsumer objects and thus multiple connections
@@ -379,7 +383,7 @@ class SyncreplConsumer:
         if cookie is None:
             cookie = self.syncrepl_get_cookie()
 
-        syncreq = SyncRequestControl(cookie=cookie, mode=mode)
+        syncreq = SyncRequestControl(cookie=cookie, mode=mode, reloadHint=reloadHint)
 
         if 'serverctrls' in search_args:
             search_args['serverctrls'] += [syncreq]

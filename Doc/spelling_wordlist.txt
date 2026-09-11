@@ -116,6 +116,7 @@ refmodule
 refreshAndPersist
 refreshDeletes
 refreshOnly
+reloadHint
 requestName
 requestValue
 resiter
