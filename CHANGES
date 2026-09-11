@@ -1,9 +1,45 @@
 Released 3.5.0 (unreleased)
 
+Breaking:
+* ``ldap.schema.models.SchemaElement.token_defaults`` class attribute had to
+  go, we couldn't find a safe way to keep it working with subclasses and are
+  unaware of any users either
+
 API changes:
 * The deprecated ``OPT_X_TLS`` option has been removed, as announced in the
   3.4.3 release notes. The ``OPT_X_TLS_*`` option constants (such as
   ``OPT_X_TLS_NEWCTX`` and ``OPT_X_TLS_REQUIRE_CERT``) are unaffected.
+* ldap.DummyLock has been removed as it has been useless since Python3.7
+* ldap.controls.KNOWN_RESPONSE_CONTROLS now only contains ResponseControl
+  types
+* Iterating ``ldap.schema.Entry`` now correctly iterates over the visible keys,
+  not internal representation
+* code better aligns with documentation:
+  * ``ldap.controls.simple.AuthorizationIdentityResponseControl`` now decodes
+    returned identity as documented
+  * ``LDAPObject``'s `*_s` functions actually return None as advertised
+  * ``LDIFParser`` now correctly ignores unknown url schemes rather than
+    attaching ``None`` as value
+  * People overriding ``SyncreplConsumer.syncrepl_present`` will no longer see
+    ``SyncDoneControl.refreshDeletes`` have a value of ``None``
+* If using the search MixIn classes (including SyncreplConsumer) and replacing
+  the relevant controls in ``KNOWN_RESPONSE_CONTROLS`` at the same time, make
+  sure you subclass the original implementations
+* Calling ``ldap.schema.SubSchema.get_structural_oc`` with incompatible
+  STRUCTURAL object classes has produced undefined behaviour in the past and it
+  does again. This and ``ldap.schema.{SubSchema,Entry}.attribute_types`` with
+  DIT content rules enforced will raise an error in future versions
+
+Fixes:
+* ``ldap.controls.pwdpolicy.PasswordExpiredControl`` finally returns reported
+  status
+
+Deprecations:
+* See above note for ``ldap.schema.SubSchema.get_structural_oc`` and its users
+* ``ldap.schema.tokenizer.extract_tokens`` has been replaced with
+  ``ldap.schema.tokenizer.parse_tokens`` and will go away eventually
+* ``_ldap`` module is now a stub forwarding to ``ldap._ldap``, ``_ldap`` will
+  go away eventually
 
 Infrastructure:
 * Building from source now requires setuptools >= 77, needed for the
