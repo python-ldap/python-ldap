@@ -45,7 +45,7 @@ MOD_OP_STR = {
   0:'add',1:'delete',2:'replace',3:'increment'
 }
 
-CHANGE_TYPES = ['add','delete','modify','modrdn']
+CHANGE_TYPES = ['add','delete','modify','modrdn', 'moddn', 'rename']
 valid_changetype_dict = {}
 for c in CHANGE_TYPES:
   valid_changetype_dict[c]=None
@@ -459,12 +459,48 @@ class LDIFParser:
     """
     return self.parse_entry_records() # parse()
 
+  def handle_add(self, dn, entry, controls=None):
+    """
+    Process a single LDIF record representing a single add operation.
+    This method should be implemented by applications using LDIFParser.
+
+    Args:
+        dn (str): DN of the new object to be created
+        entry (dict): Data of the new object to be created
+    """
+    pass
+
   def handle_modify(self,dn,modops,controls=None):
     """
     Process a single LDIF record representing a single modify operation.
     This method should be implemented by applications using LDIFParser.
     """
     controls = [] or None
+    pass
+
+  def handle_modrdn(self, dn, newrdn, deleteoldrdn=False, newsuperior=None,
+                    controls=None):
+    """
+    Process a single LDIF record representing a single modrdn/rename operation.
+    This method should be implemented by applications using LDIFParser.
+
+    Args:
+        dn (str): DN of the existing object to be renamed/moved
+        newrdn (str): RDN of the new object
+        deleteoldrdn (bool): Whether the old RDN value(s) should be removed
+            from the entry
+        newsuperior (str): DN of the new parent
+    """
+    pass
+
+  def handle_delete(self, dn, controls=None):
+    """
+    Process a single LDIF record representing a single delete operation.
+    This method should be implemented by applications using LDIFParser.
+
+    Args:
+        dn (str): DN of the existing object to be deleted
+    """
     pass
 
   def parse_change_records(self):
@@ -509,7 +545,7 @@ class LDIFParser:
       # Consume changetype line of record
       if k=='changetype':
         # v is still bytes, spec says it should be valid utf-8; decode it.
-        v = v.decode('utf-8')
+        v = v.decode('utf-8').lower()
         if not v in valid_changetype_dict:
           raise ValueError('Invalid changetype: %s' % repr(v))
         changetype = v
@@ -551,12 +587,60 @@ class LDIFParser:
         except EOFError:
           k,v = None,None
 
-        if modops:
-          # append entry to result list
-          self.handle_modify(dn,modops,controls)
+        self.handle_modify(dn, modops, controls or None)
 
+      elif changetype == 'add':
+        entry = {}
+        while k!=None:
+          if not k.lower() in self._ignored_attr_types:
+            entry.setdefault(k, []).append(v)
+          try:
+            k,v = next_key_and_value()
+          except EOFError:
+            k,v = None,None
+
+        self.handle_add(dn,entry, controls or None)
+
+      elif changetype == 'delete':
+        if k is not None:
+          raise ValueError(f'Line {self.line_counter}: Unexpected '
+                           f'attribute {k} in LDIF delete')
+        self.handle_delete(dn, controls or None)
+      elif changetype in ('moddn', 'modrdn', 'rename'):
+        if k.lower() != 'newrdn':
+          raise ValueError(f'Line {self.line_counter}: expected "newrdn"'
+                           f'got {k}')
+        newrdn = v.decode('utf-8')
+        k,v = next_key_and_value()
+        deleteoldrdn = False
+        if k is not None:
+          if k.lower() == 'deleteoldrdn':
+            deleteoldrdn = (v == b'1')
+            try:
+              k,v = next_key_and_value()
+            except EOFError:
+              k,v = None,None
+          elif k.lower() == 'newsuperior':
+            pass
+          else:
+            raise ValueError(f'Line {self.line_counter}: expected '
+                             f'"deleteoldrdn" got {k}')
+        newsuperior = None
+        if k is not None:
+          if k.lower() != 'newsuperior':
+            raise ValueError(f'Line {self.line_counter}: expected '
+                             f'"newsuperior" got {k}')
+          newsuperior = v.decode('utf-8')
+          try:
+            k,v = next_key_and_value()
+          except EOFError:
+            k,v = None,None
+        if k is not None:
+          raise ValueError(f'Line {self.line_counter}: {changetype} entry '
+                           f'unexpected pseudoattribute {k}')
+        self.handle_modrdn(dn, newrdn, deleteoldrdn, newsuperior,
+                           controls or None)
       else:
-
         # Consume the unhandled change record
         while k!=None:
           k,v = next_key_and_value()
@@ -592,6 +676,7 @@ class LDIFRecordList(LDIFParser):
     #: List storing parsed records.
     self.all_records = []
     self.all_modify_changes = []
+    self.all_changes = []
 
   def handle(self,dn,entry):
     """
@@ -599,13 +684,40 @@ class LDIFRecordList(LDIFParser):
     """
     self.all_records.append((dn,entry))
 
+  def handle_add(self, dn, entry, controls=None):
+    """
+    Process a single LDIF record representing a single add operation.
+    This method should be implemented by applications using LDIFParser.
+    """
+    self.all_changes.append(('add', {'dn': dn, 'entry': entry,
+                                     'controls': controls}))
+
   def handle_modify(self,dn,modops,controls=None):
     """
     Process a single LDIF record representing a single modify operation.
     This method should be implemented by applications using LDIFParser.
     """
-    controls = [] or None
     self.all_modify_changes.append((dn,modops,controls))
+    self.all_changes.append(('modify', {'dn': dn, 'modops': modops,
+                                        'controls': controls}))
+
+  def handle_modrdn(self, dn, newrdn, deleteoldrdn=False, newsuperior=None,
+                    controls=None):
+    """
+    Process a single LDIF record representing a single modrdn/rename operation.
+    This method should be implemented by applications using LDIFParser.
+    """
+    self.all_changes.append(('modrdn', {'dn': dn, 'newrdn': newrdn,
+                                        'deleteoldrdn': deleteoldrdn,
+                                        'newsuperior': newsuperior,
+                                        'controls': controls}))
+
+  def handle_delete(self, dn, controls=None):
+    """
+    Process a single LDIF record representing a single delete operation.
+    This method should be implemented by applications using LDIFParser.
+    """
+    self.all_changes.append(('delete', {'dn': dn, 'controls': controls}))
 
 
 class LDIFCopy(LDIFParser):

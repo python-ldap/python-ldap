@@ -6,6 +6,7 @@ See https://www.python-ldap.org/ for details.
 import os
 import textwrap
 import unittest
+from collections import namedtuple
 
 try:
     from StringIO import StringIO
@@ -22,6 +23,7 @@ class TestLDIFParser(unittest.TestCase):
     """
     Various LDIF test cases
     """
+    Mod = namedtuple('Mod', ['dn', 'modops', 'controls'])
 
     def _parse_records(
             self,
@@ -38,15 +40,22 @@ class TestLDIFParser(unittest.TestCase):
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
-        parser_method = getattr(
-            ldif_parser,
-            'parse_%s_records' % self.record_type
-        )
+        if self.record_type == 'entry':
+            parser_method = ldif_parser.parse_entry_records
+        else:
+            parser_method = ldif_parser.parse_change_records
         parser_method()
         if self.record_type == 'entry':
             return ldif_parser.all_records
-        elif self.record_type == 'change':
+        elif self.record_type == 'modify':
+            for change, modify in zip(ldif_parser.all_changes,
+                                      ldif_parser.all_modify_changes):
+                self.assertEqual(change[0], 'modify')
+                modify = TestLDIFParser.Mod(*modify)._asdict()
+                self.assertEqual(change[1], modify)
             return ldif_parser.all_modify_changes
+        elif self.record_type == 'change':
+            return ldif_parser.all_changes
 
     def _unparse_records(self, records):
         """
@@ -57,7 +66,7 @@ class TestLDIFParser(unittest.TestCase):
         if self.record_type == 'entry':
             for dn, entry in records:
                 ldif_writer.unparse(dn, entry)
-        elif self.record_type == 'change':
+        elif self.record_type == 'modify':
             for dn, modops, controls in records:
                 ldif_writer.unparse(dn, modops)
         return ldif_file.getvalue()
@@ -79,14 +88,16 @@ class TestLDIFParser(unittest.TestCase):
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
-        generated_ldif = self._unparse_records(records)
-        parsed_records2 = self._parse_records(
-            generated_ldif,
-            ignored_attr_types=ignored_attr_types,
-            max_entries=max_entries,
-        )
         self.assertEqual(records, parsed_records)
-        self.assertEqual(records, parsed_records2)
+        # We don't have an API to unparse arbitrary changes yet
+        if self.record_type != 'change':
+            generated_ldif = self._unparse_records(records)
+            parsed_records2 = self._parse_records(
+                generated_ldif,
+                ignored_attr_types=ignored_attr_types,
+                max_entries=max_entries,
+            )
+            self.assertEqual(records, parsed_records2)
 
 
 class TestEntryRecords(TestLDIFParser):
@@ -527,11 +538,11 @@ class TestEntryRecords(TestLDIFParser):
         )
 
 
-class TestChangeRecords(TestLDIFParser):
+class TestModifyRecords(TestLDIFParser):
     """
     Various LDIF test cases
     """
-    record_type='change'
+    record_type='modify'
 
     def test_empty(self):
         self.check_records(
@@ -669,7 +680,7 @@ class TestChangeRecords(TestLDIFParser):
             ],
         )
 
-    def test_bad_change_records(self):
+    def test_bad_modify_records(self):
         for bad_ldif_string in (
             """
             changetype: modify
@@ -709,6 +720,128 @@ class TestChangeRecords(TestLDIFParser):
                 ),
             ],
         )
+
+
+class TestChangeRecords(TestLDIFParser):
+    """
+    Various LDIF test cases
+    """
+    record_type = 'change'
+
+    def test_simple(self):
+        self.check_records(
+            """
+            version: 1
+
+            dn: cn=x,cn=y,cn=z
+            changetype: delete
+
+            dn: cn=foo,cn=bar
+            changetype: add
+            objectClass: device
+            cn: foo
+
+            dn: cn=old,cn=baz
+            changetype: modrdn
+            newrdn: cn=new
+            newsuperior: cn=y,cn=z
+            """,
+            [
+                (
+                    'delete',
+                    {
+                        'dn': 'cn=x,cn=y,cn=z',
+                        'controls': None,
+                    }
+                ),
+                (
+                    'add',
+                    {
+                        'dn': 'cn=foo,cn=bar',
+                        'entry': {
+                            'objectClass': [b'device'],
+                            'cn': [b'foo'],
+                        },
+                        'controls': None,
+                    }
+                ),
+                (
+                    'modrdn',
+                    {
+                        'dn': 'cn=old,cn=baz',
+                        'newrdn': 'cn=new',
+                        'deleteoldrdn': False,
+                        'newsuperior': 'cn=y,cn=z',
+                        'controls': None,
+                    }
+                ),
+            ],
+        )
+
+    def test_modrdn_variants(self):
+        for changetype in ('modrdn', 'ReNaMe', 'moDDN'):
+            self.check_records(
+                f"""
+                version: 1
+
+                dn: cn=old,cn=baz
+                changetype: {changetype}
+                newrdn: cn=new
+                deleteoldrdn: 1
+                """,
+                [
+                    (
+                        'modrdn',
+                        {
+                            'dn': 'cn=old,cn=baz',
+                            'newrdn': 'cn=new',
+                            'deleteoldrdn': True,
+                            'newsuperior': None,
+                            'controls': None,
+                        }
+                    ),
+                ],
+            )
+
+    def test_bad_change_records(self):
+        for bad_ldif_string in (
+            # missing dn
+            """
+            changetype: modify
+            replace: attrib
+            attrib: value
+            attrib: value2
+
+            """,
+            # missing newrdn
+            """
+            dn: cn=x,cn=y,cn=z
+            changetype: rename
+            newsuperior: cn=bar
+
+            """,
+            # extra lines in delete
+            """
+            dn: cn=x,cn=y,cn=z
+            changetype: delete
+            replace: attrib
+            attrib: value
+            attrib: value2
+
+            """,
+            # extra lines in modrdn
+            """
+            dn: cn=x,cn=y,cn=z
+            changetype: modrdn
+            newrdn: cn=new
+            newsuperior: cn=y,cn=z
+            cn: other
+
+            """,
+        ):
+            ldif_string = textwrap.dedent(bad_ldif_string).lstrip() + '\n'
+            with self.assertRaises(ValueError):
+                self._parse_records(ldif_string)
 
 
 if __name__ == '__main__':
