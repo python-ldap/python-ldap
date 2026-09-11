@@ -4,12 +4,21 @@ ldap.controls.openldap - classes for OpenLDAP-specific controls
 See https://www.python-ldap.org/ for project details.
 """
 
+from __future__ import annotations
+
 import ldap.controls
 from ldap.controls import ValueLessRequestControl,ResponseControl
+from ldap.ldapobject import SimpleLDAPObject
 
 from pyasn1.type import univ
 from pyasn1.codec.ber import decoder
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+  _Base = SimpleLDAPObject
+else:
+  _Base = object
 
 __all__ = [
   'SearchNoOpControl',
@@ -26,13 +35,13 @@ class SearchNoOpControl(ValueLessRequestControl,ResponseControl):
   """
   controlType = '1.3.6.1.4.1.4203.666.5.18'
 
-  def __init__(self,criticality=False):
+  def __init__(self, criticality: bool = False) -> None:
     self.criticality = criticality
 
   class SearchNoOpControlValue(univ.Sequence):
     pass
 
-  def decodeControlValue(self,encodedControlValue):
+  def decodeControlValue(self, encodedControlValue: bytes) -> None:
     decodedValue,_ = decoder.decode(encodedControlValue,asn1Spec=self.SearchNoOpControlValue())
     self.resultCode = int(decodedValue[0])
     self.numSearchResults = int(decodedValue[1])
@@ -42,15 +51,25 @@ class SearchNoOpControl(ValueLessRequestControl,ResponseControl):
 ldap.controls.KNOWN_RESPONSE_CONTROLS[SearchNoOpControl.controlType] = SearchNoOpControl
 
 
-class SearchNoOpMixIn:
+class SearchNoOpMixIn(_Base):
   """
   Mix-in class to be used with class LDAPObject and friends.
 
   It adds a convenience method noop_search_st() to LDAPObject
   for easily using the no-op search control.
   """
+  def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+    if not isinstance(self, SimpleLDAPObject):
+      raise TypeError(f"Expecting to be a subclass of {SimpleLDAPObject}")
+    super().__init__(*args, **kwargs)
 
-  def noop_search_st(self,base,scope=ldap.SCOPE_SUBTREE,filterstr='(objectClass=*)',timeout=-1):
+  def noop_search_st(
+    self,
+    base: str,
+    scope: int = ldap.SCOPE_SUBTREE,
+    filterstr: str = '(objectClass=*)',
+    timeout: int = -1,
+  ) -> tuple[int, int] | tuple[None, None]:
     msg_id = None
     try:
       msg_id = self.search_ext(
@@ -74,8 +93,8 @@ class SearchNoOpMixIn:
     else:
       noop_srch_ctrl = [
         c
-        for c in search_response_ctrls
-        if c.controlType==SearchNoOpControl.controlType
+        for c in search_response_ctrls or []
+        if isinstance(c, SearchNoOpControl)
       ]
       if noop_srch_ctrl:
         return noop_srch_ctrl[0].numSearchResults,noop_srch_ctrl[0].numSearchContinuations

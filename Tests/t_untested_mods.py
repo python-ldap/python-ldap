@@ -5,6 +5,16 @@ import os
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
+# FIXME: Remove in 5.0
+from _ldap import (
+    __version__,
+    initialize,
+    LDAPError,
+    MOD_ADD,
+    OPT_URI,
+    SUCCESS,
+)
+
 import ldap.controls.deref
 import ldap.controls.openldap
 import ldap.controls.ppolicy

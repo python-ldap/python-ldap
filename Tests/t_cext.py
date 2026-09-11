@@ -13,13 +13,13 @@ import unittest
 os.environ['LDAPNOINIT'] = '1'
 
 # import the plain C wrapper module
-import _ldap
+import ldap._ldap as _ldap
 from slapdtest import SlapdTestCase, requires_tls, requires_init_fd
 
 
 class TestLdapCExtension(SlapdTestCase):
     """
-    These tests apply only to the _ldap module and therefore bypass the
+    These tests apply only to the ldap._ldap module and therefore bypass the
     LDAPObject wrapper completely.
     """
 
