@@ -179,6 +179,44 @@ LDAPerror(PyObject *m, LDAP *l)
     return LDAPraise_for_message(m, l, NULL);
 }
 
+/* GC protocol for heap types */
+int
+LDAPMod_traverse(PyObject *m, visitproc visit, void *arg)
+{
+    LDAPModState *state = PyModule_GetState(m);
+    size_t i = 0;
+
+    Py_VISIT(state->ldap_type);
+    Py_VISIT(state->exception_class);
+    for ( ; i < sizeof(state->errobjects)/sizeof(state->errobjects[0]); i++ ) {
+        Py_VISIT(state->errobjects[i]);
+    }
+
+    return 0;
+}
+
+int
+LDAPMod_clear(PyObject *m)
+{
+    LDAPModState *state = PyModule_GetState(m);
+    size_t i = 0;
+
+    Py_CLEAR(state->ldap_type);
+    Py_CLEAR(state->exception_class);
+    for ( ; i < sizeof(state->errobjects)/sizeof(state->errobjects[0]); i++ ) {
+        Py_CLEAR(state->errobjects[i]);
+    }
+
+    return 0;
+}
+
+/* destructor */
+void
+LDAPMod_free(void *m)
+{
+    LDAPMod_clear(m);
+}
+
 /* initialise the module constants */
 
 int

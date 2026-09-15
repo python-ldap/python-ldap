@@ -119,6 +119,11 @@ typedef struct LDAPModState {
     PyObject *errobjects[LDAP_ERROR_MAX - LDAP_ERROR_MIN + 1];
 } LDAPModState;
 
+/* *** module level state *** */
+PYLDAP_FUNC(int) LDAPMod_traverse(PyObject *, visitproc, void *);
+PYLDAP_FUNC(int) LDAPMod_clear(PyObject *);
+PYLDAP_FUNC(void) LDAPMod_free(void *);
+
 /* *** ldapcontrol *** */
 PYLDAP_FUNC(void) LDAPControl_List_DEL(LDAPControl **);
 PYLDAP_FUNC(int) LDAPControls_from_object(PyObject *, LDAPControl ***);
