@@ -2,6 +2,8 @@
 
 #include "pythonldap.h"
 
+static int LDAP_int_get_option(LDAPObject *self, int option, void *value);
+
 void
 set_timeval_from_double(struct timeval *tv, double d)
 {
@@ -163,7 +165,7 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
     case LDAP_OPT_SOCKET_BIND_ADDRESSES:
 #endif
         /* String valued options */
-        if (!PyArg_Parse(value, "s:set_option", &strval))
+        if (!PyArg_Parse(value, "z:set_option", &strval))
             return 0;
         ptr = strval;
         break;
@@ -219,6 +221,21 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
     }
 
     if (self) {
+        if (option == LDAP_OPT_DEFBASE) {
+            /* work around https://bugs.openldap.org/show_bug.cgi?id=10606 */
+            char *defbase = NULL;
+            res = LDAP_int_get_option(NULL, option, &defbase);
+            if (res != LDAP_OPT_SUCCESS) {
+                option_error(res, "ldap_get_option");
+                return 0;
+            }
+            if (defbase) {
+                ldap_memfree(defbase);
+            } else {
+                /* ultimately the default is "", just use that */
+                ptr = (void *)"";
+            }
+        }
         LDAP_BEGIN_ALLOW_THREADS(self);
         res = ldap_set_option(ld, option, ptr);
         LDAP_END_ALLOW_THREADS(self);
