@@ -15,8 +15,6 @@ the examples of digest_md5 and gssapi.
 from __future__ import annotations
 from ldap.pkginfo import __version__
 
-from typing import Union
-
 if __debug__:
     # Tracing is only supported in debugging mode
     from ldap import _trace_level, _trace_file
@@ -41,7 +39,7 @@ class sasl:
     overridden
     """
 
-    def __init__(self, cb_value_dict: dict[int, str], mech: Union[str, bytes]) -> None:
+    def __init__(self, cb_value_dict: dict[int, str], mech: str | bytes) -> None:
         """
         The (generic) base class takes a cb_value_dictionary of
         question-answer pairs. Questions are specified by the respective
@@ -57,9 +55,9 @@ class sasl:
     def callback(
         self,
         cb_id: int,
-        challenge: Union[str, bytes],
-        prompt: Union[str, bytes],
-        defresult: Union[str, bytes] | None,
+        challenge: str | bytes,
+        prompt: str | bytes,
+        defresult: str | bytes | None,
     ) -> bytes:
         """
         The callback method will be called by the sasl_bind_s()
@@ -82,7 +80,7 @@ class sasl:
 
         # The following print command might be useful for debugging
         # new sasl mechanisms. So it is left here
-        cb_result: Union[str, bytes] | None = self.cb_value_dict.get(cb_id)
+        cb_result: str | bytes | None = self.cb_value_dict.get(cb_id)
         if cb_result is None:
             cb_result = defresult or ''
 

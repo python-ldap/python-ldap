@@ -13,7 +13,7 @@ from ldap.pkginfo import __version__
 from ldap import _ldap
 from ldap.functions import strf_secs
 
-from typing import Iterable, Union
+from typing import Iterable
 
 import time
 
@@ -65,8 +65,8 @@ def filter_format(filter_template: str, assertion_values: Iterable[str]) -> str:
 
 def time_span_filter(
         filterstr: str = '',
-        from_timestamp: Union[int, float] = 0,
-        until_timestamp: Union[int, float] | None = None,
+        from_timestamp: int | float = 0,
+        until_timestamp: int | float | None = None,
         delta_attr: str = 'modifyTimestamp',
     ) -> str:
     """

@@ -5,7 +5,7 @@ See https://www.python-ldap.org/ for project details.
 """
 from __future__ import annotations
 
-from typing import Any, Union, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from uuid import UUID
 
