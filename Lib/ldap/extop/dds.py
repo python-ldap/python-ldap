@@ -39,10 +39,12 @@ class RefreshRequest(ExtendedRequest):
   def __init__(
     self,
     requestName: str | None = None,
-    entryName: str | None = None,
+    entryName: str | bytes | None = None,
     requestTtl: int | None = None
   ) -> None:
     super().__init__(requestName or self.requestName, b'')
+    if isinstance(entryName, str):
+        entryName = entryName.encode('UTF-8')
     self.entryName = entryName
     self.requestTtl = requestTtl or self.defaultRequestTtl
 
