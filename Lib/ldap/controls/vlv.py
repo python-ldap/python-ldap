@@ -123,8 +123,8 @@ class VLVResponseControl(ResponseControl):
     def __init__(self, criticality: bool = False) -> None:
         ResponseControl.__init__(self,self.controlType,criticality)
 
-    def decodeControlValue(self, encoded: bytes) -> None:
-        p, rest = decoder.decode(encoded, asn1Spec=VirtualListViewResponseType())
+    def decodeControlValue(self, encodedControlValue: bytes) -> None:
+        p, rest = decoder.decode(encodedControlValue, asn1Spec=VirtualListViewResponseType())
         assert not rest, 'all data could not be decoded'
         self.targetPosition = int(p.getComponentByName('targetPosition'))
         self.contentCount = int(p.getComponentByName('contentCount'))
