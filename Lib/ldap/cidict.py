@@ -20,30 +20,30 @@ from typing import (
     TypeVar,
 )
 
-T = TypeVar('T', bound=Any)
+_T = TypeVar('_T', bound=Any)
 
 if TYPE_CHECKING:
     from typing_extensions import Self
 
 
-class cidict(MutableMappingType[str, T]):
+class cidict(MutableMappingType[str, _T]):
     """
     Case-insensitive but case-respecting dictionary.
     """
     __slots__ = ('_keys', '_data')
 
-    def __init__(self, default: Mapping[str, T] | None = None) -> None:
+    def __init__(self, default: Mapping[str, _T] | None = None) -> None:
         self._keys: dict[str, str] = {}
-        self._data: dict[str, T] = {}
+        self._data: dict[str, _T] = {}
         if default:
             self.update(default)
 
     # MutableMapping abstract methods
 
-    def __getitem__(self, key: str) -> T:
+    def __getitem__(self, key: str) -> _T:
         return self._data[key.lower()]
 
-    def __setitem__(self, key: str, value: T) -> None:
+    def __setitem__(self, key: str, value: _T) -> None:
         lower_key = key.lower()
         self._keys[lower_key] = key
         self._data[lower_key] = value
@@ -85,7 +85,7 @@ class cidict(MutableMappingType[str, T]):
         return key in self
 
     @property
-    def data(self) -> dict[str, T]:
+    def data(self) -> dict[str, _T]:
         """Compatibility with older IterableUserDict-based implementation"""
         warnings.warn(
             'ldap.cidict.cidict.data is an internal attribute; it may be ' +

@@ -75,9 +75,9 @@ else:
     HAVE_LDAPI = hasattr(socket, 'AF_UNIX')
 
 
-T = TypeVar('T', bound=Any)
+_T = TypeVar('_T', bound=Any)
 
-def identity(test_item: T) -> T:
+def identity(test_item: _T) -> _T:
     """Identity decorator
 
     """

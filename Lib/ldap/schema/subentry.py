@@ -35,7 +35,7 @@ from ldap.schema.models import (
     DITContentRule,
 )
 
-SchemaElementSubclass = TypeVar('SchemaElementSubclass', bound=SchemaElement)
+_SchemaElementSubclass = TypeVar('_SchemaElementSubclass', bound=SchemaElement)
 
 SCHEMA_ATTRS = list(SCHEMA_CLASS_MAPPING)
 
@@ -273,7 +273,7 @@ class SubSchema:
 
   def getoid(
     self,
-    se_class: type[SchemaElementSubclass],
+    se_class: type[_SchemaElementSubclass],
     nameoroid: str,
     raise_keyerror: int = 0,
   ) -> str:
@@ -297,7 +297,7 @@ class SubSchema:
 
   def get_inheritedattr(
     self,
-    se_class: type[SchemaElementSubclass],
+    se_class: type[_SchemaElementSubclass],
     nameoroid: str,
     name: str,
   ) -> Any:
@@ -326,11 +326,11 @@ class SubSchema:
 
   def get_obj(
     self,
-    se_class: type[SchemaElementSubclass],
+    se_class: type[_SchemaElementSubclass],
     nameoroid: str,
-    default: SchemaElementSubclass | None = None,
+    default: _SchemaElementSubclass | None = None,
     raise_keyerror: int = 0,
-  ) -> SchemaElementSubclass | None:
+  ) -> _SchemaElementSubclass | None:
     """
     Get a schema element by name or OID
     """
@@ -353,10 +353,10 @@ class SubSchema:
 
   def get_inheritedobj(
     self,
-    se_class: type[SchemaElementSubclass],
+    se_class: type[_SchemaElementSubclass],
     nameoroid: str,
     inherited: list[str] | None = None,
-  ) -> SchemaElementSubclass | None:
+  ) -> _SchemaElementSubclass | None:
     """
     Get a schema element by name or OID with all class attributes
     set including inherited class attributes
