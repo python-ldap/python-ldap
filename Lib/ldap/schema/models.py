@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 from ldap.cidict import cidict
-from ldap._types import LDAPEntryDict
+from ldap._types import LDAPEntryDict, TypeAlias
 
 import ldap.schema
 from ldap.schema.subentry import SCHEMA_CLASS_MAPPING, SCHEMA_ATTR_MAPPING
@@ -22,7 +22,7 @@ from ldap.schema.tokenizer import (
     LDAPTokenDict
 )
 
-EntryBase = MutableMapping[str, list[bytes]]
+EntryBase: TypeAlias = MutableMapping[str, list[bytes]]
 
 
 NOT_HUMAN_READABLE_LDAP_SYNTAXES = {

@@ -8,13 +8,15 @@ from __future__ import annotations
 
 import re
 import warnings
-
 from typing import Any, Mapping, Union
 
-LDAPTokenDictValue = Union[tuple[()], tuple[str, ...]]
+from ldap._types import TypeAlias
+
+
+LDAPTokenDictValue: TypeAlias = Union[tuple[()], tuple[str, ...]]
 """The kind of values which may be found in a token dict."""
 
-LDAPTokenDict = Mapping[str, LDAPTokenDictValue]
+LDAPTokenDict: TypeAlias = Mapping[str, LDAPTokenDictValue]
 """The type of the dict used to keep track of tokens while parsing schema
 (Mapping because of variance)."""
 
