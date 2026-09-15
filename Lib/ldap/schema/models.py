@@ -64,8 +64,13 @@ class SchemaElement:
   known_tokens
     List used internally containing the valid tokens
   """
+
   schema_attribute: ClassVar[str]
   known_tokens: ClassVar[list[str]] = ['DESC', 'NAME']
+
+  oid: str
+  names: tuple[str, ...]
+  desc: str | None
 
   def __init__(self, schema_element_str: str | bytes | None = None) -> None:
     if isinstance(schema_element_str, bytes):
@@ -183,6 +188,13 @@ class ObjectClass(SchemaElement):
     'X-ORIGIN',
   ]
 
+  obsolete: bool
+  must: tuple[str, ...]
+  may: tuple[str, ...]
+  kind: int
+  sup: tuple[str, ...]
+  x_origin: tuple[str, ...]
+
   def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l, d)
     self.obsolete = 'OBSOLETE' in d
@@ -276,6 +288,13 @@ class AttributeType(SchemaElement):
     Although it's not official, X-ORIGIN is used in several LDAP server
     implementations to indicate the source of the associated schema
     element
+  x_ordered
+    Value of the X-ORDERED extension flag (string, or None if missing).
+
+    X-ORDERED is an OpenLDAP extension used to indicate that ordering is
+    significant. "VALUES" indicates that the values of a multi-valued
+    attribute are ordered, while "SIBLINGS" indicates that entries using
+    the attribute as their RDN are ordered among their siblings.
   """
   schema_attribute = 'attributeTypes'
   known_tokens: ClassVar[list[str]] = [
@@ -294,6 +313,19 @@ class AttributeType(SchemaElement):
     'X-ORIGIN',
     'X-ORDERED',
   ]
+
+  obsolete: bool
+  single_value: bool
+  collective: bool
+  syntax: str | None
+  no_user_mod: bool
+  usage: int
+  sup: tuple[str, ...]
+  equality: str | None
+  ordering: str | None
+  substr : str | None
+  x_origin: tuple[str, ...]
+  x_ordered: str | None
 
   def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l, d)
@@ -387,6 +419,8 @@ class LDAPSyntax(SchemaElement):
     'X-SUBST',
   ]
 
+  not_human_readable: bool
+
   def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l, d)
     self.x_subst = d.get('X-SUBST', (None,))[0]
@@ -438,6 +472,9 @@ class MatchingRule(SchemaElement):
     'SYNTAX',
   ]
 
+  obsolete: bool
+  syntax: str | None
+
   def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l, d)
     self.obsolete = 'OBSOLETE' in d
@@ -485,6 +522,9 @@ class MatchingRuleUse(SchemaElement):
     'OBSOLETE',
     'APPLIES',
   ]
+
+  obsolete: bool
+  applies: tuple[str, ...]
 
   def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l, d)
@@ -551,6 +591,12 @@ class DITContentRule(SchemaElement):
     'NOT',
   ]
 
+  obsolete: bool
+  aux: tuple[str, ...]
+  must: tuple[str, ...]
+  may: tuple[str, ...]
+  nots: tuple[str, ...]
+
   def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l ,d)
     self.obsolete = 'OBSOLETE' in d
@@ -608,6 +654,11 @@ class DITStructureRule(SchemaElement):
     'SUP',
   ]
 
+  ruleid: str
+  obsolete: bool
+  form: str | None
+  sup: tuple[str, ...]
+
   def set_id(self, element_id: str) -> None:
     self.ruleid = element_id
 
@@ -652,8 +703,6 @@ class NameForm(SchemaElement):
   obsolete
     Boolean flag indicating whether the name form is marked as OBSOLETE in the
     schema
-  form
-    NAMEs or OIDs of associated name forms (tuple of strings)
   oc
     NAME or OID of structural object classes this name form
     is usable with (string)
@@ -672,6 +721,11 @@ class NameForm(SchemaElement):
     'MUST',
     'MAY',
   ]
+
+  obsolete: bool
+  oc: str | None
+  must: tuple[str, ...]
+  may: tuple[str, ...]
 
   def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
     super()._set_attrs(l ,d)
