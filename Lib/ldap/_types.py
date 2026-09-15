@@ -4,9 +4,19 @@ types - type annotations which are shared across modules
 See https://www.python-ldap.org/ for details.
 """
 from __future__ import annotations
+
+import sys
+from typing import TYPE_CHECKING, MutableMapping, Optional, Sequence, Union
+
 from ldap.pkginfo import __version__
 
-from typing import MutableMapping, Optional, Sequence, Union
+
+if sys.version_info >= (3, 10):  # workaround for mypy, which cannot distinguish between real imports in except clause
+    from typing import TypeAlias
+elif TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+else:
+    TypeAlias = object
 
 __all__ = [
     'LDAPModListAddEntry',
@@ -19,6 +29,7 @@ __all__ = [
     'LDAPControlTuple',
     'LDAPControlTuples',
     'LDAPSearchResult',
+    'TypeAlias',
 ]
 
 LDAPModListAddEntry = tuple[str, list[bytes]]
