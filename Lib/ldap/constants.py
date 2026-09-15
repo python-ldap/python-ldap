@@ -60,9 +60,9 @@ class Feature(Constant):
     c_template = '\n'.join([
         '',
         '#ifdef {self.c_feature}',
-        'if (PyModule_AddIntConstant(m, "{self.name}", 1) != 0) return -1;',
+        'if (PyModule_AddIntConstant(m, "{self.name}", 1) != 0) goto error;',
         '#else',
-        'if (PyModule_AddIntConstant(m, "{self.name}", 0) != 0) return -1;',
+        'if (PyModule_AddIntConstant(m, "{self.name}", 0) != 0) goto error;',
         '#endif',
         '',
     ])
