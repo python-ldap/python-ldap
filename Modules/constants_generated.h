@@ -366,23 +366,23 @@ add_int(URL_ERR_BADSCOPE);
 add_int(URL_ERR_MEM);
 
 #ifdef HAVE_SASL
-if (PyModule_AddIntConstant(m, "SASL_AVAIL", 1) != 0) return -1;
+if (PyModule_AddIntConstant(m, "SASL_AVAIL", 1) != 0) goto error;
 #else
-if (PyModule_AddIntConstant(m, "SASL_AVAIL", 0) != 0) return -1;
+if (PyModule_AddIntConstant(m, "SASL_AVAIL", 0) != 0) goto error;
 #endif
 
 
 #ifdef HAVE_TLS
-if (PyModule_AddIntConstant(m, "TLS_AVAIL", 1) != 0) return -1;
+if (PyModule_AddIntConstant(m, "TLS_AVAIL", 1) != 0) goto error;
 #else
-if (PyModule_AddIntConstant(m, "TLS_AVAIL", 0) != 0) return -1;
+if (PyModule_AddIntConstant(m, "TLS_AVAIL", 0) != 0) goto error;
 #endif
 
 
 #ifdef HAVE_LDAP_INIT_FD
-if (PyModule_AddIntConstant(m, "INIT_FD_AVAIL", 1) != 0) return -1;
+if (PyModule_AddIntConstant(m, "INIT_FD_AVAIL", 1) != 0) goto error;
 #else
-if (PyModule_AddIntConstant(m, "INIT_FD_AVAIL", 0) != 0) return -1;
+if (PyModule_AddIntConstant(m, "INIT_FD_AVAIL", 0) != 0) goto error;
 #endif
 
 add_string(CONTROL_MANAGEDSAIT);
