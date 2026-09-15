@@ -33,7 +33,7 @@ from ldap._types import (
     LDAPModListModifyEntry,
     LDAPModListAddEntry,
 )
-from typing import Any, BinaryIO, TextIO, cast, Union
+from typing import Any, BinaryIO, TextIO, cast
 
 attrtype_pattern = r'[\w;.-]+(;[\w_-]+)*'
 attrvalue_pattern = r'(([^,]|\\,)+|".*?")'
@@ -203,7 +203,7 @@ class LDIFWriter:
       if mod_len==3:
         self._output_file.write('-'+self._last_line_sep)
 
-  def unparse(self, dn: str, record: Union[LDAPEntryDict, LDAPModList]) -> None:
+  def unparse(self, dn: str, record: LDAPEntryDict | LDAPModList) -> None:
     """
     dn
           string-representation of distinguished name
@@ -228,7 +228,7 @@ class LDIFWriter:
 
 def CreateLDIF(
     dn: str,
-    record: Union[LDAPEntryDict, LDAPModList],
+    record: LDAPEntryDict | LDAPModList,
     base64_attrs: list[str] | None = None,
     cols: int = 76,
   ) -> str:
@@ -274,7 +274,7 @@ class LDIFParser:
 
   def __init__(
     self,
-    input_file: Union[TextIO, BinaryIO],
+    input_file: TextIO | BinaryIO,
     ignored_attr_types: list[str] | None = [],
     max_entries: int = 0,
     process_url_schemes: list[str] | None = [],
@@ -747,7 +747,7 @@ class LDIFRecordList(LDIFParser):
 
   def __init__(
     self,
-    input_file: Union[TextIO, BinaryIO],
+    input_file: TextIO | BinaryIO,
     ignored_attr_types: list[str] | None = [],
     max_entries: int = 0,
     process_url_schemes: list[str] | None = [],
@@ -829,7 +829,7 @@ class LDIFCopy(LDIFParser):
 
   def __init__(
     self,
-    input_file: Union[TextIO, BinaryIO],
+    input_file: TextIO | BinaryIO,
     output_file: TextIO,
     ignored_attr_types: list[str] | None = [],
     max_entries: int = 0,
@@ -852,7 +852,7 @@ class LDIFCopy(LDIFParser):
 
 
 def ParseLDIF(
-    f: Union[TextIO, BinaryIO],
+    f: TextIO | BinaryIO,
     ignore_attrs: list[str] | None = [],
     maxentries: int = 0
   ) -> list[tuple[str, LDAPEntryDict]]:

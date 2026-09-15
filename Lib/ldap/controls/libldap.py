@@ -16,8 +16,6 @@ import ldap
 
 from ldap.controls import RequestControl,LDAPControl,KNOWN_RESPONSE_CONTROLS
 
-from typing import Union
-
 
 class AssertionControl(RequestControl):
   """
@@ -78,7 +76,7 @@ class SimplePagedResultsControl(LDAPControl):
     self,
     criticality: bool = False,
     size: int | None = None,
-    cookie: Union[str, bytes] | None = None
+    cookie: str | bytes | None = None
   ) -> None:
     self.criticality = criticality
     self.size,self.cookie = size,cookie

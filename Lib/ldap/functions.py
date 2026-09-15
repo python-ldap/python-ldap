@@ -26,7 +26,7 @@ from ldap.dn import explode_dn,explode_rdn
 
 from ldap.ldapobject import LDAPObject
 
-from typing import Any, BinaryIO, Callable, TextIO, Union
+from typing import Any, BinaryIO, Callable, TextIO
 
 
 if __debug__:

@@ -16,7 +16,7 @@ import ldapurl
 import ldif
 
 from ldap._types import LDAPEntryDict
-from typing import Any, TypeVar, Union
+from typing import Any, TypeVar
 from collections.abc import Iterable, MutableMapping
 
 # Maps schema element description (from class.schema_attribute,
@@ -187,7 +187,7 @@ class SubSchema:
   def listall(
     self,
     schema_element_class: type[SchemaElement],
-    schema_element_filters: Iterable[tuple[str, Iterable[Union[str, int]]]] | None = None,
+    schema_element_filters: Iterable[tuple[str, Iterable[str | int]]] | None = None,
   ) -> list[str]:
     """
     Returns a list of OIDs of all available schema
@@ -440,7 +440,7 @@ class SubSchema:
   def attribute_types(
     self,
     object_class_list: Iterable[str],
-    attr_type_filter: Iterable[tuple[str, Iterable[Union[str, int]]]] | None = None,
+    attr_type_filter: Iterable[tuple[str, Iterable[str | int]]] | None = None,
     raise_keyerror: int = 1,
     ignore_dit_content_rule: int = 0,
   ) -> tuple[cidict[AttributeType | None], cidict[AttributeType | None]]:

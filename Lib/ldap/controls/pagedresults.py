@@ -20,8 +20,6 @@ from pyasn1.type import tag,namedtype,univ,constraint
 from pyasn1.codec.ber import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPString
 
-from typing import Union
-
 
 class PagedResultsControlValue(univ.Sequence):
   componentType = namedtype.NamedTypes(
