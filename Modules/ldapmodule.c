@@ -67,6 +67,9 @@ static struct PyModuleDef ldap_moduledef = {
     .m_size = sizeof(LDAPModState),
     .m_methods = ldap_functions,
     .m_slots = ldap_slots,
+    .m_traverse = LDAPMod_traverse,
+    .m_clear = LDAPMod_clear,
+    .m_free = LDAPMod_free,
 };
 struct PyModuleDef *LDAPMod_moduledef;
 
