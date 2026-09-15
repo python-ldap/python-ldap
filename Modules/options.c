@@ -163,7 +163,7 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
     case LDAP_OPT_SOCKET_BIND_ADDRESSES:
 #endif
         /* String valued options */
-        if (!PyArg_Parse(value, "s:set_option", &strval))
+        if (!PyArg_Parse(value, "z:set_option", &strval))
             return 0;
         ptr = strval;
         break;
