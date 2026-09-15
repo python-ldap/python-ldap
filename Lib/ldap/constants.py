@@ -124,7 +124,6 @@ CONSTANTS = (
     Error('NAMING_VIOLATION'),
     Error('NO_MEMORY'),
     Error('NO_OBJECT_CLASS_MODS'),
-    Error('NO_OBJECT_CLASS_MODS'),
     Error('NO_RESULTS_RETURNED'),
     Error('NO_SUCH_ATTRIBUTE'),
     Error('NO_SUCH_OBJECT'),
