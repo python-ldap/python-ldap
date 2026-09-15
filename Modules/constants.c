@@ -201,6 +201,8 @@ LDAPMod_init_constants(PyObject *m)
         return -1;
     }
 
+    /* FIXME: With 3.13+ We can use PyModule_Add/ObjectRef and make the
+     * refcounting a little easier to follow */
     if (PyModule_AddObject(m, "LDAPError", state->exception_class) != 0)
         goto error;
     Py_INCREF(state->exception_class);
@@ -220,25 +222,27 @@ LDAPMod_init_constants(PyObject *m)
     /* Generated constants -- see Lib/ldap/constants.py */
 
 #define add_err(n) do {  \
-    exc = PyErr_NewException("ldap." #n, state->exception_class, NULL);  \
-    if (exc == NULL) goto error; \
-    nobj = PyLong_FromLong(LDAP_##n); \
-    if (nobj == NULL) { \
-        Py_DECREF(exc); \
-        goto error; \
-    } \
-    if (PyObject_SetAttrString(exc, "errnum", nobj) != 0) { \
+    if ((exc = state->errobjects[LDAP_##n+LDAP_ERROR_OFFSET]) == NULL) { \
+        exc = PyErr_NewException("ldap." #n, state->exception_class, NULL); \
+        if (exc == NULL) goto error; \
+        nobj = PyLong_FromLong(LDAP_##n); \
+        if (nobj == NULL) { \
+            Py_DECREF(exc); \
+            goto error; \
+        } \
+        if (PyObject_SetAttrString(exc, "errnum", nobj) != 0) { \
+            Py_DECREF(nobj); \
+            Py_DECREF(exc); \
+            goto error; \
+        } \
         Py_DECREF(nobj); \
-        Py_DECREF(exc); \
-        goto error; \
+        state->errobjects[LDAP_##n+LDAP_ERROR_OFFSET] = exc; \
     } \
-    Py_DECREF(nobj); \
-    state->errobjects[LDAP_##n+LDAP_ERROR_OFFSET] = exc;  \
+    Py_INCREF(exc); \
     if (PyModule_AddObject(m, #n, exc) != 0) { \
         Py_DECREF(exc); \
         goto error; \
     } \
-    Py_INCREF(exc);  \
 } while (0)
 
 #define add_int(n) do {  \
