@@ -23,8 +23,6 @@ from ldap.controls import (RequestControl, ResponseControl,
 from pyasn1.type import univ, namedtype, tag, namedval, constraint
 from pyasn1.codec.ber import encoder, decoder
 
-from typing import Union
-
 #    SortKeyList ::= SEQUENCE OF SEQUENCE {
 #                     attributeType   AttributeDescription,
 #                     orderingRule    [0] MatchingRuleId OPTIONAL,
