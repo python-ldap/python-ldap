@@ -14,6 +14,8 @@ the examples of digest_md5 and gssapi.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 from ldap.pkginfo import __version__  # noqa: F401
 
 
@@ -58,7 +60,7 @@ class SaslAuth:
     overridden.
     """
 
-    def __init__(self, cb_value_dict: dict[int, str], mech: str | bytes) -> None:
+    def __init__(self, cb_value_dict: Mapping[int, str | bytes | None], mech: str | bytes) -> None:
         """
         The (generic) base class takes a cb_value_dictionary of
         question-answer pairs. Questions are specified by the respective
