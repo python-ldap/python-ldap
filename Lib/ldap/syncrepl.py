@@ -372,7 +372,7 @@ class SyncreplConsumer(_Base):
     SyncreplConsumer - LDAP syncrepl consumer object.
     """
 
-    def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         if not isinstance(self, SimpleLDAPObject):
             raise TypeError(f"Expecting to be a subclass of {SimpleLDAPObject}")
         super().__init__(*args, **kwargs)
