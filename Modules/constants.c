@@ -3,42 +3,27 @@
 
 #include "pythonldap.h"
 
+#include <stdio.h>
+#include <errno.h>
+
 /* the base exception class */
-
-PyObject *LDAPexception_class;
-
-/* list of exception classes */
-
-#define LDAP_ERROR_MIN          LDAP_REFERRAL_LIMIT_EXCEEDED
-
-#ifdef LDAP_PROXIED_AUTHORIZATION_DENIED
-#define LDAP_ERROR_MAX          LDAP_PROXIED_AUTHORIZATION_DENIED
-#else
-#ifdef LDAP_ASSERTION_FAILED
-#define LDAP_ERROR_MAX          LDAP_ASSERTION_FAILED
-#else
-#define LDAP_ERROR_MAX          LDAP_OTHER
-#endif
-#endif
-
-#define LDAP_ERROR_OFFSET       -LDAP_ERROR_MIN
-
-static PyObject *errobjects[LDAP_ERROR_MAX - LDAP_ERROR_MIN + 1];
 
 /* Convert a bare LDAP error number into an exception */
 PyObject *
-LDAPerr(int errnum)
+LDAPerr(PyObject *module, int errnum)
 {
+    LDAPModState *state = PyModule_GetState(module);
+
     if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX &&
-            errobjects[errnum + LDAP_ERROR_OFFSET] != NULL) {
-        PyErr_SetNone(errobjects[errnum + LDAP_ERROR_OFFSET]);
+            state->errobjects[errnum + LDAP_ERROR_OFFSET] != NULL) {
+        PyErr_SetNone(state->errobjects[errnum + LDAP_ERROR_OFFSET]);
     }
     else {
         PyObject *args = Py_BuildValue("{s:i}", "errnum", errnum);
 
         if (args == NULL)
             return NULL;
-        PyErr_SetObject(LDAPexception_class, args);
+        PyErr_SetObject(state->exception_class, args);
         Py_DECREF(args);
     }
     return NULL;
@@ -46,10 +31,12 @@ LDAPerr(int errnum)
 
 /* Convert an LDAP error into an informative python exception */
 PyObject *
-LDAPraise_for_message(LDAP *l, LDAPMessage *m)
+LDAPraise_for_message(PyObject *module, LDAP *l, LDAPMessage *m)
 {
+    LDAPModState *state = PyModule_GetState(module);
+
     if (l == NULL) {
-        PyErr_SetFromErrno(LDAPexception_class);
+        PyErr_SetFromErrno(state->exception_class);
         ldap_msgfree(m);
         return NULL;
     }
@@ -90,11 +77,11 @@ LDAPraise_for_message(LDAP *l, LDAPMessage *m)
         }
 
         if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX &&
-                errobjects[errnum + LDAP_ERROR_OFFSET] != NULL) {
-            errobj = errobjects[errnum + LDAP_ERROR_OFFSET];
+                state->errobjects[errnum + LDAP_ERROR_OFFSET] != NULL) {
+            errobj = state->errobjects[errnum + LDAP_ERROR_OFFSET];
         }
         else {
-            errobj = LDAPexception_class;
+            errobj = state->exception_class;
         }
 
         info = PyDict_New();
@@ -187,19 +174,56 @@ LDAPraise_for_message(LDAP *l, LDAPMessage *m)
 }
 
 PyObject *
-LDAPerror(LDAP *l)
+LDAPerror(PyObject *m, LDAP *l)
 {
-    return LDAPraise_for_message(l, NULL);
+    return LDAPraise_for_message(m, l, NULL);
+}
+
+/* GC protocol for heap types */
+int
+LDAPMod_traverse(PyObject *m, visitproc visit, void *arg)
+{
+    LDAPModState *state = PyModule_GetState(m);
+    size_t i = 0;
+
+    Py_VISIT(state->ldap_type);
+    Py_VISIT(state->exception_class);
+    for ( ; i < sizeof(state->errobjects)/sizeof(state->errobjects[0]); i++ ) {
+        Py_VISIT(state->errobjects[i]);
+    }
+
+    return 0;
+}
+
+int
+LDAPMod_clear(PyObject *m)
+{
+    LDAPModState *state = PyModule_GetState(m);
+    size_t i = 0;
+
+    Py_CLEAR(state->ldap_type);
+    Py_CLEAR(state->exception_class);
+    for ( ; i < sizeof(state->errobjects)/sizeof(state->errobjects[0]); i++ ) {
+        Py_CLEAR(state->errobjects[i]);
+    }
+
+    return 0;
+}
+
+/* destructor */
+void
+LDAPMod_free(void *m)
+{
+    LDAPMod_clear(m);
 }
 
 /* initialise the module constants */
 
 int
-LDAPinit_constants(PyObject *m)
+LDAPMod_init_constants(PyObject *m)
 {
     PyObject *exc, *nobj;
-    struct ldap_apifeature_info info = { 1, "X_OPENLDAP_THREAD_SAFE", 0 };
-    int thread_safe = 0;
+    LDAPModState *state = PyModule_GetState(m);
 
     /* simple constants */
 
@@ -210,58 +234,53 @@ LDAPinit_constants(PyObject *m)
 
     /* exceptions */
 
-    LDAPexception_class = PyErr_NewException("ldap.LDAPError", NULL, NULL);
-    if (LDAPexception_class == NULL) {
+    state->exception_class = PyErr_NewException("ldap.LDAPError", NULL, NULL);
+    if (state->exception_class == NULL) {
         return -1;
     }
 
-    if (PyModule_AddObject(m, "LDAPError", LDAPexception_class) != 0)
+    /* FIXME: With 3.13+ We can use PyModule_Add/ObjectRef and make the
+     * refcounting a little easier to follow */
+    if (PyModule_AddObject(m, "LDAPError", state->exception_class) != 0)
         goto error;
-    Py_INCREF(LDAPexception_class);
+    Py_INCREF(state->exception_class);
 
     /* XXX - backward compatibility with pre-1.8 */
-    if (PyModule_AddObject(m, "error", LDAPexception_class) != 0)
+    if (PyModule_AddObject(m, "error", state->exception_class) != 0)
         goto error;
-    Py_INCREF(LDAPexception_class);
+    Py_INCREF(state->exception_class);
 
-#ifdef LDAP_API_FEATURE_X_OPENLDAP_THREAD_SAFE
-    if (ldap_get_option(NULL, LDAP_OPT_API_FEATURE_INFO, &info) == LDAP_SUCCESS) {
-        thread_safe = (info.ldapaif_version == 1);
-    }
-#endif
-    if (PyModule_AddIntConstant(m, "LIBLDAP_R", thread_safe) != 0)
+    if (PyModule_AddIntConstant(m, "LIBLDAP_R", LDAPMod_thread_safe) != 0)
         goto error;
 
-    if (ldap_get_option(NULL, LDAP_OPT_API_INFO, &ldap_version_info) != LDAP_SUCCESS) {
-        PyErr_SetString(PyExc_ImportError, "unrecognised libldap version");
-        goto error;
-    }
     if (PyModule_AddIntConstant(m, "_VENDOR_VERSION_RUNTIME",
-                ldap_version_info.ldapai_vendor_version ) != 0)
+                LDAPMod_version_info.ldapai_vendor_version) != 0)
         goto error;
 
     /* Generated constants -- see Lib/ldap/constants.py */
 
 #define add_err(n) do {  \
-    exc = PyErr_NewException("ldap." #n, LDAPexception_class, NULL);  \
-    if (exc == NULL) goto error; \
-    nobj = PyLong_FromLong(LDAP_##n); \
-    if (nobj == NULL) { \
-        Py_DECREF(exc); \
-        goto error; \
-    } \
-    if (PyObject_SetAttrString(exc, "errnum", nobj) != 0) { \
+    if ((exc = state->errobjects[LDAP_##n+LDAP_ERROR_OFFSET]) == NULL) { \
+        exc = PyErr_NewException("ldap." #n, state->exception_class, NULL); \
+        if (exc == NULL) goto error; \
+        nobj = PyLong_FromLong(LDAP_##n); \
+        if (nobj == NULL) { \
+            Py_DECREF(exc); \
+            goto error; \
+        } \
+        if (PyObject_SetAttrString(exc, "errnum", nobj) != 0) { \
+            Py_DECREF(nobj); \
+            Py_DECREF(exc); \
+            goto error; \
+        } \
         Py_DECREF(nobj); \
-        Py_DECREF(exc); \
-        goto error; \
+        state->errobjects[LDAP_##n+LDAP_ERROR_OFFSET] = exc; \
     } \
-    Py_DECREF(nobj); \
-    errobjects[LDAP_##n+LDAP_ERROR_OFFSET] = exc;  \
+    Py_INCREF(exc); \
     if (PyModule_AddObject(m, #n, exc) != 0) { \
         Py_DECREF(exc); \
         goto error; \
     } \
-    Py_INCREF(exc);  \
 } while (0)
 
 #define add_int(n) do {  \
@@ -277,6 +296,6 @@ LDAPinit_constants(PyObject *m)
     return 0;
 
 error:
-    Py_CLEAR(LDAPexception_class);
+    Py_CLEAR(state->exception_class);
     return -1;
 }

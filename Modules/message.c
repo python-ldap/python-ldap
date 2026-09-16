@@ -17,8 +17,8 @@
  * be returned
  */
 PyObject *
-LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
-                      int add_intermediates)
+LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
+                      int add_ctrls, int add_intermediates)
 {
     /* we convert an LDAP message into a python structure.
      * It is always a list of dictionaries.
@@ -49,7 +49,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
         if (dn == NULL) {
             Py_DECREF(result);
             ldap_msgfree(m);
-            return LDAPerror(ld);
+            return LDAPerror(module, ld);
         }
 
         attrdict = PyDict_New();
@@ -66,7 +66,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
             Py_DECREF(attrdict);
             ldap_msgfree(m);
             ldap_memfree(dn);
-            return LDAPerror(ld);
+            return LDAPerror(module, ld);
         }
 
         /* convert serverctrls to list of tuples */
@@ -79,7 +79,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
             ldap_msgfree(m);
             ldap_memfree(dn);
             ldap_controls_free(serverctrls);
-            return LDAPerror(ld);
+            return LDAPerror(module, ld);
         }
         ldap_controls_free(serverctrls);
 
@@ -113,10 +113,15 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
                  * tests. 389-DS sometimes triggeres it, see
                  * https://github.com/python-ldap/python-ldap/issues/218
                  */
+#if PY_VERSION_HEX >= 0x030D0000
+                PyDict_GetItemRef(attrdict, pyattr, &valuelist);
+#else
+                /* <3.13 compat, GIL always exists, so no race */
                 valuelist = PyDict_GetItem(attrdict, pyattr);
                 /* Turn borrowed reference into owned reference */
                 if (valuelist != NULL)
                     Py_INCREF(valuelist);
+#endif
             }
             else {
                 valuelist = PyList_New(0);
@@ -212,7 +217,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
             Py_DECREF(reflist);
             Py_DECREF(result);
             ldap_msgfree(m);
-            return LDAPerror(ld);
+            return LDAPerror(module, ld);
         }
         /* convert serverctrls to list of tuples */
         if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
@@ -223,7 +228,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
             Py_DECREF(result);
             ldap_msgfree(m);
             ldap_controls_free(serverctrls);
-            return LDAPerror(ld);
+            return LDAPerror(module, ld);
         }
         ldap_controls_free(serverctrls);
         if (refs) {
@@ -274,7 +279,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
                      0) != LDAP_SUCCESS) {
                     Py_DECREF(result);
                     ldap_msgfree(m);
-                    return LDAPerror(ld);
+                    return LDAPerror(module, ld);
                 }
                 /* convert serverctrls to list of tuples */
                 if (!(pyctrls = LDAPControls_to_List(serverctrls))) {
@@ -286,7 +291,7 @@ LDAPmessage_to_python(LDAP *ld, LDAPMessage *m, int add_ctrls,
                     ldap_controls_free(serverctrls);
                     ldap_memfree(retoid);
                     ber_bvfree(retdata);
-                    return LDAPerror(ld);
+                    return LDAPerror(module, ld);
                 }
                 ldap_controls_free(serverctrls);
 

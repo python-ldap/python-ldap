@@ -182,8 +182,8 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
                     /* TypeError: mention either float or None is expected */
                     PyErr_Clear();
                     PyErr_Format(PyExc_TypeError,
-                                 "A float or None is expected for timeout, got %.100s",
-                                 Py_TYPE(value)->tp_name);
+                                 "A float or None is expected for timeout, got %S",
+                                 Py_TYPE(value));
                 }
                 return 0;
             }
@@ -301,9 +301,9 @@ LDAP_get_option(LDAPObject *self, int option)
             num_extensions++;
         extensions = PyTuple_New(num_extensions);
         for (i = 0; i < num_extensions; i++)
-            PyTuple_SET_ITEM(extensions, i,
-                             PyUnicode_FromString(apiinfo.ldapai_extensions
-                                                  [i]));
+            PyTuple_SetItem(extensions, i,
+                            PyUnicode_FromString(apiinfo.ldapai_extensions
+                                                 [i]));
 
         /* return api info as a dictionary */
         v = Py_BuildValue("{s:i, s:i, s:i, s:s, s:i, s:O}",
@@ -437,8 +437,7 @@ LDAP_get_option(LDAPObject *self, int option)
         if (res != LDAP_OPT_SUCCESS)
             return option_error(res, "ldap_get_option");
         if (strval == NULL) {
-            Py_INCREF(Py_None);
-            return Py_None;
+            return Py_NewRef(Py_None);
         }
         v = PyUnicode_FromString(strval);
         ldap_memfree(strval);
@@ -464,8 +463,7 @@ LDAP_get_option(LDAPObject *self, int option)
         if (res != LDAP_OPT_SUCCESS)
             return option_error(res, "ldap_get_option");
         if (tv == NULL) {
-            Py_INCREF(Py_None);
-            return Py_None;
+            return Py_NewRef(Py_None);
         }
         v = PyFloat_FromDouble((double)tv->tv_sec +
                                ((double)tv->tv_usec / 1000000.0)

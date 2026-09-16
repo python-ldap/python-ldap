@@ -6,7 +6,7 @@ This file handles only the C extension modules (_ldap) configuration,
 while pyproject.toml handles all project metadata, dependencies, and other settings.
 """
 
-import sys,os
+import sys,os,sysconfig
 from setuptools import setup, Extension
 
 if sys.version_info < (3, 6):
@@ -18,6 +18,33 @@ from configparser import ConfigParser
 
 sys.path.insert(0, os.path.join(os.getcwd(), 'Lib/ldap'))
 import pkginfo
+
+SETUP_OPTIONS = {}
+
+#-- Limited API configuration:
+# Currently some of the symbols we rely on did not appear in the Limited API
+# until later. Also free-threading is not in the Limited API in any Pythons
+# yet. We have to take all of these into account, allow Stable ABI for 3.13+,
+# but do not disallow building on 3.9+.
+LIMITED_API_FLOOR = 0x030D0000
+LIMITED_API_TAG = 'cp313'
+
+def use_limited_api():
+  """
+  Decide whether to build against the limited API (Stable ABI)
+
+  Also allow targeting a specific version if PYTHON_LDAP_NO_LIMITED_API is
+  nonempty.
+  """
+  if os.environ.get('PYTHON_LDAP_NO_LIMITED_API'):
+    return False
+  if sysconfig.get_config_var('Py_GIL_DISABLED'):
+    return False
+  return sys.hexversion >= LIMITED_API_FLOOR
+
+LIMITED_API = use_limited_api()
+if LIMITED_API:
+  SETUP_OPTIONS |= {"bdist_wheel": {"py_limited_api": LIMITED_API_TAG}}
 
 #-- A class describing the features and requirements of OpenLDAP 2.0
 class OpenLDAP2:
@@ -83,9 +110,11 @@ setup(
       extra_link_args = LDAP_CLASS.extra_link_args,
       extra_objects = LDAP_CLASS.extra_objects,
       runtime_library_dirs = (not sys.platform.startswith("win"))*LDAP_CLASS.library_dirs,
+      py_limited_api = LIMITED_API,
       define_macros = LDAP_CLASS.defines + \
         ('sasl' in LDAP_CLASS.libs or 'sasl2' in LDAP_CLASS.libs or 'libsasl' in LDAP_CLASS.libs)*[('HAVE_SASL',None)] + \
         ('ssl' in LDAP_CLASS.libs and 'crypto' in LDAP_CLASS.libs)*[('HAVE_TLS',None)] + \
+        LIMITED_API*[('Py_LIMITED_API', hex(LIMITED_API_FLOOR).upper())] + \
         [
           ('LDAPMODULE_VERSION', pkginfo.__version__),
           ('LDAPMODULE_AUTHOR', pkginfo.__author__),
@@ -93,4 +122,5 @@ setup(
         ]
     ),
   ],
+  options = SETUP_OPTIONS,
 )
