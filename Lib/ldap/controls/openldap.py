@@ -13,7 +13,7 @@ from ldap.ldapobject import SimpleLDAPObject
 from pyasn1.type import univ
 from pyasn1.codec.ber import decoder
 
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
   _Base = SimpleLDAPObject
@@ -58,7 +58,7 @@ class SearchNoOpMixIn(_Base):
   It adds a convenience method noop_search_st() to LDAPObject
   for easily using the no-op search control.
   """
-  def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+  def __init__(self, *args: Any, **kwargs: Any) -> None:
     if not isinstance(self, SimpleLDAPObject):
       raise TypeError(f"Expecting to be a subclass of {SimpleLDAPObject}")
     super().__init__(*args, **kwargs)
