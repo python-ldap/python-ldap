@@ -41,7 +41,7 @@ class sasl:
     overridden
     """
 
-    def __init__(self, cb_value_dict: dict[int, str], mech: Union[str, bytes]) -> None:
+    def __init__(self, cb_value_dict: dict[int, str | None], mech: Union[str, bytes]) -> None:
         """
         The (generic) base class takes a cb_value_dictionary of
         question-answer pairs. Questions are specified by the respective
