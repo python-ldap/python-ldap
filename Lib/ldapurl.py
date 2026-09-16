@@ -20,8 +20,10 @@ __all__ = [
 import html
 from collections.abc import MutableMapping
 from urllib.parse import quote, unquote
-
 from typing import Iterator
+
+from ldap._types import TypeAlias
+
 
 LDAP_SCOPE_BASE = 0
 LDAP_SCOPE_ONELEVEL = 1
@@ -141,7 +143,7 @@ class LDAPUrlExtension:
     return not self.__eq__(other)
 
 
-LDAPUrlExtensionsBase = MutableMapping[str, LDAPUrlExtension]
+LDAPUrlExtensionsBase: TypeAlias = MutableMapping[str, LDAPUrlExtension]
 
 class LDAPUrlExtensions(LDAPUrlExtensionsBase):
     """
