@@ -39,7 +39,7 @@ class RefreshRequest(ExtendedRequest):
   def __init__(
     self,
     requestName: str | None = None,
-    entryName: str | None = None,
+    entryName: bytes | None = None,
     requestTtl: int | None = None
   ) -> None:
     super().__init__(requestName or self.requestName, b'')
