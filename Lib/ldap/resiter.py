@@ -23,7 +23,7 @@ class ResultProcessor(_Base):
     Mix-in class used with ldap.ldapopbject.LDAPObject or derived classes.
     """
 
-    def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         if not isinstance(self, LDAPObject):
             raise TypeError(f"Expecting to be a subclass of {LDAPObject}")
         super().__init__(*args, **kwargs)
