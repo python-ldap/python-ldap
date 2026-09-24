@@ -81,10 +81,57 @@ where = ["Lib"]
 [tool.setuptools.package-dir]
 "" = "Lib"
 
-[tool.isort]
-line_length = 88
-known_first_party = ["ldap", "_ldap", "ldapurl", "ldif", "slapdtest"]
-sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+[tool.ruff]
+# ruff 0.16.8
+target-version = "py39"
+output-format = "concise"
+
+line-length = 120
+indent-width = 4
+
+[tool.ruff.lint]
+task-tags = ["TODO", "FIXME"]
+extend-select = [
+ "C90",  # complex-structure
+ "E",
+]
+ignore = [
+ # conflict with --preview or --unsafe-fixes
+ "RUF100", # unused-noqa
+ # conflict with formatter
+ "E501",  # line-too-long
+ # too many violations
+ "E741",  # ambiguous-variable-name
+ "UP031", # printf-string-formatting
+ "RUF012", # mutable-class-default
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.format]
+quote-style = "single"  # https://github.com/astral-sh/ruff/issues/7525
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+multiline-quotes = "double"
+inline-quotes = "single"
+
+[tool.ruff.lint.flake8-unused-arguments]
+ignore-variadic-names = true
+
+[tool.ruff.lint.flake8-pytest-style]
+parametrize-names-type = "csv"
+
+[tool.ruff.lint.flake8-annotations]
+ignore-fully-untyped = true
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["ldap", "_ldap", "ldapurl", "ldif", "slapdtest"]
+known-third-party = ["pyasn1", "pyasn1_modules"]
+known-local-folder = []
+lines-after-imports = 2
 
 [tool.coverage.run]
 branch = true
