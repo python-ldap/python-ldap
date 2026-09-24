@@ -113,7 +113,7 @@ class TestLdapCExtension(SlapdTestCase):
         # Perform a simple bind
         l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
         m = l.simple_bind(self.server.root_dn, self.server.root_pw)
-        result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ONE, self.timeout)
+        result, _pmsg, msgid, _ctrls = l.result4(m, _ldap.MSG_ONE, self.timeout)
         self.assertEqual(result, _ldap.RES_BIND)
         self.assertEqual(type(msgid), int)
 
@@ -255,7 +255,7 @@ class TestLdapCExtension(SlapdTestCase):
         l = self._open_conn()
 
     def test_simple_bind_fileno(self):
-        with self._open_conn_fd() as (fd, l):
+        with self._open_conn_fd() as (_fd, l):
             self.assertEqual(l.whoami_s(), "dn:" + self.server.root_dn)
 
     @requires_init_fd()
@@ -280,7 +280,7 @@ class TestLdapCExtension(SlapdTestCase):
 
     @requires_init_fd()
     def test_simple_bind_fileno_rebind(self):
-        with self._open_conn_fd() as (fd, l):
+        with self._open_conn_fd() as (_fd, l):
             self.assertEqual(l.whoami_s(), "dn:" + self.server.root_dn)
             l.unbind_ext()
             with self.assertRaises(_ldap.LDAPError):
@@ -464,7 +464,7 @@ class TestLdapCExtension(SlapdTestCase):
             ],
         )
         self.assertEqual(type(m), int)
-        result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
+        result, _pmsg, _msgid, _ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_ADD)
 
         # try a false compare
@@ -714,7 +714,7 @@ class TestLdapCExtension(SlapdTestCase):
         l.set_option(_ldap.OPT_PROTOCOL_VERSION, _ldap.VERSION3)
         # Anonymous bind
         m = l.simple_bind("", "")
-        result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
+        result, _pmsg, _msgid, _ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_BIND)
         # check with Who Am I? extended operation
         r = l.whoami_s()
