@@ -118,7 +118,7 @@ class SyncReplClient(ReconnectLDAPObject, SyncreplConsumer):
 def commenceShutdown(signum, stack):
     # Declare the needed global variables
     global watcher_running, ldap_connection
-    logger.warn('Shutting down!')
+    logger.warning('Shutting down!')
 
     # We are no longer running
     watcher_running = False
@@ -169,7 +169,7 @@ while watcher_running:
         logger.error('Login to LDAP server failed: %s', err)
         sys.exit(1)
     except ldap.SERVER_DOWN:
-        logger.warn('LDAP server is down, going to retry.')
+        logger.warning('LDAP server is down, going to retry.')
         time.sleep(5)
         continue
 
