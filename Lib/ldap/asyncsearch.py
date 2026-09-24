@@ -6,17 +6,15 @@ See https://www.python-ldap.org/ for details.
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Any, TextIO
+from typing import Any, TextIO
 
 import ldap
+import ldap.ldapobject
 import ldif
 from ldap._types import LDAPEntryDict, LDAPSearchResult
 from ldap.controls import RequestControl
 from ldap.pkginfo import __version__  # noqa: F401
 
-
-if TYPE_CHECKING:
-    import ldap.ldapobject
 
 SEARCH_RESULT_TYPES = {
   ldap.RES_SEARCH_ENTRY,
