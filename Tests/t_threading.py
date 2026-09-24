@@ -19,7 +19,7 @@ GIL_STARTS_ENABLED = gil_enabled()
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
-import _ldap
+import _ldap  # noqa: E402
 
 
 # loop and thread counts

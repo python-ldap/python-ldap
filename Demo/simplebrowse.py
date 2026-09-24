@@ -15,14 +15,14 @@ dn = "dc=openldap,dc=org"
 print("Connecting to", url)
 
 l = ldap.initialize(url)
-l.bind_s("", "", ldap.AUTH_SIMPLE);
+l.bind_s("", "", ldap.AUTH_SIMPLE)
 
 lastdn = dn
 dnlist = None
 
 while True:
 
-    #-- read a command
+    # -- read a command
     try:
         cmd = input(dn + "> ")
     except EOFError:
@@ -31,15 +31,15 @@ while True:
 
     try:
         if cmd == "?":
-            print( "cd <dn>	- change DN to <dn>")
-            print( "cd <n>	- change DN to number <n> of last 'ls'")
-            print( "cd -	- change to previous DN")
-            print( "cd ..	- change to one-level higher DN")
-            print( "cd 	- change to root DN")
-            print( "ls	- list children of crrent DN")
-            print( ".	- show attributes of current DN")
-            print( "/<expr>	- list descendents matching filter <expr>")
-            print( "?	- show this help")
+            print("cd <dn>	- change DN to <dn>")
+            print("cd <n>	- change DN to number <n> of last 'ls'")
+            print("cd -	- change to previous DN")
+            print("cd ..	- change to one-level higher DN")
+            print("cd 	- change to root DN")
+            print("ls	- list children of crrent DN")
+            print(".	- show attributes of current DN")
+            print("/<expr>	- list descendents matching filter <expr>")
+            print("?	- show this help")
 
         elif cmd == "ls":
             print("Children of", dn, ":")
@@ -50,13 +50,13 @@ while True:
             # We're not interested in attributes at this stage, so
             # we specify [] as the list of attribute names to retreive.
             #
-            for name,attrs in l.search_s(dn, ldap.SCOPE_ONELEVEL,
+            for name, attrs in l.search_s(dn, ldap.SCOPE_ONELEVEL,
                 "objectclass=*", []):
-                #-- shorten resulting dns for output brevity
-                if name.startswith(dn+", "):
-                    shortname = "+ "+name[len(dn)+2:]
-                elif name.endswith(", "+dn):
-                    shortname = name[:-len(dn)-2]+" +"
+                # -- shorten resulting dns for output brevity
+                if name.startswith(dn + ", "):
+                    shortname = "+ " + name[len(dn) + 2:]
+                elif name.endswith(", " + dn):
+                    shortname = name[:-len(dn) - 2] + " +"
                 else:
                     shortname = name
                 print(" %3d. %s" % (len(dnlist), shortname))
@@ -69,7 +69,7 @@ while True:
         elif cmd.startswith("cd "):
             arg = cmd[3:]
             if arg == '-':
-                lastdn,dn = dn,lastdn
+                lastdn, dn = dn, lastdn
             elif arg == '..':
                 dn = ldap.explode_dn(dn)[1:].join(",")
                 dn = dn.strip()
@@ -95,10 +95,10 @@ while True:
             # the client to receive all attributes on the DN.
             #
             print("Attributes of", dn, ":")
-            for name,attrs in l.search_s(dn, ldap.SCOPE_BASE,
+            for name, attrs in l.search_s(dn, ldap.SCOPE_BASE,
                 "objectclass=*"):
                 print("  %-24s" % name)
-                for k,vals in attrs.items():
+                for k, vals in attrs.items():
                     for v in vals:
                         if len(v) > 200:
                             v = v[:200] + ("... (%d bytes)" % len(v))
@@ -113,7 +113,7 @@ while True:
             #
             expr = cmd[1:]
             print("Descendents matching filter", expr, ":")
-            for name,attrs in l.search_s(dn, ldap.SCOPE_SUBTREE,
+            for name, attrs in l.search_s(dn, ldap.SCOPE_SUBTREE,
                 expr, []):
                 print("  %24s", name)
 

@@ -83,7 +83,6 @@ class Feature(Constant):
         '',
     ])
 
-
     def __init__(self, name: str, c_feature: str, **kwargs: Any) -> None:
         super().__init__(name, **kwargs)
         self.c_feature = c_feature

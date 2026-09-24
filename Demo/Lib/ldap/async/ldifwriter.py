@@ -37,6 +37,6 @@ else:
 
 sys.stderr.write(
   '%d results received.\n' % (
-    s.endResultBreak-s.beginResultsDropped
+    s.endResultBreak - s.beginResultsDropped
   )
 )

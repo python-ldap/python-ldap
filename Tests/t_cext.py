@@ -38,15 +38,15 @@ class TestLdapCExtension(SlapdTestCase):
         )
         cls.server.ldapadd(
             "\n".join([
-                'dn: '+cls.server.suffix,
+                'dn: ' + cls.server.suffix,
                 'objectClass: dcObject',
                 'objectClass: organization',
-                'dc: '+suffix_dc,
-                'o: '+suffix_dc,
+                'dc: ' + suffix_dc,
+                'o: ' + suffix_dc,
                 '',
-                'dn: '+cls.server.root_dn,
+                'dn: ' + cls.server.root_dn,
                 'objectClass: applicationProcess',
-                'cn: '+cls.server.root_cn,
+                'cn: ' + cls.server.root_cn,
                 ''
             ])
         )
@@ -117,7 +117,6 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(result, _ldap.RES_BIND)
         self.assertEqual(type(msgid), int)
 
-
     # Test for the existence of a whole bunch of constants
     # that the C module is supposed to export
     def test_constants(self):
@@ -138,9 +137,9 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(_ldap.RES_DELETE, 0x6b)
         self.assertEqual(_ldap.RES_MODRDN, 0x6d)
         self.assertEqual(_ldap.RES_COMPARE, 0x6f)
-        self.assertEqual(_ldap.RES_SEARCH_REFERENCE, 0x73) # v3
+        self.assertEqual(_ldap.RES_SEARCH_REFERENCE, 0x73)  # v3
         self.assertEqual(_ldap.RES_EXTENDED, 0x78)         # v3
-        #self.assertEqual(_ldap.RES_INTERMEDIATE, 0x79)     # v3
+        # self.assertEqual(_ldap.RES_INTERMEDIATE, 0x79)     # v3
         self.assertIsNotNone(_ldap.RES_ANY)
         self.assertIsNotNone(_ldap.RES_UNSOLICITED)
 
@@ -193,10 +192,10 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertIsNotNone(_ldap.OPT_REFHOPLIMIT)
         self.assertIsNotNone(_ldap.OPT_NETWORK_TIMEOUT)
         self.assertIsNotNone(_ldap.OPT_URI)
-        #self.assertIsNotNone(_ldap.OPT_REFERRAL_URLS)
-        #self.assertIsNotNone(_ldap.OPT_SOCKBUF)
-        #self.assertIsNotNone(_ldap.OPT_DEFBASE)
-        #self.assertIsNotNone(_ldap.OPT_CONNECT_ASYNC)
+        # self.assertIsNotNone(_ldap.OPT_REFERRAL_URLS)
+        # self.assertIsNotNone(_ldap.OPT_SOCKBUF)
+        # self.assertIsNotNone(_ldap.OPT_DEFBASE)
+        # self.assertIsNotNone(_ldap.OPT_CONNECT_ASYNC)
 
         # str2dn()
         self.assertIsNotNone(_ldap.DN_FORMAT_LDAP)
@@ -297,7 +296,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(ctrls, [])
 
     @unittest.skipUnless(
-        _ldap.VENDOR_VERSION >= 20500 and \
+        _ldap.VENDOR_VERSION >= 20500 and 
             _ldap._VENDOR_VERSION_RUNTIME >= 20500,
         reason="Test requires libldap 2.5+"
     )
@@ -331,7 +330,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(type(m), int)
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
-        self.assertEqual(pmsg[0][0], "") # rootDSE has no dn
+        self.assertEqual(pmsg[0][0], "")  # rootDSE has no dn
         self.assertEqual(msgid, m)
         self.assertEqual(ctrls, [])
         root_dse = pmsg[0][1]
@@ -438,7 +437,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(
             pmsg[0],
             (
-                'cn=Foo,'+self.writesuffix,
+                'cn=Foo,' + self.writesuffix,
                 {
                     'objectClass': [b'organizationalRole'],
                     'cn': [b'Foo'],
@@ -502,7 +501,7 @@ class TestLdapCExtension(SlapdTestCase):
         try deleting an object that doesn't exist
         """
         l = self._open_conn()
-        m = l.delete_ext("cn=DoesNotExist,"+self.server.suffix)
+        m = l.delete_ext("cn=DoesNotExist," + self.server.suffix)
         try:
             r = l.result4(m, _ldap.MSG_ALL, self.timeout)
         except _ldap.NO_SUCH_OBJECT:
@@ -513,7 +512,7 @@ class TestLdapCExtension(SlapdTestCase):
     def test_delete(self):
         l = self._open_conn()
         # first, add an object we will delete
-        dn = "cn=Deleteme,"+self.writesuffix
+        dn = "cn=Deleteme," + self.writesuffix
         m = l.add_ext(
             dn,
             [
@@ -537,7 +536,7 @@ class TestLdapCExtension(SlapdTestCase):
 
         # try deleting an object that doesn't exist
         m = l.modify_ext(
-            "cn=DoesNotExist,"+self.writesuffix,
+            "cn=DoesNotExist," + self.writesuffix,
             [
                 (_ldap.MOD_ADD, 'description', [b'blah']),
             ]
@@ -555,7 +554,7 @@ class TestLdapCExtension(SlapdTestCase):
         """
         l = self._open_conn()
         m = l.modify_ext(
-            "cn=DoesNotExist,"+self.server.suffix,
+            "cn=DoesNotExist," + self.server.suffix,
             [
                 (_ldap.MOD_ADD, 'description', [b'dummy']),
             ]
@@ -574,7 +573,7 @@ class TestLdapCExtension(SlapdTestCase):
         """
         l = self._open_conn()
         # first, add an object we will delete
-        dn = "cn=AddToMe,"+self.writesuffix
+        dn = "cn=AddToMe," + self.writesuffix
         m = l.add_ext(
             dn,
             [
@@ -614,7 +613,7 @@ class TestLdapCExtension(SlapdTestCase):
 
     def test_rename(self):
         l = self._open_conn()
-        dn = "cn=RenameMe,"+self.writesuffix
+        dn = "cn=RenameMe," + self.writesuffix
         m = l.add_ext(
             dn,
             [
@@ -638,12 +637,12 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.search_ext(self.writesuffix, _ldap.SCOPE_SUBTREE, '(cn=RenameMe)')
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
-        self.assertEqual(len(pmsg), 0) # expect no results
+        self.assertEqual(len(pmsg), 0)  # expect no results
         self.assertEqual(msgid, m)
         self.assertEqual(ctrls, [])
 
         # check that the new one looks right
-        dn2 = "cn=IAmRenamed,"+self.writesuffix
+        dn2 = "cn=IAmRenamed," + self.writesuffix
         m = l.search_ext(self.writesuffix, _ldap.SCOPE_SUBTREE, '(cn=IAmRenamed)')
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
@@ -654,7 +653,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(pmsg[0][1]['cn'], [b'IAmRenamed'])
 
         # create the container
-        containerDn = "ou=RenameContainer,"+self.writesuffix
+        containerDn = "ou=RenameContainer," + self.writesuffix
         m = l.add_ext(
             containerDn,
             [
@@ -680,7 +679,7 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.search_ext(self.writesuffix, _ldap.SCOPE_SUBTREE, '(cn=IAmRenamed)')
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
-        self.assertEqual(len(pmsg), 0) # expect no results
+        self.assertEqual(len(pmsg), 0)  # expect no results
         self.assertEqual(msgid, m)
         self.assertEqual(ctrls, [])
 
@@ -696,7 +695,6 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(len(pmsg), 1)
         self.assertEqual(pmsg[0][0], dn3)
         self.assertEqual(pmsg[0][1]['cn'], [b'IAmRenamedAgain'])
-
 
     def test_whoami(self):
         l = self._open_conn()
@@ -811,7 +809,7 @@ class TestLdapCExtension(SlapdTestCase):
 
     def test_sasl(self):
         l = self._open_conn()
-        if not self._require_attr(l, 'sasl_interactive_bind_s'): # HAVE_SASL
+        if not self._require_attr(l, 'sasl_interactive_bind_s'):  # HAVE_SASL
             return
         # TODO
 
@@ -853,7 +851,7 @@ class TestLdapCExtension(SlapdTestCase):
         l = self._open_conn(bind=False)
         # search with invalid filter
         try:
-            m = l.simple_bind(self.server.root_dn, self.server.root_pw+'wrong')
+            m = l.simple_bind(self.server.root_dn, self.server.root_pw + 'wrong')
             r = l.result4(m, _ldap.MSG_ALL, self.timeout)
         except _ldap.INVALID_CREDENTIALS:
             pass

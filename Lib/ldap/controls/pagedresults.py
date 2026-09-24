@@ -21,13 +21,13 @@ from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseContr
 
 class PagedResultsControlValue(univ.Sequence):
   componentType = namedtype.NamedTypes(
-    namedtype.NamedType('size',univ.Integer()),
+    namedtype.NamedType('size', univ.Integer()),
     # FIXME: This should be univ.OctetString, not LDAPString()?
-    namedtype.NamedType('cookie',LDAPString()),
+    namedtype.NamedType('cookie', LDAPString()),
   )
 
 
-class SimplePagedResultsControl(RequestControl,ResponseControl):
+class SimplePagedResultsControl(RequestControl, ResponseControl):
   controlType = '1.2.840.113556.1.4.319'
 
   def __init__(
@@ -48,12 +48,12 @@ class SimplePagedResultsControl(RequestControl,ResponseControl):
 
   def encodeControlValue(self) -> bytes:
     pc = PagedResultsControlValue()
-    pc.setComponentByName('size',univ.Integer(self.size))
-    pc.setComponentByName('cookie',LDAPString(self.cookie))
+    pc.setComponentByName('size', univ.Integer(self.size))
+    pc.setComponentByName('cookie', LDAPString(self.cookie))
     return encoder.encode(pc)  # type: ignore
 
   def decodeControlValue(self, encodedControlValue: bytes) -> None:
-    decodedValue,_ = decoder.decode(encodedControlValue,asn1Spec=PagedResultsControlValue())
+    decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=PagedResultsControlValue())
     self.size = int(decodedValue.getComponentByName('size'))
     self.cookie = bytes(decodedValue.getComponentByName('cookie'))
 

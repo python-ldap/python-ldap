@@ -25,7 +25,7 @@ except (IndexError, ValueError):
   sys.exit(1)
 
 # Set debugging level
-#ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
+# ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
@@ -40,10 +40,10 @@ if ldap_url.who and ldap_url.cred is None:
   ldap_url.cred = getpass.getpass()
 
 try:
-  ldap_conn.simple_bind_s(ldap_url.who or '',ldap_url.cred or '')
+  ldap_conn.simple_bind_s(ldap_url.who or '', ldap_url.cred or '')
 
 except ldap.INVALID_CREDENTIALS as e:
-  print('Simple bind failed:',str(e))
+  print('Simple bind failed:', str(e))
   sys.exit(1)
 
 st_ctrl = SessionTrackingControl(

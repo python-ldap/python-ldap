@@ -19,7 +19,7 @@ class TestBinds(SlapdTestCase):
     def _get_ldapobject(self, bytes_mode=None):
         l = LDAPObject(self.server.ldap_uri, bytes_mode=bytes_mode)
         l.protocol_version = 3
-        l.set_option(ldap.OPT_REFERRALS,0)
+        l.set_option(ldap.OPT_REFERRALS, 0)
         return l
 
     def test_simple_bind(self):

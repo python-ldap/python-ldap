@@ -27,7 +27,7 @@ __all__ = [
 ]
 
 
-class SearchNoOpControl(ValueLessRequestControl,ResponseControl):
+class SearchNoOpControl(ValueLessRequestControl, ResponseControl):
   """
   No-op control attached to search operations implementing sort of a
   count operation
@@ -43,7 +43,7 @@ class SearchNoOpControl(ValueLessRequestControl,ResponseControl):
     pass
 
   def decodeControlValue(self, encodedControlValue: bytes) -> None:
-    decodedValue,_ = decoder.decode(encodedControlValue,asn1Spec=self.SearchNoOpControlValue())
+    decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=self.SearchNoOpControlValue())
     self.resultCode = int(decodedValue[0])
     self.numSearchResults = int(decodedValue[1])
     self.numSearchContinuations = int(decodedValue[2])
@@ -81,7 +81,7 @@ class SearchNoOpMixIn(_Base):
         timeout=timeout,
         serverctrls=[SearchNoOpControl(criticality=True)],
       )
-      _,_,_,search_response_ctrls = self.result3(msg_id,all=1,timeout=timeout)
+      _, _, _, search_response_ctrls = self.result3(msg_id, all=1, timeout=timeout)
     except (
       ldap.TIMEOUT,
       ldap.TIMELIMIT_EXCEEDED,
@@ -98,6 +98,6 @@ class SearchNoOpMixIn(_Base):
         if isinstance(c, SearchNoOpControl)
       ]
       if noop_srch_ctrl:
-        return noop_srch_ctrl[0].numSearchResults,noop_srch_ctrl[0].numSearchContinuations
+        return noop_srch_ctrl[0].numSearchResults, noop_srch_ctrl[0].numSearchContinuations
       else:
-        return (None,None)
+        return (None, None)

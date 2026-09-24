@@ -14,9 +14,9 @@ from ldap.controls import RequestControl
 
 # OID constants
 SESSION_TRACKING_CONTROL_OID = "1.3.6.1.4.1.21008.108.63.1"
-SESSION_TRACKING_FORMAT_OID_RADIUS_ACCT_SESSION_ID = SESSION_TRACKING_CONTROL_OID+".1"
-SESSION_TRACKING_FORMAT_OID_RADIUS_ACCT_MULTI_SESSION_ID = SESSION_TRACKING_CONTROL_OID+".2"
-SESSION_TRACKING_FORMAT_OID_USERNAME = SESSION_TRACKING_CONTROL_OID+".3"
+SESSION_TRACKING_FORMAT_OID_RADIUS_ACCT_SESSION_ID = SESSION_TRACKING_CONTROL_OID + ".1"
+SESSION_TRACKING_FORMAT_OID_RADIUS_ACCT_MULTI_SESSION_ID = SESSION_TRACKING_CONTROL_OID + ".2"
+SESSION_TRACKING_FORMAT_OID_USERNAME = SESSION_TRACKING_CONTROL_OID + ".3"
 
 
 class SessionTrackingControl(RequestControl):
@@ -38,10 +38,10 @@ class SessionTrackingControl(RequestControl):
 
   class SessionIdentifierControlValue(univ.Sequence):
     componentType = namedtype.NamedTypes(
-      namedtype.NamedType('sessionSourceIp',LDAPString()),
-      namedtype.NamedType('sessionSourceName',LDAPString()),
-      namedtype.NamedType('formatOID',LDAPOID()),
-      namedtype.NamedType('sessionTrackingIdentifier',LDAPString()),
+      namedtype.NamedType('sessionSourceIp', LDAPString()),
+      namedtype.NamedType('sessionSourceName', LDAPString()),
+      namedtype.NamedType('formatOID', LDAPOID()),
+      namedtype.NamedType('sessionTrackingIdentifier', LDAPString()),
     )
 
   controlType = SESSION_TRACKING_CONTROL_OID
@@ -51,17 +51,17 @@ class SessionTrackingControl(RequestControl):
     sessionSourceIp: str,
     sessionSourceName: str,
     formatOID: str,
-    sessionTrackingIdentifier:str,
+    sessionTrackingIdentifier: str,
   ) -> None:
     # criticality MUST be false for this control
     self.criticality = False
-    self.sessionSourceIp,self.sessionSourceName,self.formatOID,self.sessionTrackingIdentifier = \
-      sessionSourceIp,sessionSourceName,formatOID,sessionTrackingIdentifier
+    self.sessionSourceIp, self.sessionSourceName, self.formatOID, self.sessionTrackingIdentifier = \
+      sessionSourceIp, sessionSourceName, formatOID, sessionTrackingIdentifier
 
   def encodeControlValue(self) -> bytes:
     s = self.SessionIdentifierControlValue()
-    s.setComponentByName('sessionSourceIp',LDAPString(self.sessionSourceIp))
-    s.setComponentByName('sessionSourceName',LDAPString(self.sessionSourceName))
-    s.setComponentByName('formatOID',LDAPOID(self.formatOID))
-    s.setComponentByName('sessionTrackingIdentifier',LDAPString(self.sessionTrackingIdentifier))
+    s.setComponentByName('sessionSourceIp', LDAPString(self.sessionSourceIp))
+    s.setComponentByName('sessionSourceName', LDAPString(self.sessionSourceName))
+    s.setComponentByName('formatOID', LDAPOID(self.formatOID))
+    s.setComponentByName('sessionTrackingIdentifier', LDAPString(self.sessionTrackingIdentifier))
     return encoder.encode(s)  # type: ignore

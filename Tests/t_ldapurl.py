@@ -17,10 +17,10 @@ from ldapurl import LDAPUrl
 
 class MyLDAPUrl(LDAPUrl):
     attr2extype = {
-        'who':'bindname',
-        'cred':'X-BINDPW',
-        'start_tls':'startTLS',
-        'trace_level':'trace',
+        'who': 'bindname',
+        'cred': 'X-BINDPW',
+        'start_tls': 'startTLS',
+        'trace_level': 'trace',
     }
 
 
@@ -28,24 +28,24 @@ class TestIsLDAPUrl(unittest.TestCase):
 
     is_ldap_url_tests = {
         # Examples from RFC2255
-        'ldap:///o=University%20of%20Michigan,c=US':1,
-        'ldap://ldap.itd.umich.edu/o=University%20of%20Michigan,c=US':1,
-        'ldap://ldap.itd.umich.edu/o=University%20of%20Michigan,':1,
-        'ldap://host.com:6666/o=University%20of%20Michigan,':1,
-        'ldap://ldap.itd.umich.edu/c=GB?objectClass?one':1,
-        'ldap://ldap.question.com/o=Question%3f,c=US?mail':1,
-        'ldap://ldap.netscape.com/o=Babsco,c=US???(int=%5c00%5c00%5c00%5c04)':1,
-        'ldap:///??sub??bindname=cn=Manager%2co=Foo':1,
-        'ldap:///??sub??!bindname=cn=Manager%2co=Foo':1,
+        'ldap:///o=University%20of%20Michigan,c=US': 1,
+        'ldap://ldap.itd.umich.edu/o=University%20of%20Michigan,c=US': 1,
+        'ldap://ldap.itd.umich.edu/o=University%20of%20Michigan,': 1,
+        'ldap://host.com:6666/o=University%20of%20Michigan,': 1,
+        'ldap://ldap.itd.umich.edu/c=GB?objectClass?one': 1,
+        'ldap://ldap.question.com/o=Question%3f,c=US?mail': 1,
+        'ldap://ldap.netscape.com/o=Babsco,c=US???(int=%5c00%5c00%5c00%5c04)': 1,
+        'ldap:///??sub??bindname=cn=Manager%2co=Foo': 1,
+        'ldap:///??sub??!bindname=cn=Manager%2co=Foo': 1,
         # More examples from various sources
-        'ldap://ldap.nameflow.net:1389/c%3dDE':1,
-        'ldap://root.openldap.org/dc=openldap,dc=org':1,
-        'ldaps://root.openldap.org/dc=openldap,dc=org':1,
-        'ldap://x500.mh.se/o=Mitthogskolan,c=se????1.2.752.58.10.2=T.61':1,
-        'ldp://root.openldap.org/dc=openldap,dc=org':0,
-        'ldap://localhost:1389/ou%3DUnstructured%20testing%20tree%2Cdc%3Dstroeder%2Cdc%3Dcom??one':1,
-        'ldaps://ldap.example.com/c%3dDE':1,
-        'ldapi:///dc=stroeder,dc=de????x-saslmech=EXTERNAL':1,
+        'ldap://ldap.nameflow.net:1389/c%3dDE': 1,
+        'ldap://root.openldap.org/dc=openldap,dc=org': 1,
+        'ldaps://root.openldap.org/dc=openldap,dc=org': 1,
+        'ldap://x500.mh.se/o=Mitthogskolan,c=se????1.2.752.58.10.2=T.61': 1,
+        'ldp://root.openldap.org/dc=openldap,dc=org': 0,
+        'ldap://localhost:1389/ou%3DUnstructured%20testing%20tree%2Cdc%3Dstroeder%2Cdc%3Dcom??one': 1,
+        'ldaps://ldap.example.com/c%3dDE': 1,
+        'ldapi:///dc=stroeder,dc=de????x-saslmech=EXTERNAL': 1,
         'LDAP://localhost': True,
         'LDAPS://localhost': True,
         'LDAPI://%2Frun%2Fldap.sock': True,
@@ -117,8 +117,8 @@ class TestParseLDAPUrl(unittest.TestCase):
             hostport='x500.mh.se',
             dn='o=Mitthogskolan,c=se',
             extensions=ldapurl.LDAPUrlExtensions({
-                '1.2.752.58.10.2':ldapurl.LDAPUrlExtension(
-                critical=0,extype='1.2.752.58.10.2',exvalue='T.61'
+                '1.2.752.58.10.2': ldapurl.LDAPUrlExtension(
+                critical=0, extype='1.2.752.58.10.2', exvalue='T.61'
                 )
             })
         )
@@ -129,11 +129,11 @@ class TestParseLDAPUrl(unittest.TestCase):
             hostport='localhost:12345',
             dn='dc=stroeder,dc=com',
             extensions=ldapurl.LDAPUrlExtensions({
-                'bindname':ldapurl.LDAPUrlExtension(
-                critical=1,extype='bindname',exvalue='cn=Michael,dc=stroeder,dc=com'
+                'bindname': ldapurl.LDAPUrlExtension(
+                critical=1, extype='bindname', exvalue='cn=Michael,dc=stroeder,dc=com'
                 ),
-                'X-BINDPW':ldapurl.LDAPUrlExtension(
-                critical=1,extype='X-BINDPW',exvalue='secretpassword'
+                'X-BINDPW': ldapurl.LDAPUrlExtension(
+                critical=1, extype='X-BINDPW', exvalue='secretpassword'
                 ),
             }),
         )
@@ -182,7 +182,7 @@ class TestParseLDAPUrl(unittest.TestCase):
     ]
 
     def test_ldapurl(self):
-        for ldap_url_str,test_ldap_url_obj in self.parse_ldap_url_tests:
+        for ldap_url_str, test_ldap_url_obj in self.parse_ldap_url_tests:
             ldap_url_obj = LDAPUrl(ldapUrl=ldap_url_str)
             self.assertEqual(
                 ldap_url_obj, test_ldap_url_obj,
@@ -210,7 +210,7 @@ class TestLDAPUrl(unittest.TestCase):
         self.assertEqual(u.urlscheme, "ldap")
         self.assertEqual(u.hostport, "127.0.0.1:1234")
         self.assertEqual(u.dn, "dc=example,dc=com")
-        self.assertEqual(u.attrs, ["attr1","attr2","attr3"])
+        self.assertEqual(u.attrs, ["attr1", "attr2", "attr3"])
         self.assertEqual(u.scope, ldapurl.LDAP_SCOPE_SUBTREE)
         self.assertEqual(u.filterstr, "(objectClass=*)")
         self.assertEqual(len(u.extensions), 3)
@@ -241,7 +241,7 @@ class TestLDAPUrl(unittest.TestCase):
 
     def test_parse_default_filter(self):
         u = LDAPUrl("ldap://")
-        self.assertIsNone(u.filterstr) # RFC4516 s3
+        self.assertIsNone(u.filterstr)  # RFC4516 s3
 
     def test_parse_default_extensions(self):
         u = LDAPUrl("ldap://")
@@ -301,21 +301,21 @@ class TestLDAPUrl(unittest.TestCase):
         u = LDAPUrl("ldap:///?*?")
         self.assertEqual(u.attrs, ['*'])
         u = LDAPUrl("ldap:///?*,*?")
-        self.assertEqual(u.attrs, ['*','*'])
+        self.assertEqual(u.attrs, ['*', '*'])
         u = LDAPUrl("ldap:///?a")
         self.assertEqual(u.attrs, ['a'])
         u = LDAPUrl("ldap:///?%61")
         self.assertEqual(u.attrs, ['a'])
         u = LDAPUrl("ldap:///?a,b")
-        self.assertEqual(u.attrs, ['a','b'])
+        self.assertEqual(u.attrs, ['a', 'b'])
         u = LDAPUrl("ldap:///?a%3fb")
         self.assertEqual(u.attrs, ['a?b'])
 
     def test_parse_scope_default(self):
         u = LDAPUrl("ldap:///??")
-        self.assertIsNone(u.scope) # on opposite to RFC4516 s3 for referral chasing
+        self.assertIsNone(u.scope)  # on opposite to RFC4516 s3 for referral chasing
         u = LDAPUrl("ldap:///???")
-        self.assertIsNone(u.scope) # on opposite to RFC4516 s3 for referral chasing
+        self.assertIsNone(u.scope)  # on opposite to RFC4516 s3 for referral chasing
 
     def test_parse_scope(self):
         u = LDAPUrl("ldap:///??sub")
@@ -354,10 +354,10 @@ class TestLDAPUrl(unittest.TestCase):
         self.assertEqual(u.filterstr, "(cn=Q?)")
         u = LDAPUrl("ldap:///???(cn=Q%3f)")
         self.assertEqual(u.filterstr, "(cn=Q?)")
-        u = LDAPUrl("ldap:///???(sn=Str%c3%b6der)") # (possibly bad?)
+        u = LDAPUrl("ldap:///???(sn=Str%c3%b6der)")  # (possibly bad?)
         self.assertEqual(u.filterstr, "(sn=Str\xf6der)")
         u = LDAPUrl("ldap:///???(sn=Str\\c3\\b6der)")
-        self.assertEqual(u.filterstr, "(sn=Str\\c3\\b6der)") # (recommended)
+        self.assertEqual(u.filterstr, "(sn=Str\\c3\\b6der)")  # (recommended)
         u = LDAPUrl("ldap:///???(cn=*\\2a*)")
         self.assertEqual(u.filterstr, "(cn=*\\2a*)")
         u = LDAPUrl("ldap:///???(cn=*%5c2a*)")
@@ -408,7 +408,7 @@ class TestLDAPUrl(unittest.TestCase):
                 "LDAP://",
                 "invalid://",
                 "ldap:///??invalid",
-                #XXX-- the following should raise exceptions!
+                # XXX-- the following should raise exceptions!
                 "ldap://:389/",         # [host [COLON port]]
                 "ldap://a:/",           # [host [COLON port]]
                 r"ldap://%%%/",          # invalid URL encoding

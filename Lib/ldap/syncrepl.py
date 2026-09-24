@@ -173,6 +173,7 @@ class SyncStateControl(ResponseControl):
         self.state = self.__class__.opnames[int(state)]
         self.entryUUID = str(uuid)
 
+
 KNOWN_RESPONSE_CONTROLS[SyncStateControl.controlType] = SyncStateControl
 
 
@@ -213,6 +214,7 @@ class SyncDoneControl(ResponseControl):
             self.refreshDeletes = bool(refresh_deletes)
         else:
             self.refreshDeletes = False
+
 
 KNOWN_RESPONSE_CONTROLS[SyncDoneControl.controlType] = SyncDoneControl
 
@@ -515,7 +517,6 @@ class SyncreplConsumer(_Base):
 
             if all == 0:
                 return True
-
 
     # virtual methods -- subclass must override these to do useful work
 

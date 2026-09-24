@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
-url = "ldap://localhost:1390/"
-base = "dc=stroeder,dc=de"
-search_flt = r'(objectClass=*)'
-
-searchreq_attrlist=['cn','entryDN','entryUUID','mail','objectClass']
-
 import ldap
 from ldap.controls import SimplePagedResultsControl
 from ldap.ldapobject import ReconnectLDAPObject
 
 
+url = "ldap://localhost:1390/"
+base = "dc=stroeder,dc=de"
+search_flt = r'(objectClass=*)'
+
+searchreq_attrlist = ['cn', 'entryDN', 'entryUUID', 'mail', 'objectClass']
+
+
 class PagedResultsSearchObject:
   page_size = 50
 
-  def paged_search_ext_s(self,base,scope,filterstr='(objectClass=*)',attrlist=None,attrsonly=0,serverctrls=None,clientctrls=None,timeout=-1,sizelimit=0):
+  def paged_search_ext_s(self, base, scope, filterstr='(objectClass=*)', attrlist=None, attrsonly=0, serverctrls=None, clientctrls=None, timeout=-1, sizelimit=0):
     """
     Behaves exactly like LDAPObject.search_ext_s() but internally uses the
     simple paged results control to retrieve search results in chunks.
@@ -22,9 +23,9 @@ class PagedResultsSearchObject:
     to process one-by-one
     """
 
-    while True: # loop for reconnecting if necessary
+    while True:  # loop for reconnecting if necessary
 
-      req_ctrl = SimplePagedResultsControl(True,size=self.page_size,cookie='')
+      req_ctrl = SimplePagedResultsControl(True, size=self.page_size, cookie='')
 
       try:
 
@@ -35,7 +36,7 @@ class PagedResultsSearchObject:
           filterstr=filterstr,
           attrlist=attrlist,
           attrsonly=attrsonly,
-          serverctrls=(serverctrls or [])+[req_ctrl],
+          serverctrls=(serverctrls or []) + [req_ctrl],
           clientctrls=clientctrls,
           timeout=timeout,
           sizelimit=sizelimit
@@ -64,13 +65,13 @@ class PagedResultsSearchObject:
                   filterstr=filterstr,
                   attrlist=attrlist,
                   attrsonly=attrsonly,
-                  serverctrls=(serverctrls or [])+[req_ctrl],
+                  serverctrls=(serverctrls or []) + [req_ctrl],
                   clientctrls=clientctrls,
                   timeout=timeout,
                   sizelimit=sizelimit
                 )
             else:
-              break # no more pages available
+              break  # no more pages available
 
       except ldap.SERVER_DOWN as e:
         try:
@@ -79,22 +80,22 @@ class PagedResultsSearchObject:
           raise e
 
       else:
-        return result_pages,all_results
+        return result_pages, all_results
 
 
-class MyLDAPObject(ReconnectLDAPObject,PagedResultsSearchObject):
+class MyLDAPObject(ReconnectLDAPObject, PagedResultsSearchObject):
   pass
 
 
-#ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
+# ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
 ldap.set_option(ldap.OPT_REFERRALS, 0)
-l = MyLDAPObject(url,trace_level=2,retry_max=100,retry_delay=2)
+l = MyLDAPObject(url, trace_level=2, retry_max=100, retry_delay=2)
 l.protocol_version = 3
 l.simple_bind_s("", "")
-l.page_size=10
+l.page_size = 10
 
 # Send search request
-result_pages,all_results = l.paged_search_ext_s(
+result_pages, all_results = l.paged_search_ext_s(
   base,
   ldap.SCOPE_SUBTREE,
   search_flt,
@@ -104,4 +105,4 @@ result_pages,all_results = l.paged_search_ext_s(
 
 l.unbind_s()
 
-print('Received %d results in %d pages.' % (len(all_results),result_pages))
+print('Received %d results in %d pages.' % (len(all_results), result_pages))

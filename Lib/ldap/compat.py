@@ -2,8 +2,13 @@
 from __future__ import annotations
 
 import warnings
+from collections import UserDict
+from collections.abc import MutableMapping  # noqa: F401
+from shutil import which  # noqa: F401
 from types import TracebackType
 from typing import NoReturn
+from urllib.parse import quote, quote_plus, unquote, urlparse  # noqa: F401
+from urllib.request import urlopen  # noqa: F401
 
 
 warnings.warn(
@@ -11,14 +16,8 @@ warnings.warn(
     DeprecationWarning,
 )
 
-from collections import UserDict
-
 
 IterableUserDict = UserDict
-from collections.abc import MutableMapping  # noqa: F401
-from shutil import which  # noqa: F401
-from urllib.parse import quote, quote_plus, unquote, urlparse  # noqa: F401
-from urllib.request import urlopen  # noqa: F401
 
 
 def reraise(exc_type: type[BaseException], exc_value: BaseException,

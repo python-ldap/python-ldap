@@ -22,17 +22,17 @@ from pyasn1_modules.rfc2251 import LDAPDN
 from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Constants and classes for Persistent Search Control
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 CHANGE_TYPES_INT = {
-  'add':1,
-  'delete':2,
-  'modify':4,
-  'modDN':8,
+  'add': 1,
+  'delete': 2,
+  'modify': 4,
+  'modDN': 8,
 }
-CHANGE_TYPES_STR = {v: k for k,v in CHANGE_TYPES_INT.items()}
+CHANGE_TYPES_STR = {v: k for k, v in CHANGE_TYPES_INT.items()}
 
 
 class PersistentSearchControl(RequestControl):
@@ -51,9 +51,9 @@ class PersistentSearchControl(RequestControl):
 
   class PersistentSearchControlValue(univ.Sequence):
     componentType = namedtype.NamedTypes(
-      namedtype.NamedType('changeTypes',univ.Integer()),
-      namedtype.NamedType('changesOnly',univ.Boolean()),
-      namedtype.NamedType('returnECs',univ.Boolean()),
+      namedtype.NamedType('changeTypes', univ.Integer()),
+      namedtype.NamedType('changesOnly', univ.Boolean()),
+      namedtype.NamedType('returnECs', univ.Boolean()),
     )
 
   controlType = "2.16.840.1.113730.3.4.3"
@@ -65,8 +65,8 @@ class PersistentSearchControl(RequestControl):
     changesOnly: bool = False,
     returnECs: bool = True
   ) -> None:
-    self.criticality,self.changesOnly,self.returnECs = \
-      criticality,changesOnly,returnECs
+    self.criticality, self.changesOnly, self.returnECs = \
+      criticality, changesOnly, returnECs
     if isinstance(changeTypes, int):
         changeTypes = [changeTypes]
     self.changeTypes = changeTypes or CHANGE_TYPES_INT.keys()
@@ -80,27 +80,27 @@ class PersistentSearchControl(RequestControl):
       changeTypes_int |= ct
 
     p = self.PersistentSearchControlValue()
-    p.setComponentByName('changeTypes',univ.Integer(changeTypes_int))
-    p.setComponentByName('changesOnly',univ.Boolean(self.changesOnly))
-    p.setComponentByName('returnECs',univ.Boolean(self.returnECs))
+    p.setComponentByName('changeTypes', univ.Integer(changeTypes_int))
+    p.setComponentByName('changesOnly', univ.Boolean(self.changesOnly))
+    p.setComponentByName('returnECs', univ.Boolean(self.returnECs))
     return encoder.encode(p)  # type: ignore[no-any-return]
 
 
 class ChangeType(univ.Enumerated):
   namedValues = namedval.NamedValues(
-    ('add',1),
-    ('delete',2),
-    ('modify',4),
-    ('modDN',8),
+    ('add', 1),
+    ('delete', 2),
+    ('modify', 4),
+    ('modDN', 8),
   )
-  subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(1,2,4,8)
+  subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(1, 2, 4, 8)
 
 
 class EntryChangeNotificationValue(univ.Sequence):
   componentType = namedtype.NamedTypes(
-    namedtype.NamedType('changeType',ChangeType()),
+    namedtype.NamedType('changeType', ChangeType()),
     namedtype.OptionalNamedType('previousDN', LDAPDN()),
-    namedtype.OptionalNamedType('changeNumber',univ.Integer()),
+    namedtype.OptionalNamedType('changeNumber', univ.Integer()),
   )
 
 
@@ -122,7 +122,7 @@ class EntryChangeNotificationControl(ResponseControl):
   controlType = "2.16.840.1.113730.3.4.7"
 
   def decodeControlValue(self, encodedControlValue: bytes) -> None:
-    ecncValue,_ = decoder.decode(encodedControlValue,asn1Spec=EntryChangeNotificationValue())
+    ecncValue, _ = decoder.decode(encodedControlValue, asn1Spec=EntryChangeNotificationValue())
     self.changeType = int(ecncValue.getComponentByName('changeType'))
     previousDN = ecncValue.getComponentByName('previousDN')
     if previousDN.hasValue():
@@ -134,5 +134,6 @@ class EntryChangeNotificationControl(ResponseControl):
       self.changeNumber: int | None = int(changeNumber)
     else:
       self.changeNumber = None
+
 
 KNOWN_RESPONSE_CONTROLS[EntryChangeNotificationControl.controlType] = EntryChangeNotificationControl
