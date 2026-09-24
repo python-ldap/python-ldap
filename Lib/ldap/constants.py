@@ -407,7 +407,7 @@ def print_header() -> None:  # pragma: no cover
     current_requirements: list[str] = []
 
     def pop_requirement() -> None:
-        popped = current_requirements.pop()
+        current_requirements.pop()
         print('#endif')
         print()
 
