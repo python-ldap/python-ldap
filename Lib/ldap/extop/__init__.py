@@ -19,11 +19,11 @@ from ldap.pkginfo import __version__  # noqa: F401
 __all__ = [
   'ExtendedRequest',
   'ExtendedResponse',
+  # passwd
+  'PasswordModifyResponse',
   # dds
   'RefreshRequest',
   'RefreshResponse',
-  # passwd
-  'PasswordModifyResponse',
 ]
 
 

@@ -9,15 +9,16 @@ from __future__ import annotations
 __version__ = '3.4.7'
 
 __all__ = [
-  # constants
-  'ldif_pattern',
   # functions
-  'CreateLDIF','ParseLDIF',
-  # classes
-  'LDIFWriter',
+  'CreateLDIF',
+  'LDIFCopy',
   'LDIFParser',
   'LDIFRecordList',
-  'LDIFCopy',
+  # classes
+  'LDIFWriter',
+  'ParseLDIF',
+  # constants
+  'ldif_pattern',
 ]
 
 import re
