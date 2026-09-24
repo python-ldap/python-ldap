@@ -1,4 +1,5 @@
 PYTHON=python3
+PRE_COMMIT=prek
 LCOV_INFO=build/lcov.info
 LCOV_REPORT=build/lcov_report
 LCOV_REPORT_OPTIONS=--show-details -no-branch-coverage \
@@ -84,16 +85,23 @@ valgrind: build $(PYTHON_SUPP)
 	fi
 
 # Code autoformatter
-.PHONY: autoformat indent black black-check
-autoformat: indent black
+.PHONY: autoformat lint lint-all format-check format clang
+autoformat: format clang
 
-indent:
-	indent Modules/*.c
-	indent -npsl Modules/pythonldap.h
-	rm -f Modules/*.c~ Modules/*.h~
+lint:
+	{ git diff --name-only; git ls-files --others --exclude-standard; git diff --cached --name-only; } | xargs $(PRE_COMMIT) run --files
 
-black:
-	$(PYTHON) -m black $(CURDIR)
+lint-all:
+	$(PRE_COMMIT) run -a
 
-black-check:
-	$(PYTHON) -m black $(CURDIR) --check
+clang:
+	$(PRE_COMMIT) run -a --hook-stage manual clang-format-fix
+
+clang-check:
+	$(PRE_COMMIT) run -a clang-format-check
+
+format-check:
+	$(PRE_COMMIT) run -a ruff-format-check
+
+format:
+	$(PRE_COMMIT) run -a --hook-stage manual ruff-format-fix
