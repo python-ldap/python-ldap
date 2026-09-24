@@ -3,8 +3,8 @@
 
 #include "pythonldap.h"
 
-#include <stdio.h>
 #include <errno.h>
+#include <stdio.h>
 
 /* the base exception class */
 
@@ -15,10 +15,9 @@ LDAPerr(PyObject *module, int errnum)
     LDAPModState *state = PyModule_GetState(module);
 
     if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX &&
-            state->errobjects[errnum + LDAP_ERROR_OFFSET] != NULL) {
+        state->errobjects[errnum + LDAP_ERROR_OFFSET] != NULL) {
         PyErr_SetNone(state->errobjects[errnum + LDAP_ERROR_OFFSET]);
-    }
-    else {
+    } else {
         PyObject *args = Py_BuildValue("{s:i}", "errnum", errnum);
 
         if (args == NULL)
@@ -39,8 +38,7 @@ LDAPraise_for_message(PyObject *module, LDAP *l, LDAPMessage *m)
         PyErr_SetFromErrno(state->exception_class);
         ldap_msgfree(m);
         return NULL;
-    }
-    else {
+    } else {
         int myerrno, errnum, opt_errnum, msgid = -1, msgtype = 0, rc = LDAP_SUCCESS;
         PyObject *errobj;
         PyObject *info;
@@ -57,8 +55,7 @@ LDAPraise_for_message(PyObject *module, LDAP *l, LDAPMessage *m)
         if (m != NULL) {
             msgid = ldap_msgid(m);
             msgtype = ldap_msgtype(m);
-            rc = ldap_parse_result(l, m, &errnum, &matched, &error, &refs,
-                    &serverctrls, 1);
+            rc = ldap_parse_result(l, m, &errnum, &matched, &error, &refs, &serverctrls, 1);
         }
 
         if (rc != LDAP_SUCCESS) {
@@ -77,10 +74,9 @@ LDAPraise_for_message(PyObject *module, LDAP *l, LDAPMessage *m)
         }
 
         if (errnum >= LDAP_ERROR_MIN && errnum <= LDAP_ERROR_MAX &&
-                state->errobjects[errnum + LDAP_ERROR_OFFSET] != NULL) {
+            state->errobjects[errnum + LDAP_ERROR_OFFSET] != NULL) {
             errobj = state->errobjects[errnum + LDAP_ERROR_OFFSET];
-        }
-        else {
+        } else {
             errobj = state->exception_class;
         }
 
@@ -155,13 +151,13 @@ LDAPraise_for_message(PyObject *module, LDAP *l, LDAPMessage *m)
             PyObject *referralList;
             int i;
 
-            for ( i=0; refs[i]; i++ ) /* count */;
+            for (i = 0; refs[i]; i++) /* count */
+                ;
             referralList = PyList_New(i);
             if (referralList) {
-                for ( ; i--; ) {
+                for (; i--;) {
                     PyObject *referralURL = Py_BuildValue("s", refs[i]);
-                    if (referralURL == NULL ||
-                            PyList_SetItem(referralList, i, referralURL)) {
+                    if (referralURL == NULL || PyList_SetItem(referralList, i, referralURL)) {
                         Py_CLEAR(referralList);
                         break;
                     }
@@ -179,8 +175,7 @@ LDAPraise_for_message(PyObject *module, LDAP *l, LDAPMessage *m)
                 PyDict_SetItemString(info, "info", str);
             }
             Py_XDECREF(str);
-        }
-        else if (error != NULL && *error != '\0') {
+        } else if (error != NULL && *error != '\0') {
             str = PyUnicode_FromString(error);
             if (str)
                 PyDict_SetItemString(info, "info", str);
@@ -210,7 +205,7 @@ LDAPMod_traverse(PyObject *m, visitproc visit, void *arg)
 
     Py_VISIT(state->ldap_type);
     Py_VISIT(state->exception_class);
-    for ( ; i < sizeof(state->errobjects)/sizeof(state->errobjects[0]); i++ ) {
+    for (; i < sizeof(state->errobjects) / sizeof(state->errobjects[0]); i++) {
         Py_VISIT(state->errobjects[i]);
     }
 
@@ -225,7 +220,7 @@ LDAPMod_clear(PyObject *m)
 
     Py_CLEAR(state->ldap_type);
     Py_CLEAR(state->exception_class);
-    for ( ; i < sizeof(state->errobjects)/sizeof(state->errobjects[0]); i++ ) {
+    for (; i < sizeof(state->errobjects) / sizeof(state->errobjects[0]); i++) {
         Py_CLEAR(state->errobjects[i]);
     }
 
@@ -275,43 +270,48 @@ LDAPMod_init_constants(PyObject *m)
     if (PyModule_AddIntConstant(m, "LIBLDAP_R", LDAPMod_thread_safe) != 0)
         goto error;
 
-    if (PyModule_AddIntConstant(m, "_VENDOR_VERSION_RUNTIME",
-                LDAPMod_version_info.ldapai_vendor_version) != 0)
+    if (PyModule_AddIntConstant(m, "_VENDOR_VERSION_RUNTIME", LDAPMod_version_info.ldapai_vendor_version) != 0)
         goto error;
 
     /* Generated constants -- see Lib/ldap/constants.py */
 
-#define add_err(n) do {  \
-    if ((exc = state->errobjects[LDAP_##n+LDAP_ERROR_OFFSET]) == NULL) { \
-        exc = PyErr_NewException("ldap." #n, state->exception_class, NULL); \
-        if (exc == NULL) goto error; \
-        nobj = PyLong_FromLong(LDAP_##n); \
-        if (nobj == NULL) { \
-            Py_DECREF(exc); \
-            goto error; \
-        } \
-        if (PyObject_SetAttrString(exc, "errnum", nobj) != 0) { \
-            Py_DECREF(nobj); \
-            Py_DECREF(exc); \
-            goto error; \
-        } \
-        Py_DECREF(nobj); \
-        state->errobjects[LDAP_##n+LDAP_ERROR_OFFSET] = exc; \
-    } \
-    Py_INCREF(exc); \
-    if (PyModule_AddObject(m, #n, exc) != 0) { \
-        Py_DECREF(exc); \
-        goto error; \
-    } \
-} while (0)
+#define add_err(n)                                                                                                \
+    do {                                                                                                          \
+        if ((exc = state->errobjects[LDAP_##n + LDAP_ERROR_OFFSET]) == NULL) {                                    \
+            exc = PyErr_NewException("ldap." #n, state->exception_class, NULL);                                   \
+            if (exc == NULL)                                                                                      \
+                goto error;                                                                                       \
+            nobj = PyLong_FromLong(LDAP_##n);                                                                     \
+            if (nobj == NULL) {                                                                                   \
+                Py_DECREF(exc);                                                                                   \
+                goto error;                                                                                       \
+            }                                                                                                     \
+            if (PyObject_SetAttrString(exc, "errnum", nobj) != 0) {                                               \
+                Py_DECREF(nobj);                                                                                  \
+                Py_DECREF(exc);                                                                                   \
+                goto error;                                                                                       \
+            }                                                                                                     \
+            Py_DECREF(nobj);                                                                                      \
+            state->errobjects[LDAP_##n + LDAP_ERROR_OFFSET] = exc;                                                \
+        }                                                                                                         \
+        Py_INCREF(exc);                                                                                           \
+        if (PyModule_AddObject(m, #n, exc) != 0) {                                                                \
+            Py_DECREF(exc);                                                                                       \
+            goto error;                                                                                           \
+        }                                                                                                         \
+    } while (0)
 
-#define add_int(n) do {  \
-    if (PyModule_AddIntConstant(m, #n, LDAP_##n) != 0) goto error; \
-} while (0)
+#define add_int(n)                                                                                                \
+    do {                                                                                                          \
+        if (PyModule_AddIntConstant(m, #n, LDAP_##n) != 0)                                                        \
+            goto error;                                                                                           \
+    } while (0)
 
-#define add_string(n) do {  \
-    if (PyModule_AddStringConstant(m, #n, LDAP_##n) != 0) goto error; \
-} while (0)
+#define add_string(n)                                                                                             \
+    do {                                                                                                          \
+        if (PyModule_AddStringConstant(m, #n, LDAP_##n) != 0)                                                     \
+            goto error;                                                                                           \
+    } while (0)
 
 #include "constants_generated.h"
 

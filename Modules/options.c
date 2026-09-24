@@ -174,15 +174,13 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
         if (value == Py_None) {
             /* None is mapped to infinity timeout */
             doubleval = -1;
-        }
-        else {
+        } else {
             /* 'd' handles int/long */
             if (!PyArg_Parse(value, "d:set_option", &doubleval)) {
                 if (PyErr_ExceptionMatches(PyExc_TypeError)) {
                     /* TypeError: mention either float or None is expected */
                     PyErr_Clear();
-                    PyErr_Format(PyExc_TypeError,
-                                 "A float or None is expected for timeout, got %S",
+                    PyErr_Format(PyExc_TypeError, "A float or None is expected for timeout, got %S",
                                  Py_TYPE(value));
                 }
                 return 0;
@@ -192,17 +190,13 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
         if (doubleval >= 0) {
             set_timeval_from_double(&tv, doubleval);
             ptr = &tv;
-        }
-        else if (doubleval == -1) {
+        } else if (doubleval == -1) {
             /* -1 is infinity timeout */
             tv.tv_sec = -1;
             tv.tv_usec = 0;
             ptr = &tv;
-        }
-        else {
-            PyErr_Format(PyExc_ValueError,
-                         "timeout must be >= 0 or -1/None for infinity, got %S",
-                         value);
+        } else {
+            PyErr_Format(PyExc_ValueError, "timeout must be >= 0 or -1/None for infinity, got %S", value);
             return 0;
         }
         break;
@@ -222,8 +216,7 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
         LDAP_BEGIN_ALLOW_THREADS(self);
         res = ldap_set_option(ld, option, ptr);
         LDAP_END_ALLOW_THREADS(self);
-    }
-    else {
+    } else {
         PyThreadState *save;
 
         save = PyEval_SaveThread();
@@ -231,8 +224,7 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
         PyEval_RestoreThread(save);
     }
 
-    if ((option == LDAP_OPT_SERVER_CONTROLS) ||
-        (option == LDAP_OPT_CLIENT_CONTROLS))
+    if ((option == LDAP_OPT_SERVER_CONTROLS) || (option == LDAP_OPT_CLIENT_CONTROLS))
         LDAPControl_List_DEL(controls);
 
     if (res != LDAP_OPT_SUCCESS) {
@@ -252,8 +244,7 @@ LDAP_int_get_option(LDAPObject *self, int option, void *value)
         LDAP_BEGIN_ALLOW_THREADS(self);
         res = ldap_get_option(self->ldap, option, value);
         LDAP_END_ALLOW_THREADS(self);
-    }
-    else {
+    } else {
         PyThreadState *save;
 
         save = PyEval_SaveThread();
@@ -301,18 +292,13 @@ LDAP_get_option(LDAPObject *self, int option)
             num_extensions++;
         extensions = PyTuple_New(num_extensions);
         for (i = 0; i < num_extensions; i++)
-            PyTuple_SetItem(extensions, i,
-                            PyUnicode_FromString(apiinfo.ldapai_extensions
-                                                 [i]));
+            PyTuple_SetItem(extensions, i, PyUnicode_FromString(apiinfo.ldapai_extensions[i]));
 
         /* return api info as a dictionary */
-        v = Py_BuildValue("{s:i, s:i, s:i, s:s, s:i, s:O}",
-                          "info_version", apiinfo.ldapai_info_version,
-                          "api_version", apiinfo.ldapai_api_version,
-                          "protocol_version", apiinfo.ldapai_protocol_version,
-                          "vendor_name", apiinfo.ldapai_vendor_name,
-                          "vendor_version", apiinfo.ldapai_vendor_version,
-                          "extensions", extensions);
+        v = Py_BuildValue("{s:i, s:i, s:i, s:s, s:i, s:O}", "info_version", apiinfo.ldapai_info_version,
+                          "api_version", apiinfo.ldapai_api_version, "protocol_version",
+                          apiinfo.ldapai_protocol_version, "vendor_name", apiinfo.ldapai_vendor_name,
+                          "vendor_version", apiinfo.ldapai_vendor_version, "extensions", extensions);
 
         if (apiinfo.ldapai_vendor_name)
             ldap_memfree(apiinfo.ldapai_vendor_name);
@@ -465,9 +451,7 @@ LDAP_get_option(LDAPObject *self, int option)
         if (tv == NULL) {
             return Py_NewRef(Py_None);
         }
-        v = PyFloat_FromDouble((double)tv->tv_sec +
-                               ((double)tv->tv_usec / 1000000.0)
-            );
+        v = PyFloat_FromDouble((double)tv->tv_sec + ((double)tv->tv_usec / 1000000.0));
         ldap_memfree(tv);
         return v;
 
