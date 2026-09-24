@@ -29,4 +29,4 @@ requires = python openldap2-client openssl cyrus-sasl2
 distribution_name = SuSE Linux 8.2
 release = 1
 packager = Michael Stroeder <michael@stroeder.com>
-doc_files = CHANGES README INSTALL TODO Demo/
+doc_files = CHANGELOG.rst README INSTALL TODO Demo/

@@ -197,7 +197,7 @@ remember:
 * When squashing, do edit commit messages to add references to the pull request
   and relevant discussions/issues, and to conform to Git best practices.
 
-  * Consider making the summary line suitable for the CHANGES document,
+  * Consider making the summary line suitable for the CHANGELOG.rst document,
     and starting it with a prefix like ``Lib:`` or ``Tests:``.
 
 If you have good reason to break the “rules”, go ahead and break them,
@@ -210,9 +210,9 @@ Instructions for release managers
 If you are tasked with releasing python-ldap, remember to:
 
 * Bump all instances of the version number.
-* Go through all changes since last version, and add them to ``CHANGES``.
+* Go through all changes since last version, and add them to ``CHANGELOG.rst``.
 * Run :ref:`additional tests` as appropriate, fix any regressions.
-* Change the release date in ``CHANGES``.
+* Change the release date in ``CHANGELOG.rst``.
 * Update ``__version__`` tags where appropriate (each module ``ldap``,
   ``ldif``, ``ldapurl``, ``slapdtest`` has its own copy).
 * Merge all that (using pull requests).
@@ -223,7 +223,7 @@ If you are tasked with releasing python-ldap, remember to:
 * Release the ``sdist`` on PyPI.
 * Announce the release on the mailing list.
   Mention the Git hash.
-* Add the release's log from ``CHANGES`` on the `GitHub release page`_.
+* Add the release's log from ``CHANGELOG.rst`` on the `GitHub release page`_.
 * Check that python-ldap.org shows the latest version; if not, adjust
   things at readthedocs.org
 
