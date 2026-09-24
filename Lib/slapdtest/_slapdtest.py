@@ -144,7 +144,7 @@ def _add_sbin(path: str) -> str:
 
 def combined_logger(
         log_name: str,
-        log_level: int = logging.WARN,
+        log_level: int = logging.WARNING,
         sys_log_format: str = '%(levelname)s %(message)s',
         console_log_format: str = '%(asctime)s %(levelname)s %(message)s',
     ) -> logging.Logger:
