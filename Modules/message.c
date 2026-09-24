@@ -17,8 +17,7 @@
  * be returned
  */
 PyObject *
-LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
-                      int add_ctrls, int add_intermediates)
+LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m, int add_ctrls, int add_intermediates)
 {
     /* we convert an LDAP message into a python structure.
      * It is always a list of dictionaries.
@@ -36,8 +35,7 @@ LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
         return NULL;
     }
 
-    for (entry = ldap_first_entry(ld, m);
-         entry != NULL; entry = ldap_next_entry(ld, entry)) {
+    for (entry = ldap_first_entry(ld, m); entry != NULL; entry = ldap_next_entry(ld, entry)) {
         char *dn;
         char *attr;
         BerElement *ber = NULL;
@@ -84,9 +82,8 @@ LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
         ldap_controls_free(serverctrls);
 
         /* Fill attrdict with lists */
-        for (attr = ldap_first_attribute(ld, entry, &ber);
-             attr != NULL; attr = ldap_next_attribute(ld, entry, ber)
-            ) {
+        for (attr = ldap_first_attribute(ld, entry, &ber); attr != NULL;
+             attr = ldap_next_attribute(ld, entry, ber)) {
             PyObject *valuelist;
             PyObject *pyattr;
             struct berval **bvals;
@@ -122,14 +119,11 @@ LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
                 if (valuelist != NULL)
                     Py_INCREF(valuelist);
 #endif
-            }
-            else {
+            } else {
                 valuelist = PyList_New(0);
-                if (valuelist != NULL && PyDict_SetItem(attrdict,
-                                                        pyattr,
-                                                        valuelist) == -1) {
+                if (valuelist != NULL && PyDict_SetItem(attrdict, pyattr, valuelist) == -1) {
                     Py_DECREF(valuelist);
-                    valuelist = NULL;   /* catch error later */
+                    valuelist = NULL; /* catch error later */
                 }
             }
 
@@ -153,8 +147,7 @@ LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
                     PyObject *valuestr;
 
                     valuestr = LDAPberval_to_object(bvals[i]);
-                    if (valuestr == NULL ||
-                            PyList_Append(valuelist, valuestr) == -1) {
+                    if (valuestr == NULL || PyList_Append(valuelist, valuestr) == -1) {
                         Py_DECREF(pyattr);
                         Py_DECREF(attrdict);
                         Py_DECREF(result);
@@ -188,8 +181,7 @@ LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
 
         if (add_ctrls) {
             entrytuple = Py_BuildValue("(OOO)", pydn, attrdict, pyctrls);
-        }
-        else {
+        } else {
             entrytuple = Py_BuildValue("(OO)", pydn, attrdict);
         }
         Py_DECREF(pydn);
@@ -201,8 +193,7 @@ LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
         if (ber != NULL)
             ber_free(ber, 0);
     }
-    for (entry = ldap_first_reference(ld, m);
-         entry != NULL; entry = ldap_next_reference(ld, entry)) {
+    for (entry = ldap_first_reference(ld, m); entry != NULL; entry = ldap_next_reference(ld, entry)) {
         char **refs = NULL;
         PyObject *entrytuple;
         PyObject *reflist = PyList_New(0);
@@ -212,8 +203,7 @@ LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
             ldap_msgfree(m);
             return NULL;
         }
-        if (ldap_parse_reference(ld, entry, &refs, &serverctrls, 0) !=
-            LDAP_SUCCESS) {
+        if (ldap_parse_reference(ld, entry, &refs, &serverctrls, 0) != LDAP_SUCCESS) {
             Py_DECREF(reflist);
             Py_DECREF(result);
             ldap_msgfree(m);
@@ -253,8 +243,7 @@ LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
         }
         if (add_ctrls) {
             entrytuple = Py_BuildValue("(sOO)", NULL, reflist, pyctrls);
-        }
-        else {
+        } else {
             entrytuple = Py_BuildValue("(sO)", NULL, reflist);
         }
         Py_DECREF(reflist);
@@ -263,8 +252,7 @@ LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
         Py_DECREF(entrytuple);
     }
     if (add_intermediates) {
-        for (entry = ldap_first_message(ld, m);
-             entry != NULL; entry = ldap_next_message(ld, entry)) {
+        for (entry = ldap_first_message(ld, m); entry != NULL; entry = ldap_next_message(ld, entry)) {
             /* list of tuples */
             /* each tuple is OID, Berval, controllist */
             if (LDAP_RES_INTERMEDIATE == ldap_msgtype(entry)) {
@@ -274,9 +262,7 @@ LDAPmessage_to_python(PyObject *module, LDAP *ld, LDAPMessage *m,
                 PyObject *pyoid;
                 struct berval *retdata = 0;
 
-                if (ldap_parse_intermediate
-                    (ld, entry, &retoid, &retdata, &serverctrls,
-                     0) != LDAP_SUCCESS) {
+                if (ldap_parse_intermediate(ld, entry, &retoid, &retdata, &serverctrls, 0) != LDAP_SUCCESS) {
                     Py_DECREF(result);
                     ldap_msgfree(m);
                     return LDAPerror(module, ld);
