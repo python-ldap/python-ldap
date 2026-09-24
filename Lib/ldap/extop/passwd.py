@@ -21,9 +21,8 @@ class PasswordModifyResponse(ExtendedResponse):
             namedtype.OptionalNamedType(
                 'genPasswd',
                 univ.OctetString().subtype(  # type: ignore[no-untyped-call]
-                    implicitTag=tag.Tag(tag.tagClassContext,
-                                        tag.tagFormatSimple, 0)
-                )
+                    implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
+                ),
             )
         )
 

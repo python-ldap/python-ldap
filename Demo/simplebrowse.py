@@ -21,7 +21,6 @@ lastdn = dn
 dnlist = None
 
 while True:
-
     # -- read a command
     try:
         cmd = input(dn + "> ")
@@ -50,13 +49,12 @@ while True:
             # We're not interested in attributes at this stage, so
             # we specify [] as the list of attribute names to retreive.
             #
-            for name, attrs in l.search_s(dn, ldap.SCOPE_ONELEVEL,
-                "objectclass=*", []):
+            for name, attrs in l.search_s(dn, ldap.SCOPE_ONELEVEL, "objectclass=*", []):
                 # -- shorten resulting dns for output brevity
                 if name.startswith(dn + ", "):
-                    shortname = "+ " + name[len(dn) + 2:]
+                    shortname = "+ " + name[len(dn) + 2 :]
                 elif name.endswith(", " + dn):
-                    shortname = name[:-len(dn) - 2] + " +"
+                    shortname = name[: -len(dn) - 2] + " +"
                 else:
                     shortname = name
                 print(" %3d. %s" % (len(dnlist), shortname))
@@ -95,8 +93,7 @@ while True:
             # the client to receive all attributes on the DN.
             #
             print("Attributes of", dn, ":")
-            for name, attrs in l.search_s(dn, ldap.SCOPE_BASE,
-                "objectclass=*"):
+            for name, attrs in l.search_s(dn, ldap.SCOPE_BASE, "objectclass=*"):
                 print("  %-24s" % name)
                 for k, vals in attrs.items():
                     for v in vals:
@@ -113,8 +110,7 @@ while True:
             #
             expr = cmd[1:]
             print("Descendents matching filter", expr, ":")
-            for name, attrs in l.search_s(dn, ldap.SCOPE_SUBTREE,
-                expr, []):
+            for name, attrs in l.search_s(dn, ldap.SCOPE_SUBTREE, expr, []):
                 print("  %24s", name)
 
         else:

@@ -61,7 +61,7 @@ class TestSubschemaUrlfetch(unittest.TestCase):
             str(obj),
             "( 2.5.6.9 NAME 'groupOfNames' SUP top STRUCTURAL MUST cn "
             "MAY ( member $ businessCategory $ seeAlso $ owner $ ou $ o "
-            "$ description ) X-ORIGIN 'RFC 4519' )"
+            "$ description ) X-ORIGIN 'RFC 4519' )",
         )
 
 
@@ -72,19 +72,13 @@ class TestXOrigin(unittest.TestCase):
         return schema.get_obj(AttributeType, oid)
 
     def test_origin_none(self):
-        self.assertEqual(
-            self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1').x_origin,
-            ())
+        self.assertEqual(self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1').x_origin, ())
 
     def test_origin_string(self):
-        self.assertEqual(
-            self.get_attribute_type('2.16.840.1.113730.3.1.2091').x_origin,
-            ('Netscape',))
+        self.assertEqual(self.get_attribute_type('2.16.840.1.113730.3.1.2091').x_origin, ('Netscape',))
 
     def test_origin_multi_valued(self):
-        self.assertEqual(
-            self.get_attribute_type('1.3.6.1.4.1.11.1.3.1.1.3').x_origin,
-            ('RFC4876', 'user defined'))
+        self.assertEqual(self.get_attribute_type('1.3.6.1.4.1.11.1.3.1.1.3').x_origin, ('RFC4876', 'user defined'))
 
     def test_origin_none_str(self):
         """Check string representation of an attribute without X-ORIGIN"""
@@ -203,9 +197,7 @@ class TestAttributes(unittest.TestCase):
         """Check types and values of an AttributeType object's attributes"""
         schema = self.get_schema()
         attr = schema.get_obj(AttributeType, '1.3.6.1.4.1.11.1.3.1.1.3')
-        expected_desc = (
-            'Maximum time an agent or service allows for a search to complete'
-        )
+        expected_desc = 'Maximum time an agent or service allows for a search to complete'
         self.assertEqual(attr.oid, '1.3.6.1.4.1.11.1.3.1.1.3')
         self.assertEqual(attr.names, ('searchTimeLimit',))
         self.assertEqual(attr.desc, expected_desc)
@@ -223,7 +215,12 @@ class TestAttributes(unittest.TestCase):
         schema = self.get_schema()
         cls = schema.get_obj(ObjectClass, '2.5.6.9')
         expected_may = (
-            'member', 'businessCategory', 'seeAlso', 'owner', 'ou', 'o',
+            'member',
+            'businessCategory',
+            'seeAlso',
+            'owner',
+            'ou',
+            'o',
             'description',
         )
         self.assertEqual(cls.oid, '2.5.6.9')
@@ -244,17 +241,19 @@ class TestSubschemaUrlfetchSlapd(SlapdTestCase):
         self.assertEqual(dn, 'cn=Subschema')
         self.assertIsInstance(schema, ldap.schema.subentry.SubSchema)
         obj = schema.get_obj(ObjectClass, '1.3.6.1.1.3.1')
-        self.assertEqual(
-            str(obj),
-            "( 1.3.6.1.1.3.1 NAME 'uidObject' DESC 'RFC2377: uid object' "
-            "SUP top AUXILIARY MUST uid )"
-        )
+        self.assertEqual(str(obj), "( 1.3.6.1.1.3.1 NAME 'uidObject' DESC 'RFC2377: uid object' SUP top AUXILIARY MUST uid )")
         entries = schema.ldap_entry()
         self.assertIsInstance(entries, dict)
-        self.assertEqual(sorted(entries), [
-            'attributeTypes', 'ldapSyntaxes', 'matchingRuleUse',
-            'matchingRules', 'objectClasses',
-        ])
+        self.assertEqual(
+            sorted(entries),
+            [
+                'attributeTypes',
+                'ldapSyntaxes',
+                'matchingRuleUse',
+                'matchingRules',
+                'objectClasses',
+            ],
+        )
 
     def test_urlfetch_ldap(self):
         dn, schema = ldap.schema.urlfetch(self.server.ldap_uri)

@@ -4,7 +4,6 @@ Automatic tests for python-ldap
 See https://www.python-ldap.org/ for details.
 """
 
-
 from . import (
     t_bind,  # noqa: F401
     t_cext,  # noqa: F401

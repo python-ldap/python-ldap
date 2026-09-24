@@ -3,6 +3,7 @@ types - type annotations which are shared across modules
 
 See https://www.python-ldap.org/ for details.
 """
+
 from __future__ import annotations
 
 import sys
@@ -36,9 +37,7 @@ __all__ = [
 LDAPModListAddEntry = tuple[str, list[bytes]]
 """The type of an addition entry in a modlist."""
 
-LDAPModListModifyEntry = tuple[
-    int, str, Optional[Union[bytes, list[bytes]]]
-]
+LDAPModListModifyEntry = tuple[int, str, Optional[Union[bytes, list[bytes]]]]
 """The type of a modification entry in a modlist."""
 
 LDAPModListEntry = Union[LDAPModListAddEntry, LDAPModListModifyEntry]

@@ -62,8 +62,8 @@ TESTCASES_BROKEN = (
     "BLUB )",
     "BLUB 'DA",
     "BLUB $ DA",
-#    "BLUB 'DA\\'",
-#    "( BLUB )) DA (",
+    #    "BLUB 'DA\\'",
+    #    "( BLUB )) DA (",
 )
 
 
@@ -88,7 +88,8 @@ class TestSplitTokens(unittest.TestCase):
                 should_have_failed.append(test_value)
         if should_have_failed:
             self.fail(
-                '%d value(s) should have raised ValueError: %r' % (
+                '%d value(s) should have raised ValueError: %r'
+                % (
                     len(should_have_failed),
                     should_have_failed,
                 )

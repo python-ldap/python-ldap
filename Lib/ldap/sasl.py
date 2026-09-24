@@ -87,13 +87,10 @@ class sasl:
             cb_result = defresult or ''
 
         if __debug__ and _trace_level >= 1:
-            _trace_file.write("*** id=%d, challenge=%r, prompt=%r, defresult=%s\n-> %s\n" % (
-                cb_id,
-                challenge,
-                prompt,
-                repr(defresult),
-                repr(self.cb_value_dict.get(cb_id))
-            ))
+            _trace_file.write(
+                "*** id=%d, challenge=%r, prompt=%r, defresult=%s\n-> %s\n"
+                % (cb_id, challenge, prompt, repr(defresult), repr(self.cb_value_dict.get(cb_id)))
+            )
 
         if isinstance(cb_result, str):
             return cb_result.encode('utf-8')

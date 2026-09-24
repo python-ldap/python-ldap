@@ -22,18 +22,18 @@ LDAPTokenDict: TypeAlias = Mapping[str, LDAPTokenDictValue]
 (Mapping because of variance)."""
 
 TOKENS_FINDALL = re.compile(
-    r"(\()"           # opening parenthesis
-    r"|"              # or
-    r"(\))"           # closing parenthesis
-    r"|"              # or
-    r"([^'$()\s]+)"   # string of length >= 1 without '$() or whitespace
-    r"|"              # or
+    r"(\()"  # opening parenthesis
+    r"|"  # or
+    r"(\))"  # closing parenthesis
+    r"|"  # or
+    r"([^'$()\s]+)"  # string of length >= 1 without '$() or whitespace
+    r"|"  # or
     r"('(?:[^'\\]|\\.)*'(?!\w))"
-                      # any string or empty string surrounded by unescaped
-                      # single quotes except if right quote is succeeded by
-                      # alphanumeric char
-    r"|"              # or
-    r"([^\s]+?)",     # residue, all non-whitespace strings
+    # any string or empty string surrounded by unescaped
+    # single quotes except if right quote is succeeded by
+    # alphanumeric char
+    r"|"  # or
+    r"([^\s]+?)",  # residue, all non-whitespace strings
 ).findall
 
 UNESCAPE_PATTERN = re.compile(r"\\(.)")
@@ -66,10 +66,7 @@ def split_tokens(s: str) -> list[str]:
     return parts
 
 
-def parse_tokens(
-    tokens: list[str],
-    known_tokens: list[str]
-) -> tuple[str, LDAPTokenDict]:
+def parse_tokens(tokens: list[str], known_tokens: list[str]) -> tuple[str, LDAPTokenDict]:
     """
     Process a list of tokens and return a dictionary of known tokens with all
     values
@@ -111,7 +108,7 @@ def parse_tokens(
 
         if next_token in known_tokens:
             # non-valued
-            value: LDAPTokenDictValue = (())
+            value: LDAPTokenDictValue = ()
 
         elif next_token == "(":
             # multi-valued
@@ -144,8 +141,7 @@ def extract_tokens(
     from known_tokens and the OID is not returned.
     """
     warnings.warn(
-        'ldap.schema.tokenizer.extract_tokens() is deprecated, '
-        'use parse_tokens() instead',
+        'ldap.schema.tokenizer.extract_tokens() is deprecated, use parse_tokens() instead',
         category=DeprecationWarning,
         stacklevel=2,
     )

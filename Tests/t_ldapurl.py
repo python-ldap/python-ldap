@@ -3,6 +3,7 @@ Automatic tests for python-ldap's module ldapurl
 
 See https://www.python-ldap.org/ for details.
 """
+
 import os
 import unittest
 from urllib.parse import quote
@@ -25,7 +26,6 @@ class MyLDAPUrl(LDAPUrl):
 
 
 class TestIsLDAPUrl(unittest.TestCase):
-
     is_ldap_url_tests = {
         # Examples from RFC2255
         'ldap:///o=University%20of%20Michigan,c=US': 1,
@@ -57,10 +57,14 @@ class TestIsLDAPUrl(unittest.TestCase):
         for ldap_url, expected in self.is_ldap_url_tests.items():
             result = ldapurl.isLDAPUrl(ldap_url)
             self.assertEqual(
-                result, expected,
-                'isLDAPUrl("%s") returns %d instead of %d.' % (
-                    ldap_url, result, expected,
-                )
+                result,
+                expected,
+                'isLDAPUrl("%s") returns %d instead of %d.'
+                % (
+                    ldap_url,
+                    result,
+                    expected,
+                ),
             )
             if expected:
                 LDAPUrl(ldapUrl=ldap_url)
@@ -70,129 +74,97 @@ class TestIsLDAPUrl(unittest.TestCase):
 
 
 class TestParseLDAPUrl(unittest.TestCase):
-
     parse_ldap_url_tests = [
-    (
-        'ldap://root.openldap.org/dc=openldap,dc=org',
-        LDAPUrl(
-            hostport='root.openldap.org',
-            dn='dc=openldap,dc=org'
-        )
-    ),
-    (
-        'ldap://root.openldap.org/dc%3dboolean%2cdc%3dnet???%28objectClass%3d%2a%29',
-        LDAPUrl(
-            hostport='root.openldap.org',
-            dn='dc=boolean,dc=net',
-            filterstr='(objectClass=*)'
-        )
-    ),
-    (
-        'ldap://root.openldap.org/dc=openldap,dc=org??sub?',
-        LDAPUrl(
-            hostport='root.openldap.org',
-            dn='dc=openldap,dc=org',
-            scope=ldapurl.LDAP_SCOPE_SUBTREE
-        )
-    ),
-    (
-        'ldap://root.openldap.org/dc=openldap,dc=org??one?',
-        LDAPUrl(
-            hostport='root.openldap.org',
-            dn='dc=openldap,dc=org',
-            scope=ldapurl.LDAP_SCOPE_ONELEVEL
-        )
-    ),
-    (
-        'ldap://root.openldap.org/dc=openldap,dc=org??base?',
-        LDAPUrl(
-            hostport='root.openldap.org',
-            dn='dc=openldap,dc=org',
-            scope=ldapurl.LDAP_SCOPE_BASE
-        )
-    ),
-    (
-        'ldap://x500.mh.se/o=Mitthogskolan,c=se????1.2.752.58.10.2=T.61',
-        LDAPUrl(
-            hostport='x500.mh.se',
-            dn='o=Mitthogskolan,c=se',
-            extensions=ldapurl.LDAPUrlExtensions({
-                '1.2.752.58.10.2': ldapurl.LDAPUrlExtension(
-                critical=0, extype='1.2.752.58.10.2', exvalue='T.61'
-                )
-            })
-        )
-    ),
-    (
-        'ldap://localhost:12345/dc=stroeder,dc=com????!bindname=cn=Michael%2Cdc=stroeder%2Cdc=com,!X-BINDPW=secretpassword',
-        LDAPUrl(
-            hostport='localhost:12345',
-            dn='dc=stroeder,dc=com',
-            extensions=ldapurl.LDAPUrlExtensions({
-                'bindname': ldapurl.LDAPUrlExtension(
-                critical=1, extype='bindname', exvalue='cn=Michael,dc=stroeder,dc=com'
+        ('ldap://root.openldap.org/dc=openldap,dc=org', LDAPUrl(hostport='root.openldap.org', dn='dc=openldap,dc=org')),
+        (
+            'ldap://root.openldap.org/dc%3dboolean%2cdc%3dnet???%28objectClass%3d%2a%29',
+            LDAPUrl(hostport='root.openldap.org', dn='dc=boolean,dc=net', filterstr='(objectClass=*)'),
+        ),
+        (
+            'ldap://root.openldap.org/dc=openldap,dc=org??sub?',
+            LDAPUrl(hostport='root.openldap.org', dn='dc=openldap,dc=org', scope=ldapurl.LDAP_SCOPE_SUBTREE),
+        ),
+        (
+            'ldap://root.openldap.org/dc=openldap,dc=org??one?',
+            LDAPUrl(hostport='root.openldap.org', dn='dc=openldap,dc=org', scope=ldapurl.LDAP_SCOPE_ONELEVEL),
+        ),
+        (
+            'ldap://root.openldap.org/dc=openldap,dc=org??base?',
+            LDAPUrl(hostport='root.openldap.org', dn='dc=openldap,dc=org', scope=ldapurl.LDAP_SCOPE_BASE),
+        ),
+        (
+            'ldap://x500.mh.se/o=Mitthogskolan,c=se????1.2.752.58.10.2=T.61',
+            LDAPUrl(
+                hostport='x500.mh.se',
+                dn='o=Mitthogskolan,c=se',
+                extensions=ldapurl.LDAPUrlExtensions(
+                    {'1.2.752.58.10.2': ldapurl.LDAPUrlExtension(critical=0, extype='1.2.752.58.10.2', exvalue='T.61')}
                 ),
-                'X-BINDPW': ldapurl.LDAPUrlExtension(
-                critical=1, extype='X-BINDPW', exvalue='secretpassword'
+            ),
+        ),
+        (
+            'ldap://localhost:12345/dc=stroeder,dc=com????!bindname=cn=Michael%2Cdc=stroeder%2Cdc=com,!X-BINDPW=secretpassword',
+            LDAPUrl(
+                hostport='localhost:12345',
+                dn='dc=stroeder,dc=com',
+                extensions=ldapurl.LDAPUrlExtensions(
+                    {
+                        'bindname': ldapurl.LDAPUrlExtension(critical=1, extype='bindname', exvalue='cn=Michael,dc=stroeder,dc=com'),
+                        'X-BINDPW': ldapurl.LDAPUrlExtension(critical=1, extype='X-BINDPW', exvalue='secretpassword'),
+                    }
                 ),
-            }),
-        )
-    ),
-    (
-        'ldap://localhost:54321/dc=stroeder,dc=com????bindname=cn=Michael%2Cdc=stroeder%2Cdc=com,X-BINDPW=secretpassword',
-        LDAPUrl(
-            hostport='localhost:54321',
-            dn='dc=stroeder,dc=com',
-            who='cn=Michael,dc=stroeder,dc=com',
-            cred='secretpassword'
-        )
-    ),
-    (
-        'ldaps://localhost:12345/dc=stroeder,dc=com',
-        LDAPUrl(
-            urlscheme='ldaps',
-            hostport='localhost:12345',
-            dn='dc=stroeder,dc=com',
+            ),
         ),
-    ),
-    (
-        'LDAPS://localhost:12345/dc=stroeder,dc=com',
-        LDAPUrl(
-            urlscheme='ldaps',
-            hostport='localhost:12345',
-            dn='dc=stroeder,dc=com',
+        (
+            'ldap://localhost:54321/dc=stroeder,dc=com????bindname=cn=Michael%2Cdc=stroeder%2Cdc=com,X-BINDPW=secretpassword',
+            LDAPUrl(hostport='localhost:54321', dn='dc=stroeder,dc=com', who='cn=Michael,dc=stroeder,dc=com', cred='secretpassword'),
         ),
-    ),
-    (
-        'ldaps://localhost:12345/dc=stroeder,dc=com',
-        LDAPUrl(
-            urlscheme='LDAPS',
-            hostport='localhost:12345',
-            dn='dc=stroeder,dc=com',
+        (
+            'ldaps://localhost:12345/dc=stroeder,dc=com',
+            LDAPUrl(
+                urlscheme='ldaps',
+                hostport='localhost:12345',
+                dn='dc=stroeder,dc=com',
+            ),
         ),
-    ),
-    (
-        'ldapi://%2ftmp%2fopenldap2-1389/dc=stroeder,dc=com',
-        LDAPUrl(
-            urlscheme='ldapi',
-            hostport='/tmp/openldap2-1389',
-            dn='dc=stroeder,dc=com',
+        (
+            'LDAPS://localhost:12345/dc=stroeder,dc=com',
+            LDAPUrl(
+                urlscheme='ldaps',
+                hostport='localhost:12345',
+                dn='dc=stroeder,dc=com',
+            ),
         ),
-    ),
+        (
+            'ldaps://localhost:12345/dc=stroeder,dc=com',
+            LDAPUrl(
+                urlscheme='LDAPS',
+                hostport='localhost:12345',
+                dn='dc=stroeder,dc=com',
+            ),
+        ),
+        (
+            'ldapi://%2ftmp%2fopenldap2-1389/dc=stroeder,dc=com',
+            LDAPUrl(
+                urlscheme='ldapi',
+                hostport='/tmp/openldap2-1389',
+                dn='dc=stroeder,dc=com',
+            ),
+        ),
     ]
 
     def test_ldapurl(self):
         for ldap_url_str, test_ldap_url_obj in self.parse_ldap_url_tests:
             ldap_url_obj = LDAPUrl(ldapUrl=ldap_url_str)
             self.assertEqual(
-                ldap_url_obj, test_ldap_url_obj,
-                f'Attributes of LDAPUrl({ldap_url_str!r}) are:\n{ldap_url_obj!r}\ninstead of:\n{test_ldap_url_obj!r}'
+                ldap_url_obj, test_ldap_url_obj, f'Attributes of LDAPUrl({ldap_url_str!r}) are:\n{ldap_url_obj!r}\ninstead of:\n{test_ldap_url_obj!r}'
             )
             unparsed_ldap_url_str = test_ldap_url_obj.unparse()
             unparsed_ldap_url_obj = LDAPUrl(ldapUrl=unparsed_ldap_url_str)
             self.assertEqual(
-                unparsed_ldap_url_obj, test_ldap_url_obj,
-                f'Attributes of LDAPUrl({unparsed_ldap_url_str!r}) are:\n{unparsed_ldap_url_obj!r}\ninstead of:\n{test_ldap_url_obj!r}'
+                unparsed_ldap_url_obj,
+                test_ldap_url_obj,
+                f'Attributes of LDAPUrl({unparsed_ldap_url_str!r}) are:\n{unparsed_ldap_url_obj!r}\ninstead of:\n{test_ldap_url_obj!r}',
             )
 
 
@@ -202,9 +174,12 @@ class TestLDAPUrl(unittest.TestCase):
             "ldap://127.0.0.1:1234/dc=example,dc=com"
             + "?attr1,attr2,attr3"
             + "?sub"
-            + "?" + quote("(objectClass=*)")
-            + "?bindname=" + quote("cn=d,c=au")
-            + ",X-BINDPW=" + quote("???")
+            + "?"
+            + quote("(objectClass=*)")
+            + "?bindname="
+            + quote("cn=d,c=au")
+            + ",X-BINDPW="
+            + quote("???")
             + ",trace=8"
         )
         self.assertEqual(u.urlscheme, "ldap")
@@ -237,7 +212,7 @@ class TestLDAPUrl(unittest.TestCase):
 
     def test_parse_default_scope(self):
         u = LDAPUrl("ldap://")
-        self.assertIsNone(u.scope)     # RFC4516 s3
+        self.assertIsNone(u.scope)  # RFC4516 s3
 
     def test_parse_default_filter(self):
         u = LDAPUrl("ldap://")
@@ -396,33 +371,33 @@ class TestLDAPUrl(unittest.TestCase):
     def test_bad_urls(self):
         failed_urls = []
         for bad in (
-                "",
-                "ldap:",
-                "ldap:/",
-                ":///",
-                "://",
-                "///",
-                "//",
-                "/",
-                "ldap:///?????",       # extension can't start with '?'
-                "LDAP://",
-                "invalid://",
-                "ldap:///??invalid",
-                # XXX-- the following should raise exceptions!
-                "ldap://:389/",         # [host [COLON port]]
-                "ldap://a:/",           # [host [COLON port]]
-                r"ldap://%%%/",          # invalid URL encoding
-                "ldap:///?,",           # attrdesc *(COMMA attrdesc)
-                "ldap:///?a,",          # attrdesc *(COMMA attrdesc)
-                "ldap:///?,a",          # attrdesc *(COMMA attrdesc)
-                "ldap:///?a,,b",        # attrdesc *(COMMA attrdesc)
-                r"ldap://%00/",         # RFC4516 2.1
-                r"ldap:///%00",         # RFC4516 2.1
-                r"ldap:///?%00",        # RFC4516 2.1
-                r"ldap:///??%00",       # RFC4516 2.1
-                "ldap:///????0=0",      # extype must start with Alpha
-                "ldap:///????a_b=0",    # extype contains only [-a-zA-Z0-9]
-                "ldap:///????!!a=0",    # only one exclamation allowed
+            "",
+            "ldap:",
+            "ldap:/",
+            ":///",
+            "://",
+            "///",
+            "//",
+            "/",
+            "ldap:///?????",  # extension can't start with '?'
+            "LDAP://",
+            "invalid://",
+            "ldap:///??invalid",
+            # XXX-- the following should raise exceptions!
+            "ldap://:389/",  # [host [COLON port]]
+            "ldap://a:/",  # [host [COLON port]]
+            r"ldap://%%%/",  # invalid URL encoding
+            "ldap:///?,",  # attrdesc *(COMMA attrdesc)
+            "ldap:///?a,",  # attrdesc *(COMMA attrdesc)
+            "ldap:///?,a",  # attrdesc *(COMMA attrdesc)
+            "ldap:///?a,,b",  # attrdesc *(COMMA attrdesc)
+            r"ldap://%00/",  # RFC4516 2.1
+            r"ldap:///%00",  # RFC4516 2.1
+            r"ldap:///?%00",  # RFC4516 2.1
+            r"ldap:///??%00",  # RFC4516 2.1
+            "ldap:///????0=0",  # extype must start with Alpha
+            "ldap:///????a_b=0",  # extype contains only [-a-zA-Z0-9]
+            "ldap:///????!!a=0",  # only one exclamation allowed
         ):
             try:
                 LDAPUrl(bad)
@@ -431,17 +406,25 @@ class TestLDAPUrl(unittest.TestCase):
             else:
                 failed_urls.append(bad)
         if failed_urls:
-          self.fail(f"These LDAP URLs should have raised ValueError: {failed_urls!r}")
+            self.fail(f"These LDAP URLs should have raised ValueError: {failed_urls!r}")
 
     def test_html_href(self):
         u = ldapurl.LDAPUrl('ldap://root.openldap.org/dc=openldap,dc=org')
-        self.assertEqual(u.htmlHREF(), '<a href="ldap://root.openldap.org/dc%3Dopenldap%2Cdc%3Dorg???">ldap://root.openldap.org/dc%3Dopenldap%2Cdc%3Dorg???</a>')
+        self.assertEqual(
+            u.htmlHREF(), '<a href="ldap://root.openldap.org/dc%3Dopenldap%2Cdc%3Dorg???">ldap://root.openldap.org/dc%3Dopenldap%2Cdc%3Dorg???</a>'
+        )
 
     def test_html_href_escaping(self):
         bad_chars = '<"&\'>'
         u = ldapurl.LDAPUrl(f'ldap://{bad_chars}/dc={bad_chars},dc=org?scope={bad_chars}')
-        self.assertEqual(u.htmlHREF(), '<a href="ldap://&lt;&quot;&amp;&#x27;&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;&quot;&amp;&#x27;&gt;??">ldap://&lt;"&amp;\'&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;"&amp;\'&gt;??</a>')
-        self.assertEqual(u.htmlHREF(bad_chars, bad_chars, bad_chars), '<a target="&lt;&quot;&amp;&#x27;&gt;" href="&lt;&quot;&amp;&#x27;&gt;ldap://&lt;&quot;&amp;&#x27;&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;&quot;&amp;&#x27;&gt;??">&lt;"&amp;\'&gt;</a>')
+        self.assertEqual(
+            u.htmlHREF(),
+            '<a href="ldap://&lt;&quot;&amp;&#x27;&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;&quot;&amp;&#x27;&gt;??">ldap://&lt;"&amp;\'&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;"&amp;\'&gt;??</a>',
+        )
+        self.assertEqual(
+            u.htmlHREF(bad_chars, bad_chars, bad_chars),
+            '<a target="&lt;&quot;&amp;&#x27;&gt;" href="&lt;&quot;&amp;&#x27;&gt;ldap://&lt;&quot;&amp;&#x27;&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;&quot;&amp;&#x27;&gt;??">&lt;"&amp;\'&gt;</a>',
+        )
 
 
 if __name__ == '__main__':
