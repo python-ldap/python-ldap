@@ -42,15 +42,15 @@ class ReadEntryControl(LDAPControl):
   def encodeControlValue(self) -> bytes:
     attributeSelection = AttributeDescriptionList()
     for i in range(len(self.attrList)):
-      attributeSelection.setComponentByPosition(i,self.attrList[i])
+      attributeSelection.setComponentByPosition(i, self.attrList[i])
     return encoder.encode(attributeSelection)  # type: ignore
 
   def decodeControlValue(self, encodedControlValue: bytes) -> None:
-    decodedEntry,_ = decoder.decode(encodedControlValue,asn1Spec=SearchResultEntry())
+    decodedEntry, _ = decoder.decode(encodedControlValue, asn1Spec=SearchResultEntry())
     self.dn = str(decodedEntry[0])
     self.entry = {}
     for attr in decodedEntry[1]:
-      self.entry[str(attr[0])] = [ bytes(attr_value) for attr_value in attr[1] ]
+      self.entry[str(attr[0])] = [bytes(attr_value) for attr_value in attr[1]]
 
 
 class PreReadControl(ReadEntryControl):
@@ -70,6 +70,7 @@ class PreReadControl(ReadEntryControl):
       before the operation was done by the server
   """
   controlType = ldap.CONTROL_PRE_READ
+
 
 KNOWN_RESPONSE_CONTROLS[PreReadControl.controlType] = PreReadControl
 
@@ -91,5 +92,6 @@ class PostReadControl(ReadEntryControl):
       after the operation was done by the server
   """
   controlType = ldap.CONTROL_POST_READ
+
 
 KNOWN_RESPONSE_CONTROLS[PostReadControl.controlType] = PostReadControl

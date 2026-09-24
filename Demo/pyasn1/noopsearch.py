@@ -18,7 +18,7 @@ import ldapurl
 from ldap.controls.openldap import SearchNoOpControl
 
 
-SEARCH_TIMEOUT=30.0
+SEARCH_TIMEOUT = 30.0
 
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])
@@ -27,7 +27,7 @@ except IndexError:
   sys.exit(1)
 
 # Set debugging level
-#ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
+# ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
@@ -42,10 +42,10 @@ if ldap_url.who and ldap_url.cred is None:
   ldap_url.cred = getpass.getpass()
 
 try:
-  ldap_conn.simple_bind_s(ldap_url.who or '',ldap_url.cred or '')
+  ldap_conn.simple_bind_s(ldap_url.who or '', ldap_url.cred or '')
 
 except ldap.INVALID_CREDENTIALS as e:
-  print('Simple bind failed:',str(e))
+  print('Simple bind failed:', str(e))
   sys.exit(1)
 
 try:
@@ -57,7 +57,7 @@ try:
     timeout=SEARCH_TIMEOUT,
     serverctrls=[SearchNoOpControl(criticality=True)],
   )
-  _,_,_,search_response_ctrls = ldap_conn.result3(msg_id,all=1,timeout=SEARCH_TIMEOUT)
+  _, _, _, search_response_ctrls = ldap_conn.result3(msg_id, all=1, timeout=SEARCH_TIMEOUT)
 except (
   ldap.TIMEOUT,
   ldap.TIMELIMIT_EXCEEDED,
@@ -70,7 +70,7 @@ except (
 noop_srch_ctrl = next(
   c
   for c in search_response_ctrls
-  if c.controlType==SearchNoOpControl.controlType
+  if c.controlType == SearchNoOpControl.controlType
 )
 
 print('Number of search results: %d' % noop_srch_ctrl.numSearchResults)

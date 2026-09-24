@@ -105,7 +105,7 @@ class TestEntryRecords(TestLDIFParser):
     """
     Various LDIF test cases
     """
-    record_type='entry'
+    record_type = 'entry'
 
     def test_empty(self):
         self.check_records(
@@ -196,12 +196,12 @@ class TestEntryRecords(TestLDIFParser):
              value
             attrib2: %s
 
-            """ % ('asdf.'*20), [
+            """ % ('asdf.' * 20), [
                 (
                     'cn=x,cn=y,cn=z',
                     {
                         'attrib': [b'very long line-folded value'],
-                        'attrib2': [b'asdf.'*20],
+                        'attrib2': [b'asdf.' * 20],
                     }
                 ),
             ]
@@ -279,7 +279,7 @@ class TestEntryRecords(TestLDIFParser):
             [
                 (
                     'cn=x,cn=y,cn=z',
-                    {'attrib': [500*b'\0']},
+                    {'attrib': [500 * b'\0']},
                 ),
             ]
         )
@@ -543,7 +543,7 @@ class TestModifyRecords(TestLDIFParser):
     """
     Various LDIF test cases
     """
-    record_type='modify'
+    record_type = 'modify'
 
     def test_empty(self):
         self.check_records(

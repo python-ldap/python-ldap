@@ -26,7 +26,7 @@ class TestCidict(unittest.TestCase):
         """
         self.assertEqual(ldap.dn.is_dn('foobar,ou=ae-dir'), False)
         data = {
-            'AbCDeF':123,
+            'AbCDeF': 123,
         }
         cix = ldap.cidict.cidict(data)
         self.assertEqual(cix["ABCDEF"], 123)
@@ -36,11 +36,11 @@ class TestCidict(unittest.TestCase):
         self.assertEqual(cix["XyZ"], 987)
         self.assertEqual(cix.get("xyz", None), 987)
         cix_keys = sorted(cix.keys())
-        self.assertEqual(cix_keys, ['AbCDeF','xYZ'])
+        self.assertEqual(cix_keys, ['AbCDeF', 'xYZ'])
         cix_keys = sorted(cix)
-        self.assertEqual(cix_keys, ['AbCDeF','xYZ'])
+        self.assertEqual(cix_keys, ['AbCDeF', 'xYZ'])
         cix_items = sorted(cix.items())
-        self.assertEqual(cix_items, [('AbCDeF',123), ('xYZ',987)])
+        self.assertEqual(cix_items, [('AbCDeF', 123), ('xYZ', 987)])
         del cix["abcdEF"]
         self.assertEqual("abcdef" in cix._keys, False)
         self.assertEqual("AbCDef" in cix._keys, False)

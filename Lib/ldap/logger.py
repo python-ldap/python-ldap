@@ -16,4 +16,5 @@ class logging_file_class:
     def flush(self) -> None:
         return
 
+
 logging_file_obj = logging_file_class(logging.DEBUG)

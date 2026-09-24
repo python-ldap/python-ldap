@@ -75,7 +75,7 @@ class TestDN(unittest.TestCase):
         self.assertEqual(
             ldap.dn.str2dn('uid=test42+uidNumber=42,ou=Testing,dc=example,dc=com'),
             [
-                [('uid', 'test42', 1), ('uidNumber', '42', 1) ],
+                [('uid', 'test42', 1), ('uidNumber', '42', 1)],
                 [('ou', 'Testing', 1)],
                 [('dc', 'example', 1)],
                 [('dc', 'com', 1)]

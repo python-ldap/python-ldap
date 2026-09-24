@@ -56,10 +56,10 @@ class OctetStringInteger(LDAPControl):
     self.integerValue = integerValue
 
   def encodeControlValue(self) -> bytes:
-    return struct.pack('!Q',self.integerValue)
+    return struct.pack('!Q', self.integerValue)
 
   def decodeControlValue(self, encodedControlValue: bytes) -> None:
-    self.integerValue = struct.unpack('!Q',encodedControlValue)[0]
+    self.integerValue = struct.unpack('!Q', encodedControlValue)[0]
 
 
 class BooleanControl(LDAPControl):
@@ -83,10 +83,10 @@ class BooleanControl(LDAPControl):
     self.booleanValue = booleanValue
 
   def encodeControlValue(self) -> bytes:
-    return encoder.encode(self.booleanValue,asn1Spec=univ.Boolean())  # type: ignore
+    return encoder.encode(self.booleanValue, asn1Spec=univ.Boolean())  # type: ignore
 
   def decodeControlValue(self, encodedControlValue: bytes) -> None:
-    decodedValue,_ = decoder.decode(encodedControlValue,asn1Spec=univ.Boolean())
+    decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=univ.Boolean())
     self.booleanValue = bool(int(decodedValue))
 
 
@@ -96,7 +96,7 @@ class ManageDSAITControl(ValueLessRequestControl):
   """
 
   def __init__(self, criticality: bool = False) -> None:
-    ValueLessRequestControl.__init__(self,ldap.CONTROL_MANAGEDSAIT,criticality=False)
+    ValueLessRequestControl.__init__(self, ldap.CONTROL_MANAGEDSAIT, criticality=False)
 
 
 class RelaxRulesControl(ValueLessRequestControl):
@@ -105,7 +105,7 @@ class RelaxRulesControl(ValueLessRequestControl):
   """
 
   def __init__(self, criticality: bool = False) -> None:
-    ValueLessRequestControl.__init__(self,ldap.CONTROL_RELAX,criticality=False)
+    ValueLessRequestControl.__init__(self, ldap.CONTROL_RELAX, criticality=False)
 
 
 class ProxyAuthzControl(RequestControl):
@@ -122,7 +122,7 @@ class ProxyAuthzControl(RequestControl):
         encoded = authzId.encode('utf-8')
     else:
         encoded = authzId
-    RequestControl.__init__(self,ldap.CONTROL_PROXY_AUTHZ,criticality,encoded)
+    RequestControl.__init__(self, ldap.CONTROL_PROXY_AUTHZ, criticality, encoded)
 
 
 class AuthorizationIdentityRequestControl(ValueLessRequestControl):
@@ -132,7 +132,7 @@ class AuthorizationIdentityRequestControl(ValueLessRequestControl):
   controlType = '2.16.840.1.113730.3.4.16'
 
   def __init__(self, criticality: bool) -> None:
-    ValueLessRequestControl.__init__(self,self.controlType,criticality)
+    ValueLessRequestControl.__init__(self, self.controlType, criticality)
 
 
 class AuthorizationIdentityResponseControl(ResponseControl):
@@ -165,4 +165,4 @@ class GetEffectiveRightsControl(RequestControl):
         encoded = authzId.encode('utf-8')
     else:
         encoded = authzId
-    RequestControl.__init__(self,self.controlType,criticality,encoded)
+    RequestControl.__init__(self, self.controlType, criticality, encoded)

@@ -52,24 +52,24 @@ def _ldap_function_call(
   """
   if lock:
     lock.acquire()
-  if __debug__ and ldap._trace_level>=1:
+  if __debug__ and ldap._trace_level >= 1:
     ldap._trace_file.write('*** {}.{} {}\n'.format(
-      '_ldap',getattr(func, "__name__", None),
-      pprint.pformat((args,kwargs))
+      '_ldap', getattr(func, "__name__", None),
+      pprint.pformat((args, kwargs))
     ))
-    if ldap._trace_level>=9:
-      traceback.print_stack(limit=ldap._trace_stack_limit,file=ldap._trace_file)
+    if ldap._trace_level >= 9:
+      traceback.print_stack(limit=ldap._trace_stack_limit, file=ldap._trace_file)
   try:
     try:
-      result = func(*args,**kwargs)
+      result = func(*args, **kwargs)
     finally:
       if lock:
         lock.release()
   except LDAPError as e:
-    if __debug__ and ldap._trace_level>=2:
+    if __debug__ and ldap._trace_level >= 2:
       ldap._trace_file.write(f'=> LDAPError: {e!s}\n')
     raise
-  if __debug__ and ldap._trace_level>=2:
+  if __debug__ and ldap._trace_level >= 2:
     ldap._trace_file.write(f'=> result:\n{pprint.pformat(result)}\n')
   return result
 
@@ -119,7 +119,7 @@ def get_option(option: int) -> Any:
 
   Get the value of an LDAP global option.
   """
-  return _ldap_function_call(None,_ldap.get_option,option)
+  return _ldap_function_call(None, _ldap.get_option, option)
 
 
 def set_option(option: int, invalue: Any) -> int:
@@ -128,7 +128,7 @@ def set_option(option: int, invalue: Any) -> int:
 
   Set the value of an LDAP global option.
   """
-  return _ldap_function_call(None,_ldap.set_option,option,invalue)  # type: ignore
+  return _ldap_function_call(None, _ldap.set_option, option, invalue)  # type: ignore
 
 
 def escape_str(escape_func: Callable[[str], str], s: str, *args: str) -> str:
