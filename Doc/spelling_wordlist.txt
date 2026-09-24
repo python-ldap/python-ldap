@@ -25,6 +25,7 @@ changeNumber
 changesOnly
 changeType
 changeTypes
+Changelog
 Christoph
 cidict
 clientctrls
