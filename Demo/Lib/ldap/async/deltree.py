@@ -1,15 +1,15 @@
-import ldap,ldap.async
+import ldap,ldap.asyncsearch
 
-class DeleteLeafs(ldap.async.AsyncSearchHandler):
+class DeleteLeafs(ldap.asyncsearch.AsyncSearchHandler):
   """
   Class for deleting entries which are results of a search.
 
   DNs of Non-leaf entries are collected in DeleteLeafs.nonLeafEntries.
   """
-  _entryResultTypes = ldap.async._entryResultTypes
+  _entryResultTypes = ldap.asyncsearch._entryResultTypes
 
   def __init__(self,l):
-    ldap.async.AsyncSearchHandler.__init__(self,l)
+    ldap.asyncsearch.AsyncSearchHandler.__init__(self,l)
     self.nonLeafEntries = []
     self.deletedEntries = 0
 
@@ -18,7 +18,7 @@ class DeleteLeafs(ldap.async.AsyncSearchHandler):
       raise ValueError("Parameter searchScope must be either ldap.SCOPE_ONELEVEL or ldap.SCOPE_SUBTREE.")
     self.nonLeafEntries = []
     self.deletedEntries = 0
-    ldap.async.AsyncSearchHandler.startSearch(
+    ldap.asyncsearch.AsyncSearchHandler.startSearch(
       self,
       searchRoot,
       searchScope,
