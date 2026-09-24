@@ -11,19 +11,16 @@
  *
  * Returns a new Python object on success, or NULL on failure.
  */
-PyObject *
-LDAPberval_to_object(const struct berval *bv)
-{
-    PyObject *ret = NULL;
+PyObject *LDAPberval_to_object(const struct berval *bv) {
+	PyObject *ret = NULL;
 
-    if (!bv || !bv->bv_val) {
-        ret = Py_NewRef(Py_None);
-    }
-    else {
-        ret = PyBytes_FromStringAndSize(bv->bv_val, bv->bv_len);
-    }
+	if (!bv || !bv->bv_val) {
+		ret = Py_NewRef(Py_None);
+	} else {
+		ret = PyBytes_FromStringAndSize(bv->bv_val, bv->bv_len);
+	}
 
-    return ret;
+	return ret;
 }
 
 /*
@@ -32,17 +29,14 @@ LDAPberval_to_object(const struct berval *bv)
  *
  * Returns a new Python object on success, or NULL on failure.
  */
-PyObject *
-LDAPberval_to_unicode_object(const struct berval *bv)
-{
-    PyObject *ret = NULL;
+PyObject *LDAPberval_to_unicode_object(const struct berval *bv) {
+	PyObject *ret = NULL;
 
-    if (!bv) {
-        ret = Py_NewRef(Py_None);
-    }
-    else {
-        ret = PyUnicode_FromStringAndSize(bv->bv_val, bv->bv_len);
-    }
+	if (!bv) {
+		ret = Py_NewRef(Py_None);
+	} else {
+		ret = PyUnicode_FromStringAndSize(bv->bv_val, bv->bv_len);
+	}
 
-    return ret;
+	return ret;
 }

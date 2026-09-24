@@ -75,11 +75,9 @@ add_err(TOO_LATE);
 add_err(CANNOT_CANCEL);
 #endif
 
-
 #if defined(LDAP_ASSERTION_FAILED)
 add_err(ASSERTION_FAILED);
 #endif
-
 
 #if defined(LDAP_PROXIED_AUTHORIZATION_DENIED)
 add_err(PROXIED_AUTHORIZATION_DENIED);
@@ -199,7 +197,6 @@ add_int(OPT_URI);
 add_int(OPT_DEFBASE);
 #endif
 
-
 #if HAVE_TLS
 add_int(OPT_X_TLS_CTX);
 add_int(OPT_X_TLS_CACERTFILE);
@@ -220,21 +217,17 @@ add_int(OPT_X_TLS_TRY);
 add_int(OPT_X_TLS_VERSION);
 #endif
 
-
 #if defined(LDAP_OPT_X_TLS_CIPHER)
 add_int(OPT_X_TLS_CIPHER);
 #endif
-
 
 #if defined(LDAP_OPT_X_TLS_PEERCERT)
 add_int(OPT_X_TLS_PEERCERT);
 #endif
 
-
 #if defined(LDAP_OPT_X_TLS_CRLCHECK)
 add_int(OPT_X_TLS_CRLCHECK);
 #endif
-
 
 #if defined(LDAP_OPT_X_TLS_CRLFILE)
 add_int(OPT_X_TLS_CRLFILE);
@@ -248,56 +241,45 @@ add_int(OPT_X_TLS_CRL_ALL);
 add_int(OPT_X_TLS_NEWCTX);
 #endif
 
-
 #if defined(LDAP_OPT_X_TLS_PROTOCOL_MIN)
 add_int(OPT_X_TLS_PROTOCOL_MIN);
 #endif
-
 
 #if defined(LDAP_OPT_X_TLS_PACKAGE)
 add_int(OPT_X_TLS_PACKAGE);
 #endif
 
-
 #if defined(LDAP_OPT_X_TLS_ECNAME)
 add_int(OPT_X_TLS_ECNAME);
 #endif
-
 
 #if defined(LDAP_OPT_X_TLS_REQUIRE_SAN)
 add_int(OPT_X_TLS_REQUIRE_SAN);
 #endif
 
-
 #if defined(LDAP_OPT_X_TLS_PEERCERT)
 add_int(OPT_X_TLS_PEERCERT);
 #endif
-
 
 #if defined(LDAP_OPT_X_TLS_PROTOCOL_MAX)
 add_int(OPT_X_TLS_PROTOCOL_MAX);
 #endif
 
-
 #if defined(LDAP_OPT_X_TLS_PROTOCOL_SSL3)
 add_int(OPT_X_TLS_PROTOCOL_SSL3);
 #endif
-
 
 #if defined(LDAP_OPT_X_TLS_PROTOCOL_TLS1_0)
 add_int(OPT_X_TLS_PROTOCOL_TLS1_0);
 #endif
 
-
 #if defined(LDAP_OPT_X_TLS_PROTOCOL_TLS1_1)
 add_int(OPT_X_TLS_PROTOCOL_TLS1_1);
 #endif
 
-
 #if defined(LDAP_OPT_X_TLS_PROTOCOL_TLS1_2)
 add_int(OPT_X_TLS_PROTOCOL_TLS1_2);
 #endif
-
 
 #if defined(LDAP_OPT_X_TLS_PROTOCOL_TLS1_3)
 add_int(OPT_X_TLS_PROTOCOL_TLS1_3);
@@ -319,26 +301,21 @@ add_int(OPT_X_SASL_SSF_MAX);
 add_int(OPT_X_SASL_NOCANON);
 #endif
 
-
 #if defined(LDAP_OPT_X_SASL_USERNAME)
 add_int(OPT_X_SASL_USERNAME);
 #endif
-
 
 #if defined(LDAP_OPT_CONNECT_ASYNC)
 add_int(OPT_CONNECT_ASYNC);
 #endif
 
-
 #if defined(LDAP_OPT_X_KEEPALIVE_IDLE)
 add_int(OPT_X_KEEPALIVE_IDLE);
 #endif
 
-
 #if defined(LDAP_OPT_X_KEEPALIVE_PROBES)
 add_int(OPT_X_KEEPALIVE_PROBES);
 #endif
-
 
 #if defined(LDAP_OPT_X_KEEPALIVE_INTERVAL)
 add_int(OPT_X_KEEPALIVE_INTERVAL);
@@ -365,23 +342,27 @@ add_int(URL_ERR_BADSCOPE);
 add_int(URL_ERR_MEM);
 
 #ifdef HAVE_SASL
-if (PyModule_AddIntConstant(m, "SASL_AVAIL", 1) != 0) goto error;
+if (PyModule_AddIntConstant(m, "SASL_AVAIL", 1) != 0)
+	goto error;
 #else
-if (PyModule_AddIntConstant(m, "SASL_AVAIL", 0) != 0) goto error;
+if (PyModule_AddIntConstant(m, "SASL_AVAIL", 0) != 0)
+	goto error;
 #endif
-
 
 #ifdef HAVE_TLS
-if (PyModule_AddIntConstant(m, "TLS_AVAIL", 1) != 0) goto error;
+if (PyModule_AddIntConstant(m, "TLS_AVAIL", 1) != 0)
+	goto error;
 #else
-if (PyModule_AddIntConstant(m, "TLS_AVAIL", 0) != 0) goto error;
+if (PyModule_AddIntConstant(m, "TLS_AVAIL", 0) != 0)
+	goto error;
 #endif
 
-
 #ifdef HAVE_LDAP_INIT_FD
-if (PyModule_AddIntConstant(m, "INIT_FD_AVAIL", 1) != 0) goto error;
+if (PyModule_AddIntConstant(m, "INIT_FD_AVAIL", 1) != 0)
+	goto error;
 #else
-if (PyModule_AddIntConstant(m, "INIT_FD_AVAIL", 0) != 0) goto error;
+if (PyModule_AddIntConstant(m, "INIT_FD_AVAIL", 0) != 0)
+	goto error;
 #endif
 
 add_string(CONTROL_MANAGEDSAIT);
