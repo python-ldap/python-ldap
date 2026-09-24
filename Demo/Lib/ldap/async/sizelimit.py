@@ -1,5 +1,5 @@
 """
-ldifwriter - using ldap.async module for retrieving partial results
+ldifwriter - using ldap.asyncsearch module for retrieving partial results
              in a list even though the exception ldap.SIZELIMIT_EXCEEDED
              was raised.output of LDIF stream
 
@@ -10,9 +10,9 @@ input, sanitizes some attributes, maps/removes object classes,
 maps/removes attributes., etc. It's far from being complete though.
 """
 
-import sys,ldap,ldap.async
+import sys,ldap,ldap.asyncsearch
 
-s = ldap.async.List(
+s = ldap.asyncsearch.List(
   ldap.initialize('ldap://localhost:1390'),
 )
 

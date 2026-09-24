@@ -1,5 +1,5 @@
 """
-ldifwriter - using ldap.async module for output of LDIF stream
+ldifwriter - using ldap.asyncsearch module for output of LDIF stream
              of LDAP search results
 
 Written by Michael Stroeder <michael@stroeder.com>
@@ -9,9 +9,9 @@ input, sanitizes some attributes, maps/removes object classes,
 maps/removes attributes., etc. It's far from being complete though.
 """
 
-import sys,ldap,ldap.async
+import sys,ldap,ldap.asyncsearch
 
-s = ldap.async.LDIFWriter(
+s = ldap.asyncsearch.LDIFWriter(
   ldap.initialize('ldap://localhost:1390'),
   sys.stdout
 )
