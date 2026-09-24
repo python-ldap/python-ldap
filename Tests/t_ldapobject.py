@@ -411,7 +411,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             return filename
 
         # Assert warning points to a line marked CORRECT LINE in this file
-        self.assertEquals(_normalize(warning.filename), _normalize(__file__))
+        self.assertEqual(_normalize(warning.filename), _normalize(__file__))
         self.assertIn(
             'CORRECT LINE',
             linecache.getline(warning.filename, warning.lineno)
