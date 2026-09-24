@@ -12,7 +12,7 @@ from ldap.pkginfo import __version__, __author__, __license__
 from ldap.controls import RequestControl, ResponseControl
 
 from ldap._types import LDAPAddModList, LDAPModifyModList, LDAPEntryDict
-from typing import Any, BinaryIO, Callable, TextIO, Type
+from typing import Any, BinaryIO, Callable, TextIO
 
 __all__ = [
   'LDAPObject',
@@ -538,7 +538,7 @@ class SimpleLDAPObject:
     self,
     msgid: int = ldap.RES_ANY,
     all: int = 1,
-    timeout: int | float | None = None,
+    timeout: float | None = None,
   ) -> tuple[str | None, bytes]:
     # FIXME: The timeout argument isn't used?
     resulttype,msg,rmsgid,respctrls,respoid,respvalue = self.result4(msgid,all=1,timeout=self.timeout,add_ctrls=1,add_intermediates=1,add_extop=1)
@@ -719,7 +719,7 @@ class SimpleLDAPObject:
     self,
     msgid: int = ldap.RES_ANY,
     all: int = 1,
-    timeout: int | float | None = None,
+    timeout: float | None = None,
   ) -> tuple[int | None, Any | None]:
     """
     result([msgid=RES_ANY [,all=1 [,timeout=None]]]) -> (result_type, result_data)
@@ -778,7 +778,7 @@ class SimpleLDAPObject:
     self,
     msgid: int = ldap.RES_ANY,
     all: int = 1,
-    timeout: int | float | None = None,
+    timeout: float | None = None,
   ) -> tuple[int | None, Any | None, int | None]:
     resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid,all,timeout)
     return resp_type, resp_data, resp_msgid
@@ -787,7 +787,7 @@ class SimpleLDAPObject:
     self,
     msgid: int = ldap.RES_ANY,
     all: int = 1,
-    timeout: int | float | None = None,
+    timeout: float | None = None,
     resp_ctrl_classes: dict[str, type[ResponseControl]] | None = None,
   ) -> tuple[int | None, Any | None, int | None, list[ResponseControl] | None]:
     resp_type, resp_data, resp_msgid, decoded_resp_ctrls, retoid, retval = self.result4(
@@ -801,7 +801,7 @@ class SimpleLDAPObject:
     self,
     msgid: int = ldap.RES_ANY,
     all: int = 1,
-    timeout: int | float | None = None,
+    timeout: float | None = None,
     add_ctrls: int = 0,
     add_intermediates: int = 0,
     add_extop: int = 0,
@@ -832,7 +832,7 @@ class SimpleLDAPObject:
     attrsonly: int = 0,
     serverctrls: list[RequestControl] | None = None,
     clientctrls: list[RequestControl] | None = None,
-    timeout: int | float = -1,
+    timeout: float = -1,
     sizelimit: int = 0,
   ) -> int:
     """
@@ -899,7 +899,7 @@ class SimpleLDAPObject:
     attrsonly: int = 0,
     serverctrls: list[RequestControl] | None = None,
     clientctrls: list[RequestControl] | None = None,
-    timeout: int | float = -1,
+    timeout: float = -1,
     sizelimit: int = 0,
   ) -> list[tuple[str, LDAPEntryDict]]:
     msgid = self.search_ext(base,scope,filterstr,attrlist,attrsonly,serverctrls,clientctrls,timeout,sizelimit)
@@ -932,7 +932,7 @@ class SimpleLDAPObject:
     filterstr: str | None = None,
     attrlist: list[str] | None = None,
     attrsonly: int = 0,
-    timeout: int | float = -1,
+    timeout: float = -1,
   ) -> list[tuple[str, LDAPEntryDict]]:
     return self.search_ext_s(base,scope,filterstr,attrlist,attrsonly,None,None,timeout)
 
@@ -1062,7 +1062,7 @@ class SimpleLDAPObject:
     attrlist: list[str] | None = None,
     serverctrls: list[RequestControl] | None = None,
     clientctrls: list[RequestControl] | None = None,
-    timeout: int | float = -1,
+    timeout: float = -1,
   ) -> LDAPEntryDict | None:
     """
     Reads and returns a single entry specified by `dn'.
@@ -1114,7 +1114,7 @@ class SimpleLDAPObject:
     attrsonly: int = 0,
     serverctrls: list[RequestControl] | None = None,
     clientctrls: list[RequestControl] | None = None,
-    timeout: int | float = -1,
+    timeout: float = -1,
   ) -> tuple[str, LDAPEntryDict]:
     """
     Returns a unique entry, raises exception if not unique
