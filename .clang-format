@@ -1,0 +1,14 @@
+---
+BasedOnStyle: LLVM
+TabWidth: 4
+IndentWidth: 4
+ColumnLimit: 115
+AttributeMacros:
+  - PYLDAP_FUNC
+  - PYLDAP_DATA
+BracedInitializerIndentWidth: 4
+ContinuationIndentWidth: 8
+AllowShortFunctionsOnASingleLine: None
+BreakAfterReturnType: AllDefinitions
+UseTab: Never
+BreakBeforeBraces: Linux
