@@ -4,8 +4,8 @@ import pprint
 import ldap
 
 
-url = "ldap://localhost:1390"
-base = "dc=stroeder,dc=de"
+url = 'ldap://localhost:1390'
+base = 'dc=stroeder,dc=de'
 search_flt = r'(objectClass=*)'
 page_size = 10
 binddn = ''
@@ -39,7 +39,7 @@ pages = 0
 while True:
     pages += 1
     print('-' * 60)
-    print("Getting page %d" % (pages))
+    print('Getting page %d' % (pages))
     rtype, rdata, rmsgid, serverctrls = l.result3(msgid, resp_ctrl_classes=known_ldap_resp_ctrls)
     print('%d results' % len(rdata))
     print('serverctrls=', pprint.pprint(serverctrls))
@@ -57,7 +57,7 @@ while True:
         else:
             break
     else:
-        print("Warning:  Server ignores RFC 2696 control.")
+        print('Warning:  Server ignores RFC 2696 control.')
         break
 
 l.unbind_s()

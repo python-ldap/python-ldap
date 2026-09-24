@@ -4,10 +4,10 @@ import ldap
 import ldap.sasl
 
 
-ldap_uri = "ldap://dc1.example.com"
-dn = "CN=Anna Blume,CN=Users,DC=addomain,DC=example,DC=com"
-sAMAccountName = "ABlume"
-userPrincipalName = "ablume@addomain.example.com"
+ldap_uri = 'ldap://dc1.example.com'
+dn = 'CN=Anna Blume,CN=Users,DC=addomain,DC=example,DC=com'
+sAMAccountName = 'ABlume'
+userPrincipalName = 'ablume@addomain.example.com'
 password = 'testsecret'
 
 trace_level = 2
@@ -31,10 +31,10 @@ sasl_auth = ldap.sasl.sasl(
     },
     'DIGEST-MD5',
 )
-l.sasl_interactive_bind_s("", sasl_auth)
+l.sasl_interactive_bind_s('', sasl_auth)
 
 # SASL bind with mech GSSAPI
 # with the help of Kerberos V TGT obtained before with command
 # kinit ablume@ADDOMAIN.EXAMPLE.COM
 sasl_auth = ldap.sasl.sasl({}, 'GSSAPI')
-l.sasl_interactive_bind_s("", sasl_auth)
+l.sasl_interactive_bind_s('', sasl_auth)

@@ -55,7 +55,7 @@ def _ldap_function_call(
         lock.acquire()
     if __debug__ and ldap._trace_level >= 1:
         ldap._trace_file.write(
-            '*** {}.{} {}\n'.format('_ldap', getattr(func, "__name__", None), pprint.pformat((args, kwargs)))
+            '*** {}.{} {}\n'.format('_ldap', getattr(func, '__name__', None), pprint.pformat((args, kwargs)))
         )
         if ldap._trace_level >= 9:
             traceback.print_stack(limit=ldap._trace_stack_limit, file=ldap._trace_file)

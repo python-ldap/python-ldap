@@ -102,28 +102,28 @@ def requires_tls() -> Callable[..., Any]:
     Tests are not skipped on CI (e.g. Travis CI)
     """
     if not ldap.TLS_AVAIL:
-        return skip_unless_ci("test needs ldap.TLS_AVAIL", feature='TLS')
+        return skip_unless_ci('test needs ldap.TLS_AVAIL', feature='TLS')
     else:
         return identity
 
 
 def requires_sasl() -> Callable[..., Any]:
     if not ldap.SASL_AVAIL:
-        return skip_unless_ci("test needs ldap.SASL_AVAIL", feature='SASL')
+        return skip_unless_ci('test needs ldap.SASL_AVAIL', feature='SASL')
     else:
         return identity
 
 
 def requires_ldapi() -> Callable[..., Any]:
     if not HAVE_LDAPI:
-        return skip_unless_ci("test needs ldapi support (AF_UNIX)", feature='LDAPI')
+        return skip_unless_ci('test needs ldapi support (AF_UNIX)', feature='LDAPI')
     else:
         return identity
 
 
 def requires_init_fd() -> Callable[..., Any]:
     if not ldap.INIT_FD_AVAIL:
-        return skip_unless_ci("test needs ldap.INIT_FD", feature='INIT_FD')
+        return skip_unless_ci('test needs ldap.INIT_FD', feature='INIT_FD')
     else:
         return identity
 
@@ -210,10 +210,10 @@ class SlapdObject:
     SCHEMADIR: str | None
     if 'SCHEMA' in os.environ:
         SCHEMADIR = os.environ['SCHEMA']
-    elif os.path.isdir("/etc/openldap/schema"):
-        SCHEMADIR = "/etc/openldap/schema"
-    elif os.path.isdir("/etc/ldap/schema"):
-        SCHEMADIR = "/etc/ldap/schema"
+    elif os.path.isdir('/etc/openldap/schema'):
+        SCHEMADIR = '/etc/openldap/schema'
+    elif os.path.isdir('/etc/ldap/schema'):
+        SCHEMADIR = '/etc/ldap/schema'
     else:
         SCHEMADIR = None
 
@@ -229,11 +229,11 @@ class SlapdObject:
         self.server_id = self._port % 4096
         self.testrundir = os.path.join(self.TMPDIR, 'python-ldap-test-%d' % self._port)
         self._slapd_conf = os.path.join(self.testrundir, 'slapd.d')
-        self._db_directory = os.path.join(self.testrundir, "openldap-data")
-        self.ldap_uri = "ldap://%s:%d/" % (self.local_host, self._port)
+        self._db_directory = os.path.join(self.testrundir, 'openldap-data')
+        self.ldap_uri = 'ldap://%s:%d/' % (self.local_host, self._port)
         if HAVE_LDAPI:
             ldapi_path = os.path.join(self.testrundir, 'ldapi')
-            self.ldapi_uri: str | None = f"ldapi://{quote_plus(ldapi_path)}"
+            self.ldapi_uri: str | None = f'ldapi://{quote_plus(ldapi_path)}'
             self.default_ldap_uri = self.ldapi_uri
             # use SASL/EXTERNAL via LDAPI when invoking OpenLDAP CLI tools
             self.cli_sasl_external = ldap.SASL_AVAIL
@@ -374,26 +374,26 @@ class SlapdObject:
 
     def _write_config(self) -> None:
         """Loads the slapd.d configuration."""
-        self._log.debug("importing configuration: %s", self._slapd_conf)
+        self._log.debug('importing configuration: %s', self._slapd_conf)
 
-        self.slapadd(self.gen_config(), ["-n0"])
+        self.slapadd(self.gen_config(), ['-n0'])
         ldif_paths = [
             schema if os.path.exists(schema) else os.path.join(self.SCHEMADIR or '', schema)
             for schema in self.openldap_schema_files
         ]
         for ldif_path in ldif_paths:
-            self.slapadd(None, ["-n0", "-l", ldif_path])
+            self.slapadd(None, ['-n0', '-l', ldif_path])
 
-        self._log.debug("import ok: %s", self._slapd_conf)
+        self._log.debug('import ok: %s', self._slapd_conf)
 
     def _test_config(self) -> None:
         self._log.debug('testing config %s', self._slapd_conf)
-        popen_list = [self.PATH_SLAPD, "-Ttest", "-F", self._slapd_conf, "-u", "-v", "-d", "config"]
+        popen_list = [self.PATH_SLAPD, '-Ttest', '-F', self._slapd_conf, '-u', '-v', '-d', 'config']
         p = subprocess.run(popen_list, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if p.returncode != 0:
-            self._log.error(p.stdout.decode("utf-8"))
-            raise RuntimeError("configuration test failed")
-        self._log.info("config ok: %s", self._slapd_conf)
+            self._log.error(p.stdout.decode('utf-8'))
+            raise RuntimeError('configuration test failed')
+        self._log.info('config ok: %s', self._slapd_conf)
 
     def _start_slapd(self) -> None:
         """
@@ -427,9 +427,9 @@ class SlapdObject:
         while True:  # pragma: no cover
             if self._proc.poll() is not None:
                 self._stopped()
-                raise RuntimeError("slapd exited before opening port")
+                raise RuntimeError('slapd exited before opening port')
             try:
-                self._log.debug("slapd connection check to %s", self.default_ldap_uri)
+                self._log.debug('slapd connection check to %s', self.default_ldap_uri)
                 self.ldapwhoami()
             except RuntimeError:
                 if time.monotonic() >= deadline:
@@ -437,7 +437,7 @@ class SlapdObject:
                 time.sleep(0.2)
             else:
                 return
-        raise RuntimeError("slapd did not start properly")
+        raise RuntimeError('slapd did not start properly')
 
     def start(self) -> None:
         """
@@ -453,7 +453,7 @@ class SlapdObject:
             self._test_config()
             self._start_slapd()
             if self._proc is None:
-                raise RuntimeError("started slapd but self._proc is None")
+                raise RuntimeError('started slapd but self._proc is None')
             self._log.debug('slapd with pid=%d listening on %s and %s', self._proc.pid, self.ldap_uri, self.ldapi_uri)
 
     def stop(self, cleanup: bool = True) -> None:
@@ -527,7 +527,7 @@ class SlapdObject:
         if ldap_uri is None:
             ldap_uri = self.default_ldap_uri
 
-        if ldapcommand.rsplit("/", maxsplit=1)[-1].startswith("ldap"):
+        if ldapcommand.rsplit('/', maxsplit=1)[-1].startswith('ldap'):
             args = [ldapcommand, '-H', ldap_uri] + self._cli_auth_args()
         else:
             if tool:
@@ -583,7 +583,7 @@ class SlapdObject:
         Runs slapadd on this slapd instance, passing it the ldif content
         """
         self._cli_popen(
-            self.PATH_SLAPD, stdin_data=ldif.encode("utf-8") if ldif else None, extra_args=extra_args, tool='add'
+            self.PATH_SLAPD, stdin_data=ldif.encode('utf-8') if ldif else None, extra_args=extra_args, tool='add'
         )
 
     def __enter__(self) -> Self:
@@ -618,9 +618,9 @@ class SlapdTestCase(unittest.TestCase):
         return a LDAPObject instance after simple bind
         """
         if self.server is None:
-            raise RuntimeError("_open_ldap_conn: self.server is None")
+            raise RuntimeError('_open_ldap_conn: self.server is None')
         elif self.ldap_object_class is None:
-            raise RuntimeError("_open_ldap_conn: self.ldap_object_class is None")
+            raise RuntimeError('_open_ldap_conn: self.ldap_object_class is None')
 
         ldap_conn = self.ldap_object_class(self.server.ldap_uri, **kwargs)
         ldap_conn.protocol_version = 3

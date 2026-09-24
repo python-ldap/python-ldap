@@ -19,7 +19,7 @@ class EditionTests(SlapdTestCase):
 
         # insert some Foo* objects via ldapadd
         cls.server.ldapadd(
-            "\n".join(
+            '\n'.join(
                 [
                     'dn: ' + cls.server.suffix,
                     'objectClass: dcObject',
@@ -31,29 +31,29 @@ class EditionTests(SlapdTestCase):
                     'objectClass: applicationProcess',
                     'cn: ' + cls.server.root_cn,
                     '',
-                    "dn: cn=Foo1," + base,
-                    "objectClass: organizationalRole",
-                    "cn: Foo1",
-                    "",
-                    "dn: cn=Foo2," + base,
-                    "objectClass: organizationalRole",
-                    "cn: Foo2",
-                    "",
-                    "dn: cn=Foo3," + base,
-                    "objectClass: organizationalRole",
-                    "cn: Foo3",
-                    "",
-                    "dn: ou=Container," + base,
-                    "objectClass: organizationalUnit",
-                    "ou: Container",
-                    "",
-                    "dn: cn=Foo4,ou=Container," + base,
-                    "objectClass: organizationalRole",
-                    "cn: Foo4",
-                    "",
+                    'dn: cn=Foo1,' + base,
+                    'objectClass: organizationalRole',
+                    'cn: Foo1',
+                    '',
+                    'dn: cn=Foo2,' + base,
+                    'objectClass: organizationalRole',
+                    'cn: Foo2',
+                    '',
+                    'dn: cn=Foo3,' + base,
+                    'objectClass: organizationalRole',
+                    'cn: Foo3',
+                    '',
+                    'dn: ou=Container,' + base,
+                    'objectClass: organizationalUnit',
+                    'ou: Container',
+                    '',
+                    'dn: cn=Foo4,ou=Container,' + base,
+                    'objectClass: organizationalRole',
+                    'cn: Foo4',
+                    '',
                 ]
             )
-            + "\n"
+            + '\n'
         )
 
     def setUp(self):
@@ -67,12 +67,12 @@ class EditionTests(SlapdTestCase):
 
     def test_add_object(self):
         base = self.server.suffix
-        dn = "cn=Added,ou=Container," + base
+        dn = 'cn=Added,ou=Container,' + base
         self.ldap.add_ext_s(
             dn,
             [
-                ("objectClass", [b'organizationalRole']),
-                ("cn", [b'Added']),
+                ('objectClass', [b'organizationalRole']),
+                ('cn', [b'Added']),
             ],
         )
 
@@ -81,7 +81,7 @@ class EditionTests(SlapdTestCase):
         self.assertEqual(
             result,
             [
-                ("cn=Added,ou=Container," + base, {'cn': [b'Added'], 'objectClass': [b'organizationalRole']}),
+                ('cn=Added,ou=Container,' + base, {'cn': [b'Added'], 'objectClass': [b'organizationalRole']}),
             ],
         )
         # Delete object

@@ -52,7 +52,7 @@ def use_limited_api():
 
 LIMITED_API = use_limited_api()
 if LIMITED_API:
-    SETUP_OPTIONS |= {"bdist_wheel": {"py_limited_api": LIMITED_API_TAG}}
+    SETUP_OPTIONS |= {'bdist_wheel': {'py_limited_api': LIMITED_API_TAG}}
 
 
 # -- A class describing the features and requirements of OpenLDAP 2.0
@@ -117,7 +117,7 @@ setup(
             extra_compile_args=LDAP_CLASS.extra_compile_args,
             extra_link_args=LDAP_CLASS.extra_link_args,
             extra_objects=LDAP_CLASS.extra_objects,
-            runtime_library_dirs=(not sys.platform.startswith("win")) * LDAP_CLASS.library_dirs,
+            runtime_library_dirs=(not sys.platform.startswith('win')) * LDAP_CLASS.library_dirs,
             py_limited_api=LIMITED_API,
             define_macros=LDAP_CLASS.defines
             + ('sasl' in LDAP_CLASS.libs or 'sasl2' in LDAP_CLASS.libs or 'libsasl' in LDAP_CLASS.libs)

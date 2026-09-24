@@ -60,7 +60,7 @@ class TestSubschemaUrlfetch(unittest.TestCase):
         self.assertEqual(
             str(obj),
             "( 2.5.6.9 NAME 'groupOfNames' SUP top STRUCTURAL MUST cn "
-            "MAY ( member $ businessCategory $ seeAlso $ owner $ ou $ o "
+            'MAY ( member $ businessCategory $ seeAlso $ owner $ ou $ o '
             "$ description ) X-ORIGIN 'RFC 4519' )",
         )
 
@@ -90,10 +90,10 @@ class TestXOrigin(unittest.TestCase):
         self.assertEqual(
             str(self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1')),
             (
-                "( 2.16.840.1.113719.1.301.4.24.1 "
+                '( 2.16.840.1.113719.1.301.4.24.1 '
                 + "NAME 'krbHostServer' "
-                + "EQUALITY caseExactIA5Match "
-                + "SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )"
+                + 'EQUALITY caseExactIA5Match '
+                + 'SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )'
             ),
         )
 
@@ -107,10 +107,10 @@ class TestXOrigin(unittest.TestCase):
         self.assertEqual(
             str(self.get_attribute_type('2.16.840.1.113730.3.1.2091')),
             (
-                "( 2.16.840.1.113730.3.1.2091 "
+                '( 2.16.840.1.113730.3.1.2091 '
                 + "NAME 'nsslapd-suffix' "
                 + "DESC 'Netscape defined attribute type' "
-                + "SYNTAX 1.3.6.1.4.1.1466.115.121.1.12 "
+                + 'SYNTAX 1.3.6.1.4.1.1466.115.121.1.12 '
                 + "X-ORIGIN 'Netscape' )"
             ),
         )
@@ -128,10 +128,10 @@ class TestXOrigin(unittest.TestCase):
                 "( 1.3.6.1.4.1.11.1.3.1.1.3 NAME 'searchTimeLimit' "
                 + "DESC 'Maximum time an agent or service allows for a search "
                 + "to complete' "
-                + "EQUALITY integerMatch "
-                + "ORDERING integerOrderingMatch "
-                + "SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 "
-                + "SINGLE-VALUE "
+                + 'EQUALITY integerMatch '
+                + 'ORDERING integerOrderingMatch '
+                + 'SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 '
+                + 'SINGLE-VALUE '
                 + "X-ORIGIN ( 'RFC4876' 'user defined' ) )"
             ),
         )

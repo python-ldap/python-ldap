@@ -9,13 +9,13 @@ from traceback import print_exc
 import ldap
 
 
-url = "ldap://ldap.openldap.org/"
-dn = "dc=openldap,dc=org"
+url = 'ldap://ldap.openldap.org/'
+dn = 'dc=openldap,dc=org'
 
-print("Connecting to", url)
+print('Connecting to', url)
 
 l = ldap.initialize(url)
-l.bind_s("", "", ldap.AUTH_SIMPLE)
+l.bind_s('', '', ldap.AUTH_SIMPLE)
 
 lastdn = dn
 dnlist = None
@@ -23,25 +23,25 @@ dnlist = None
 while True:
     # -- read a command
     try:
-        cmd = input(dn + "> ")
+        cmd = input(dn + '> ')
     except EOFError:
         print()
     break
 
     try:
-        if cmd == "?":
-            print("cd <dn>	- change DN to <dn>")
+        if cmd == '?':
+            print('cd <dn>	- change DN to <dn>')
             print("cd <n>	- change DN to number <n> of last 'ls'")
-            print("cd -	- change to previous DN")
-            print("cd ..	- change to one-level higher DN")
-            print("cd 	- change to root DN")
-            print("ls	- list children of crrent DN")
-            print(".	- show attributes of current DN")
-            print("/<expr>	- list descendents matching filter <expr>")
-            print("?	- show this help")
+            print('cd -	- change to previous DN')
+            print('cd ..	- change to one-level higher DN')
+            print('cd 	- change to root DN')
+            print('ls	- list children of crrent DN')
+            print('.	- show attributes of current DN')
+            print('/<expr>	- list descendents matching filter <expr>')
+            print('?	- show this help')
 
-        elif cmd == "ls":
-            print("Children of", dn, ":")
+        elif cmd == 'ls':
+            print('Children of', dn, ':')
             dnlist = []
             #
             # List the children at one level down from the current dn
@@ -49,27 +49,27 @@ while True:
             # We're not interested in attributes at this stage, so
             # we specify [] as the list of attribute names to retreive.
             #
-            for name, attrs in l.search_s(dn, ldap.SCOPE_ONELEVEL, "objectclass=*", []):
+            for name, attrs in l.search_s(dn, ldap.SCOPE_ONELEVEL, 'objectclass=*', []):
                 # -- shorten resulting dns for output brevity
-                if name.startswith(dn + ", "):
-                    shortname = "+ " + name[len(dn) + 2 :]
-                elif name.endswith(", " + dn):
-                    shortname = name[: -len(dn) - 2] + " +"
+                if name.startswith(dn + ', '):
+                    shortname = '+ ' + name[len(dn) + 2 :]
+                elif name.endswith(', ' + dn):
+                    shortname = name[: -len(dn) - 2] + ' +'
                 else:
                     shortname = name
-                print(" %3d. %s" % (len(dnlist), shortname))
+                print(' %3d. %s' % (len(dnlist), shortname))
                 dnlist.append(name)
 
-        elif cmd == "cd":
-            dn = ""
+        elif cmd == 'cd':
+            dn = ''
             dnlist = None
 
-        elif cmd.startswith("cd "):
+        elif cmd.startswith('cd '):
             arg = cmd[3:]
             if arg == '-':
                 lastdn, dn = dn, lastdn
             elif arg == '..':
-                dn = ldap.explode_dn(dn)[1:].join(",")
+                dn = ldap.explode_dn(dn)[1:].join(',')
                 dn = dn.strip()
             else:
                 try:
@@ -78,13 +78,13 @@ while True:
                     godn = arg
                 else:
                     if dnlist is None:
-                        print("do an ls first")
+                        print('do an ls first')
                     else:
                         godn = dnlist[i]
                     lastdn = dn
                     dn = godn
 
-        elif cmd == ".":
+        elif cmd == '.':
             #
             # Retrieve all the attributes for the current dn.
             # We construct a search using SCOPE_BASE (ie just the
@@ -92,16 +92,16 @@ while True:
             # No attributes are listed, so the default is for
             # the client to receive all attributes on the DN.
             #
-            print("Attributes of", dn, ":")
-            for name, attrs in l.search_s(dn, ldap.SCOPE_BASE, "objectclass=*"):
-                print("  %-24s" % name)
+            print('Attributes of', dn, ':')
+            for name, attrs in l.search_s(dn, ldap.SCOPE_BASE, 'objectclass=*'):
+                print('  %-24s' % name)
                 for k, vals in attrs.items():
                     for v in vals:
                         if len(v) > 200:
-                            v = v[:200] + ("... (%d bytes)" % len(v))
-                        print("      %-12s: %s" % (k, v))
+                            v = v[:200] + ('... (%d bytes)' % len(v))
+                        print('      %-12s: %s' % (k, v))
 
-        elif cmd.startswith("/"):
+        elif cmd.startswith('/'):
             #
             # Search descendent objects to match a given filter.
             # We use SCOPE_SUBTREE to indicate descendents, and
@@ -109,9 +109,9 @@ while True:
             # that we're not interested in them.
             #
             expr = cmd[1:]
-            print("Descendents matching filter", expr, ":")
+            print('Descendents matching filter', expr, ':')
             for name, attrs in l.search_s(dn, ldap.SCOPE_SUBTREE, expr, []):
-                print("  %24s", name)
+                print('  %24s', name)
 
         else:
             print("unknown command - try '?' for help")

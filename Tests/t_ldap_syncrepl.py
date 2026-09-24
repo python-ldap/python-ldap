@@ -294,9 +294,9 @@ class BaseSyncreplTests:
         raise NotImplementedError
 
     def test_refreshOnly_search(self):
-        '''
+        """
         Test to see if we can initialize a syncrepl search.
-        '''
+        """
         self.tester.search(self.suffix, 'refreshOnly')
 
     def test_refreshAndPersist_search(self):
@@ -404,7 +404,7 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
 
         # An active MPR should not have a sid=000 server in it
         if self.server.server_id == 0:
-            self.skipTest("Server got serverid 0 assigned")
+            self.skipTest('Server got serverid 0 assigned')
 
     def test_mpr_refresh_and_persist(self):
         """
@@ -444,7 +444,7 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             modifications = [
                 (
                     ldap.MOD_ADD,
-                    "olcSyncrepl",
+                    'olcSyncrepl',
                     [
                         (
                             'rid=%d provider=%s searchbase="%s" type=refreshAndPersist '
@@ -455,11 +455,11 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
                     ],
                 ),
                 # do we still support 2.4.x? Change to olcMultiProvider if not
-                (ldap.MOD_REPLACE, "olcMirrorMode", [b"TRUE"]),
+                (ldap.MOD_REPLACE, 'olcMirrorMode', [b'TRUE']),
             ]
 
-            self.tester.modify_s(f"olcDatabase={{1}}{self.server.database},cn=config", modifications)
-            tester2.modify_s(f"olcDatabase={{1}}{self.server.database},cn=config", modifications)
+            self.tester.modify_s(f'olcDatabase={{1}}{self.server.database},cn=config', modifications)
+            tester2.modify_s(f'olcDatabase={{1}}{self.server.database},cn=config', modifications)
 
             tester2.search(
                 self.suffix,
@@ -490,21 +490,21 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
 
             # send some mods to both
             modification = [('objectClass', [b'device'])]
-            self.tester.add_s(f"cn=server1,{self.suffix}", modification)
+            self.tester.add_s(f'cn=server1,{self.suffix}', modification)
 
-            csn1 = self.tester.read_s(f"cn=server1,{self.suffix}", attrlist=['entryCSN'])['entryCSN'][0].decode('utf8')
+            csn1 = self.tester.read_s(f'cn=server1,{self.suffix}', attrlist=['entryCSN'])['entryCSN'][0].decode('utf8')
 
-            tester2.add_s(f"cn=server2,{self.suffix}", modification)
-            csn2 = tester2.read_s(f"cn=server2,{self.suffix}", attrlist=['entryCSN'])['entryCSN'][0].decode('utf8')
+            tester2.add_s(f'cn=server2,{self.suffix}', modification)
+            csn2 = tester2.read_s(f'cn=server2,{self.suffix}', attrlist=['entryCSN'])['entryCSN'][0].decode('utf8')
 
             new_state = LDAP_ENTRIES.copy()
-            new_state[f"cn=server1,{self.suffix}"] = {
-                "objectClass": [b"device"],
-                "cn": [b"server1"],
+            new_state[f'cn=server1,{self.suffix}'] = {
+                'objectClass': [b'device'],
+                'cn': [b'server1'],
             }
-            new_state[f"cn=server2,{self.suffix}"] = {
-                "objectClass": [b"device"],
-                "cn": [b"server2"],
+            new_state[f'cn=server2,{self.suffix}'] = {
+                'objectClass': [b'device'],
+                'cn': [b'server2'],
             }
 
             # Wait for the cookie to sync up, a failure would be that this
@@ -528,8 +528,8 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
 
             # self.tester seems to have been unbound by the time
             # self.addCleanup callbacks get called? Cleanup manually...
-            self.tester.delete_s(f"cn=server1,{self.suffix}")
-            self.tester.delete_s(f"cn=server2,{self.suffix}")
+            self.tester.delete_s(f'cn=server1,{self.suffix}')
+            self.tester.delete_s(f'cn=server2,{self.suffix}')
 
 
 class DecodeSyncreplProtoTests(unittest.TestCase):

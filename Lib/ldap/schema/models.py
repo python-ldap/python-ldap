@@ -78,7 +78,7 @@ class SchemaElement:
         elif schema_element_str is None:
             return
         else:
-            raise TypeError(f"schema_element_str must be str/bytes, was {schema_element_str!r}")
+            raise TypeError(f'schema_element_str must be str/bytes, was {schema_element_str!r}')
 
         if schema_element_string == '':
             return
@@ -100,18 +100,18 @@ class SchemaElement:
 
     def key_attr(self, key: str, value: str | None, quoted: int = 0) -> str:
         if value is None:
-            return ""
+            return ''
         elif not isinstance(value, str):
-            raise TypeError(f"value has to be of str, was {value!r}")
-        elif value == "":
-            return ""
+            raise TypeError(f'value has to be of str, was {value!r}')
+        elif value == '':
+            return ''
         elif quoted:
             return " {} '{}'".format(key, value.replace("'", "\\'"))
         else:
-            return f" {key} {value}"
+            return f' {key} {value}'
 
     def key_list(self, key: str, values: tuple[str, ...], sep: str = ' ', quoted: int = 0) -> str:
-        assert isinstance(values, tuple), TypeError(f"values has to be a tuple, was {values!r}")
+        assert isinstance(values, tuple), TypeError(f'values has to be a tuple, was {values!r}')
         if not values:
             return ''
 
@@ -353,12 +353,12 @@ class AttributeType(SchemaElement):
                 self.syntax_len = None
             else:
                 try:
-                    self.syntax, syntax_len = syntax.split("{")
+                    self.syntax, syntax_len = syntax.split('{')
                 except ValueError:
                     self.syntax = syntax
                     self.syntax_len = None
                     for i in l:
-                        if i.startswith("{") and i.endswith("}"):
+                        if i.startswith('{') and i.endswith('}'):
                             self.syntax_len = int(i[1:-1])
                 else:
                     self.syntax_len = int(syntax_len[:-1])
@@ -391,7 +391,7 @@ class AttributeType(SchemaElement):
                 {0: '', 1: ' SINGLE-VALUE'}[self.single_value],
                 {0: '', 1: ' COLLECTIVE'}[self.collective],
                 {0: '', 1: ' NO-USER-MODIFICATION'}[self.no_user_mod],
-                {0: "", 1: " USAGE directoryOperation", 2: " USAGE distributedOperation", 3: " USAGE dSAOperation"}[
+                {0: '', 1: ' USAGE directoryOperation', 2: ' USAGE distributedOperation', 3: ' USAGE dSAOperation'}[
                     self.usage
                 ],
                 self.key_list('X-ORIGIN', self.x_origin, quoted=1),
@@ -890,6 +890,6 @@ class Entry(EntryBase):
         SubSchema.attribute_types()
         """
         bin_ocs = self.get('objectClass', [])
-        ocs = [oc if isinstance(oc, str) else oc.decode("utf-8") for oc in bin_ocs]
+        ocs = [oc if isinstance(oc, str) else oc.decode('utf-8') for oc in bin_ocs]
 
         return self._s.attribute_types(ocs, attr_type_filter, raise_keyerror)

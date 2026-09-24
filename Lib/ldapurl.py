@@ -154,9 +154,9 @@ class LDAPUrlExtensions(LDAPUrlExtensionsBase):
             LDAPUrlExtension instance, whose extype nust match `name`
         """
         if not isinstance(value, LDAPUrlExtension):
-            raise TypeError("value must be LDAPUrlExtension, not " + type(value).__name__)
+            raise TypeError('value must be LDAPUrlExtension, not ' + type(value).__name__)
         if name != value.extype:
-            raise ValueError(f"key {name!r} does not match extension type {value.extype!r}")
+            raise ValueError(f'key {name!r} does not match extension type {value.extype!r}')
         self._data[name] = value
 
     def __getitem__(self, name: str) -> LDAPUrlExtension:
@@ -383,16 +383,16 @@ class LDAPUrl:
             string added as link target attribute
         """
         if not isinstance(urlPrefix, str):
-            raise TypeError("urlPrefix must be str, not " + type(urlPrefix).__name__)
+            raise TypeError('urlPrefix must be str, not ' + type(urlPrefix).__name__)
         if hrefText is None:
             hrefText = self.unparse()
         if not isinstance(hrefText, str):
-            raise TypeError("hrefText must be str, not " + type(hrefText).__name__)
+            raise TypeError('hrefText must be str, not ' + type(hrefText).__name__)
         if hrefTarget is None:
             target = ''
         else:
             if not isinstance(hrefTarget, str):
-                raise TypeError("hrefTarget must be str, not " + type(hrefTarget).__name__)
+                raise TypeError('hrefTarget must be str, not ' + type(hrefTarget).__name__)
             target = f' target="{html.escape(hrefTarget, quote=True)}"'
         return f'<a{target} href="{html.escape(urlPrefix, quote=True)}{html.escape(self.unparse(), quote=True)}">{html.escape(hrefText, quote=False)}</a>'
 

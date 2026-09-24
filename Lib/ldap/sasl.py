@@ -88,7 +88,7 @@ class sasl:
 
         if __debug__ and _trace_level >= 1:
             _trace_file.write(
-                "*** id=%d, challenge=%r, prompt=%r, defresult=%s\n-> %s\n"
+                '*** id=%d, challenge=%r, prompt=%r, defresult=%s\n-> %s\n'
                 % (cb_id, challenge, prompt, repr(defresult), repr(self.cb_value_dict.get(cb_id)))
             )
 
@@ -102,13 +102,13 @@ class cram_md5(sasl):
     This class handles SASL CRAM-MD5 authentication.
     """
 
-    def __init__(self, authc_id: str, password: str, authz_id: str = "") -> None:
+    def __init__(self, authc_id: str, password: str, authz_id: str = '') -> None:
         auth_dict = {
             CB_AUTHNAME: authc_id,
             CB_PASS: password,
             CB_USER: authz_id,
         }
-        sasl.__init__(self, auth_dict, "CRAM-MD5")
+        sasl.__init__(self, auth_dict, 'CRAM-MD5')
 
 
 class digest_md5(sasl):
@@ -116,13 +116,13 @@ class digest_md5(sasl):
     This class handles SASL DIGEST-MD5 authentication.
     """
 
-    def __init__(self, authc_id: str, password: str, authz_id: str = "") -> None:
+    def __init__(self, authc_id: str, password: str, authz_id: str = '') -> None:
         auth_dict = {
             CB_AUTHNAME: authc_id,
             CB_PASS: password,
             CB_USER: authz_id,
         }
-        sasl.__init__(self, auth_dict, "DIGEST-MD5")
+        sasl.__init__(self, auth_dict, 'DIGEST-MD5')
 
 
 class gssapi(sasl):
@@ -130,8 +130,8 @@ class gssapi(sasl):
     This class handles SASL GSSAPI (i.e. Kerberos V) authentication.
     """
 
-    def __init__(self, authz_id: str = "") -> None:
-        sasl.__init__(self, {CB_USER: authz_id}, "GSSAPI")
+    def __init__(self, authz_id: str = '') -> None:
+        sasl.__init__(self, {CB_USER: authz_id}, 'GSSAPI')
 
 
 class external(sasl):
@@ -140,5 +140,5 @@ class external(sasl):
     (i.e. X.509 client certificate)
     """
 
-    def __init__(self, authz_id: str = "") -> None:
-        sasl.__init__(self, {CB_USER: authz_id}, "EXTERNAL")
+    def __init__(self, authz_id: str = '') -> None:
+        sasl.__init__(self, {CB_USER: authz_id}, 'EXTERNAL')

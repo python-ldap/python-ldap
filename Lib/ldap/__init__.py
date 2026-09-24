@@ -22,8 +22,8 @@ if __debug__:
     import atexit
     import traceback  # noqa: F401
 
-    _trace_level = int(os.environ.get("PYTHON_LDAP_TRACE_LEVEL", 0))
-    _trace_file_path = os.environ.get("PYTHON_LDAP_TRACE_FILE")
+    _trace_level = int(os.environ.get('PYTHON_LDAP_TRACE_LEVEL', 0))
+    _trace_file_path = os.environ.get('PYTHON_LDAP_TRACE_FILE')
     if _trace_file_path is None:
         _trace_file = sys.stderr
     else:

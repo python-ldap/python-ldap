@@ -22,21 +22,21 @@ LDAPTokenDict: TypeAlias = Mapping[str, LDAPTokenDictValue]
 (Mapping because of variance)."""
 
 TOKENS_FINDALL = re.compile(
-    r"(\()"  # opening parenthesis
-    r"|"  # or
-    r"(\))"  # closing parenthesis
-    r"|"  # or
+    r'(\()'  # opening parenthesis
+    r'|'  # or
+    r'(\))'  # closing parenthesis
+    r'|'  # or
     r"([^'$()\s]+)"  # string of length >= 1 without '$() or whitespace
-    r"|"  # or
+    r'|'  # or
     r"('(?:[^'\\]|\\.)*'(?!\w))"
     # any string or empty string surrounded by unescaped
     # single quotes except if right quote is succeeded by
     # alphanumeric char
-    r"|"  # or
-    r"([^\s]+?)",  # residue, all non-whitespace strings
+    r'|'  # or
+    r'([^\s]+?)',  # residue, all non-whitespace strings
 ).findall
 
-UNESCAPE_PATTERN = re.compile(r"\\(.)")
+UNESCAPE_PATTERN = re.compile(r'\\(.)')
 
 
 def split_tokens(s: str) -> list[str]:
@@ -62,7 +62,7 @@ def split_tokens(s: str) -> list[str]:
         else:
             raise ValueError(residue, s)
     if parens:
-        raise ValueError(f"Unbalanced parenthesis in {s!r}")
+        raise ValueError(f'Unbalanced parenthesis in {s!r}')
     return parts
 
 
@@ -86,8 +86,8 @@ def parse_tokens(tokens: list[str], known_tokens: list[str]) -> tuple[str, LDAPT
     """
 
     assert len(tokens) > 2, ValueError(tokens)
-    assert tokens[0].strip() == "(", ValueError(tokens)
-    assert tokens[-1].strip() == ")", ValueError(tokens)
+    assert tokens[0].strip() == '(', ValueError(tokens)
+    assert tokens[-1].strip() == ')', ValueError(tokens)
 
     oid = tokens[1]
     result = {}
@@ -110,11 +110,11 @@ def parse_tokens(tokens: list[str], known_tokens: list[str]) -> tuple[str, LDAPT
             # non-valued
             value: LDAPTokenDictValue = ()
 
-        elif next_token == "(":
+        elif next_token == '(':
             # multi-valued
             i += 1  # Consume left parentheses
             start = i
-            while i < len(tokens) and tokens[i] != ")":
+            while i < len(tokens) and tokens[i] != ')':
                 i += 1
             value = tuple(filter(lambda v: v != '$', tokens[start:i]))
             i += 1  # Consume right parentheses
@@ -149,5 +149,5 @@ def extract_tokens(
     if len(l) > 2:
         result.update(parse_tokens(l, list(known_tokens))[1])
     else:
-        assert l[0].strip() == "(" and l[-1].strip() == ")", ValueError(l)
+        assert l[0].strip() == '(' and l[-1].strip() == ')', ValueError(l)
     return result

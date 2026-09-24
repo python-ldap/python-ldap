@@ -11,9 +11,9 @@ from slapdtest import SlapdTestCase
 
 
 class TestBinds(SlapdTestCase):
-    unicode_val = "abc\U0001f498def"
+    unicode_val = 'abc\U0001f498def'
     unicode_val_bytes = unicode_val.encode('utf-8')
-    dn_unicode = "CN=" + unicode_val
+    dn_unicode = 'CN=' + unicode_val
     dn_bytes = dn_unicode.encode('utf-8')
 
     def _get_ldapobject(self, bytes_mode=None):
@@ -29,10 +29,10 @@ class TestBinds(SlapdTestCase):
 
     def test_unicode_bind(self):
         l = self._get_ldapobject(False)
-        l.simple_bind(self.dn_unicode, "ascii")
+        l.simple_bind(self.dn_unicode, 'ascii')
 
         l = self._get_ldapobject(False)
-        l.simple_bind("CN=user", self.unicode_val)
+        l.simple_bind('CN=user', self.unicode_val)
 
     def test_unicode_bind_no_bytesmode(self):
         l = self._get_ldapobject(False)

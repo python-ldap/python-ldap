@@ -34,30 +34,30 @@ from ldap.controls import MatchedValuesControl
 
 def print_result(search_result):
     for n in range(len(search_result)):
-        print(f"dn: {search_result[n][0]}")
+        print(f'dn: {search_result[n][0]}')
         for attr in search_result[n][1]:
             for i in range(len(search_result[n][1][attr])):
-                print(f"{attr}: {search_result[n][1][attr][i]}")
+                print(f'{attr}: {search_result[n][1][attr][i]}')
         print()
 
 
-uri = "ldap://ldap.example.com"
-base = "dc=example,dc=com"
+uri = 'ldap://ldap.example.com'
+base = 'dc=example,dc=com'
 scope = ldap.SCOPE_SUBTREE
-filter = "(&(objectClass=inetOrgPerson)(mail=*@example.org))"
-control_filter = "(mail=*@example.org)"
+filter = '(&(objectClass=inetOrgPerson)(mail=*@example.org))'
+control_filter = '(mail=*@example.org)'
 
 ld = ldap.initialize(uri)
 
 mv = MatchedValuesControl(criticality=True, controlValue=control_filter)
 
 res = ld.search_ext_s(base, scope, filter, attrlist=['mail'])
-print(f"LDAP filter used: {filter}")
+print(f'LDAP filter used: {filter}')
 print("Requesting 'mail' attribute back")
 print()
-print("No matched values control:")
+print('No matched values control:')
 print_result(res)
 
 res = ld.search_ext_s(base, scope, filter, attrlist=['mail'], serverctrls=[mv])
-print(f"Matched values control: {control_filter}")
+print(f'Matched values control: {control_filter}')
 print_result(res)

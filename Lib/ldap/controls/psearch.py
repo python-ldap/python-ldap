@@ -56,7 +56,7 @@ class PersistentSearchControl(RequestControl):
             namedtype.NamedType('returnECs', univ.Boolean()),
         )
 
-    controlType = "2.16.840.1.113730.3.4.3"
+    controlType = '2.16.840.1.113730.3.4.3'
 
     def __init__(
         self,
@@ -118,7 +118,7 @@ class EntryChangeNotificationControl(ResponseControl):
       A change serial number returned by the server (optional).
     """
 
-    controlType = "2.16.840.1.113730.3.4.7"
+    controlType = '2.16.840.1.113730.3.4.7'
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
         ecncValue, _ = decoder.decode(encodedControlValue, asn1Spec=EntryChangeNotificationValue())

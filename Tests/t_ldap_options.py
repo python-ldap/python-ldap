@@ -108,7 +108,7 @@ class BaseTestOptions:
         self._test_controls(ldap.OPT_SERVER_CONTROLS)
 
     def test_uri(self):
-        self._check_option(ldap.OPT_URI, "ldapi:///path/to/socket")
+        self._check_option(ldap.OPT_URI, 'ldapi:///path/to/socket')
         with self.assertRaises(TypeError):
             self.set_option(ldap.OPT_URI, object)
 

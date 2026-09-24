@@ -27,7 +27,7 @@ class ResultProcessor(_Base):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         if not isinstance(self, LDAPObject):
-            raise TypeError(f"Expecting to be a subclass of {LDAPObject}")
+            raise TypeError(f'Expecting to be a subclass of {LDAPObject}')
         super().__init__(*args, **kwargs)
 
     def allresults(
