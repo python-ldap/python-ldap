@@ -6,7 +6,8 @@ See https://www.python-ldap.org/ for details.
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, MutableMapping, Optional, Sequence, Union
+from collections.abc import MutableMapping, Sequence
+from typing import TYPE_CHECKING, Optional, Union
 
 from ldap.pkginfo import __version__  # noqa: F401
 

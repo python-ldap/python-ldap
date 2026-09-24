@@ -10,7 +10,7 @@ Compatibility:
 from __future__ import annotations
 
 import time
-from typing import Iterable
+from collections.abc import Iterable
 
 from ldap import _ldap
 from ldap.functions import strf_secs
