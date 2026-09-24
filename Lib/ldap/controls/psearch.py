@@ -13,11 +13,9 @@ __all__ = [
   'CHANGE_TYPES_STR',
 ]
 
-# Imports from python-ldap 2.4+
 import ldap.controls
 from ldap.controls import RequestControl,ResponseControl,KNOWN_RESPONSE_CONTROLS
 
-# Imports from pyasn1
 from pyasn1.type import namedtype,namedval,univ,constraint
 from pyasn1.codec.ber import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPDN

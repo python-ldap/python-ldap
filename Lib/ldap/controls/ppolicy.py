@@ -10,12 +10,10 @@ __all__ = [
   'PasswordPolicyControl'
 ]
 
-# Imports from python-ldap 2.4+
 from ldap.controls import (
   ResponseControl, ValueLessRequestControl, KNOWN_RESPONSE_CONTROLS
 )
 
-# Imports from pyasn1
 from pyasn1.type import tag,namedtype,namedval,univ,constraint
 from pyasn1.codec.der import decoder
 

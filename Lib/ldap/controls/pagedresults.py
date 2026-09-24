@@ -11,11 +11,9 @@ __all__ = [
   'SimplePagedResultsControl'
 ]
 
-# Imports from python-ldap 2.4+
 import ldap.controls
 from ldap.controls import RequestControl,ResponseControl,KNOWN_RESPONSE_CONTROLS
 
-# Imports from pyasn1
 from pyasn1.type import tag,namedtype,univ,constraint
 from pyasn1.codec.ber import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPString
