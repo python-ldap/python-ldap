@@ -140,9 +140,8 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             l.search_s(
                 base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*']
             )
-        # Python 3.4.x does not include 'search_ext()' in message
         self.assertEqual(
-            "search_ext() argument 1 must be str, not bytes",
+            "search_ext() argument 1 must be str or None, not bytes",
             str(e.exception)
         )
 
@@ -163,6 +162,35 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             ('attrs_from_List(): expected string in list', b'*'),
             e.exception.args
         )
+
+    def test_default_uri_and_base(self):
+        old_uri = ldap.get_option(ldap.OPT_URI)
+        old_base = ldap.get_option(ldap.OPT_DEFBASE)
+
+        default_base = self.server.suffix
+        try:
+            ldap.set_option(ldap.OPT_URI, self.server.ldap_uri)
+            ldap.set_option(ldap.OPT_DEFBASE, default_base)
+            self.assertEqual(ldap.get_option(ldap.OPT_DEFBASE), default_base)
+
+            l = self.ldap_object_class()
+            self.assertEqual(ldap.get_option(ldap.OPT_DEFBASE), default_base)
+            result = l.search_s()
+            result.sort(key=lambda entry: (len(entry[0]), entry[0], entry[1]))
+            dn, _ = result[0]
+            self.assertEqual(dn, default_base)
+
+            default_base = f"cn=Foo1,{default_base}"
+            l.set_option(ldap.OPT_DEFBASE, default_base)
+            self.assertEqual(l.get_option(ldap.OPT_DEFBASE), default_base)
+
+            result = l.search_s(scope=ldap.SCOPE_BASE)
+            self.assertEqual(len(result), 1)
+            dn, _ = result[0]
+            self.assertEqual(dn, default_base)
+        finally:
+            ldap.set_option(ldap.OPT_URI, old_uri)
+            ldap.set_option(ldap.OPT_DEFBASE, old_base)
 
     def test_search_keys_are_text(self):
         base = self.server.suffix

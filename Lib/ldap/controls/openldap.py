@@ -65,7 +65,7 @@ class SearchNoOpMixIn(_Base):
 
   def noop_search_st(
     self,
-    base: str,
+    base: str | None = None,
     scope: int = ldap.SCOPE_SUBTREE,
     filterstr: str = '(objectClass=*)',
     timeout: int = -1,

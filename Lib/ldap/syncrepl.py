@@ -16,7 +16,12 @@ from pyasn1.codec.ber import encoder, decoder
 from ldap.pkginfo import __version__, __author__, __license__
 from ldap.controls import RequestControl, ResponseControl, KNOWN_RESPONSE_CONTROLS
 from ldap.ldapobject import SimpleLDAPObject
-from ldap import RES_SEARCH_RESULT, RES_SEARCH_ENTRY, RES_INTERMEDIATE
+from ldap import (
+    RES_SEARCH_RESULT,
+    RES_SEARCH_ENTRY,
+    RES_INTERMEDIATE,
+    SCOPE_SUBTREE
+)
 
 from ldap._types import LDAPEntryDict
 
@@ -379,8 +384,8 @@ class SyncreplConsumer(_Base):
 
     def syncrepl_search(
         self,
-        base: str,
-        scope: int,
+        base: str | None = None,
+        scope: int = SCOPE_SUBTREE,
         mode: str = 'refreshOnly',
         cookie: str | bytes | None = None,
         reloadHint: bool = False,

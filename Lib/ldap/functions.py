@@ -74,7 +74,7 @@ def _ldap_function_call(
 
 
 def initialize(
-    uri: str,
+    uri: str | None = None,
     trace_level: int = 0,
     trace_file: TextIO = sys.stdout,
     trace_stack_limit: int | None = None,
@@ -84,7 +84,8 @@ def initialize(
 ) -> LDAPObject:
   """
   Return LDAPObject instance by opening LDAP connection to
-  LDAP host specified by LDAP URL
+  LDAP host specified by LDAP URL. If uri is None, use the value
+  from ldap.conf/.ldaprc/``ldap.set_option(OPT_URI)``.
 
   Parameters:
   uri
