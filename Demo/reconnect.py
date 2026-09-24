@@ -24,6 +24,6 @@ l.protocol_version = ldap.VERSION3
 
 l.simple_bind_s(ldap_url.who,ldap_url.cred)
 
-while 1:
+while True:
   l.search_s(ldap_url.dn,ldap_url.scope,ldap_url.filterstr,ldap_url.attrs)
   sys.stdin.readline()

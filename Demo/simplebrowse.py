@@ -20,7 +20,7 @@ l.bind_s("", "", ldap.AUTH_SIMPLE);
 lastdn = dn
 dnlist = None
 
-while 1:
+while True:
 
     #-- read a command
     try:
