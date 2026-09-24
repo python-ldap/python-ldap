@@ -693,7 +693,7 @@ class TestModifyRecords(TestLDIFParser):
         ):
             ldif_string = textwrap.dedent(bad_ldif_string).lstrip() + '\n'
             try:
-                res = self._parse_records(ldif_string)
+                self._parse_records(ldif_string)
             except ValueError:
                 pass
             else:

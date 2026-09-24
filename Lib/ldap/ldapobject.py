@@ -971,9 +971,7 @@ class SimpleLDAPObject:
   ) -> None:
     msgid = self.unbind_ext(serverctrls,clientctrls)
     if msgid!=None:
-      result = self.result3(msgid,all=1,timeout=self.timeout)
-    else:
-      result = None
+      self.result3(msgid,all=1,timeout=self.timeout)
     if __debug__ and self._trace_level>=1:
       try:
         self._trace_file.flush()

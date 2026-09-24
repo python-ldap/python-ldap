@@ -482,7 +482,7 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             if self.server2.server_id % 4096 == 0:
                 self.server2.server_id = 1
 
-        with self.server2 as server2:
+        with self.server2:
             tester2 = self.MPRClient(
                 self.server2.ldap_uri,
                 self.server2.root_dn,

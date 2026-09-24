@@ -535,7 +535,6 @@ class LDIFParser:
     Process a single LDIF record representing a single modify operation.
     This method should be implemented by applications using LDIFParser.
     """
-    controls = [] or None
 
   def handle_modrdn(
     self,
