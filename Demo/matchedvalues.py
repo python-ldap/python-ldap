@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # demo for matched values control (RFC 3876)
 #
@@ -37,7 +37,7 @@ def print_result(search_result):
         for attr in search_result[n][1].keys():
             for i in range(len(search_result[n][1][attr])):
                 print("{}: {}".format(attr, search_result[n][1][attr][i]))
-        print
+        print()
 
 
 uri = "ldap://ldap.example.com"
@@ -53,7 +53,7 @@ mv = MatchedValuesControl(criticality=True, controlValue=control_filter)
 res = ld.search_ext_s(base, scope, filter, attrlist = ['mail'])
 print("LDAP filter used: %s" % filter)
 print("Requesting 'mail' attribute back")
-print
+print()
 print("No matched values control:")
 print_result(res)
 

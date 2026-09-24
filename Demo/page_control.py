@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 url = "ldap://localhost:1390"
 base = "dc=stroeder,dc=de"
 search_flt = r'(objectClass=*)'

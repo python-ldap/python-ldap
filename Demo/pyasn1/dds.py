@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Demo script for Dynamic Entries (see RFC 2589)
 

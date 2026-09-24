@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 This script implements a syncrepl consumer which syncs data from an OpenLDAP
 server to a local (shelve) database.
@@ -38,7 +38,7 @@ class SyncReplClient(ReconnectLDAPObject, SyncreplConsumer):
         ldap.ldapobject.ReconnectLDAPObject.__init__(self, *args, **kwargs)
         # Now prepare the data store
         if db_path:
-            self.__data = shelve.open(db_path, 'c')
+            self.__data = shelve.open(db_path, 'c')  # noqa: SIM115
         else:
             self.__data = {}
         # We need this for later internal use
@@ -140,8 +140,8 @@ signal.signal(signal.SIGINT, commenceShutdown)
 try:
     ldap_url = ldapurl.LDAPUrl(sys.argv[1])
     database_path = sys.argv[2]
-except IndexError,e:
-    print (
+except IndexError:
+    print((
         'Usage:\n'
         '{script_name} <LDAP URL> <pathname of database>\n'
         '{script_name} "ldap://127.0.0.1/cn=users,dc=test'
@@ -150,7 +150,7 @@ except IndexError,e:
          '?(objectClass=*)'
          '?bindname=uid=admin%2ccn=users%2cdc=test,'
          'X-BINDPW=password" db.shelve'
-    ).format(script_name=sys.argv[0])
+    ).format(script_name=sys.argv[0]))
     sys.exit(1)
 except ValueError as e:
     print('Error parsing command-line arguments:',str(e))
@@ -188,9 +188,9 @@ while watcher_running:
     except KeyboardInterrupt:
         # User asked to exit
         commenceShutdown(None, None)
-    except Exception as err:
+    except Exception:
         # Handle any exception
         if watcher_running:
-            logger.exception('Unhandled exception, going to retry: %s', err)
+            logger.exception('Unhandled exception, going to retry')
             logger.info('Going to retry after 5 secs')
             time.sleep(5)

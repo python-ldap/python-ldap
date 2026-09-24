@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys,ldap,ldap.schema
 
 schema_attrs = ldap.schema.SCHEMA_ATTRS

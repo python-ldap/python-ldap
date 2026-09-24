@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # For documentation, see comments in Module/LDAPObject.c and the
 # ldap.sasl module documentation.
 
