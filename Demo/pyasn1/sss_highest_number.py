@@ -5,10 +5,10 @@ This sample script demonstrates the use of the server-side-sorting control
 """
 
 import ldap
-
-from ldap.ldapobject import LDAPObject
 from ldap.controls.sss import SSSRequestControl
+from ldap.ldapobject import LDAPObject
 from ldap.resiter import ResultProcessor
+
 
 class MyLDAPObject(LDAPObject,ResultProcessor):
   pass

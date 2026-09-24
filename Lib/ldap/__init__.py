@@ -7,15 +7,14 @@ See https://www.python-ldap.org/ for details.
 # This is also the overall release version number
 
 from __future__ import annotations
-from ldap.pkginfo import __version__, __author__, __license__  # noqa: F401
 
 import os
 import sys
-
 import threading
 from typing import Any
 
 from ldap._types import *
+from ldap.pkginfo import __author__, __license__, __version__  # noqa: F401
 
 
 if __debug__:
@@ -39,9 +38,13 @@ else:
   _trace_stack_limit = None
 
 from ldap import _ldap
+
+
 assert _ldap.__version__==__version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 from ldap._ldap import *
+
+
 # call into libldap to initialize it right now
 LIBLDAP_API_INFO = _ldap.get_option(_ldap.OPT_API_INFO)
 
@@ -93,11 +96,11 @@ class LDAPLock:
 # Create module-wide lock for serializing all calls into underlying LDAP lib
 _ldap_module_lock = LDAPLock(desc='Module wide')
 
-from ldap.functions import initialize,get_option,set_option,escape_str,strf_secs,strp_secs  # noqa: F401
-
+from ldap.dn import dn2str, explode_dn, explode_rdn, str2dn  # noqa: F401
+from ldap.functions import escape_str, get_option, initialize, set_option, strf_secs, strp_secs  # noqa: F401
 from ldap.ldapobject import NO_UNIQUE_ENTRY, LDAPBytesWarning  # noqa: F401
 
-from ldap.dn import explode_dn,explode_rdn,str2dn,dn2str  # noqa: F401
+
 del str2dn
 del dn2str
 

@@ -1,9 +1,10 @@
 """Compatibility wrappers for Py2/Py3."""
 from __future__ import annotations
-import warnings
 
+import warnings
 from types import TracebackType
 from typing import NoReturn
+
 
 warnings.warn(
     "The ldap.compat module is deprecated and will be removed in the future",
@@ -11,11 +12,14 @@ warnings.warn(
 )
 
 from collections import UserDict
+
+
 IterableUserDict = UserDict
-from urllib.parse import quote, quote_plus, unquote, urlparse  # noqa: F401
-from urllib.request import urlopen  # noqa: F401
 from collections.abc import MutableMapping  # noqa: F401
 from shutil import which  # noqa: F401
+from urllib.parse import quote, quote_plus, unquote, urlparse  # noqa: F401
+from urllib.request import urlopen  # noqa: F401
+
 
 def reraise(exc_type: type[BaseException], exc_value: BaseException,
             exc_traceback: TracebackType | None) -> NoReturn:

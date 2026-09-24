@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import getpass
+
 import ldap
+
 
 #l = ldap.open("localhost", 31001)
 l = ldap.open("marta.it.uq.edu.au")

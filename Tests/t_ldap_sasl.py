@@ -6,13 +6,13 @@ See https://www.python-ldap.org/ for details.
 import os
 import unittest
 
+
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
-from ldap.ldapobject import SimpleLDAPObject
 import ldap.sasl
-from slapdtest import SlapdTestCase
-from slapdtest import requires_ldapi, requires_sasl, requires_tls
+from ldap.ldapobject import SimpleLDAPObject
+from slapdtest import SlapdTestCase, requires_ldapi, requires_sasl, requires_tls
 
 
 LDIF = """

@@ -6,8 +6,12 @@ This file handles only the C extension modules (_ldap) configuration,
 while pyproject.toml handles all project metadata, dependencies, and other settings.
 """
 
-import sys,os,sysconfig
-from setuptools import setup, Extension
+import os
+import sys
+import sysconfig
+
+from setuptools import Extension, setup
+
 
 if sys.version_info < (3, 6):
   raise RuntimeError(
@@ -16,8 +20,10 @@ if sys.version_info < (3, 6):
 
 from configparser import ConfigParser
 
+
 sys.path.insert(0, os.path.join(os.getcwd(), 'Lib/ldap'))
 import pkginfo
+
 
 SETUP_OPTIONS = {}
 

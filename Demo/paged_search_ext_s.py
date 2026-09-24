@@ -5,10 +5,9 @@ search_flt = r'(objectClass=*)'
 
 searchreq_attrlist=['cn','entryDN','entryUUID','mail','objectClass']
 
-from ldap.ldapobject import ReconnectLDAPObject
-
 import ldap
 from ldap.controls import SimplePagedResultsControl
+from ldap.ldapobject import ReconnectLDAPObject
 
 
 class PagedResultsSearchObject:

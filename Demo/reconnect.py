@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
-import sys,ldap,ldap.ldapobject,ldapurl
+import sys
 
+import ldap
+import ldap.ldapobject
+import ldapurl
 from ldap.ldapobject import *
+
 
 ldap_url = ldapurl.LDAPUrl(sys.argv[1])
 ldap_url.applyDefaults({

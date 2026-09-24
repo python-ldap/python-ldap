@@ -10,7 +10,7 @@ __all__ = [
   'PasswordExpiredControl',
 ]
 
-from ldap.controls import ResponseControl,KNOWN_RESPONSE_CONTROLS
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, ResponseControl
 
 
 class PasswordExpiringControl(ResponseControl):

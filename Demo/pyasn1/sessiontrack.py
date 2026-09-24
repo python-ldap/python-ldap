@@ -10,9 +10,13 @@ https://tools.ietf.org/html/draft-wahl-ldap-session-03
 
 __version__ = '0.1'
 
-import sys,getpass,ldap,ldapurl
+import getpass
+import sys
 
-from ldap.controls.sessiontrack import SessionTrackingControl,SESSION_TRACKING_FORMAT_OID_USERNAME
+import ldap
+import ldapurl
+from ldap.controls.sessiontrack import SESSION_TRACKING_FORMAT_OID_USERNAME, SessionTrackingControl
+
 
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])

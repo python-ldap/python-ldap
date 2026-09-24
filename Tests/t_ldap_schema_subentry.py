@@ -7,14 +7,16 @@ See https://www.python-ldap.org/ for details.
 import os
 import unittest
 
+
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
+import ldap.schema
 import ldif
 from ldap.ldapobject import SimpleLDAPObject
-import ldap.schema
-from ldap.schema.models import ObjectClass, AttributeType
+from ldap.schema.models import AttributeType, ObjectClass
 from slapdtest import SlapdTestCase, requires_ldapi
+
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 

@@ -7,6 +7,7 @@ import os
 import unittest
 from urllib.parse import quote
 
+
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 

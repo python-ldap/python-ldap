@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-import ldap
 from getpass import getpass
+
+import ldap
+
 
 # Create LDAPObject instance
 l = ldap.initialize('ldap://localhost:1389',trace_level=1)

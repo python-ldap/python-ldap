@@ -11,9 +11,13 @@ pyasn1-modules
 python-ldap 2.4+
 """
 
-import sys,ldap,ldapurl,getpass
+import getpass
+import sys
 
-from ldap.controls.psearch import PersistentSearchControl,EntryChangeNotificationControl,CHANGE_TYPES_STR
+import ldap
+import ldapurl
+from ldap.controls.psearch import CHANGE_TYPES_STR, EntryChangeNotificationControl, PersistentSearchControl
+
 
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])

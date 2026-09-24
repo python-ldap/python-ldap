@@ -8,14 +8,13 @@ Compatibility:
 """
 
 from __future__ import annotations
-from ldap.pkginfo import __version__  # noqa: F401
+
+import time
+from typing import Iterable
 
 from ldap import _ldap
 from ldap.functions import strf_secs
-
-from typing import Iterable
-
-import time
+from ldap.pkginfo import __version__  # noqa: F401
 
 
 def escape_filter_chars(assertion_value: str, escape_mode: int = 0) -> str:
