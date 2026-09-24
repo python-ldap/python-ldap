@@ -384,7 +384,7 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertIsNone(ret)
         try:
             r = l.result4(m, _ldap.MSG_ALL, 0.3)  # (timeout /could/ be longer)
-        except _ldap.TIMEOUT as e:
+        except _ldap.TIMEOUT:
             pass
         else:
             self.fail("expected TIMEOUT, got %r" % r)
