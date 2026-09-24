@@ -8,13 +8,15 @@ See https://www.python-ldap.org/ for details.
 from __future__ import annotations
 
 import warnings
-from collections.abc import MutableMapping  # noqa: F401
+from collections.abc import (
+    Iterator,
+    Mapping,
+    MutableMapping,  # noqa: F401
+    MutableMapping as MutableMappingType,
+)
 from typing import (
     TYPE_CHECKING,
     Any,
-    Iterator,
-    Mapping,
-    MutableMapping as MutableMappingType,
     TypeVar,
 )
 

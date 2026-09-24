@@ -25,8 +25,7 @@ __all__ = [
 ]
 
 import html
-from collections.abc import MutableMapping
-from typing import Iterator
+from collections.abc import Iterator, MutableMapping
 from urllib.parse import quote, unquote
 
 from ldap._types import TypeAlias

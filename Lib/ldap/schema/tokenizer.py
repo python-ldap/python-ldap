@@ -8,7 +8,8 @@ from __future__ import annotations
 
 import re
 import warnings
-from typing import Any, Mapping, Union
+from collections.abc import Mapping
+from typing import Any, Union
 
 from ldap._types import TypeAlias
 
