@@ -29,6 +29,9 @@ API changes:
   STRUCTURAL object classes has produced undefined behaviour in the past and it
   does again. This and ``ldap.schema.{SubSchema,Entry}.attribute_types`` with
   DIT content rules enforced will raise an error in future versions
+* New modules ``ldap.ldif`` and ``ldap.url``, they are the future home for
+  ``ldif`` and ``ldapurl`` and new code should target these as both ``ldif``
+  and ``ldapurl`` will go away eventually
 
 Fixes:
 * ``ldap.controls.pwdpolicy.PasswordExpiredControl`` finally returns reported
