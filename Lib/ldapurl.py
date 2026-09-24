@@ -134,10 +134,7 @@ class LDAPUrlExtension:
   def __eq__(self, other: object) -> bool:
     if not isinstance(other, self.__class__):
       return NotImplemented
-    elif self.critical != other.critical or self.extype != other.extype or self.exvalue != other.exvalue:
-      return False
-    else:
-      return True
+    return not (self.critical != other.critical or self.extype != other.extype or self.exvalue != other.exvalue)
 
   def __ne__(self, other: object) -> bool:
     if not isinstance(other, self.__class__):
@@ -276,10 +273,7 @@ class LDAPUrl:
   def __eq__(self, other: object) -> bool:
     if not isinstance(other, self.__class__):
       return NotImplemented
-    elif self.urlscheme != other.urlscheme or self.hostport != other.hostport or self.dn != other.dn or self.attrs != other.attrs or self.scope != other.scope or self.filterstr != other.filterstr or self.extensions != other.extensions:
-      return False
-    else:
-      return True
+    return not (self.urlscheme != other.urlscheme or self.hostport != other.hostport or self.dn != other.dn or self.attrs != other.attrs or self.scope != other.scope or self.filterstr != other.filterstr or self.extensions != other.extensions)
 
   def __ne__(self, other: object) -> bool:
     if not isinstance(other, self.__class__):
