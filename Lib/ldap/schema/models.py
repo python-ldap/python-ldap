@@ -215,14 +215,7 @@ class ObjectClass(SchemaElement):
 
   def __str__(self) -> str:
     result = [str(self.oid)]
-    result.append(self.key_list('NAME',self.names,quoted=1))
-    result.append(self.key_attr('DESC',self.desc,quoted=1))
-    result.append(self.key_list('SUP',self.sup,sep=' $ '))
-    result.append({False:'',True:' OBSOLETE'}[self.obsolete])
-    result.append({0:' STRUCTURAL',1:' ABSTRACT',2:' AUXILIARY'}[self.kind])
-    result.append(self.key_list('MUST',self.must,sep=' $ '))
-    result.append(self.key_list('MAY',self.may,sep=' $ '))
-    result.append(self.key_list('X-ORIGIN',self.x_origin,quoted=1))
+    result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), self.key_list('SUP', self.sup, sep=' $ '), {False: '', True: ' OBSOLETE'}[self.obsolete], {0: ' STRUCTURAL', 1: ' ABSTRACT', 2: ' AUXILIARY'}[self.kind], self.key_list('MUST', self.must, sep=' $ '), self.key_list('MAY', self.may, sep=' $ '), self.key_list('X-ORIGIN', self.x_origin, quoted=1)))
     return '( {} )'.format(''.join(result))
 
 SCHEMA_CLASS_MAPPING[ObjectClass.schema_attribute] = ObjectClass
@@ -365,29 +358,10 @@ class AttributeType(SchemaElement):
 
   def __str__(self) -> str:
     result = [str(self.oid)]
-    result.append(self.key_list('NAME',self.names,quoted=1))
-    result.append(self.key_attr('DESC',self.desc,quoted=1))
-    result.append(self.key_list('SUP',self.sup,sep=' $ '))
-    result.append({0:'',1:' OBSOLETE'}[self.obsolete])
-    result.append(self.key_attr('EQUALITY',self.equality))
-    result.append(self.key_attr('ORDERING',self.ordering))
-    result.append(self.key_attr('SUBSTR',self.substr))
-    result.append(self.key_attr('SYNTAX',self.syntax))
+    result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), self.key_list('SUP', self.sup, sep=' $ '), {0: '', 1: ' OBSOLETE'}[self.obsolete], self.key_attr('EQUALITY', self.equality), self.key_attr('ORDERING', self.ordering), self.key_attr('SUBSTR', self.substr), self.key_attr('SYNTAX', self.syntax)))
     if self.syntax_len is not None:
       result.append(('{%d}' % (self.syntax_len))*(self.syntax_len>0))
-    result.append({0:'',1:' SINGLE-VALUE'}[self.single_value])
-    result.append({0:'',1:' COLLECTIVE'}[self.collective])
-    result.append({0:'',1:' NO-USER-MODIFICATION'}[self.no_user_mod])
-    result.append(
-      {
-        0:"",
-        1:" USAGE directoryOperation",
-        2:" USAGE distributedOperation",
-        3:" USAGE dSAOperation",
-      }[self.usage]
-    )
-    result.append(self.key_list('X-ORIGIN',self.x_origin,quoted=1))
-    result.append(self.key_attr('X-ORDERED',self.x_ordered,quoted=1))
+    result.extend(({0: '', 1: ' SINGLE-VALUE'}[self.single_value], {0: '', 1: ' COLLECTIVE'}[self.collective], {0: '', 1: ' NO-USER-MODIFICATION'}[self.no_user_mod], {0: "", 1: " USAGE directoryOperation", 2: " USAGE distributedOperation", 3: " USAGE dSAOperation"}[self.usage], self.key_list('X-ORIGIN', self.x_origin, quoted=1), self.key_attr('X-ORDERED', self.x_ordered, quoted=1)))
     return '( {} )'.format(''.join(result))
 
 SCHEMA_CLASS_MAPPING[AttributeType.schema_attribute] = AttributeType
@@ -429,11 +403,7 @@ class LDAPSyntax(SchemaElement):
 
   def __str__(self) -> str:
     result = [str(self.oid)]
-    result.append(self.key_attr('DESC',self.desc,quoted=1))
-    result.append(self.key_attr('X-SUBST',self.x_subst,quoted=1))
-    result.append(
-      {0:'',1:" X-NOT-HUMAN-READABLE 'TRUE'"}[self.not_human_readable]
-    )
+    result.extend((self.key_attr('DESC', self.desc, quoted=1), self.key_attr('X-SUBST', self.x_subst, quoted=1), {0: '', 1: " X-NOT-HUMAN-READABLE 'TRUE'"}[self.not_human_readable]))
     return '( {} )'.format(''.join(result))
 
 SCHEMA_CLASS_MAPPING[LDAPSyntax.schema_attribute] = LDAPSyntax
@@ -480,10 +450,7 @@ class MatchingRule(SchemaElement):
 
   def __str__(self) -> str:
     result = [str(self.oid)]
-    result.append(self.key_list('NAME',self.names,quoted=1))
-    result.append(self.key_attr('DESC',self.desc,quoted=1))
-    result.append({0:'',1:' OBSOLETE'}[self.obsolete])
-    result.append(self.key_attr('SYNTAX',self.syntax))
+    result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), {0: '', 1: ' OBSOLETE'}[self.obsolete], self.key_attr('SYNTAX', self.syntax)))
     return '( {} )'.format(''.join(result))
 
 SCHEMA_CLASS_MAPPING[MatchingRule.schema_attribute] = MatchingRule
@@ -530,10 +497,7 @@ class MatchingRuleUse(SchemaElement):
 
   def __str__(self) -> str:
     result = [str(self.oid)]
-    result.append(self.key_list('NAME',self.names,quoted=1))
-    result.append(self.key_attr('DESC',self.desc,quoted=1))
-    result.append({0:'',1:' OBSOLETE'}[self.obsolete])
-    result.append(self.key_list('APPLIES',self.applies,sep=' $ '))
+    result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), {0: '', 1: ' OBSOLETE'}[self.obsolete], self.key_list('APPLIES', self.applies, sep=' $ ')))
     return '( {} )'.format(''.join(result))
 
 SCHEMA_CLASS_MAPPING[MatchingRuleUse.schema_attribute] = MatchingRuleUse
@@ -603,13 +567,7 @@ class DITContentRule(SchemaElement):
 
   def __str__(self) -> str:
     result = [str(self.oid)]
-    result.append(self.key_list('NAME',self.names,quoted=1))
-    result.append(self.key_attr('DESC',self.desc,quoted=1))
-    result.append({0:'',1:' OBSOLETE'}[self.obsolete])
-    result.append(self.key_list('AUX',self.aux,sep=' $ '))
-    result.append(self.key_list('MUST',self.must,sep=' $ '))
-    result.append(self.key_list('MAY',self.may,sep=' $ '))
-    result.append(self.key_list('NOT',self.nots,sep=' $ '))
+    result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), {0: '', 1: ' OBSOLETE'}[self.obsolete], self.key_list('AUX', self.aux, sep=' $ '), self.key_list('MUST', self.must, sep=' $ '), self.key_list('MAY', self.may, sep=' $ '), self.key_list('NOT', self.nots, sep=' $ ')))
     return '( {} )'.format(''.join(result))
 
 SCHEMA_CLASS_MAPPING[DITContentRule.schema_attribute] = DITContentRule
@@ -669,11 +627,7 @@ class DITStructureRule(SchemaElement):
 
   def __str__(self) -> str:
     result = [str(self.ruleid)]
-    result.append(self.key_list('NAME',self.names,quoted=1))
-    result.append(self.key_attr('DESC',self.desc,quoted=1))
-    result.append({0:'',1:' OBSOLETE'}[self.obsolete])
-    result.append(self.key_attr('FORM',self.form,quoted=0))
-    result.append(self.key_list('SUP',self.sup,sep=' $ '))
+    result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), {0: '', 1: ' OBSOLETE'}[self.obsolete], self.key_attr('FORM', self.form, quoted=0), self.key_list('SUP', self.sup, sep=' $ ')))
     return '( {} )'.format(''.join(result))
 
 SCHEMA_CLASS_MAPPING[DITStructureRule.schema_attribute] = DITStructureRule
@@ -731,12 +685,7 @@ class NameForm(SchemaElement):
 
   def __str__(self) -> str:
     result = [str(self.oid)]
-    result.append(self.key_list('NAME',self.names,quoted=1))
-    result.append(self.key_attr('DESC',self.desc,quoted=1))
-    result.append({0:'',1:' OBSOLETE'}[self.obsolete])
-    result.append(self.key_attr('OC',self.oc))
-    result.append(self.key_list('MUST',self.must,sep=' $ '))
-    result.append(self.key_list('MAY',self.may,sep=' $ '))
+    result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), {0: '', 1: ' OBSOLETE'}[self.obsolete], self.key_attr('OC', self.oc), self.key_list('MUST', self.must, sep=' $ '), self.key_list('MAY', self.may, sep=' $ ')))
     return '( {} )'.format(''.join(result))
 
 SCHEMA_CLASS_MAPPING[NameForm.schema_attribute] = NameForm
