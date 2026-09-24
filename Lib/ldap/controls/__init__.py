@@ -39,7 +39,7 @@ __all__ = [
 ]
 
 # response control OID to class registry
-KNOWN_RESPONSE_CONTROLS: dict[str, type["ResponseControl"]] = {}
+KNOWN_RESPONSE_CONTROLS: dict[str, type[ResponseControl]] = {}
 
 
 class RequestControl:
