@@ -65,8 +65,8 @@ def filter_format(filter_template: str, assertion_values: Iterable[str]) -> str:
 
 def time_span_filter(
         filterstr: str = '',
-        from_timestamp: int | float = 0,
-        until_timestamp: int | float | None = None,
+        from_timestamp: float = 0,
+        until_timestamp: float | None = None,
         delta_attr: str = 'modifyTimestamp',
     ) -> str:
     """
