@@ -5,7 +5,7 @@ See https://www.python-ldap.org/ for details.
 """
 from __future__ import annotations
 
-from ldap.pkginfo import __version__, __author__, __license__
+from ldap.pkginfo import __version__, __author__, __license__  # noqa: F401
 
 from ldap.controls import ResponseControl
 from ldap.ldapobject import LDAPObject

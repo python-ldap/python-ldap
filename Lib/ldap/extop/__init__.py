@@ -10,7 +10,7 @@ response.
 """
 
 from __future__ import annotations
-from ldap.pkginfo import __version__
+from ldap.pkginfo import __version__  # noqa: F401
 
 from typing import Any
 
