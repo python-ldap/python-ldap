@@ -6,6 +6,8 @@ See https://www.python-ldap.org/ for project details.
 """
 
 from __future__ import annotations
+
+
 __all__ = [
   'PersistentSearchControl',
   'EntryChangeNotificationControl',
@@ -13,11 +15,11 @@ __all__ = [
   'CHANGE_TYPES_STR',
 ]
 
-from ldap.controls import RequestControl,ResponseControl,KNOWN_RESPONSE_CONTROLS
-
-from pyasn1.type import namedtype,namedval,univ,constraint
-from pyasn1.codec.ber import encoder,decoder
+from pyasn1.codec.ber import decoder, encoder
+from pyasn1.type import constraint, namedtype, namedval, univ
 from pyasn1_modules.rfc2251 import LDAPDN
+
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
 
 
 #---------------------------------------------------------------------------

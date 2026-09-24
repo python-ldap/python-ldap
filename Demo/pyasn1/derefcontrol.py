@@ -4,9 +4,12 @@ This sample script demonstrates the use of the dereference control
 (see https://tools.ietf.org/html/draft-masarati-ldap-deref)
 """
 
-import pprint,ldap,ldap.resiter
+import pprint
 
+import ldap
+import ldap.resiter
 from ldap.controls.deref import DereferenceControl
+
 
 uri = "ldap://ipa.demo1.freeipa.org"
 

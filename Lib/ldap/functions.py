@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from ldap.pkginfo import __version__  # noqa: F401
 
+
 __all__ = [
   'initialize',
   'explode_dn','explode_rdn',
@@ -15,18 +16,16 @@ __all__ = [
   'strf_secs','strp_secs',
 ]
 
-import sys,pprint,time
-from ldap import _ldap
-import ldap
+import pprint
+import sys
+import time
 from calendar import timegm
-
-from ldap import LDAPError
-
-from ldap.dn import explode_dn,explode_rdn
-
-from ldap.ldapobject import LDAPObject
-
 from typing import Any, BinaryIO, Callable, TextIO
+
+import ldap
+from ldap import LDAPError, _ldap
+from ldap.dn import explode_dn, explode_rdn
+from ldap.ldapobject import LDAPObject
 
 
 if __debug__:

@@ -3,9 +3,10 @@ dn.py - misc stuff for handling distinguished names (see RFC 4514)
 
 See https://www.python-ldap.org/ for details.
 """
+from ldap import _ldap
 from ldap.pkginfo import __version__
 
-from ldap import _ldap
+
 assert _ldap.__version__==__version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 

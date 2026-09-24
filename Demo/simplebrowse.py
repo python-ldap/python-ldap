@@ -4,8 +4,10 @@
 # simple LDAP server browsing example
 #
 
-import ldap
 from traceback import print_exc
+
+import ldap
+
 
 url = "ldap://ldap.openldap.org/"
 dn = "dc=openldap,dc=org"

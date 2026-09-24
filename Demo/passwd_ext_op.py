@@ -3,7 +3,12 @@
 Example showing the use of the password extended operation.
 """
 
-import sys,ldap,ldapurl,getpass
+import getpass
+import sys
+
+import ldap
+import ldapurl
+
 
 # Set debugging level
 ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)

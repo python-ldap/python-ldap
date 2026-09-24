@@ -10,7 +10,11 @@ input, sanitizes some attributes, maps/removes object classes,
 maps/removes attributes., etc. It's far from being complete though.
 """
 
-import sys,ldap,ldap.asyncsearch
+import sys
+
+import ldap
+import ldap.asyncsearch
+
 
 s = ldap.asyncsearch.LDIFWriter(
   ldap.initialize('ldap://localhost:1390'),

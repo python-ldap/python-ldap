@@ -10,8 +10,9 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 
-import sys
 import os
+import sys
+
 
 # If your extensions are in another directory, add it here.
 _doc_dir = os.path.dirname(__file__)
@@ -24,6 +25,7 @@ import fake_ldap_module_for_documentation  # noqa: F401
 
 # Now ldap can be used normally
 from ldap import __version__
+
 
 # General configuration
 # ---------------------

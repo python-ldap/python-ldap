@@ -7,10 +7,10 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import annotations
 
-from ldap.extop import ExtendedResponse
-
-from pyasn1.type import namedtype, univ, tag
 from pyasn1.codec.der import decoder
+from pyasn1.type import namedtype, tag, univ
+
+from ldap.extop import ExtendedResponse
 
 
 class PasswordModifyResponse(ExtendedResponse):

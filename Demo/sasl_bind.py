@@ -2,7 +2,9 @@
 # For documentation, see comments in Module/LDAPObject.c and the
 # ldap.sasl module documentation.
 
-import ldap,ldap.sasl
+import ldap
+import ldap.sasl
+
 
 ldap.sasl._trace_level=0
 

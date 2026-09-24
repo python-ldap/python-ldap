@@ -6,7 +6,9 @@ written by Michael Stroeder <michael@stroeder.com>
 See https://www.python-ldap.org for details.
 """
 
-import ldap,ldap.resiter
+import ldap
+import ldap.resiter
+
 
 class LDAPObject(ldap.ldapobject.LDAPObject,ldap.resiter.ResultProcessor):
   pass

@@ -1,6 +1,8 @@
 # How to bind to MS AD with python-ldap and various methods
 
-import ldap,ldap.sasl
+import ldap
+import ldap.sasl
+
 
 ldap_uri = "ldap://dc1.example.com"
 dn = "CN=Anna Blume,CN=Users,DC=addomain,DC=example,DC=com"

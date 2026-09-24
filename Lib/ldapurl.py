@@ -5,6 +5,8 @@ See https://www.python-ldap.org/ for details.
 """
 
 from __future__ import annotations
+
+
 __version__ = '3.4.7'
 
 __all__ = [
@@ -19,8 +21,8 @@ __all__ = [
 
 import html
 from collections.abc import MutableMapping
-from urllib.parse import quote, unquote
 from typing import Iterator
+from urllib.parse import quote, unquote
 
 from ldap._types import TypeAlias
 

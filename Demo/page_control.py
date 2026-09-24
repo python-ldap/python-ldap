@@ -7,7 +7,10 @@ binddn = ''
 bindpw = ''
 trace_level = 0
 
-import ldap,pprint
+import pprint
+
+import ldap
+
 
 try:
   from ldap.controls.pagedresults import SimplePagedResultsControl

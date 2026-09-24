@@ -9,9 +9,13 @@ pyasn1-modules
 python-ldap 2.4+
 """
 
-from ldap.extop.dds import RefreshRequest,RefreshResponse
+import getpass
+import sys
 
-import sys,ldap,ldapurl,getpass
+import ldap
+import ldapurl
+from ldap.extop.dds import RefreshRequest, RefreshResponse
+
 
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])

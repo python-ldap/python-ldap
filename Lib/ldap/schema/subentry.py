@@ -5,19 +5,19 @@ See https://www.python-ldap.org/ for details.
 """
 
 from __future__ import annotations
+
 import copy
-from urllib.request import urlopen
 import warnings
+from collections.abc import Iterable, MutableMapping
+from typing import Any, TypeVar
+from urllib.request import urlopen
 
 import ldap.schema
-from ldap.cidict import cidict
-
 import ldapurl
 import ldif
-
 from ldap._types import LDAPEntryDict
-from typing import Any, TypeVar
-from collections.abc import Iterable, MutableMapping
+from ldap.cidict import cidict
+
 
 # Maps schema element description (from class.schema_attribute,
 # e.g. 'ObjectClass') to the schema class.
@@ -29,11 +29,12 @@ SCHEMA_ATTR_MAPPING: dict[type[SchemaElement], str] = {}
 # Note: this cannot be moved up due to circular imports:
 #       ldap.schema.models imports the two dicts above
 from ldap.schema.models import (
-    SchemaElement,
     AttributeType,
-    ObjectClass,
     DITContentRule,
+    ObjectClass,
+    SchemaElement,
 )
+
 
 SchemaElementSubclass = TypeVar('SchemaElementSubclass', bound=SchemaElement)
 

@@ -6,7 +6,11 @@ of a given server
 Usage: schema_oc_tree.py [--html] [LDAP URL]
 """
 
-import sys,getopt,ldap,ldap.schema
+import getopt
+import sys
+
+import ldap
+import ldap.schema
 
 
 ldap._trace_level = 1

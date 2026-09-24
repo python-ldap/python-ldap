@@ -6,17 +6,16 @@ See https://www.python-ldap.org/ for project details.
 """
 
 from __future__ import annotations
+
+
 __all__ = [
   'PasswordPolicyControl'
 ]
 
-from ldap.controls import (
-  ResponseControl, ValueLessRequestControl, KNOWN_RESPONSE_CONTROLS
-)
-
-from pyasn1.type import tag,namedtype,namedval,univ,constraint
 from pyasn1.codec.der import decoder
+from pyasn1.type import constraint, namedtype, namedval, tag, univ
 
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, ResponseControl, ValueLessRequestControl
 
 
 class PasswordPolicyWarning(univ.Choice):

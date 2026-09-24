@@ -31,6 +31,7 @@
 import ldap
 from ldap.controls import MatchedValuesControl
 
+
 def print_result(search_result):
     for n in range(len(search_result)):
         print("dn: %s" % search_result[n][0])

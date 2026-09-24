@@ -4,7 +4,12 @@ Do a search with the LDAP URL specified at command-line.
 
 No output of LDAP data is produced except trace output.
 """
-import sys,getpass,ldap,ldapurl
+import getpass
+import sys
+
+import ldap
+import ldapurl
+
 
 try:
   ldapUrl = ldapurl.LDAPUrl(ldapUrl=sys.argv[1])

@@ -8,6 +8,7 @@ import textwrap
 import unittest
 from collections import namedtuple
 
+
 try:
     from StringIO import StringIO
 except ImportError:

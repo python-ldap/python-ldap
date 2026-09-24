@@ -13,11 +13,13 @@ the examples of digest_md5 and gssapi.
 """
 
 from __future__ import annotations
+
 from ldap.pkginfo import __version__  # noqa: F401
+
 
 if __debug__:
     # Tracing is only supported in debugging mode
-    from ldap import _trace_level, _trace_file
+    from ldap import _trace_file, _trace_level
 
 
 # These are the SASL callback id's , as defined in sasl.h

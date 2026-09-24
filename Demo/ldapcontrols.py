@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-import ldap,pprint
+import pprint
 
-from ldap.controls import LDAPControl,BooleanControl
+import ldap
+from ldap.controls import BooleanControl, LDAPControl
+
 
 l = ldap.initialize('ldap://localhost:1390',trace_level=2)
 

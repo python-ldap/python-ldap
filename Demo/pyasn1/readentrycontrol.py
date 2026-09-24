@@ -5,9 +5,12 @@ This sample script demonstrates the use of the pre-read control (see RFC 4527).
 Originally contributed by Andreas Hasenack <ahasenack@terra.com.br>
 """
 
-import pprint,ldap,ldap.modlist
+import pprint
 
-from ldap.controls.readentry import PreReadControl,PostReadControl
+import ldap
+import ldap.modlist
+from ldap.controls.readentry import PostReadControl, PreReadControl
+
 
 uri = "ldap://localhost:2071/"
 

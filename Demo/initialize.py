@@ -9,7 +9,11 @@ ldaps://localhost:1391 (LDAP over SSL)
 ldapi://%2ftmp%2fopenldap2 (domain socket /tmp/openldap2)
 """
 
-import sys,os,ldap
+import os
+import sys
+
+import ldap
+
 
 # Switch off processing .ldaprc or ldap.conf
 os.environ['LDAPNOINIT']='1'

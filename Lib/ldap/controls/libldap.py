@@ -6,15 +6,16 @@ See https://www.python-ldap.org/ for details.
 """
 
 from __future__ import annotations
-from ldap.pkginfo import __version__
 
 from ldap import _ldap
+from ldap.pkginfo import __version__
+
+
 assert _ldap.__version__==__version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 
 import ldap
-
-from ldap.controls import RequestControl,LDAPControl,KNOWN_RESPONSE_CONTROLS
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl, RequestControl
 
 
 class AssertionControl(RequestControl):

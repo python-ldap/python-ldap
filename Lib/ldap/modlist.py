@@ -5,16 +5,15 @@ See https://www.python-ldap.org/ for details.
 """
 
 from __future__ import annotations
-from ldap.pkginfo import __version__  # noqa: F401
 
 import ldap
-
 from ldap._types import (
-    LDAPEntryDict,
     LDAPAddModList,
+    LDAPEntryDict,
     LDAPModifyModList,
     LDAPModListModifyEntry,
 )
+from ldap.pkginfo import __version__  # noqa: F401
 
 
 def addModlist(

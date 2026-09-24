@@ -4,6 +4,8 @@ ldif - generate and parse LDIF data (see RFC 2849)
 See https://www.python-ldap.org/ for details.
 """
 from __future__ import annotations
+
+
 __version__ = '3.4.7'
 
 __all__ = [
@@ -19,21 +21,21 @@ __all__ = [
 ]
 
 import re
-from base64 import b64encode, b64decode
-from io import StringIO
 import warnings
-
+from base64 import b64decode, b64encode
+from io import StringIO
+from typing import Any, BinaryIO, TextIO, cast
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
 from ldap._types import (
-    LDAPEntryDict,
-    LDAPModList,
-    LDAPControlTuples,
-    LDAPModListModifyEntry,
-    LDAPModListAddEntry,
+  LDAPControlTuples,
+  LDAPEntryDict,
+  LDAPModList,
+  LDAPModListAddEntry,
+  LDAPModListModifyEntry,
 )
-from typing import Any, BinaryIO, TextIO, cast
+
 
 attrtype_pattern = r'[\w;.-]+(;[\w_-]+)*'
 attrvalue_pattern = r'(([^,]|\\,)+|".*?")'

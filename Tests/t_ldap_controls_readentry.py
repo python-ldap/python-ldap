@@ -1,10 +1,11 @@
 import os
 import unittest
 
+
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
-from ldap.controls import readentry  # noqa: E402
+from ldap.controls import readentry
 
 
 PRC_ENC = b'db\x04)uid=Administrator,cn=users,l=school,l=dev0503\x04\tentryUUID1&\x04$5d96cc2c-8e13-103a-8ca5-2f74868e0e44'

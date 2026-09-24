@@ -6,16 +6,19 @@ See https://www.python-ldap.org/ for project details.
 """
 
 from __future__ import annotations
+
+
 __all__ = [
   'DEREF_CONTROL_OID',
   'DereferenceControl',
 ]
 
-from ldap.controls import LDAPControl,KNOWN_RESPONSE_CONTROLS
+from pyasn1.codec.ber import decoder, encoder
+from pyasn1.type import namedtype, tag, univ
+from pyasn1_modules.rfc2251 import LDAPDN, AttributeDescription, AttributeDescriptionList, AttributeValue
 
-from pyasn1.type import namedtype,univ,tag
-from pyasn1.codec.ber import encoder,decoder
-from pyasn1_modules.rfc2251 import LDAPDN,AttributeDescription,AttributeDescriptionList,AttributeValue
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl
+
 
 DEREF_CONTROL_OID = '1.3.6.1.4.1.4203.666.5.16'
 

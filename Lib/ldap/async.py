@@ -8,6 +8,7 @@ import warnings
 from ldap.asyncsearch import *
 from ldap.pkginfo import __version__  # noqa: F401
 
+
 warnings.warn(
     "'ldap.async module' is deprecated, import 'ldap.asyncsearch' instead.",
     DeprecationWarning,

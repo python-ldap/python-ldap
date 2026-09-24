@@ -19,6 +19,7 @@ import ldapurl
 from ldap.ldapobject import ReconnectLDAPObject
 from ldap.syncrepl import SyncreplConsumer
 
+
 logger = logging.getLogger('syncrepl')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())

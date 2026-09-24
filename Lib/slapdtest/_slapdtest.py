@@ -5,30 +5,33 @@ See https://www.python-ldap.org/ for details.
 """
 from __future__ import annotations
 
-import os
-import socket
-import sys
-import time
-import subprocess
+import atexit
 import logging
 import logging.handlers
-import atexit
-from logging.handlers import SysLogHandler
+import os
+import socket
+import subprocess
+import sys
+import time
 import unittest
+from collections.abc import Iterable
+from logging.handlers import SysLogHandler
 from shutil import which
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 from urllib.parse import quote_plus
 
-from typing import Any, Callable, TYPE_CHECKING, TypeVar
-from collections.abc import Iterable
+
 if TYPE_CHECKING:
     from typing_extensions import Self
 from types import TracebackType
+
 
 # Switch off processing .ldaprc or ldap.conf before importing ldap._ldap
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
 import ldap.ldapobject
+
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -316,7 +319,8 @@ class SlapdObject:
         """
         # cleanup_rundir() is called in atexit handler. Until Python 3.4,
         # the rest of the world is already destroyed.
-        import os, os.path
+        import os
+        import os.path
         if not os.path.exists(self.testrundir):
             return
         self._log.debug('clean-up %s', self.testrundir)

@@ -9,12 +9,13 @@ import os
 import socket
 import unittest
 
+
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
 # import the plain C wrapper module
 import ldap._ldap as _ldap
-from slapdtest import SlapdTestCase, requires_tls, requires_init_fd
+from slapdtest import SlapdTestCase, requires_init_fd, requires_tls
 
 
 class TestLdapCExtension(SlapdTestCase):

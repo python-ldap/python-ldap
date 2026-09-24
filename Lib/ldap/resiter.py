@@ -5,12 +5,12 @@ See https://www.python-ldap.org/ for details.
 """
 from __future__ import annotations
 
-from ldap.pkginfo import __version__, __author__, __license__  # noqa: F401
+from typing import TYPE_CHECKING, Any, Iterator
 
 from ldap.controls import ResponseControl
 from ldap.ldapobject import LDAPObject
+from ldap.pkginfo import __author__, __license__, __version__  # noqa: F401
 
-from typing import Any, Iterator, TYPE_CHECKING
 
 if TYPE_CHECKING:
     _Base = LDAPObject

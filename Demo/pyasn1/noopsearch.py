@@ -10,9 +10,13 @@ pyasn1-modules
 python-ldap 2.4+
 """
 
-import sys,ldap,ldapurl,getpass
+import getpass
+import sys
 
+import ldap
+import ldapurl
 from ldap.controls.openldap import SearchNoOpControl
+
 
 SEARCH_TIMEOUT=30.0
 

@@ -7,25 +7,23 @@ import base64
 import errno
 import linecache
 import os
+import pickle
 import re
 import socket
 import threading
 import time
 import traceback
 import unittest
-import pickle
 
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
-from ldap.ldapobject import SimpleLDAPObject, ReconnectLDAPObject
 from ldap.controls.simple import ManageDSAITControl
+from ldap.ldapobject import ReconnectLDAPObject, SimpleLDAPObject
+from slapdtest import SlapdTestCase, requires_init_fd, requires_ldapi, requires_sasl, requires_tls
 
-from slapdtest import SlapdTestCase
-from slapdtest import requires_ldapi, requires_sasl, requires_tls
-from slapdtest import requires_init_fd
 
 PEM_CERT_RE = re.compile(
     b'-----BEGIN CERTIFICATE-----(.*?)-----END CERTIFICATE-----',
