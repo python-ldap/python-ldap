@@ -470,9 +470,7 @@ def render_pyi() -> str:  # pragma: no cover
         lines.append(f'{name}: {typ}\n')
     lines.append('\n\n')
     for name in sorted(error_names, key=str.casefold):
-        lines.append(f'class {name}(LDAPError):\n')
-        lines.append('    errnum: ClassVar[int] = ...\n')
-        lines.append('\n\n')
+        lines.extend((f'class {name}(LDAPError):\n', '    errnum: ClassVar[int] = ...\n', '\n\n'))
     lines.append(END)
 
     pyi = _pyi_path().read_text()
