@@ -76,20 +76,13 @@ def time_span_filter(
         if from_timestamp < 0:
             from_timestamp = until_timestamp + from_timestamp
     if from_timestamp > until_timestamp:
-        raise ValueError('from_timestamp {!r} must not be greater than until_timestamp {!r}'.format(
-            from_timestamp, until_timestamp
-        ))
+        raise ValueError(f'from_timestamp {from_timestamp!r} must not be greater than until_timestamp {until_timestamp!r}')
     return (
         '(&'
-        '{filterstr}'
-        '({delta_attr}>={from_timestr})'
-        '(!({delta_attr}>={until_timestr}))'
+        f'{filterstr}'
+        f'({delta_attr}>={strf_secs(from_timestamp)})'
+        f'(!({delta_attr}>={strf_secs(until_timestamp)}))'
         ')'
-    ).format(
-        filterstr=filterstr,
-        delta_attr=delta_attr,
-        from_timestr=strf_secs(from_timestamp),
-        until_timestr=strf_secs(until_timestamp),
     )
     # end of time_span_filter()
 

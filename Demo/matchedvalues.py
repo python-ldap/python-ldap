@@ -37,7 +37,7 @@ def print_result(search_result):
         print("dn: %s" % search_result[n][0])
         for attr in search_result[n][1].keys():
             for i in range(len(search_result[n][1][attr])):
-                print("{}: {}".format(attr, search_result[n][1][attr][i]))
+                print(f"{attr}: {search_result[n][1][attr][i]}")
         print()
 
 

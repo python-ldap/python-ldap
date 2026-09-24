@@ -52,7 +52,7 @@ class TestSubschemaLDIF(unittest.TestCase):
 
 class TestSubschemaUrlfetch(unittest.TestCase):
     def test_urlfetch_file(self):
-        freeipa_uri = 'file://{}'.format(TEST_SUBSCHEMA_FILES[0])
+        freeipa_uri = f'file://{TEST_SUBSCHEMA_FILES[0]}'
         dn, schema = ldap.schema.urlfetch(freeipa_uri)
         self.assertEqual(dn, 'cn=schema')
         self.assertIsInstance(schema, ldap.schema.subentry.SubSchema)
@@ -67,7 +67,7 @@ class TestSubschemaUrlfetch(unittest.TestCase):
 
 class TestXOrigin(unittest.TestCase):
     def get_attribute_type(self, oid):
-        openldap_uri = 'file://{}'.format(TEST_SUBSCHEMA_FILES[0])
+        openldap_uri = f'file://{TEST_SUBSCHEMA_FILES[0]}'
         dn, schema = ldap.schema.urlfetch(openldap_uri)
         return schema.get_obj(AttributeType, oid)
 
@@ -163,7 +163,7 @@ class TestXOrigin(unittest.TestCase):
 
 class TestAttributes(unittest.TestCase):
     def get_schema(self):
-        openldap_uri = 'file://{}'.format(TEST_SUBSCHEMA_FILES[0])
+        openldap_uri = f'file://{TEST_SUBSCHEMA_FILES[0]}'
         dn, schema = ldap.schema.urlfetch(openldap_uri)
         return schema
 

@@ -295,8 +295,8 @@ class SlapdObject:
         command = which(cmd, path=path)
         if command is None:
             raise ValueError(
-                "Command '{}' not found. Set the {} environment variable to "
-                "override slapdtest's search path: {}.".format(cmd, var_name, path)
+                f"Command '{cmd}' not found. Set the {var_name} environment variable to "
+                f"override slapdtest's search path: {path}."
             )
         return command
 
@@ -572,9 +572,7 @@ class SlapdObject:
             self._log.debug('stderr_data=%r', stderr_data)
         if proc.wait() != 0:
             raise RuntimeError(
-                '{!r} process failed:\n{!r}\n{!r}'.format(
-                    args, stdout_data, stderr_data
-                )
+                f'{args!r} process failed:\n{stdout_data!r}\n{stderr_data!r}'
             )
         return stdout_data, stderr_data
 

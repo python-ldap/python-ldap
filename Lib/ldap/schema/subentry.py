@@ -259,9 +259,7 @@ class SubSchema:
         continue
       # FIXME: This assertion is superfluous?
       assert se_obj.__class__==schema_element_class, \
-        "Schema element referenced by {} must be of class {} but was {}".format(
-          se_oid,schema_element_class.__name__,se_obj.__class__
-        )
+        f"Schema element referenced by {se_oid} must be of class {schema_element_class.__name__} but was {se_obj.__class__}"
       for s in getattr(se_obj, "sup", ()) or ('_',):
         sup_oid = self.getoid(schema_element_class,s)
         try:
@@ -289,7 +287,7 @@ class SubSchema:
         result_oid = self.name2oid[se_class][nameoroid_stripped]
       except KeyError:
         if raise_keyerror:
-          raise KeyError('No registered {}-OID for nameoroid {}'.format(se_class.__name__,repr(nameoroid_stripped)))
+          raise KeyError(f'No registered {se_class.__name__}-OID for nameoroid {nameoroid_stripped!r}')
         else:
           result_oid = nameoroid_stripped
     return result_oid
@@ -339,8 +337,7 @@ class SubSchema:
       se_obj = self.sed[se_class][se_oid]
     except KeyError:
       if raise_keyerror:
-        raise KeyError('No ldap.schema.{} instance with nameoroid {} and se_oid {}'.format(
-          se_class.__name__,repr(nameoroid),repr(se_oid))
+        raise KeyError(f'No ldap.schema.{se_class.__name__} instance with nameoroid {nameoroid!r} and se_oid {se_oid!r}'
         )
       elif default is None:
         return None
