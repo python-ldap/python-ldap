@@ -69,9 +69,7 @@ def is_dn(s: str) -> int:
   if s=='':
     return 1
   rm = dn_regex.match(s)
-  if rm is None:
-    return 0
-  elif rm.group(0)!=s:
+  if rm is None or rm.group(0)!=s:
     return 0
   else:
     return 1
