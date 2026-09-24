@@ -14,10 +14,10 @@ from ldap.pkginfo import __author__, __license__, __version__  # noqa: F401
 
 
 __all__ = [
+  'LDAPBytesWarning',
   'LDAPObject',
-  'SimpleLDAPObject',
   'ReconnectLDAPObject',
-  'LDAPBytesWarning'
+  'SimpleLDAPObject'
 ]
 
 

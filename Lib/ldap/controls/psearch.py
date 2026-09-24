@@ -9,10 +9,10 @@ from __future__ import annotations
 
 
 __all__ = [
-  'PersistentSearchControl',
-  'EntryChangeNotificationControl',
   'CHANGE_TYPES_INT',
   'CHANGE_TYPES_STR',
+  'EntryChangeNotificationControl',
+  'PersistentSearchControl',
 ]
 
 from pyasn1.codec.ber import decoder, encoder

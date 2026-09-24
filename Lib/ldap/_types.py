@@ -19,15 +19,15 @@ else:
     TypeAlias = object
 
 __all__ = [
-    'LDAPModListAddEntry',
-    'LDAPModListModifyEntry',
-    'LDAPModListEntry',
     'LDAPAddModList',
-    'LDAPModifyModList',
-    'LDAPModList',
-    'LDAPEntryDict',
     'LDAPControlTuple',
     'LDAPControlTuples',
+    'LDAPEntryDict',
+    'LDAPModList',
+    'LDAPModListAddEntry',
+    'LDAPModListEntry',
+    'LDAPModListModifyEntry',
+    'LDAPModifyModList',
     'LDAPSearchResult',
     'TypeAlias',
 ]
