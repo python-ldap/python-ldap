@@ -534,7 +534,7 @@ class SimpleLDAPObject:
     timeout: float | None = None,
   ) -> tuple[str | None, bytes]:
     # FIXME: The timeout argument isn't used?
-    resulttype,msg,rmsgid,respctrls,respoid,respvalue = self.result4(msgid,all=1,timeout=self.timeout,add_ctrls=1,add_intermediates=1,add_extop=1)
+    _resulttype,_msg,_rmsgid,_respctrls,respoid,respvalue = self.result4(msgid,all=1,timeout=self.timeout,add_ctrls=1,add_intermediates=1,add_extop=1)
     return (respoid,respvalue)  # type: ignore
 
   def extop_s(
@@ -706,7 +706,7 @@ class SimpleLDAPObject:
     clientctrls: list[RequestControl] | None = None,
   ) -> None:
     msgid = self.rename(dn,newrdn,newsuperior,delold,serverctrls,clientctrls)
-    resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid,all=1,timeout=self.timeout)
+    _resp_type, _resp_data, _resp_msgid, _resp_ctrls = self.result3(msgid,all=1,timeout=self.timeout)
 
   def result(
     self,
@@ -764,7 +764,7 @@ class SimpleLDAPObject:
         If a timeout occurs, a TIMEOUT exception is raised, unless
         polling (timeout = 0), in which case (None, None) is returned.
     """
-    resp_type, resp_data, resp_msgid = self.result2(msgid,all,timeout)
+    resp_type, resp_data, _resp_msgid = self.result2(msgid,all,timeout)
     return resp_type, resp_data
 
   def result2(
@@ -773,7 +773,7 @@ class SimpleLDAPObject:
     all: int = 1,
     timeout: float | None = None,
   ) -> tuple[int | None, Any | None, int | None]:
-    resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid,all,timeout)
+    resp_type, resp_data, resp_msgid, _resp_ctrls = self.result3(msgid,all,timeout)
     return resp_type, resp_data, resp_msgid
 
   def result3(
@@ -783,7 +783,7 @@ class SimpleLDAPObject:
     timeout: float | None = None,
     resp_ctrl_classes: dict[str, type[ResponseControl]] | None = None,
   ) -> tuple[int | None, Any | None, int | None, list[ResponseControl] | None]:
-    resp_type, resp_data, resp_msgid, decoded_resp_ctrls, retoid, retval = self.result4(
+    resp_type, resp_data, resp_msgid, decoded_resp_ctrls, _retoid, _retval = self.result4(
       msgid,all,timeout,
       add_ctrls=0,add_intermediates=0,add_extop=0,
       resp_ctrl_classes=resp_ctrl_classes

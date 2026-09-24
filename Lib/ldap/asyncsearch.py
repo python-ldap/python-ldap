@@ -146,7 +146,7 @@ class AsyncSearchHandler:
       result_type,result_list = None,None
       while go_ahead:
         while result_type is None and not result_list:
-          result_type,result_list,result_msgid,result_serverctrls = self._l.result3(self._msgId,0,timeout)
+          result_type,result_list,_result_msgid,_result_serverctrls = self._l.result3(self._msgId,0,timeout)
           if self._afterFirstResult:
             self.afterFirstResult()
             self._afterFirstResult = 0

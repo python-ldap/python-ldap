@@ -68,7 +68,7 @@ class TestSubschemaUrlfetch(unittest.TestCase):
 class TestXOrigin(unittest.TestCase):
     def get_attribute_type(self, oid):
         openldap_uri = f'file://{TEST_SUBSCHEMA_FILES[0]}'
-        dn, schema = ldap.schema.urlfetch(openldap_uri)
+        _dn, schema = ldap.schema.urlfetch(openldap_uri)
         return schema.get_obj(AttributeType, oid)
 
     def test_origin_none(self):
@@ -164,7 +164,7 @@ class TestXOrigin(unittest.TestCase):
 class TestAttributes(unittest.TestCase):
     def get_schema(self):
         openldap_uri = f'file://{TEST_SUBSCHEMA_FILES[0]}'
-        dn, schema = ldap.schema.urlfetch(openldap_uri)
+        _dn, schema = ldap.schema.urlfetch(openldap_uri)
         return schema
 
     def test_empty_attributetype_attrs(self):

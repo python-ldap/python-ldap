@@ -45,7 +45,7 @@ class PagedResultsSearchObject:
         all_results = []
 
         while True:
-          rtype, rdata, rmsgid, rctrls = self.result3(msgid)
+          _rtype, rdata, _rmsgid, rctrls = self.result3(msgid)
           all_results.extend(rdata)
           result_pages += 1
           # Extract the simple paged results response control
