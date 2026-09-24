@@ -115,7 +115,7 @@ class TestLdapCExtension(SlapdTestCase):
         m = l.simple_bind(self.server.root_dn, self.server.root_pw)
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ONE, self.timeout)
         self.assertEqual(result, _ldap.RES_BIND)
-        self.assertEqual(type(msgid), type(0))
+        self.assertEqual(type(msgid), int)
 
 
     # Test for the existence of a whole bunch of constants
@@ -289,7 +289,7 @@ class TestLdapCExtension(SlapdTestCase):
     def test_simple_anonymous_bind(self):
         l = self._open_conn(bind=False)
         m = l.simple_bind("", "")
-        self.assertEqual(type(m), type(0))
+        self.assertEqual(type(m), int)
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_BIND)
         self.assertEqual(msgid, m)
@@ -328,7 +328,7 @@ class TestLdapCExtension(SlapdTestCase):
             '(objectClass=*)',
             ['objectClass', 'namingContexts'],
         )
-        self.assertEqual(type(m), type(0))
+        self.assertEqual(type(m), int)
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
         self.assertEqual(pmsg[0][0], "") # rootDSE has no dn
@@ -358,7 +358,7 @@ class TestLdapCExtension(SlapdTestCase):
             _ldap.SCOPE_SUBTREE,
             '(objectClass=dcObject)'
         )
-        self.assertEqual(type(m), type(0))
+        self.assertEqual(type(m), int)
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ONE, self.timeout)
         # Expect to get just one object
         self.assertEqual(result, _ldap.RES_SEARCH_ENTRY)
@@ -393,7 +393,7 @@ class TestLdapCExtension(SlapdTestCase):
         l = self._open_conn()
         # send search request
         m = l.search_ext(self.server.suffix, _ldap.SCOPE_SUBTREE, '(objectClass=*)')
-        self.assertEqual(type(m), type(0))
+        self.assertEqual(type(m), int)
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         # Expect to get some objects
         self.assertEqual(result, _ldap.RES_SEARCH_RESULT)
@@ -421,7 +421,7 @@ class TestLdapCExtension(SlapdTestCase):
                 ('description', b'testing'),
             ]
         )
-        self.assertEqual(type(m), type(0))
+        self.assertEqual(type(m), int)
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_ADD)
         self.assertEqual(pmsg, [])
@@ -463,7 +463,7 @@ class TestLdapCExtension(SlapdTestCase):
                 ('userPassword', b'the_password'),
             ],
         )
-        self.assertEqual(type(m), type(0))
+        self.assertEqual(type(m), int)
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_ADD)
 
@@ -521,7 +521,7 @@ class TestLdapCExtension(SlapdTestCase):
                 ('cn', b'Deleteme'),
             ]
         )
-        self.assertEqual(type(m), type(0))
+        self.assertEqual(type(m), int)
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_ADD)
 
@@ -584,7 +584,7 @@ class TestLdapCExtension(SlapdTestCase):
                 ('description', b'a description'),
             ]
         )
-        self.assertEqual(type(m), type(0))
+        self.assertEqual(type(m), int)
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_ADD)
 
@@ -622,7 +622,7 @@ class TestLdapCExtension(SlapdTestCase):
                 ('cn', b'RenameMe'),
             ]
         )
-        self.assertEqual(type(m), type(0))
+        self.assertEqual(type(m), int)
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_ADD)
 
@@ -740,12 +740,12 @@ class TestLdapCExtension(SlapdTestCase):
                 ('userPassword', b'initial'),
             ]
         )
-        self.assertEqual(type(m), type(0))
+        self.assertEqual(type(m), int)
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
         self.assertEqual(result, _ldap.RES_ADD)
         # try changing password with a wrong old-pw
         m = l.passwd(dn, "bogus", "ignored")
-        self.assertEqual(type(m), type(0))
+        self.assertEqual(type(m), int)
         try:
             r = l.result4(m, _ldap.MSG_ALL, self.timeout)
         except _ldap.UNWILLING_TO_PERFORM:
@@ -845,7 +845,7 @@ class TestLdapCExtension(SlapdTestCase):
                 _ldap.SCOPE_BASE,
                 '(|(objectClass=*)',
             )
-            self.assertEqual(type(m), type(0))
+            self.assertEqual(type(m), int)
             r = l.result4(m, _ldap.MSG_ALL, self.timeout)
         except _ldap.FILTER_ERROR:
             pass
