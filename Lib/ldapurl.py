@@ -134,11 +134,7 @@ class LDAPUrlExtension:
   def __eq__(self, other: object) -> bool:
     if not isinstance(other, self.__class__):
       return NotImplemented
-    elif self.critical != other.critical:
-      return False
-    elif self.extype != other.extype:
-      return False
-    elif self.exvalue != other.exvalue:
+    elif self.critical != other.critical or self.extype != other.extype or self.exvalue != other.exvalue:
       return False
     else:
       return True
@@ -280,19 +276,7 @@ class LDAPUrl:
   def __eq__(self, other: object) -> bool:
     if not isinstance(other, self.__class__):
       return NotImplemented
-    elif self.urlscheme != other.urlscheme:
-      return False
-    elif self.hostport != other.hostport:
-      return False
-    elif self.dn != other.dn:
-      return False
-    elif self.attrs != other.attrs:
-      return False
-    elif self.scope != other.scope:
-      return False
-    elif self.filterstr != other.filterstr:
-      return False
-    elif self.extensions != other.extensions:
+    elif self.urlscheme != other.urlscheme or self.hostport != other.hostport or self.dn != other.dn or self.attrs != other.attrs or self.scope != other.scope or self.filterstr != other.filterstr or self.extensions != other.extensions:
       return False
     else:
       return True
@@ -460,9 +444,7 @@ class LDAPUrl:
       ))
 
     extype = self.attr2extype[name]
-    if self.extensions is None:
-      return None
-    elif extype not in self.extensions:
+    if self.extensions is None or extype not in self.extensions:
       return None
 
     exvalue = self.extensions[extype].exvalue
