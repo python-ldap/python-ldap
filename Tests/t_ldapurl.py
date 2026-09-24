@@ -109,7 +109,9 @@ class TestParseLDAPUrl(unittest.TestCase):
                 dn='dc=stroeder,dc=com',
                 extensions=ldapurl.LDAPUrlExtensions(
                     {
-                        'bindname': ldapurl.LDAPUrlExtension(critical=1, extype='bindname', exvalue='cn=Michael,dc=stroeder,dc=com'),
+                        'bindname': ldapurl.LDAPUrlExtension(
+                            critical=1, extype='bindname', exvalue='cn=Michael,dc=stroeder,dc=com'
+                        ),
                         'X-BINDPW': ldapurl.LDAPUrlExtension(critical=1, extype='X-BINDPW', exvalue='secretpassword'),
                     }
                 ),
@@ -117,7 +119,12 @@ class TestParseLDAPUrl(unittest.TestCase):
         ),
         (
             'ldap://localhost:54321/dc=stroeder,dc=com????bindname=cn=Michael%2Cdc=stroeder%2Cdc=com,X-BINDPW=secretpassword',
-            LDAPUrl(hostport='localhost:54321', dn='dc=stroeder,dc=com', who='cn=Michael,dc=stroeder,dc=com', cred='secretpassword'),
+            LDAPUrl(
+                hostport='localhost:54321',
+                dn='dc=stroeder,dc=com',
+                who='cn=Michael,dc=stroeder,dc=com',
+                cred='secretpassword',
+            ),
         ),
         (
             'ldaps://localhost:12345/dc=stroeder,dc=com',
@@ -157,7 +164,9 @@ class TestParseLDAPUrl(unittest.TestCase):
         for ldap_url_str, test_ldap_url_obj in self.parse_ldap_url_tests:
             ldap_url_obj = LDAPUrl(ldapUrl=ldap_url_str)
             self.assertEqual(
-                ldap_url_obj, test_ldap_url_obj, f'Attributes of LDAPUrl({ldap_url_str!r}) are:\n{ldap_url_obj!r}\ninstead of:\n{test_ldap_url_obj!r}'
+                ldap_url_obj,
+                test_ldap_url_obj,
+                f'Attributes of LDAPUrl({ldap_url_str!r}) are:\n{ldap_url_obj!r}\ninstead of:\n{test_ldap_url_obj!r}',
             )
             unparsed_ldap_url_str = test_ldap_url_obj.unparse()
             unparsed_ldap_url_obj = LDAPUrl(ldapUrl=unparsed_ldap_url_str)
@@ -411,7 +420,8 @@ class TestLDAPUrl(unittest.TestCase):
     def test_html_href(self):
         u = ldapurl.LDAPUrl('ldap://root.openldap.org/dc=openldap,dc=org')
         self.assertEqual(
-            u.htmlHREF(), '<a href="ldap://root.openldap.org/dc%3Dopenldap%2Cdc%3Dorg???">ldap://root.openldap.org/dc%3Dopenldap%2Cdc%3Dorg???</a>'
+            u.htmlHREF(),
+            '<a href="ldap://root.openldap.org/dc%3Dopenldap%2Cdc%3Dorg???">ldap://root.openldap.org/dc%3Dopenldap%2Cdc%3Dorg???</a>',
         )
 
     def test_html_href_escaping(self):

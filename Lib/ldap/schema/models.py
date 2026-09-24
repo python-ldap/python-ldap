@@ -391,7 +391,9 @@ class AttributeType(SchemaElement):
                 {0: '', 1: ' SINGLE-VALUE'}[self.single_value],
                 {0: '', 1: ' COLLECTIVE'}[self.collective],
                 {0: '', 1: ' NO-USER-MODIFICATION'}[self.no_user_mod],
-                {0: "", 1: " USAGE directoryOperation", 2: " USAGE distributedOperation", 3: " USAGE dSAOperation"}[self.usage],
+                {0: "", 1: " USAGE directoryOperation", 2: " USAGE distributedOperation", 3: " USAGE dSAOperation"}[
+                    self.usage
+                ],
                 self.key_list('X-ORIGIN', self.x_origin, quoted=1),
                 self.key_attr('X-ORDERED', self.x_ordered, quoted=1),
             )
@@ -432,7 +434,9 @@ class LDAPSyntax(SchemaElement):
     def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
         super()._set_attrs(l, d)
         self.x_subst = d.get('X-SUBST', (None,))[0]
-        self.not_human_readable = self.oid in NOT_HUMAN_READABLE_LDAP_SYNTAXES or d.get('X-NOT-HUMAN-READABLE', (None,))[0] == 'TRUE'
+        self.not_human_readable = (
+            self.oid in NOT_HUMAN_READABLE_LDAP_SYNTAXES or d.get('X-NOT-HUMAN-READABLE', (None,))[0] == 'TRUE'
+        )
         self.x_binary_transfer_required = d.get('X-BINARY-TRANSFER-REQUIRED', (None,))[0] == 'TRUE'
 
     def __str__(self) -> str:

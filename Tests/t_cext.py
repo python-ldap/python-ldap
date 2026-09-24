@@ -79,7 +79,14 @@ class TestLdapCExtension(SlapdTestCase):
         self._writesuffix = f'ou=write tests,{self.server.suffix}'
         # Add writeable subtree
         self.server.ldapadd(
-            "\n".join(['dn: ' + self._writesuffix, 'objectClass: organizationalUnit', 'ou:' + self._writesuffix.split(',')[0][3:], ''])
+            "\n".join(
+                [
+                    'dn: ' + self._writesuffix,
+                    'objectClass: organizationalUnit',
+                    'ou:' + self._writesuffix.split(',')[0][3:],
+                    '',
+                ]
+            )
         )
         return self._writesuffix
 
@@ -289,7 +296,9 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(pmsg, [])
         self.assertEqual(ctrls, [])
 
-    @unittest.skipUnless(_ldap.VENDOR_VERSION >= 20500 and _ldap._VENDOR_VERSION_RUNTIME >= 20500, reason="Test requires libldap 2.5+")
+    @unittest.skipUnless(
+        _ldap.VENDOR_VERSION >= 20500 and _ldap._VENDOR_VERSION_RUNTIME >= 20500, reason="Test requires libldap 2.5+"
+    )
     def test_connect(self):
         l = self._open_conn(bind=False)
         invalid_fileno = l.get_option(_ldap.OPT_DESC)

@@ -19,14 +19,22 @@ try:
 
     print('Using rename_s():')
 
-    l.rename_s('uid=fred,ou=Unstructured testing tree,dc=stroeder,dc=com', 'cn=Fred Feuerstein', 'dc=stroeder,dc=com', 0)
+    l.rename_s(
+        'uid=fred,ou=Unstructured testing tree,dc=stroeder,dc=com', 'cn=Fred Feuerstein', 'dc=stroeder,dc=com', 0
+    )
 
-    l.rename_s('cn=Fred Feuerstein,dc=stroeder,dc=com', 'uid=fred', 'ou=Unstructured testing tree,dc=stroeder,dc=com', 0)
+    l.rename_s(
+        'cn=Fred Feuerstein,dc=stroeder,dc=com', 'uid=fred', 'ou=Unstructured testing tree,dc=stroeder,dc=com', 0
+    )
 
-    m = l.rename('uid=fred,ou=Unstructured testing tree,dc=stroeder,dc=com', 'cn=Fred Feuerstein', 'dc=stroeder,dc=com', 0)
+    m = l.rename(
+        'uid=fred,ou=Unstructured testing tree,dc=stroeder,dc=com', 'cn=Fred Feuerstein', 'dc=stroeder,dc=com', 0
+    )
     r = l.result(m, 1)
 
-    m = l.rename('cn=Fred Feuerstein,dc=stroeder,dc=com', 'uid=fred', 'ou=Unstructured testing tree,dc=stroeder,dc=com', 0)
+    m = l.rename(
+        'cn=Fred Feuerstein,dc=stroeder,dc=com', 'uid=fred', 'ou=Unstructured testing tree,dc=stroeder,dc=com', 0
+    )
     r = l.result(m, 1)
 
 finally:

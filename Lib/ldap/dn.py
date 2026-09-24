@@ -8,7 +8,9 @@ from ldap import _ldap
 from ldap.pkginfo import __version__
 
 
-assert _ldap.__version__ == __version__, ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
+assert _ldap.__version__ == __version__, ImportError(
+    f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!'
+)
 
 import ldap.functions  # noqa: E402
 
@@ -68,7 +70,9 @@ def dn2str(dn: list[list[tuple[str, str, int]]], flags: int = 0) -> str:
     """
     if flags:
         return ldap.functions._ldap_function_call(None, _ldap.dn2str, dn, flags)  # type: ignore
-    return ','.join(['+'.join(['='.join((atype, escape_dn_chars(avalue or ''))) for atype, avalue, dummy in rdn]) for rdn in dn])
+    return ','.join(
+        ['+'.join(['='.join((atype, escape_dn_chars(avalue or ''))) for atype, avalue, dummy in rdn]) for rdn in dn]
+    )
 
 
 def explode_dn(dn: str, notypes: bool = False, flags: int = 0) -> list[str]:
@@ -87,7 +91,9 @@ def explode_dn(dn: str, notypes: bool = False, flags: int = 0) -> list[str]:
         if notypes:
             rdn_list.append('+'.join([escape_dn_chars(avalue or '') for atype, avalue, dummy in rdn]))
         else:
-            rdn_list.append('+'.join(['='.join((atype, escape_dn_chars(avalue or ''))) for atype, avalue, dummy in rdn]))
+            rdn_list.append(
+                '+'.join(['='.join((atype, escape_dn_chars(avalue or ''))) for atype, avalue, dummy in rdn])
+            )
     return rdn_list
 
 

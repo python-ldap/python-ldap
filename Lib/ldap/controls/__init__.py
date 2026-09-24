@@ -14,7 +14,9 @@ from ldap import _ldap
 from ldap.pkginfo import __version__
 
 
-assert _ldap.__version__ == __version__, ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
+assert _ldap.__version__ == __version__, ImportError(
+    f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!'
+)
 
 from pyasn1.error import PyAsn1Error  # noqa: E402
 
@@ -56,7 +58,9 @@ class RequestControl:
         (here it is the BER-encoded ASN.1 control value)
     """
 
-    def __init__(self, controlType: str | None = None, criticality: bool = False, encodedControlValue: bytes | None = None) -> None:
+    def __init__(
+        self, controlType: str | None = None, criticality: bool = False, encodedControlValue: bytes | None = None
+    ) -> None:
         self.controlType = controlType
         self.criticality = criticality
         self.encodedControlValue = encodedControlValue
@@ -99,7 +103,11 @@ class LDAPControl(RequestControl, ResponseControl):
     """
 
     def __init__(
-        self, controlType: str | None = None, criticality: bool = False, controlValue: str | None = None, encodedControlValue: bytes | None = None
+        self,
+        controlType: str | None = None,
+        criticality: bool = False,
+        controlValue: str | None = None,
+        encodedControlValue: bytes | None = None,
     ) -> None:
         self.controlType = controlType
         self.criticality = criticality
@@ -107,7 +115,9 @@ class LDAPControl(RequestControl, ResponseControl):
         self.encodedControlValue = encodedControlValue
 
 
-def RequestControlTuples(ldapControls: list[RequestControl] | None) -> list[tuple[str | None, bool, bytes | None]] | None:
+def RequestControlTuples(
+    ldapControls: list[RequestControl] | None,
+) -> list[tuple[str | None, bool, bytes | None]] | None:
     """
     Return list of readily encoded 3-tuples which can be directly
     passed to C module _ldap
@@ -144,7 +154,9 @@ def DecodeControlTuples(
             control = knownLDAPControls[controlType]()
         except KeyError:
             if criticality:
-                raise ldap.UNAVAILABLE_CRITICAL_EXTENSION(f'Received unexpected critical response control with controlType {controlType!r}')
+                raise ldap.UNAVAILABLE_CRITICAL_EXTENSION(
+                    f'Received unexpected critical response control with controlType {controlType!r}'
+                )
         else:
             control.controlType, control.criticality = controlType, criticality
             try:

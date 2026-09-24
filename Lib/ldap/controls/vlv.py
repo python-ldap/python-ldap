@@ -23,7 +23,9 @@ class ByOffsetType(univ.Sequence):
     tagSet = univ.Sequence.tagSet.tagImplicitly(  # type: ignore[no-untyped-call]
         tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
     )
-    componentType = namedtype.NamedTypes(namedtype.NamedType('offset', univ.Integer()), namedtype.NamedType('contentCount', univ.Integer()))
+    componentType = namedtype.NamedTypes(
+        namedtype.NamedType('offset', univ.Integer()), namedtype.NamedType('contentCount', univ.Integer())
+    )
 
 
 class TargetType(univ.Choice):

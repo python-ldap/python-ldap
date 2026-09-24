@@ -141,7 +141,9 @@ class SyncStateValue(univ.Sequence):
     """
 
     componentType = namedtype.NamedTypes(
-        namedtype.NamedType('state', SyncStateOp()), namedtype.NamedType('entryUUID', SyncUUID()), namedtype.OptionalNamedType('cookie', SyncCookie())
+        namedtype.NamedType('state', SyncStateOp()),
+        namedtype.NamedType('entryUUID', SyncUUID()),
+        namedtype.OptionalNamedType('cookie', SyncCookie()),
     )
 
 
@@ -184,7 +186,8 @@ class SyncDoneValue(univ.Sequence):
     """
 
     componentType = namedtype.NamedTypes(
-        namedtype.OptionalNamedType('cookie', SyncCookie()), namedtype.DefaultedNamedType('refreshDeletes', univ.Boolean(False))
+        namedtype.OptionalNamedType('cookie', SyncCookie()),
+        namedtype.DefaultedNamedType('refreshDeletes', univ.Boolean(False)),
     )
 
 
@@ -227,7 +230,8 @@ class RefreshDelete(univ.Sequence):
     """
 
     componentType = namedtype.NamedTypes(
-        namedtype.OptionalNamedType('cookie', SyncCookie()), namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True))
+        namedtype.OptionalNamedType('cookie', SyncCookie()),
+        namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True)),
     )
 
 
@@ -240,7 +244,8 @@ class RefreshPresent(univ.Sequence):
     """
 
     componentType = namedtype.NamedTypes(
-        namedtype.OptionalNamedType('cookie', SyncCookie()), namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True))
+        namedtype.OptionalNamedType('cookie', SyncCookie()),
+        namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True)),
     )
 
 

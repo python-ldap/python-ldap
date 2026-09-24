@@ -92,7 +92,9 @@ class LDIFWriter:
     via URLs
     """
 
-    def __init__(self, output_file: TextIO, base64_attrs: list[str] | None = None, cols: int = 76, line_sep: str = '\n') -> None:
+    def __init__(
+        self, output_file: TextIO, base64_attrs: list[str] | None = None, cols: int = 76, line_sep: str = '\n'
+    ) -> None:
         """
         output_file
             file object for output; should be opened in *text* mode
@@ -461,14 +463,18 @@ class LDIFParser:
         while k is not None and (not self._max_entries or self.records_read < self._max_entries):
             # Consume first line which must start with "dn: "
             if k != 'dn':
-                raise ValueError('Line %d: First line of record does not start with "dn:": %s' % (self.line_counter, repr(k)))
+                raise ValueError(
+                    'Line %d: First line of record does not start with "dn:": %s' % (self.line_counter, repr(k))
+                )
             # Value of a 'dn' field *has* to be valid UTF-8
             # k is text, v is bytes.
             if v is None:
                 raise ValueError('Line %d: DN has None value.' % (self.line_counter))
             dn = v.decode('utf-8')
             if not is_dn(dn):
-                raise ValueError('Line %d: Not a valid string-representation for dn: %s.' % (self.line_counter, repr(v)))
+                raise ValueError(
+                    'Line %d: Not a valid string-representation for dn: %s.' % (self.line_counter, repr(v))
+                )
 
             entry: LDAPEntryDict = {}
 
@@ -568,14 +574,18 @@ class LDIFParser:
         while k is not None and (not self._max_entries or self.records_read < self._max_entries):
             # Consume first line which must start with "dn: "
             if k != 'dn':
-                raise ValueError('Line %d: First line of record does not start with "dn:": %s' % (self.line_counter, repr(k)))
+                raise ValueError(
+                    'Line %d: First line of record does not start with "dn:": %s' % (self.line_counter, repr(k))
+                )
             # Value of a 'dn' field *has* to be valid UTF-8
             # k is text, v is bytes.
             if v is None:
                 raise ValueError('Line %d: DN has None value.' % (self.line_counter))
             dn = v.decode('utf-8')
             if not is_dn(dn):
-                raise ValueError('Line %d: Not a valid string-representation for dn: %s.' % (self.line_counter, repr(v)))
+                raise ValueError(
+                    'Line %d: Not a valid string-representation for dn: %s.' % (self.line_counter, repr(v))
+                )
 
             # Consume second line of record
             k, v = next_key_and_value()
@@ -777,7 +787,16 @@ class LDIFRecordList(LDIFParser):
         This method should be implemented by applications using LDIFParser.
         """
         self.all_changes.append(
-            ('modrdn', {'dn': dn, 'newrdn': newrdn, 'deleteoldrdn': deleteoldrdn, 'newsuperior': newsuperior, 'controls': controls})
+            (
+                'modrdn',
+                {
+                    'dn': dn,
+                    'newrdn': newrdn,
+                    'deleteoldrdn': deleteoldrdn,
+                    'newsuperior': newsuperior,
+                    'controls': controls,
+                },
+            )
         )
 
     def handle_delete(self, dn: str, controls: LDAPControlTuples | None = None) -> None:
@@ -822,7 +841,9 @@ class LDIFCopy(LDIFParser):
         self._output_ldif.unparse(dn, entry)
 
 
-def ParseLDIF(f: TextIO | BinaryIO, ignore_attrs: list[str] | None = None, maxentries: int = 0) -> list[tuple[str, LDAPEntryDict]]:
+def ParseLDIF(
+    f: TextIO | BinaryIO, ignore_attrs: list[str] | None = None, maxentries: int = 0
+) -> list[tuple[str, LDAPEntryDict]]:
     """
     Parse LDIF records read from file.
     This is a compatibility function.

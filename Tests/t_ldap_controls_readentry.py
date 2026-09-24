@@ -8,7 +8,9 @@ os.environ['LDAPNOINIT'] = '1'
 from ldap.controls import readentry
 
 
-PRC_ENC = b'db\x04)uid=Administrator,cn=users,l=school,l=dev0503\x04\tentryUUID1&\x04$5d96cc2c-8e13-103a-8ca5-2f74868e0e44'
+PRC_ENC = (
+    b'db\x04)uid=Administrator,cn=users,l=school,l=dev0503\x04\tentryUUID1&\x04$5d96cc2c-8e13-103a-8ca5-2f74868e0e44'
+)
 PRC_DEC = b'0\x0b\x04\tentryUUID'
 
 

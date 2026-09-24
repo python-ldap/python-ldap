@@ -79,7 +79,9 @@ class LDAPUrlExtension:
             Value of extension
     """
 
-    def __init__(self, extensionStr: str | None = None, critical: int = 0, extype: str | None = None, exvalue: str | None = None) -> None:
+    def __init__(
+        self, extensionStr: str | None = None, critical: int = 0, extype: str | None = None, exvalue: str | None = None
+    ) -> None:
         self.critical = critical
         self.extype = extype
         self.exvalue = exvalue
