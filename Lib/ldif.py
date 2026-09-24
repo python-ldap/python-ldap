@@ -276,9 +276,9 @@ class LDIFParser:
   def __init__(
     self,
     input_file: TextIO | BinaryIO,
-    ignored_attr_types: list[str] | None = [],
+    ignored_attr_types: list[str] | None = None,
     max_entries: int = 0,
-    process_url_schemes: list[str] | None = [],
+    process_url_schemes: list[str] | None = None,
     line_sep: str = '\n',
   ) -> None:
     """
@@ -298,6 +298,10 @@ class LDIFParser:
         String used as line separator
     """
     # Detect whether the file is open in text or bytes mode.
+    if process_url_schemes is None:
+      process_url_schemes = []
+    if ignored_attr_types is None:
+      ignored_attr_types = []
     if isinstance(input_file.read(0), bytes):
       self._binary_input_file: BinaryIO | None = cast(BinaryIO, input_file)
       self._text_input_file: TextIO | None = None
@@ -744,10 +748,14 @@ class LDIFRecordList(LDIFParser):
   def __init__(
     self,
     input_file: TextIO | BinaryIO,
-    ignored_attr_types: list[str] | None = [],
+    ignored_attr_types: list[str] | None = None,
     max_entries: int = 0,
-    process_url_schemes: list[str] | None = [],
+    process_url_schemes: list[str] | None = None,
   ) -> None:
+    if process_url_schemes is None:
+      process_url_schemes = []
+    if ignored_attr_types is None:
+      ignored_attr_types = []
     LDIFParser.__init__(self,input_file,ignored_attr_types,max_entries,process_url_schemes)
 
     #: List storing parsed records.
@@ -827,9 +835,9 @@ class LDIFCopy(LDIFParser):
     self,
     input_file: TextIO | BinaryIO,
     output_file: TextIO,
-    ignored_attr_types: list[str] | None = [],
+    ignored_attr_types: list[str] | None = None,
     max_entries: int = 0,
-    process_url_schemes: list[str] | None = [],
+    process_url_schemes: list[str] | None = None,
     base64_attrs: list[str] | None = None,
     cols: int = 76,
     line_sep: str = '\n'
@@ -837,6 +845,10 @@ class LDIFCopy(LDIFParser):
     """
     See LDIFParser.__init__() and LDIFWriter.__init__()
     """
+    if process_url_schemes is None:
+      process_url_schemes = []
+    if ignored_attr_types is None:
+      ignored_attr_types = []
     LDIFParser.__init__(self,input_file,ignored_attr_types,max_entries,process_url_schemes)
     self._output_ldif = LDIFWriter(output_file,base64_attrs,cols,line_sep)
 
@@ -849,13 +861,15 @@ class LDIFCopy(LDIFParser):
 
 def ParseLDIF(
     f: TextIO | BinaryIO,
-    ignore_attrs: list[str] | None = [],
+    ignore_attrs: list[str] | None = None,
     maxentries: int = 0
   ) -> list[tuple[str, LDAPEntryDict]]:
   """
   Parse LDIF records read from file.
   This is a compatibility function.
   """
+  if ignore_attrs is None:
+    ignore_attrs = []
   warnings.warn(
     'ldif.ParseLDIF() is deprecated. Use LDIFRecordList.parse() instead. It '
     'will be removed in python-ldap 3.1',
