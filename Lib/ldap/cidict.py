@@ -31,7 +31,7 @@ class cidict(MutableMappingType[str, T]):
     """
     Case-insensitive but case-respecting dictionary.
     """
-    __slots__ = ('_keys', '_data')
+    __slots__ = ('_data', '_keys')
 
     def __init__(self, default: Mapping[str, T] | None = None) -> None:
         self._keys: dict[str, str] = {}
