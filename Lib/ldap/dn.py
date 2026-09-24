@@ -10,7 +10,7 @@ from ldap.pkginfo import __version__
 assert _ldap.__version__==__version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 
-import ldap.functions
+import ldap.functions  # noqa: E402
 
 
 def escape_dn_chars(s: str) -> str:
