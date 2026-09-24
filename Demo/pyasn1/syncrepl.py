@@ -142,16 +142,16 @@ try:
     ldap_url = ldapurl.LDAPUrl(sys.argv[1])
     database_path = sys.argv[2]
 except IndexError:
-    print((
+    print(
         'Usage:\n'
-        '{script_name} <LDAP URL> <pathname of database>\n'
-        '{script_name} "ldap://127.0.0.1/cn=users,dc=test'
+        f'{sys.argv[0]} <LDAP URL> <pathname of database>\n'
+        f'{sys.argv[0]} "ldap://127.0.0.1/cn=users,dc=test'
          '?*'
          '?sub'
          '?(objectClass=*)'
          '?bindname=uid=admin%2ccn=users%2cdc=test,'
          'X-BINDPW=password" db.shelve'
-    ).format(script_name=sys.argv[0]))
+    )
     sys.exit(1)
 except ValueError as e:
     print('Error parsing command-line arguments:',str(e))

@@ -123,9 +123,9 @@ class SchemaElement:
       quoted_values = list(values)
 
     if len(quoted_values)==1:
-      return ' {} {}'.format(key,quoted_values[0])
+      return f' {key} {quoted_values[0]}'
     else:
-      return ' {} ( {} )'.format(key,sep.join(quoted_values))
+      return f' {key} ( {sep.join(quoted_values)} )'
 
   def __str__(self) -> str:
     result = [str(self.oid)]

@@ -186,21 +186,13 @@ class TestParseLDAPUrl(unittest.TestCase):
             ldap_url_obj = LDAPUrl(ldapUrl=ldap_url_str)
             self.assertEqual(
                 ldap_url_obj, test_ldap_url_obj,
-                'Attributes of LDAPUrl({}) are:\n{}\ninstead of:\n{}'.format(
-                    repr(ldap_url_str),
-                    repr(ldap_url_obj),
-                    repr(test_ldap_url_obj),
-                )
+                f'Attributes of LDAPUrl({ldap_url_str!r}) are:\n{ldap_url_obj!r}\ninstead of:\n{test_ldap_url_obj!r}'
             )
             unparsed_ldap_url_str = test_ldap_url_obj.unparse()
             unparsed_ldap_url_obj = LDAPUrl(ldapUrl=unparsed_ldap_url_str)
             self.assertEqual(
                 unparsed_ldap_url_obj, test_ldap_url_obj,
-                'Attributes of LDAPUrl({}) are:\n{}\ninstead of:\n{}'.format(
-                    repr(unparsed_ldap_url_str),
-                    repr(unparsed_ldap_url_obj),
-                    repr(test_ldap_url_obj),
-                )
+                f'Attributes of LDAPUrl({unparsed_ldap_url_str!r}) are:\n{unparsed_ldap_url_obj!r}\ninstead of:\n{test_ldap_url_obj!r}'
             )
 
 
