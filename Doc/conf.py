@@ -10,7 +10,6 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 
-import datetime
 import sys
 import os
 

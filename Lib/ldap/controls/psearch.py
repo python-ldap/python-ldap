@@ -13,7 +13,6 @@ __all__ = [
   'CHANGE_TYPES_STR',
 ]
 
-import ldap.controls
 from ldap.controls import RequestControl,ResponseControl,KNOWN_RESPONSE_CONTROLS
 
 from pyasn1.type import namedtype,namedval,univ,constraint
