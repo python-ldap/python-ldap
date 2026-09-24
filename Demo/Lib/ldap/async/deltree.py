@@ -70,7 +70,7 @@ def DelTree(l,dn,scope=ldap.SCOPE_ONELEVEL):
     leafs_deleter.processResults()
     deleted_entries += leafs_deleter.deletedEntries
     non_leaf_entries.extend(leafs_deleter.nonLeafEntries)
-  return # DelTree()
+  # return DelTree()
 
 
 # Create LDAPObject instance

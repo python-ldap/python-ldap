@@ -477,7 +477,6 @@ class MatchingRule(SchemaElement):
     super()._set_attrs(l, d)
     self.obsolete = 'OBSOLETE' in d
     self.syntax = d.get('SYNTAX', (None,))[0]
-    return
 
   def __str__(self) -> str:
     result = [str(self.oid)]
@@ -528,7 +527,6 @@ class MatchingRuleUse(SchemaElement):
     super()._set_attrs(l, d)
     self.obsolete = 'OBSOLETE' in d
     self.applies = d.get('APPLIES', ())
-    return
 
   def __str__(self) -> str:
     result = [str(self.oid)]
@@ -668,7 +666,6 @@ class DITStructureRule(SchemaElement):
     self.obsolete = 'OBSOLETE' in d
     self.form = d.get('FORM', (None,))[0]
     self.sup = d.get('SUP', ())
-    return
 
   def __str__(self) -> str:
     result = [str(self.ruleid)]
