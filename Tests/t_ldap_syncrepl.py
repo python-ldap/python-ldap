@@ -103,7 +103,10 @@ cn: Foo4
 LDAP_ENTRIES = {
     'ou=Container,dc=slapd-test,dc=python-ldap,dc=org': {'objectClass': [b'organizationalUnit'], 'ou': [b'Container']},
     'cn=Foo2,dc=slapd-test,dc=python-ldap,dc=org': {'objectClass': [b'organizationalRole'], 'cn': [b'Foo2']},
-    'cn=Foo4,ou=Container,dc=slapd-test,dc=python-ldap,dc=org': {'objectClass': [b'organizationalRole'], 'cn': [b'Foo4']},
+    'cn=Foo4,ou=Container,dc=slapd-test,dc=python-ldap,dc=org': {
+        'objectClass': [b'organizationalRole'],
+        'cn': [b'Foo4'],
+    },
     'cn=Manager,dc=slapd-test,dc=python-ldap,dc=org': {
         'objectClass': [b'applicationProcess', b'simpleSecurityObject'],
         'userPassword': [b'password'],
@@ -111,7 +114,11 @@ LDAP_ENTRIES = {
     },
     'cn=Foo3,dc=slapd-test,dc=python-ldap,dc=org': {'objectClass': [b'organizationalRole'], 'cn': [b'Foo3']},
     'cn=Foo1,dc=slapd-test,dc=python-ldap,dc=org': {'objectClass': [b'organizationalRole'], 'cn': [b'Foo1']},
-    'dc=slapd-test,dc=python-ldap,dc=org': {'objectClass': [b'dcObject', b'organization'], 'dc': [b'slapd-test'], 'o': [b'slapd-test']},
+    'dc=slapd-test,dc=python-ldap,dc=org': {
+        'objectClass': [b'dcObject', b'organization'],
+        'dc': [b'slapd-test'],
+        'o': [b'slapd-test'],
+    },
 }
 
 
@@ -409,7 +416,9 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
                 self.server2.server_id = 1
 
         with self.server2:
-            tester2 = self.MPRClient(self.server2.ldap_uri, self.server2.root_dn, self.server2.root_pw, bytes_mode=False)
+            tester2 = self.MPRClient(
+                self.server2.ldap_uri, self.server2.root_dn, self.server2.root_pw, bytes_mode=False
+            )
             self.addCleanup(tester2.unbind_s)
 
             self.tester.search(

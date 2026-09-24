@@ -20,7 +20,9 @@ class RefreshRequest(ExtendedRequest):
 
     class RefreshRequestValue(univ.Sequence):
         componentType = namedtype.NamedTypes(
-            namedtype.NamedType('entryName', LDAPDN().subtype(implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0))),
+            namedtype.NamedType(
+                'entryName', LDAPDN().subtype(implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0))
+            ),
             namedtype.NamedType(
                 'requestTtl',
                 univ.Integer().subtype(  # type: ignore[no-untyped-call]
@@ -29,7 +31,9 @@ class RefreshRequest(ExtendedRequest):
             ),
         )
 
-    def __init__(self, requestName: str | None = None, entryName: str | bytes | None = None, requestTtl: int | None = None) -> None:
+    def __init__(
+        self, requestName: str | None = None, entryName: str | bytes | None = None, requestTtl: int | None = None
+    ) -> None:
         super().__init__(requestName or self.requestName, b'')
         if isinstance(entryName, str):
             entryName = entryName.encode('UTF-8')
@@ -38,7 +42,10 @@ class RefreshRequest(ExtendedRequest):
 
     def encodedRequestValue(self) -> bytes:
         p = self.RefreshRequestValue()
-        p.setComponentByName('entryName', LDAPDN(self.entryName).subtype(implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)))
+        p.setComponentByName(
+            'entryName',
+            LDAPDN(self.entryName).subtype(implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)),
+        )
         p.setComponentByName(
             'requestTtl',
             univ.Integer(self.requestTtl).subtype(  # type: ignore[no-untyped-call]

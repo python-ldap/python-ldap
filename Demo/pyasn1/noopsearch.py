@@ -31,7 +31,9 @@ except IndexError:
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
-ldap_conn = ldap.ldapobject.LDAPObject(ldap_url.initializeUrl(), trace_level=ldapmodule_trace_level, trace_file=ldapmodule_trace_file)
+ldap_conn = ldap.ldapobject.LDAPObject(
+    ldap_url.initializeUrl(), trace_level=ldapmodule_trace_level, trace_file=ldapmodule_trace_file
+)
 
 if ldap_url.who and ldap_url.cred is None:
     print(f'Password for {ldap_url.who!r}:')

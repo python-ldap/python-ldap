@@ -112,7 +112,8 @@ class SortResultType(univ.Sequence):
                     ('unwillingToPerform', 53),
                     ('other', 80),
                 ),
-                subtypeSpec=univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0, 1, 3, 8, 11, 16, 18, 50, 51, 53, 80),
+                subtypeSpec=univ.Enumerated.subtypeSpec
+                + constraint.SingleValueConstraint(0, 1, 3, 8, 11, 16, 18, 50, 51, 53, 80),
             ),
         ),
         namedtype.OptionalNamedType(

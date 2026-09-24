@@ -47,14 +47,18 @@ print("""#----------------------------------------------------------------------
 
 pr = PreReadControl(criticality=True, attrList=['uidNumber', 'gidNumber', 'entryCSN'])
 
-msg_id = l.modify_ext(new_test_dn, [(ldap.MOD_INCREMENT, "uidNumber", "1"), (ldap.MOD_INCREMENT, "gidNumber", "1")], serverctrls=[pr])
+msg_id = l.modify_ext(
+    new_test_dn, [(ldap.MOD_INCREMENT, "uidNumber", "1"), (ldap.MOD_INCREMENT, "gidNumber", "1")], serverctrls=[pr]
+)
 _, _, _, resp_ctrls = l.result3(msg_id)
 print("resp_ctrls[0].dn:", resp_ctrls[0].dn)
 print("resp_ctrls[0].entry:", pprint.pformat(resp_ctrls[0].entry))
 
 pr = PostReadControl(criticality=True, attrList=['uidNumber', 'gidNumber', 'entryCSN'])
 
-msg_id = l.modify_ext(new_test_dn, [(ldap.MOD_INCREMENT, "uidNumber", "1"), (ldap.MOD_INCREMENT, "gidNumber", "1")], serverctrls=[pr])
+msg_id = l.modify_ext(
+    new_test_dn, [(ldap.MOD_INCREMENT, "uidNumber", "1"), (ldap.MOD_INCREMENT, "gidNumber", "1")], serverctrls=[pr]
+)
 _, _, _, resp_ctrls = l.result3(msg_id)
 print("resp_ctrls[0].dn:", resp_ctrls[0].dn)
 print("resp_ctrls[0].entry:", pprint.pformat(resp_ctrls[0].entry))

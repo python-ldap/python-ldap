@@ -241,7 +241,9 @@ class TestSubschemaUrlfetchSlapd(SlapdTestCase):
         self.assertEqual(dn, 'cn=Subschema')
         self.assertIsInstance(schema, ldap.schema.subentry.SubSchema)
         obj = schema.get_obj(ObjectClass, '1.3.6.1.1.3.1')
-        self.assertEqual(str(obj), "( 1.3.6.1.1.3.1 NAME 'uidObject' DESC 'RFC2377: uid object' SUP top AUXILIARY MUST uid )")
+        self.assertEqual(
+            str(obj), "( 1.3.6.1.1.3.1 NAME 'uidObject' DESC 'RFC2377: uid object' SUP top AUXILIARY MUST uid )"
+        )
         entries = schema.ldap_entry()
         self.assertIsInstance(entries, dict)
         self.assertEqual(

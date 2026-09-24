@@ -192,7 +192,10 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
                 ('cn=Foo1,' + self.server.suffix, {'cn': [b'Foo1'], 'objectClass': [b'organizationalRole']}),
                 ('cn=Foo2,' + self.server.suffix, {'cn': [b'Foo2'], 'objectClass': [b'organizationalRole']}),
                 ('cn=Foo3,' + self.server.suffix, {'cn': [b'Foo3'], 'objectClass': [b'organizationalRole']}),
-                ('cn=Foo4,ou=Container,' + self.server.suffix, {'cn': [b'Foo4'], 'objectClass': [b'organizationalRole']}),
+                (
+                    'cn=Foo4,ou=Container,' + self.server.suffix,
+                    {'cn': [b'Foo4'], 'objectClass': [b'organizationalRole']},
+                ),
             ],
         )
 
@@ -255,7 +258,9 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertEqual(dn, "cn=Subschema")
         subschema = l.read_subschemasubentry_s(dn)
         self.assertIsInstance(subschema, dict)
-        self.assertEqual(sorted(subschema), ['attributeTypes', 'ldapSyntaxes', 'matchingRuleUse', 'matchingRules', 'objectClasses'])
+        self.assertEqual(
+            sorted(subschema), ['attributeTypes', 'ldapSyntaxes', 'matchingRuleUse', 'matchingRules', 'objectClasses']
+        )
 
     def test004_enotconn(self):
         l = self.ldap_object_class('ldap://127.0.0.1:42')

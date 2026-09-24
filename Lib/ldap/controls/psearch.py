@@ -59,7 +59,11 @@ class PersistentSearchControl(RequestControl):
     controlType = "2.16.840.1.113730.3.4.3"
 
     def __init__(
-        self, criticality: bool = True, changeTypes: list[int | str] | int | None = None, changesOnly: bool = False, returnECs: bool = True
+        self,
+        criticality: bool = True,
+        changeTypes: list[int | str] | int | None = None,
+        changesOnly: bool = False,
+        returnECs: bool = True,
     ) -> None:
         self.criticality, self.changesOnly, self.returnECs = criticality, changesOnly, returnECs
         if isinstance(changeTypes, int):

@@ -28,7 +28,9 @@ except (IndexError, ValueError):
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
-ldap_conn = ldap.ldapobject.LDAPObject(ldap_url.initializeUrl(), trace_level=ldapmodule_trace_level, trace_file=ldapmodule_trace_file)
+ldap_conn = ldap.ldapobject.LDAPObject(
+    ldap_url.initializeUrl(), trace_level=ldapmodule_trace_level, trace_file=ldapmodule_trace_file
+)
 
 if ldap_url.who and ldap_url.cred is None:
     print(f'Password for {ldap_url.who!r}:')
@@ -44,5 +46,9 @@ except ldap.INVALID_CREDENTIALS as e:
 st_ctrl = SessionTrackingControl('192.0.2.1', 'app.example.com', SESSION_TRACKING_FORMAT_OID_USERNAME, 'bloggs')
 
 ldap_conn.search_ext_s(
-    ldap_url.dn or '', ldap_url.scope or ldap.SCOPE_SUBTREE, ldap_url.filterstr or '(objectClass=*)', ldap_url.attrs or ['*'], serverctrls=[st_ctrl]
+    ldap_url.dn or '',
+    ldap_url.scope or ldap.SCOPE_SUBTREE,
+    ldap_url.filterstr or '(objectClass=*)',
+    ldap_url.attrs or ['*'],
+    serverctrls=[st_ctrl],
 )

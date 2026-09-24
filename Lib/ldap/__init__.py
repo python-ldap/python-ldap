@@ -41,7 +41,9 @@ else:
 from ldap import _ldap
 
 
-assert _ldap.__version__ == __version__, ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
+assert _ldap.__version__ == __version__, ImportError(
+    f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!'
+)
 from ldap._ldap import *  # noqa: E402
 
 

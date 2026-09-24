@@ -51,7 +51,9 @@ while True:
         if pctrls[0].cookie:
             # Copy cookie from response control to request control
             req_ctrl.cookie = pctrls[0].cookie
-            msgid = l.search_ext(base, ldap.SCOPE_SUBTREE, search_flt, attrlist=searchreq_attrlist, serverctrls=[req_ctrl])
+            msgid = l.search_ext(
+                base, ldap.SCOPE_SUBTREE, search_flt, attrlist=searchreq_attrlist, serverctrls=[req_ctrl]
+            )
         else:
             break
     else:
