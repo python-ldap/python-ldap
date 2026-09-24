@@ -7,10 +7,11 @@ See https://www.python-ldap.org/ for details.
 import os
 import unittest
 
+
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
-from ldap.filter import escape_filter_chars, is_filter, filter_format
+from ldap.filter import escape_filter_chars, filter_format, is_filter
 
 
 class TestFilter(unittest.TestCase):

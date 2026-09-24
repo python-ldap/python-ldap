@@ -4,6 +4,7 @@ Helper class for using logging as trace file object
 
 import logging
 
+
 class logging_file_class:
 
     def __init__(self, logging_level: int) -> None:

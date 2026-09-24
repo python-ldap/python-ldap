@@ -6,13 +6,12 @@ See https://www.python-ldap.org/ for details.
 from __future__ import annotations
 
 from os import strerror
-
-from ldap.pkginfo import __version__, __author__, __license__  # noqa: F401
-
-from ldap.controls import RequestControl, ResponseControl
-
-from ldap._types import LDAPAddModList, LDAPModifyModList, LDAPEntryDict
 from typing import Any, BinaryIO, Callable, TextIO
+
+from ldap._types import LDAPAddModList, LDAPEntryDict, LDAPModifyModList
+from ldap.controls import RequestControl, ResponseControl
+from ldap.pkginfo import __author__, __license__, __version__  # noqa: F401
+
 
 __all__ = [
   'LDAPObject',
@@ -26,20 +25,18 @@ if __debug__:
   # Tracing is only supported in debugging mode
   import traceback
 
-import time,pprint
-from ldap import _ldap
-import ldap, ldap.cidict, ldap.sasl, ldap.functions
+import pprint
+import time
 import warnings
 
-from ldap.schema.subentry import SCHEMA_ATTRS
+import ldap
+import ldap.cidict
+import ldap.functions
+import ldap.sasl
+from ldap import LDAPError, _ldap
 from ldap.controls import DecodeControlTuples, RequestControlTuples
-from ldap.extop import (
-        ExtendedRequest,
-        ExtendedResponse,
-        PasswordModifyResponse
-)
-
-from ldap import LDAPError
+from ldap.extop import ExtendedRequest, ExtendedResponse, PasswordModifyResponse
+from ldap.schema.subentry import SCHEMA_ATTRS
 
 
 class LDAPBytesWarning(BytesWarning):

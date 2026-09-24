@@ -6,14 +6,15 @@ See https://www.python-ldap.org/ for project details.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
+from pyasn1.codec.ber import decoder
+from pyasn1.type import univ
+
 import ldap.controls
-from ldap.controls import ValueLessRequestControl,ResponseControl
+from ldap.controls import ResponseControl, ValueLessRequestControl
 from ldap.ldapobject import SimpleLDAPObject
 
-from pyasn1.type import univ
-from pyasn1.codec.ber import decoder
-
-from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
   _Base = SimpleLDAPObject

@@ -2,6 +2,7 @@
 
 import ldap
 
+
 host="localhost:1390"
 
 print("API info:",ldap.get_option(ldap.OPT_API_INFO))

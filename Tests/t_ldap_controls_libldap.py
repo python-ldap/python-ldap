@@ -1,11 +1,11 @@
 import os
 import unittest
 
+
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
-from ldap.controls import pagedresults
-from ldap.controls import libldap
+from ldap.controls import libldap, pagedresults
 
 
 PRC_BER = b'0\x0b\x02\x01\x05\x04\x06cookie'

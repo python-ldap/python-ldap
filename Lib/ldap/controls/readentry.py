@@ -6,14 +6,14 @@ See https://www.python-ldap.org/ for project details.
 """
 
 from __future__ import annotations
+
+from pyasn1.codec.ber import decoder, encoder
+from pyasn1_modules.rfc2251 import AttributeDescriptionList, SearchResultEntry
+
 import ldap
-
-from pyasn1.codec.ber import encoder,decoder
-from ldap.controls import LDAPControl,KNOWN_RESPONSE_CONTROLS
-
-from pyasn1_modules.rfc2251 import AttributeDescriptionList,SearchResultEntry
-
 from ldap._types import LDAPEntryDict
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl
+
 
 class ReadEntryControl(LDAPControl):
   """

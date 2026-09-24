@@ -5,12 +5,14 @@ See https://www.python-ldap.org/ for details.
 """
 
 from __future__ import annotations
-import struct,ldap
-from ldap.controls import RequestControl,ResponseControl,LDAPControl,KNOWN_RESPONSE_CONTROLS
 
+import struct
+
+from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import univ
-from pyasn1.codec.ber import encoder,decoder
 
+import ldap
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl, RequestControl, ResponseControl
 
 
 class ValueLessRequestControl(RequestControl):

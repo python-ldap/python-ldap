@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-import ldap,ldap.asyncsearch
+import ldap
+import ldap.asyncsearch
+
 
 class DeleteLeafs(ldap.asyncsearch.AsyncSearchHandler):
   """

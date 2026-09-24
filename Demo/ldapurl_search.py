@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-import sys,pprint,ldap
+import pprint
+import sys
 
+import ldap
 from ldap.ldapobject import LDAPObject
 from ldapurl import LDAPUrl
+
 
 class MyLDAPUrl(LDAPUrl):
   attr2extype = {

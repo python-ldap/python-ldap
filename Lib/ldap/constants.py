@@ -10,7 +10,9 @@ The information serves two purposes:
 
 """
 from __future__ import annotations
-from typing import Any, Sequence, TYPE_CHECKING
+
+from typing import TYPE_CHECKING, Any, Sequence
+
 
 if TYPE_CHECKING:
     import pathlib

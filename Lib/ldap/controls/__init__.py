@@ -9,15 +9,17 @@ Each class provides support for a certain control.
 """
 
 from __future__ import annotations
-from ldap.pkginfo import __version__
 
 from ldap import _ldap
+from ldap.pkginfo import __version__
+
+
 assert _ldap.__version__==__version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 
-import ldap
-
 from pyasn1.error import PyAsn1Error
+
+import ldap
 
 
 __all__ = [
@@ -174,5 +176,5 @@ def DecodeControlTuples(
   return result
 
 
-from ldap.controls.simple import *
 from ldap.controls.libldap import *
+from ldap.controls.simple import *

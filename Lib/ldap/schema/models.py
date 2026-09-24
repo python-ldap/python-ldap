@@ -6,20 +6,19 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import annotations
 
-from typing import ClassVar, TYPE_CHECKING
 from collections.abc import Iterator, MutableMapping
+from typing import TYPE_CHECKING, ClassVar
+
+
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-from ldap.cidict import cidict
-from ldap._types import LDAPEntryDict, TypeAlias
-
 import ldap.schema
-from ldap.schema.subentry import SCHEMA_CLASS_MAPPING, SCHEMA_ATTR_MAPPING
-from ldap.schema.tokenizer import (
-    parse_tokens, split_tokens,
-    LDAPTokenDict
-)
+from ldap._types import LDAPEntryDict, TypeAlias
+from ldap.cidict import cidict
+from ldap.schema.subentry import SCHEMA_ATTR_MAPPING, SCHEMA_CLASS_MAPPING
+from ldap.schema.tokenizer import LDAPTokenDict, parse_tokens, split_tokens
+
 
 EntryBase: TypeAlias = MutableMapping[str, list[bytes]]
 

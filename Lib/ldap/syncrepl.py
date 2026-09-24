@@ -5,19 +5,18 @@ See https://www.python-ldap.org/ for project details.
 """
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
-
+from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
-from pyasn1.type import tag, namedtype, namedval, univ, constraint
-from pyasn1.codec.ber import encoder, decoder
+from pyasn1.codec.ber import decoder, encoder
+from pyasn1.type import constraint, namedtype, namedval, tag, univ
 
-from ldap.pkginfo import __version__, __author__, __license__  # noqa: F401
-from ldap.controls import RequestControl, ResponseControl, KNOWN_RESPONSE_CONTROLS
-from ldap.ldapobject import SimpleLDAPObject
-from ldap import RES_SEARCH_RESULT, RES_SEARCH_ENTRY, RES_INTERMEDIATE
-
+from ldap import RES_INTERMEDIATE, RES_SEARCH_ENTRY, RES_SEARCH_RESULT
 from ldap._types import LDAPEntryDict
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
+from ldap.ldapobject import SimpleLDAPObject
+from ldap.pkginfo import __author__, __license__, __version__  # noqa: F401
+
 
 __all__ = [
     'OpenLDAPSyncreplCookie',

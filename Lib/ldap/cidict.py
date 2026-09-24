@@ -6,19 +6,20 @@ names of variable case.
 See https://www.python-ldap.org/ for details.
 """
 from __future__ import annotations
+
 import warnings
-
-from collections.abc import MutableMapping
-from ldap.pkginfo import __version__
-
+from collections.abc import MutableMapping  # noqa: F401
 from typing import (
+    TYPE_CHECKING,
     Any,
     Iterator,
     Mapping,
     MutableMapping as MutableMappingType,
-    TYPE_CHECKING,
     TypeVar,
 )
+
+from ldap.pkginfo import __version__  # noqa: F401
+
 
 T = TypeVar('T', bound=Any)
 

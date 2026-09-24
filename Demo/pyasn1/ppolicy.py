@@ -10,9 +10,13 @@ pyasn1-modules
 python-ldap 2.4+
 """
 
-import sys,ldap,ldapurl,getpass
+import getpass
+import sys
 
-from ldap.controls.ppolicy import PasswordPolicyError,PasswordPolicyControl
+import ldap
+import ldapurl
+from ldap.controls.ppolicy import PasswordPolicyControl, PasswordPolicyError
+
 
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])
