@@ -14,7 +14,7 @@ import unittest
 os.environ['LDAPNOINIT'] = '1'
 
 # import the plain C wrapper module
-import ldap._ldap as _ldap
+from ldap import _ldap
 from slapdtest import SlapdTestCase, requires_init_fd, requires_tls
 
 
