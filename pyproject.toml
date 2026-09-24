@@ -173,3 +173,11 @@ exclude_lines = [
 [tool.coverage.html]
 directory = "build/htmlcov"
 title = "python-ldap coverage report"
+
+[tool.mypy]
+strict = true
+files = ["Lib/"]
+
+[[tool.mypy.overrides]]
+module = ["pyasn1.*", "pyasn1_modules.*"]
+ignore_missing_imports = true

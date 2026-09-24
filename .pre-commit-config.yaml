@@ -49,3 +49,10 @@ repos:
         alias: "clang-format-check"
         types_or: [c]
         args: ["--dry-run"]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.19.1
+    hooks:
+      - id: mypy
+        pass_filenames: false
+        additional_dependencies:
+          - types-pyasn1==0.6.0.20250914
