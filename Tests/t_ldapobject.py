@@ -168,7 +168,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         result = l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
         result.sort()
         dn, fields = result[0]
-        self.assertEqual(dn, 'cn=Foo1,%s' % base)
+        self.assertEqual(dn, f'cn=Foo1,{base}')
         self.assertEqual(type(dn), str)
         for key, values in fields.items():
             self.assertEqual(type(key), str)
@@ -328,7 +328,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             if info != expected_info:
                 self.fail(f"expected info={expected_info!r}, got {info!r}")
         else:
-            self.fail("expected SERVER_DOWN, got %r" % r)
+            self.fail(f"expected SERVER_DOWN, got {r!r}")
 
     def test005_invalid_credentials(self):
         l = self.ldap_object_class(self.server.ldap_uri)
@@ -339,7 +339,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         except ldap.INVALID_CREDENTIALS:
             pass
         else:
-            self.fail("expected INVALID_CREDENTIALS, got %r" % r)
+            self.fail(f"expected INVALID_CREDENTIALS, got {r!r}")
 
     @requires_sasl()
     @requires_ldapi()
@@ -347,7 +347,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         l = self.ldap_object_class(self.server.ldapi_uri)
         l.sasl_external_bind_s()
         self.assertEqual(l.whoami_s(), 'dn:'+self.server.root_dn.lower())
-        authz_id = 'dn:cn=Foo2,%s' % (self.server.suffix)
+        authz_id = f'dn:cn=Foo2,{self.server.suffix}'
         l = self.ldap_object_class(self.server.ldapi_uri)
         l.sasl_external_bind_s(authz_id=authz_id)
         self.assertEqual(l.whoami_s(), authz_id.lower())
@@ -480,31 +480,31 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
     def test_compare_s_true(self):
         base = self.server.suffix
         l = self._ldap_conn
-        result = l.compare_s('cn=Foo1,%s' % base, 'cn', b'Foo1')
+        result = l.compare_s(f'cn=Foo1,{base}', 'cn', b'Foo1')
         self.assertIs(result, True)
 
     def test_compare_s_false(self):
         base = self.server.suffix
         l = self._ldap_conn
-        result = l.compare_s('cn=Foo1,%s' % base, 'cn', b'Foo2')
+        result = l.compare_s(f'cn=Foo1,{base}', 'cn', b'Foo2')
         self.assertIs(result, False)
 
     def test_compare_s_notfound(self):
         base = self.server.suffix
         l = self._ldap_conn
         with self.assertRaises(ldap.NO_SUCH_OBJECT):
-            l.compare_s('cn=invalid,%s' % base, 'cn', b'Foo2')
+            l.compare_s(f'cn=invalid,{base}', 'cn', b'Foo2')
 
     def test_compare_s_invalidattr(self):
         base = self.server.suffix
         l = self._ldap_conn
         with self.assertRaises(ldap.UNDEFINED_TYPE):
-            l.compare_s('cn=Foo1,%s' % base, 'invalidattr', b'invalid')
+            l.compare_s(f'cn=Foo1,{base}', 'invalidattr', b'invalid')
 
     def test_compare_true_exception_contains_message_id(self):
         base = self.server.suffix
         l = self._ldap_conn
-        msgid = l.compare('cn=Foo1,%s' % base, 'cn', b'Foo1')
+        msgid = l.compare(f'cn=Foo1,{base}', 'cn', b'Foo1')
         with self.assertRaises(ldap.COMPARE_TRUE) as cm:
             l.result()
         self.assertEqual(cm.exception.args[0]["msgid"], msgid)
@@ -554,7 +554,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
 
     def test_slapadd(self):
         with self.assertRaises(ldap.INVALID_DN_SYNTAX):
-            self._ldap_conn.add_s("myAttribute=foobar,ou=Container,%s" % self.server.suffix, [
+            self._ldap_conn.add_s(f"myAttribute=foobar,ou=Container,{self.server.suffix}", [
                 ("objectClass", b'myClass'),
                 ("myAttribute", b'foobar'),
             ])
@@ -563,7 +563,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.server.restart()
         self.reset_connection()
 
-        self._ldap_conn.add_s("myAttribute=foobar,ou=Container,%s" % self.server.suffix, [
+        self._ldap_conn.add_s(f"myAttribute=foobar,ou=Container,{self.server.suffix}", [
             ("objectClass", b'myClass'),
             ("myAttribute", b'foobar'),
         ])
@@ -580,7 +580,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
 
         for attrlist in valid_attrlist_parameters:
             l.search_ext(
-                "%s" % self.server.suffix, ldap.SCOPE_SUBTREE, attrlist=attrlist
+                f"{self.server.suffix}", ldap.SCOPE_SUBTREE, attrlist=attrlist
             )
 
     def test_invalid_attrlist_parameter_types(self):
@@ -597,7 +597,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         for attrlist in invalid_attrlist_parameters:
             with self.assertRaises(TypeError):
                 l.search_ext(
-                    "%s" % self.server.suffix, ldap.SCOPE_SUBTREE, attrlist=attrlist
+                    f"{self.server.suffix}", ldap.SCOPE_SUBTREE, attrlist=attrlist
                 )
 
     def test_referral_error(self):
@@ -606,7 +606,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         l = self._open_ldap_conn(bytes_mode=False)
 
         l.set_option(ldap.OPT_REFERRALS, 0)
-        dn = "cn=delegated,ou=Container,%s" % self.server.suffix
+        dn = f"cn=delegated,ou=Container,{self.server.suffix}"
         l.add_s(dn, [
             ("objectClass", [b'referral', b'extensibleObject']),
             ("ref", b'ldap://ldap.example.com'),

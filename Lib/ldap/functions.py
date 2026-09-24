@@ -67,10 +67,10 @@ def _ldap_function_call(
         lock.release()
   except LDAPError as e:
     if __debug__ and ldap._trace_level>=2:
-      ldap._trace_file.write('=> LDAPError: %s\n' % (str(e)))
+      ldap._trace_file.write(f'=> LDAPError: {e!s}\n')
     raise
   if __debug__ and ldap._trace_level>=2:
-    ldap._trace_file.write('=> result:\n%s\n' % (pprint.pformat(result)))
+    ldap._trace_file.write(f'=> result:\n{pprint.pformat(result)}\n')
   return result
 
 

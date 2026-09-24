@@ -500,8 +500,8 @@ def check_pyi() -> int:  # pragma: no cover
     sys.stderr.writelines(difflib.unified_diff(
         on_disk.splitlines(keepends=True),
         expected.splitlines(keepends=True),
-        fromfile='%s (on disk)' % path,
-        tofile='%s (expected)' % path,
+        fromfile=f'{path} (on disk)',
+        tofile=f'{path} (expected)',
     ))
     sys.stderr.write(
         '\n_ldap.pyi is out of date, regenerate it with:\n'

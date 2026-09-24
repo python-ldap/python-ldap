@@ -15,7 +15,7 @@ from setuptools import Extension, setup
 
 if sys.version_info < (3, 6):  # noqa: UP036
   raise RuntimeError(
-    'The C API from Python 3.6+ is required, found %s' % sys.version_info
+    'The C API from Python 3.6+ is required, found %s' % sys.version_info  # noqa: UP031
   )
 
 from configparser import ConfigParser
