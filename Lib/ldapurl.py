@@ -37,21 +37,21 @@ LDAP_SCOPE_SUBTREE = 2
 LDAP_SCOPE_SUBORDINATES = 3
 
 SEARCH_SCOPE_STR = {
-  None:'',
-  LDAP_SCOPE_BASE:'base',
-  LDAP_SCOPE_ONELEVEL:'one',
-  LDAP_SCOPE_SUBTREE:'sub',
-  LDAP_SCOPE_SUBORDINATES:'subordinates',
+  None: '',
+  LDAP_SCOPE_BASE: 'base',
+  LDAP_SCOPE_ONELEVEL: 'one',
+  LDAP_SCOPE_SUBTREE: 'sub',
+  LDAP_SCOPE_SUBORDINATES: 'subordinates',
 }
 
 SEARCH_SCOPE = {
-  '':None,
+  '': None,
   # the search scope strings defined in RFC 4516
-  'base':LDAP_SCOPE_BASE,
-  'one':LDAP_SCOPE_ONELEVEL,
-  'sub':LDAP_SCOPE_SUBTREE,
+  'base': LDAP_SCOPE_BASE,
+  'one': LDAP_SCOPE_ONELEVEL,
+  'sub': LDAP_SCOPE_SUBTREE,
   # from draft-sermersheim-ldap-subordinate-scope
-  'subordinates':LDAP_SCOPE_SUBORDINATES,
+  'subordinates': LDAP_SCOPE_SUBORDINATES,
 }
 
 
@@ -63,7 +63,7 @@ def isLDAPUrl(s: str) -> bool:
 
 def ldapUrlEscape(s: str) -> str:
   """Returns URL encoding of string s"""
-  return quote(s).replace(',','%2C').replace('/','%2F')
+  return quote(s).replace(',', '%2C').replace('/', '%2F')
 
 
 class LDAPUrlExtension:
@@ -97,27 +97,27 @@ class LDAPUrlExtension:
     extension = extension.strip()
     if not extension:
       # Don't parse empty strings
-      self.extype,self.exvalue = None,None
+      self.extype, self.exvalue = None, None
       return
-    self.critical = extension[0]=='!'
-    if extension[0]=='!':
+    self.critical = extension[0] == '!'
+    if extension[0] == '!':
       extension = extension[1:].strip()
     try:
-      self.extype,self.exvalue = extension.split('=',1)
+      self.extype, self.exvalue = extension.split('=', 1)
     except ValueError:
       # No value, just the extype
-      self.extype,self.exvalue = extension,None
+      self.extype, self.exvalue = extension, None
     else:
       self.exvalue = unquote(self.exvalue.strip())
     self.extype = self.extype.strip()
 
   def unparse(self) -> str:
     if self.exvalue is None:
-      return '{}{}'.format('!'*(self.critical>0),self.extype)
+      return '{}{}'.format('!' * (self.critical > 0), self.extype)
     else:
       return '{}{}={}'.format(
-        '!'*(self.critical>0),
-        self.extype,quote(self.exvalue or '')
+        '!' * (self.critical > 0),
+        self.extype, quote(self.exvalue or '')
       )
 
   def __str__(self) -> str:
@@ -138,6 +138,7 @@ class LDAPUrlExtension:
 
 
 LDAPUrlExtensionsBase: TypeAlias = MutableMapping[str, LDAPUrlExtension]
+
 
 class LDAPUrlExtensions(LDAPUrlExtensionsBase):
     """
@@ -228,7 +229,7 @@ class LDAPUrl:
         Maps automagically to X-BINDPW LDAP URL extension
   """
 
-  attr2extype = {'who':'bindname','cred':'X-BINDPW'}
+  attr2extype = {'who': 'bindname', 'cred': 'X-BINDPW'}
 
   def __init__(
     self,
@@ -244,19 +245,19 @@ class LDAPUrl:
     cred: str | None = None
   ) -> None:
 
-    self.urlscheme=urlscheme.lower()
-    self.hostport=hostport
-    self.dn=dn
-    self.attrs=attrs
-    self.scope=scope
-    self.filterstr=filterstr
+    self.urlscheme = urlscheme.lower()
+    self.hostport = hostport
+    self.dn = dn
+    self.attrs = attrs
+    self.scope = scope
+    self.filterstr = filterstr
     self.extensions: LDAPUrlExtensions | None = (extensions or LDAPUrlExtensions({}))
 
     if ldapUrl is not None:
       self._parse(ldapUrl)
-    if who!=None:
+    if who is not None:
       self.who = who
-    if cred!=None:
+    if cred is not None:
       self.cred = cred
 
   def __eq__(self, other: object) -> bool:
@@ -276,47 +277,47 @@ class LDAPUrl:
     """
     if not isLDAPUrl(ldap_url):
       raise ValueError(f'Value {ldap_url!r} for ldap_url does not seem to be a LDAP URL.')
-    scheme,rest = ldap_url.split('://',1)
+    scheme, rest = ldap_url.split('://', 1)
     self.urlscheme = scheme.lower()
     slash_pos = rest.find('/')
     qemark_pos = rest.find('?')
-    if (slash_pos==-1) and (qemark_pos==-1):
+    if (slash_pos == -1) and (qemark_pos == -1):
       # No / and ? found at all
       self.hostport = unquote(rest)
       self.dn = ''
       return
     else:
-      if slash_pos!=-1 and (qemark_pos==-1 or (slash_pos<qemark_pos)):
+      if slash_pos != -1 and (qemark_pos == -1 or (slash_pos < qemark_pos)):
         # Slash separates DN from hostport
         self.hostport = unquote(rest[:slash_pos])
         # Eat the slash from rest
-        rest = rest[slash_pos+1:]
-      elif qemark_pos!=1 and (slash_pos==-1 or (slash_pos>qemark_pos)):
+        rest = rest[slash_pos + 1:]
+      elif qemark_pos != 1 and (slash_pos == -1 or (slash_pos > qemark_pos)):
         # Question mark separates hostport from rest, DN is assumed to be empty
         self.hostport = unquote(rest[:qemark_pos])
         # Do not eat question mark
         rest = rest[qemark_pos:]
       else:
         raise ValueError('Something completely weird happened!')
-    paramlist=rest.split('?',4)
+    paramlist = rest.split('?', 4)
     paramlist_len = len(paramlist)
-    if paramlist_len>=1:
+    if paramlist_len >= 1:
       self.dn = unquote(paramlist[0]).strip()
-    if (paramlist_len>=2) and (paramlist[1]):
+    if (paramlist_len >= 2) and (paramlist[1]):
       self.attrs = unquote(paramlist[1].strip()).split(',')
-    if paramlist_len>=3:
+    if paramlist_len >= 3:
       scope = paramlist[2].strip()
       try:
         self.scope = SEARCH_SCOPE[scope]
       except KeyError:
         raise ValueError(f'Invalid search scope {scope!r}')
-    if paramlist_len>=4:
+    if paramlist_len >= 4:
       filterstr = paramlist[3].strip()
       if not filterstr:
         self.filterstr = None
       else:
         self.filterstr = unquote(filterstr)
-    if paramlist_len>=5:
+    if paramlist_len >= 5:
       if paramlist[4]:
         self.extensions = LDAPUrlExtensions()
         self.extensions.parse(paramlist[4])
@@ -333,14 +334,14 @@ class LDAPUrl:
         to default values
     """
     for k, value in defaults.items():
-      if getattr(self,k) is None:
+      if getattr(self, k) is None:
         setattr(self, k, value)
 
   def initializeUrl(self) -> str:
     """
     Returns LDAP URL suitable to be passed to ldap.initialize()
     """
-    if self.urlscheme=='ldapi':
+    if self.urlscheme == 'ldapi':
       # hostport part might contain slashes when ldapi:// is used
       hostport = ldapUrlEscape(self.hostport)
     else:
@@ -361,7 +362,7 @@ class LDAPUrl:
     else:
       filterstr = ldapUrlEscape(self.filterstr)
     dn = ldapUrlEscape(self.dn)
-    if self.urlscheme=='ldapi':
+    if self.urlscheme == 'ldapi':
       # hostport part might contain slashes when ldapi:// is used
       hostport = ldapUrlEscape(self.hostport)
     else:
@@ -429,13 +430,13 @@ class LDAPUrl:
       extype = self.attr2extype[name]
       if value is None:
         # A value of None means that extension is deleted
-        delattr(self,name)
+        delattr(self, name)
       else:
         # Add appropriate extension
         if self.extensions is None:
           self.extensions = LDAPUrlExtensions()
         self.extensions[extype] = LDAPUrlExtension(
-          extype=extype,exvalue=unquote(value)
+          extype=extype, exvalue=unquote(value)
         )
     else:
       self.__dict__[name] = value

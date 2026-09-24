@@ -11,22 +11,23 @@ hinting that this is not the actual ldap._ldap.
 
 See https://www.python-ldap.org/ for details.
 """
-
 import sys
-
-
-# Cause `import ldap._ldap` to import this module instead of the actual module.
-sys.modules['ldap._ldap'] = sys.modules[__name__]
 
 from constants import CONSTANTS
 from pkginfo import __version__  # noqa: F401
 
 
+# Cause `import ldap._ldap` to import this module instead of the actual module.
+sys.modules['ldap._ldap'] = sys.modules[__name__]
+
+
 for constant in CONSTANTS:
     globals()[constant.name] = constant
 
+
 def get_option(num):
     pass
+
 
 class LDAPError:
     pass

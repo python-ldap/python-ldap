@@ -8,14 +8,11 @@ LIBLDAP_R: int
 OPT_OFF: int
 OPT_ON: int
 
-
 class LDAPError(Exception):
     ...
 
-
 class error(Exception):
     ...
-
 
 # BEGIN GENERATED
 # Regenerate with: python Lib/ldap/constants.py --pyi
@@ -197,278 +194,209 @@ VERSION3: int
 VERSION_MAX: int
 VERSION_MIN: int
 
-
 class ADMINLIMIT_EXCEEDED(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class AFFECTS_MULTIPLE_DSAS(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class ALIAS_DEREF_PROBLEM(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class ALIAS_PROBLEM(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class ALREADY_EXISTS(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class ASSERTION_FAILED(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class AUTH_METHOD_NOT_SUPPORTED(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class AUTH_UNKNOWN(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class BUSY(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class CANCELLED(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class CANNOT_CANCEL(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class CLIENT_LOOP(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class COMPARE_FALSE(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class COMPARE_TRUE(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class CONFIDENTIALITY_REQUIRED(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class CONNECT_ERROR(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class CONSTRAINT_VIOLATION(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class CONTROL_NOT_FOUND(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class DECODING_ERROR(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class ENCODING_ERROR(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class FILTER_ERROR(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class INAPPROPRIATE_AUTH(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class INAPPROPRIATE_MATCHING(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class INSUFFICIENT_ACCESS(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class INVALID_CREDENTIALS(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class INVALID_DN_SYNTAX(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class INVALID_SYNTAX(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class IS_LEAF(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class LOCAL_ERROR(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class LOOP_DETECT(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class MORE_RESULTS_TO_RETURN(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class NAMING_VIOLATION(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class NO_MEMORY(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class NO_OBJECT_CLASS_MODS(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class NO_RESULTS_RETURNED(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class NO_SUCH_ATTRIBUTE(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class NO_SUCH_OBJECT(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class NO_SUCH_OPERATION(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class NOT_ALLOWED_ON_NONLEAF(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class NOT_ALLOWED_ON_RDN(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class NOT_SUPPORTED(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class OBJECT_CLASS_VIOLATION(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class OPERATIONS_ERROR(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class OTHER(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class PARAM_ERROR(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class PARTIAL_RESULTS(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class PROTOCOL_ERROR(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class PROXIED_AUTHORIZATION_DENIED(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class REFERRAL(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class REFERRAL_LIMIT_EXCEEDED(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class RESULTS_TOO_LARGE(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class SASL_BIND_IN_PROGRESS(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class SERVER_DOWN(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class SIZELIMIT_EXCEEDED(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class STRONG_AUTH_NOT_SUPPORTED(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class STRONG_AUTH_REQUIRED(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class SUCCESS(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class TIMELIMIT_EXCEEDED(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class TIMEOUT(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class TOO_LATE(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class TYPE_OR_VALUE_EXISTS(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class UNAVAILABLE(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class UNAVAILABLE_CRITICAL_EXTENSION(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class UNDEFINED_TYPE(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class UNWILLING_TO_PERFORM(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 class USER_CANCELLED(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class VLV_ERROR(LDAPError):
     errnum: ClassVar[int] = ...
 
-
 class X_PROXY_AUTHZ_FAILURE(LDAPError):
     errnum: ClassVar[int] = ...
-
 
 # END GENERATED
 

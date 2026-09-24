@@ -7,15 +7,14 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import annotations
 
+import ldap
 from ldap import _ldap
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl, RequestControl
 from ldap.pkginfo import __version__
 
 
-assert _ldap.__version__==__version__, \
+assert _ldap.__version__ == __version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
-
-import ldap
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl, RequestControl
 
 
 class AssertionControl(RequestControl):
@@ -80,12 +79,13 @@ class SimplePagedResultsControl(LDAPControl):
     cookie: str | bytes | None = None
   ) -> None:
     self.criticality = criticality
-    self.size,self.cookie = size,cookie
+    self.size, self.cookie = size, cookie
 
   def encodeControlValue(self) -> bytes:
-    return _ldap.encode_page_control(self.size,self.cookie)  # type: ignore
+    return _ldap.encode_page_control(self.size, self.cookie)  # type: ignore
 
-  def decodeControlValue(self,encodedControlValue: bytes) -> None:
-    self.size,self.cookie = _ldap.decode_page_control(encodedControlValue)
+  def decodeControlValue(self, encodedControlValue: bytes) -> None:
+    self.size, self.cookie = _ldap.decode_page_control(encodedControlValue)
+
 
 KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_PAGEDRESULTS] = SimplePagedResultsControl

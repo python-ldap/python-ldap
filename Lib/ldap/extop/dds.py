@@ -24,13 +24,13 @@ class RefreshRequest(ExtendedRequest):
       namedtype.NamedType(
         'entryName',
         LDAPDN().subtype(
-          implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,0)
+          implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
         )
       ),
       namedtype.NamedType(
         'requestTtl',
         univ.Integer().subtype(  # type: ignore[no-untyped-call]
-          implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,1)
+          implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1)
         )
       ),
     )
@@ -52,13 +52,13 @@ class RefreshRequest(ExtendedRequest):
     p.setComponentByName(
       'entryName',
       LDAPDN(self.entryName).subtype(
-        implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple,0)
+        implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
       )
     )
     p.setComponentByName(
       'requestTtl',
       univ.Integer(self.requestTtl).subtype(  # type: ignore[no-untyped-call]
-        implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,1)
+        implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1)
       )
     )
     return encoder.encode(p)  # type: ignore[no-any-return]
@@ -72,12 +72,12 @@ class RefreshResponse(ExtendedResponse):
       namedtype.NamedType(
         'responseTtl',
         univ.Integer().subtype(  # type: ignore[no-untyped-call]
-          implicitTag=tag.Tag(tag.tagClassContext,tag.tagFormatSimple,1)
+          implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1)
         )
       )
     )
 
   def decodeResponseValue(self, value: bytes | None) -> int:
-    respValue,_ = decoder.decode(value,asn1Spec=self.RefreshResponseValue())
+    respValue, _ = decoder.decode(value, asn1Spec=self.RefreshResponseValue())
     self.responseTtl = int(respValue.getComponentByName('responseTtl'))
     return self.responseTtl

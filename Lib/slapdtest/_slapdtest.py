@@ -80,6 +80,7 @@ else:
 
 T = TypeVar('T', bound=Any)
 
+
 def identity(test_item: T) -> T:
     """Identity decorator
 
@@ -123,6 +124,7 @@ def requires_ldapi() -> Callable[..., Any]:
     else:
         return identity
 
+
 def requires_init_fd() -> Callable[..., Any]:
     if not ldap.INIT_FD_AVAIL:
         return skip_unless_ci(
@@ -139,6 +141,7 @@ def _add_sbin(path: str) -> str:
             if sbin not in directories:
                 directories.append(sbin)
     return os.pathsep.join(directories)
+
 
 def combined_logger(
         log_name: str,
@@ -432,7 +435,7 @@ class SlapdObject:
         stderr = None
         if self._log.isEnabledFor(logging.DEBUG):
             slapd_args.extend(['-d', '-1'])
-            stderr = os.open(os.path.join(self.testrundir, 'slapd.log'), os.O_WRONLY|os.O_CREAT)
+            stderr = os.open(os.path.join(self.testrundir, 'slapd.log'), os.O_WRONLY | os.O_CREAT)
         else:
             slapd_args.extend(['-d', '0'])
         self._log.info('starting slapd: %r', ' '.join(slapd_args))
@@ -665,7 +668,7 @@ class SlapdTestCase(unittest.TestCase):
 
         ldap_conn = self.ldap_object_class(self.server.ldap_uri, **kwargs)
         ldap_conn.protocol_version = 3
-        #ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
+        # ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
         ldap_conn.simple_bind_s(who or self.server.root_dn, cred or self.server.root_pw)
         return ldap_conn
 

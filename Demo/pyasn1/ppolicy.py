@@ -20,12 +20,12 @@ from ldap.controls.ppolicy import PasswordPolicyControl, PasswordPolicyError
 
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])
-except (IndexError,ValueError):
+except (IndexError, ValueError):
   print('Usage: ppolicy.py <LDAP URL>')
   sys.exit(1)
 
 # Set debugging level
-#ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
+# ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
@@ -40,15 +40,15 @@ if ldap_url.cred is None:
   ldap_url.cred = getpass.getpass()
 
 try:
-  msgid = ldap_conn.simple_bind(ldap_url.who,ldap_url.cred,serverctrls=[PasswordPolicyControl()])
-  res_type,res_data,res_msgid,res_ctrls = ldap_conn.result3(msgid)
+  msgid = ldap_conn.simple_bind(ldap_url.who, ldap_url.cred, serverctrls=[PasswordPolicyControl()])
+  res_type, res_data, res_msgid, res_ctrls = ldap_conn.result3(msgid)
 except ldap.INVALID_CREDENTIALS as e:
-  print('Simple bind failed:',str(e))
+  print('Simple bind failed:', str(e))
   sys.exit(1)
 else:
-  if res_ctrls[0].controlType==PasswordPolicyControl.controlType:
+  if res_ctrls[0].controlType == PasswordPolicyControl.controlType:
     ppolicy_ctrl = res_ctrls[0]
     print('PasswordPolicyControl')
-    print('error',repr(ppolicy_ctrl.error),(ppolicy_ctrl.error!=None)*repr(PasswordPolicyError(ppolicy_ctrl.error)))
-    print('timeBeforeExpiration',repr(ppolicy_ctrl.timeBeforeExpiration))
-    print('graceAuthNsRemaining',repr(ppolicy_ctrl.graceAuthNsRemaining))
+    print('error', repr(ppolicy_ctrl.error), (ppolicy_ctrl.error is not None) * repr(PasswordPolicyError(ppolicy_ctrl.error)))
+    print('timeBeforeExpiration', repr(ppolicy_ctrl.timeBeforeExpiration))
+    print('graceAuthNsRemaining', repr(ppolicy_ctrl.graceAuthNsRemaining))

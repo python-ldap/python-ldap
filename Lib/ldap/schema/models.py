@@ -28,11 +28,11 @@ NOT_HUMAN_READABLE_LDAP_SYNTAXES = {
   '1.3.6.1.4.1.1466.115.121.1.5',  # Binary
   '1.3.6.1.4.1.1466.115.121.1.8',  # Certificate
   '1.3.6.1.4.1.1466.115.121.1.9',  # Certificate List
-  '1.3.6.1.4.1.1466.115.121.1.10', # Certificate Pair
-  '1.3.6.1.4.1.1466.115.121.1.23', # G3 FAX
-  '1.3.6.1.4.1.1466.115.121.1.28', # JPEG
-  '1.3.6.1.4.1.1466.115.121.1.40', # Octet String
-  '1.3.6.1.4.1.1466.115.121.1.49', # Supported Algorithm
+  '1.3.6.1.4.1.1466.115.121.1.10',  # Certificate Pair
+  '1.3.6.1.4.1.1466.115.121.1.23',  # G3 FAX
+  '1.3.6.1.4.1.1466.115.121.1.28',  # JPEG
+  '1.3.6.1.4.1.1466.115.121.1.40',  # Octet String
+  '1.3.6.1.4.1.1466.115.121.1.49',  # Supported Algorithm
 }
 
 
@@ -106,30 +106,30 @@ class SchemaElement:
     elif value == "":
       return ""
     elif quoted:
-      return " {} '{}'".format(key,value.replace("'","\\'"))
+      return " {} '{}'".format(key, value.replace("'", "\\'"))
     else:
       return f" {key} {value}"
 
   def key_list(
     self, key: str, values: tuple[str, ...], sep: str = ' ', quoted: int = 0
   ) -> str:
-    assert isinstance(values, tuple),TypeError(f"values has to be a tuple, was {values!r}")
+    assert isinstance(values, tuple), TypeError(f"values has to be a tuple, was {values!r}")
     if not values:
       return ''
 
     if quoted:
-      quoted_values = [ "'{}'".format(value.replace("'","\\'")) for value in values ]
+      quoted_values = ["'{}'".format(value.replace("'", "\\'")) for value in values]
     else:
       quoted_values = list(values)
 
-    if len(quoted_values)==1:
+    if len(quoted_values) == 1:
       return f' {key} {quoted_values[0]}'
     else:
       return f' {key} ( {sep.join(quoted_values)} )'
 
   def __str__(self) -> str:
     result = [str(self.oid)]
-    result.append(self.key_attr('DESC',self.desc,quoted=1))
+    result.append(self.key_attr('DESC', self.desc, quoted=1))
     return '( {} )'.format(''.join(result))
 
 
@@ -207,7 +207,7 @@ class ObjectClass(SchemaElement):
     elif 'AUXILIARY' in d:
       self.kind = 2
 
-    if self.kind==0 and len(d.get('SUP', ())) == 0 and self.oid!='2.5.6.0':
+    if self.kind == 0 and len(d.get('SUP', ())) == 0 and self.oid != '2.5.6.0':
       # STRUCTURAL object classes are sub-classes of 'top' by default
       self.sup: tuple[str, ...] = ('top',)
     else:
@@ -218,15 +218,16 @@ class ObjectClass(SchemaElement):
     result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), self.key_list('SUP', self.sup, sep=' $ '), {False: '', True: ' OBSOLETE'}[self.obsolete], {0: ' STRUCTURAL', 1: ' ABSTRACT', 2: ' AUXILIARY'}[self.kind], self.key_list('MUST', self.must, sep=' $ '), self.key_list('MAY', self.may, sep=' $ '), self.key_list('X-ORIGIN', self.x_origin, quoted=1)))
     return '( {} )'.format(''.join(result))
 
+
 SCHEMA_CLASS_MAPPING[ObjectClass.schema_attribute] = ObjectClass
 SCHEMA_ATTR_MAPPING[ObjectClass] = ObjectClass.schema_attribute
 
 AttributeUsage = cidict({
-  'userApplication':0, # work-around for non-compliant schema
-  'userApplications':0,
-  'directoryOperation':1,
-  'distributedOperation':2,
-  'dSAOperation':3,
+  'userApplication': 0,  # work-around for non-compliant schema
+  'userApplications': 0,
+  'directoryOperation': 1,
+  'distributedOperation': 2,
+  'dSAOperation': 3,
 })
 
 
@@ -314,7 +315,7 @@ class AttributeType(SchemaElement):
   sup: tuple[str, ...]
   equality: str | None
   ordering: str | None
-  substr : str | None
+  substr: str | None
   x_origin: tuple[str, ...]
   x_ordered: str | None
 
@@ -339,7 +340,7 @@ class AttributeType(SchemaElement):
         self.syntax_len = None
       else:
         try:
-          self.syntax,syntax_len = syntax.split("{")
+          self.syntax, syntax_len = syntax.split("{")
         except ValueError:
           self.syntax = syntax
           self.syntax_len = None
@@ -360,9 +361,10 @@ class AttributeType(SchemaElement):
     result = [str(self.oid)]
     result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), self.key_list('SUP', self.sup, sep=' $ '), {0: '', 1: ' OBSOLETE'}[self.obsolete], self.key_attr('EQUALITY', self.equality), self.key_attr('ORDERING', self.ordering), self.key_attr('SUBSTR', self.substr), self.key_attr('SYNTAX', self.syntax)))
     if self.syntax_len is not None:
-      result.append(('{%d}' % (self.syntax_len))*(self.syntax_len>0))
+      result.append(('{%d}' % (self.syntax_len)) * (self.syntax_len > 0))
     result.extend(({0: '', 1: ' SINGLE-VALUE'}[self.single_value], {0: '', 1: ' COLLECTIVE'}[self.collective], {0: '', 1: ' NO-USER-MODIFICATION'}[self.no_user_mod], {0: "", 1: " USAGE directoryOperation", 2: " USAGE distributedOperation", 3: " USAGE dSAOperation"}[self.usage], self.key_list('X-ORIGIN', self.x_origin, quoted=1), self.key_attr('X-ORDERED', self.x_ordered, quoted=1)))
     return '( {} )'.format(''.join(result))
+
 
 SCHEMA_CLASS_MAPPING[AttributeType.schema_attribute] = AttributeType
 SCHEMA_ATTR_MAPPING[AttributeType] = AttributeType.schema_attribute
@@ -405,6 +407,7 @@ class LDAPSyntax(SchemaElement):
     result = [str(self.oid)]
     result.extend((self.key_attr('DESC', self.desc, quoted=1), self.key_attr('X-SUBST', self.x_subst, quoted=1), {0: '', 1: " X-NOT-HUMAN-READABLE 'TRUE'"}[self.not_human_readable]))
     return '( {} )'.format(''.join(result))
+
 
 SCHEMA_CLASS_MAPPING[LDAPSyntax.schema_attribute] = LDAPSyntax
 SCHEMA_ATTR_MAPPING[LDAPSyntax] = LDAPSyntax.schema_attribute
@@ -453,6 +456,7 @@ class MatchingRule(SchemaElement):
     result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), {0: '', 1: ' OBSOLETE'}[self.obsolete], self.key_attr('SYNTAX', self.syntax)))
     return '( {} )'.format(''.join(result))
 
+
 SCHEMA_CLASS_MAPPING[MatchingRule.schema_attribute] = MatchingRule
 SCHEMA_ATTR_MAPPING[MatchingRule] = MatchingRule.schema_attribute
 
@@ -499,6 +503,7 @@ class MatchingRuleUse(SchemaElement):
     result = [str(self.oid)]
     result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), {0: '', 1: ' OBSOLETE'}[self.obsolete], self.key_list('APPLIES', self.applies, sep=' $ ')))
     return '( {} )'.format(''.join(result))
+
 
 SCHEMA_CLASS_MAPPING[MatchingRuleUse.schema_attribute] = MatchingRuleUse
 SCHEMA_ATTR_MAPPING[MatchingRuleUse] = MatchingRuleUse.schema_attribute
@@ -558,7 +563,7 @@ class DITContentRule(SchemaElement):
   nots: tuple[str, ...]
 
   def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
-    super()._set_attrs(l ,d)
+    super()._set_attrs(l, d)
     self.obsolete = 'OBSOLETE' in d
     self.aux = d.get('AUX', ())
     self.must = d.get('MUST', ())
@@ -569,6 +574,7 @@ class DITContentRule(SchemaElement):
     result = [str(self.oid)]
     result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), {0: '', 1: ' OBSOLETE'}[self.obsolete], self.key_list('AUX', self.aux, sep=' $ '), self.key_list('MUST', self.must, sep=' $ '), self.key_list('MAY', self.may, sep=' $ '), self.key_list('NOT', self.nots, sep=' $ ')))
     return '( {} )'.format(''.join(result))
+
 
 SCHEMA_CLASS_MAPPING[DITContentRule.schema_attribute] = DITContentRule
 SCHEMA_ATTR_MAPPING[DITContentRule] = DITContentRule.schema_attribute
@@ -620,7 +626,7 @@ class DITStructureRule(SchemaElement):
     return self.ruleid
 
   def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
-    super()._set_attrs(l ,d)
+    super()._set_attrs(l, d)
     self.obsolete = 'OBSOLETE' in d
     self.form = d.get('FORM', (None,))[0]
     self.sup = d.get('SUP', ())
@@ -629,6 +635,7 @@ class DITStructureRule(SchemaElement):
     result = [str(self.ruleid)]
     result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), {0: '', 1: ' OBSOLETE'}[self.obsolete], self.key_attr('FORM', self.form, quoted=0), self.key_list('SUP', self.sup, sep=' $ ')))
     return '( {} )'.format(''.join(result))
+
 
 SCHEMA_CLASS_MAPPING[DITStructureRule.schema_attribute] = DITStructureRule
 SCHEMA_ATTR_MAPPING[DITStructureRule] = DITStructureRule.schema_attribute
@@ -677,7 +684,7 @@ class NameForm(SchemaElement):
   may: tuple[str, ...]
 
   def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
-    super()._set_attrs(l ,d)
+    super()._set_attrs(l, d)
     self.obsolete = 'OBSOLETE' in d
     self.oc = d.get('OC', (None,))[0]
     self.must = d.get('MUST', ())
@@ -687,6 +694,7 @@ class NameForm(SchemaElement):
     result = [str(self.oid)]
     result.extend((self.key_list('NAME', self.names, quoted=1), self.key_attr('DESC', self.desc, quoted=1), {0: '', 1: ' OBSOLETE'}[self.obsolete], self.key_attr('OC', self.oc), self.key_list('MUST', self.must, sep=' $ '), self.key_list('MAY', self.may, sep=' $ ')))
     return '( {} )'.format(''.join(result))
+
 
 SCHEMA_CLASS_MAPPING[NameForm.schema_attribute] = NameForm
 SCHEMA_ATTR_MAPPING[NameForm] = NameForm.schema_attribute
@@ -719,7 +727,7 @@ class Entry(EntryBase):
       return self._attrtype2keytuple[nameoroid]
     except KeyError:
       # Mapping has to be constructed
-      oid = self._s.getoid(AttributeType,nameoroid)
+      oid = self._s.getoid(AttributeType, nameoroid)
       l = nameoroid.lower().split(';')
       l[0] = oid
       t = tuple(l)
@@ -768,7 +776,7 @@ class Entry(EntryBase):
 
   def items(self) -> list[tuple[str, list[bytes]]]:  # type: ignore
     return [
-      (k,self[k])
+      (k, self[k])
       for k in self.keys()
     ]
 
@@ -799,4 +807,4 @@ class Entry(EntryBase):
     bin_ocs = self.get('objectClass', [])
     ocs = [oc if isinstance(oc, str) else oc.decode("utf-8") for oc in bin_ocs]
 
-    return self._s.attribute_types(ocs,attr_type_filter,raise_keyerror)
+    return self._s.attribute_types(ocs, attr_type_filter, raise_keyerror)

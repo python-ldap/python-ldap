@@ -40,7 +40,7 @@ else:
 from ldap import _ldap
 
 
-assert _ldap.__version__==__version__, \
+assert _ldap.__version__ == __version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 from ldap._ldap import *  # noqa: E402
 
@@ -49,9 +49,9 @@ from ldap._ldap import *  # noqa: E402
 LIBLDAP_API_INFO = _ldap.get_option(_ldap.OPT_API_INFO)
 
 OPT_NAMES_DICT = {}
-for k,v in vars(_ldap).items():
+for k, v in vars(_ldap).items():
   if k.startswith('OPT_'):
-    OPT_NAMES_DICT[v]=k
+    OPT_NAMES_DICT[v] = k
 
 LDAPLockBaseClass = threading.Lock
 
@@ -81,14 +81,14 @@ class LDAPLock:
   def acquire(self) -> bool:
     if __debug__:
       global _trace_level
-      if _trace_level>=self._min_trace_level:
+      if _trace_level >= self._min_trace_level:
         _trace_file.write(f'***{self.__class__.__name__}.acquire() {self!r} {self._desc}\n')
     return self._lock.acquire()
 
   def release(self) -> None:
     if __debug__:
       global _trace_level
-      if _trace_level>=self._min_trace_level:
+      if _trace_level >= self._min_trace_level:
         _trace_file.write(f'***{self.__class__.__name__}.release() {self!r} {self._desc}\n')
     self._lock.release()
 

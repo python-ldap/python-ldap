@@ -115,17 +115,17 @@ def parse_tokens(
 
         elif next_token == "(":
             # multi-valued
-            i += 1 # Consume left parentheses
+            i += 1  # Consume left parentheses
             start = i
             while i < len(tokens) and tokens[i] != ")":
                 i += 1
             value = tuple(filter(lambda v: v != '$', tokens[start:i]))
-            i += 1 # Consume right parentheses
+            i += 1  # Consume right parentheses
 
         else:
             # single-valued
             value = (next_token,)
-            i += 1 # Consume single value
+            i += 1  # Consume single value
 
         result[token] = value
 

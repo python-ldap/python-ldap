@@ -35,7 +35,7 @@ class TestSubschemaLDIF(unittest.TestCase):
         for test_file in TEST_SUBSCHEMA_FILES:
             # Read and parse LDIF file
             with open(test_file, 'rb') as ldif_file:
-                ldif_parser = ldif.LDIFRecordList(ldif_file,max_entries=1)
+                ldif_parser = ldif.LDIFRecordList(ldif_file, max_entries=1)
                 ldif_parser.parse()
             _, subschema_subentry = ldif_parser.all_records[0]
             sub_schema = ldap.schema.SubSchema(subschema_subentry)

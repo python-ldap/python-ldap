@@ -91,5 +91,6 @@ class TestSasl(SlapdTestCase):
             f"dn:{self.certsubject}"
         )
 
+
 if __name__ == '__main__':
     unittest.main()

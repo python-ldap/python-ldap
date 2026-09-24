@@ -14,7 +14,7 @@ from ldap import _ldap
 from ldap.pkginfo import __version__
 
 
-assert _ldap.__version__==__version__, \
+assert _ldap.__version__ == __version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 
 from pyasn1.error import PyAsn1Error  # noqa: E402
@@ -135,7 +135,7 @@ def RequestControlTuples(
     return None
   else:
     result = [
-      (c.controlType,c.criticality,c.encodeControlValue())
+      (c.controlType, c.criticality, c.encodeControlValue())
       for c in ldapControls
     ]
     return result
@@ -158,14 +158,14 @@ def DecodeControlTuples(
   """
   knownLDAPControls = knownLDAPControls or KNOWN_RESPONSE_CONTROLS
   result = []
-  for controlType,criticality,encodedControlValue in ldapControlTuples or []:
+  for controlType, criticality, encodedControlValue in ldapControlTuples or []:
     try:
       control = knownLDAPControls[controlType]()
     except KeyError:
       if criticality:
         raise ldap.UNAVAILABLE_CRITICAL_EXTENSION(f'Received unexpected critical response control with controlType {controlType!r}')
     else:
-      control.controlType,control.criticality = controlType,criticality
+      control.controlType, control.criticality = controlType, criticality
       try:
         control.decodeControlValue(encodedControlValue)
       except PyAsn1Error:

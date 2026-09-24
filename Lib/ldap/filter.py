@@ -31,12 +31,12 @@ def escape_filter_chars(assertion_value: str, escape_mode: int = 0) -> str:
     raise TypeError("assertion_value must be of type str.")
   if escape_mode:
     r = []
-    if escape_mode==1:
+    if escape_mode == 1:
       for c in assertion_value:
         if c < '0' or c > 'z' or c in "\\*()":
           c = f"\\{ord(c):02x}"
         r.append(c)
-    elif escape_mode==2:
+    elif escape_mode == 2:
       for c in assertion_value:
         r.append(f"\\{ord(c):02x}")
     else:

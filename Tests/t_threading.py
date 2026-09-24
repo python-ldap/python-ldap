@@ -5,6 +5,8 @@ import sys
 import threading
 import unittest
 
+import _ldap
+
 
 def gil_enabled():
     is_enabled = getattr(sys, '_is_gil_enabled', None)
@@ -18,8 +20,6 @@ GIL_STARTS_ENABLED = gil_enabled()
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
-
-import _ldap
 
 
 # loop and thread counts

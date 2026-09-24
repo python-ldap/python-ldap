@@ -25,7 +25,7 @@ except (IndexError, ValueError):
   sys.exit(1)
 
 # Set debugging level
-#ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
+# ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
@@ -40,20 +40,20 @@ if ldap_url.cred is None:
   ldap_url.cred = getpass.getpass()
 
 try:
-  ldap_conn.simple_bind_s(ldap_url.who or '',ldap_url.cred or '')
+  ldap_conn.simple_bind_s(ldap_url.who or '', ldap_url.cred or '')
 
 except ldap.INVALID_CREDENTIALS as e:
-  print('Simple bind failed:',str(e))
+  print('Simple bind failed:', str(e))
   sys.exit(1)
 
 else:
-  extreq = RefreshRequest(entryName=ldap_url.dn,requestTtl=request_ttl)
+  extreq = RefreshRequest(entryName=ldap_url.dn, requestTtl=request_ttl)
   try:
-    extop_resp_obj = ldap_conn.extop_s(extreq,extop_resp_class=RefreshResponse)
+    extop_resp_obj = ldap_conn.extop_s(extreq, extop_resp_class=RefreshResponse)
   except ldap.LDAPError as e:
     print(str(e))
   else:
-    if extop_resp_obj.responseTtl!=request_ttl:
-      print('Different response TTL:',extop_resp_obj.responseTtl)
+    if extop_resp_obj.responseTtl != request_ttl:
+      print('Different response TTL:', extop_resp_obj.responseTtl)
     else:
-      print('Response TTL:',extop_resp_obj.responseTtl)
+      print('Response TTL:', extop_resp_obj.responseTtl)

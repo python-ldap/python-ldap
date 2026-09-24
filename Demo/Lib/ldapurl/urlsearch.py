@@ -18,20 +18,20 @@ except IndexError:
   sys.exit(1)
 
 for a in [
-  'urlscheme','hostport','dn','attrs','scope',
-  'filterstr','extensions','who','cred'
+  'urlscheme', 'hostport', 'dn', 'attrs', 'scope',
+  'filterstr', 'extensions', 'who', 'cred'
 ]:
-  print(a,repr(getattr(ldapUrl,a)))
+  print(a, repr(getattr(ldapUrl, a)))
 
-l = ldap.initialize(ldapUrl.initializeUrl(),trace_level=1)
-if ldapUrl.who!=None:
-  if ldapUrl.cred!=None:
-    cred=ldapUrl.cred
+l = ldap.initialize(ldapUrl.initializeUrl(), trace_level=1)
+if ldapUrl.who is not None:
+  if ldapUrl.cred is not None:
+    cred = ldapUrl.cred
   else:
-    print('Enter password for simple bind with',repr(ldapUrl.who))
-    cred=getpass.getpass()
-  l.simple_bind_s(ldapUrl.who,cred)
+    print('Enter password for simple bind with', repr(ldapUrl.who))
+    cred = getpass.getpass()
+  l.simple_bind_s(ldapUrl.who, cred)
 
-res = l.search_s(ldapUrl.dn,ldapUrl.scope,ldapUrl.filterstr,ldapUrl.attrs)
+res = l.search_s(ldapUrl.dn, ldapUrl.scope, ldapUrl.filterstr, ldapUrl.attrs)
 
-print(len(res),'search results')
+print(len(res), 'search results')

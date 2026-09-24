@@ -11,13 +11,13 @@ class DeleteLeafs(ldap.asyncsearch.AsyncSearchHandler):
   """
   _entryResultTypes = ldap.asyncsearch._entryResultTypes
 
-  def __init__(self,l):
-    ldap.asyncsearch.AsyncSearchHandler.__init__(self,l)
+  def __init__(self, l):
+    ldap.asyncsearch.AsyncSearchHandler.__init__(self, l)
     self.nonLeafEntries = []
     self.deletedEntries = 0
 
-  def startSearch(self,searchRoot,searchScope):
-    if not searchScope in [ldap.SCOPE_ONELEVEL,ldap.SCOPE_SUBTREE]:
+  def startSearch(self, searchRoot, searchScope):
+    if searchScope not in [ldap.SCOPE_ONELEVEL, ldap.SCOPE_SUBTREE]:
       raise ValueError("Parameter searchScope must be either ldap.SCOPE_ONELEVEL or ldap.SCOPE_SUBTREE.")
     self.nonLeafEntries = []
     self.deletedEntries = 0
@@ -26,24 +26,24 @@ class DeleteLeafs(ldap.asyncsearch.AsyncSearchHandler):
       searchRoot,
       searchScope,
       filterStr='(objectClass=*)',
-      attrList=['hasSubordinates','numSubordinates'],
+      attrList=['hasSubordinates', 'numSubordinates'],
       attrsOnly=0,
     )
 
-  def _processSingleResult(self,resultType,resultItem):
+  def _processSingleResult(self, resultType, resultItem):
     if resultType in self._entryResultTypes:
       # Don't process search references
-      dn,entry = resultItem
+      dn, entry = resultItem
       hasSubordinates = entry.get(
         'hasSubordinates',
-        entry.get('hassubordinates',['FALSE']
+        entry.get('hassubordinates', ['FALSE']
         )
       )[0]
       numSubordinates = entry.get(
         'numSubordinates',
-        entry.get('numsubordinates',['0'])
+        entry.get('numsubordinates', ['0'])
       )[0]
-      if hasSubordinates=='TRUE' or int(numSubordinates):
+      if hasSubordinates == 'TRUE' or int(numSubordinates):
         self.nonLeafEntries.append(dn)
       else:
         try:
@@ -54,19 +54,19 @@ class DeleteLeafs(ldap.asyncsearch.AsyncSearchHandler):
           self.deletedEntries += 1
 
 
-def DelTree(l,dn,scope=ldap.SCOPE_ONELEVEL):
+def DelTree(l, dn, scope=ldap.SCOPE_ONELEVEL):
   """
   Recursively delete entries below or including entry with name dn.
   """
   leafs_deleter = DeleteLeafs(l)
-  leafs_deleter.startSearch(dn,scope)
+  leafs_deleter.startSearch(dn, scope)
   leafs_deleter.processResults()
   deleted_entries = leafs_deleter.deletedEntries
   non_leaf_entries = leafs_deleter.nonLeafEntries[:]
   while non_leaf_entries:
     dn = non_leaf_entries.pop()
-    print(deleted_entries,len(non_leaf_entries),dn)
-    leafs_deleter.startSearch(dn,ldap.SCOPE_SUBTREE)
+    print(deleted_entries, len(non_leaf_entries), dn)
+    leafs_deleter.startSearch(dn, ldap.SCOPE_SUBTREE)
     leafs_deleter.processResults()
     deleted_entries += leafs_deleter.deletedEntries
     non_leaf_entries.extend(leafs_deleter.nonLeafEntries)
@@ -77,7 +77,7 @@ def DelTree(l,dn,scope=ldap.SCOPE_ONELEVEL):
 l = ldap.initialize('ldap://localhost:1390')
 
 # Try a bind to provoke failure if protocol version is not supported
-l.simple_bind_s('cn=Directory Manager,dc=IMC,dc=org','controller')
+l.simple_bind_s('cn=Directory Manager,dc=IMC,dc=org', 'controller')
 
 # Delete all entries *below* the entry dc=Delete,dc=IMC,dc=org
-DelTree(l,'dc=Delete,dc=IMC,dc=org',ldap.SCOPE_ONELEVEL)
+DelTree(l, 'dc=Delete,dc=IMC,dc=org', ldap.SCOPE_ONELEVEL)

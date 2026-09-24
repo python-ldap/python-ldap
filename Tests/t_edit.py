@@ -20,37 +20,37 @@ class EditionTests(SlapdTestCase):
 
         # insert some Foo* objects via ldapadd
         cls.server.ldapadd("\n".join([
-            'dn: '+cls.server.suffix,
+            'dn: ' + cls.server.suffix,
             'objectClass: dcObject',
             'objectClass: organization',
-            'dc: '+suffix_dc,
-            'o: '+suffix_dc,
+            'dc: ' + suffix_dc,
+            'o: ' + suffix_dc,
             '',
-            'dn: '+cls.server.root_dn,
+            'dn: ' + cls.server.root_dn,
             'objectClass: applicationProcess',
-            'cn: '+cls.server.root_cn,
+            'cn: ' + cls.server.root_cn,
             '',
-            "dn: cn=Foo1,"+base,
+            "dn: cn=Foo1," + base,
             "objectClass: organizationalRole",
             "cn: Foo1",
             "",
-            "dn: cn=Foo2,"+base,
+            "dn: cn=Foo2," + base,
             "objectClass: organizationalRole",
             "cn: Foo2",
             "",
-            "dn: cn=Foo3,"+base,
+            "dn: cn=Foo3," + base,
             "objectClass: organizationalRole",
             "cn: Foo3",
             "",
-            "dn: ou=Container,"+base,
+            "dn: ou=Container," + base,
             "objectClass: organizationalUnit",
             "ou: Container",
             "",
-            "dn: cn=Foo4,ou=Container,"+base,
+            "dn: cn=Foo4,ou=Container," + base,
             "objectClass: organizationalRole",
             "cn: Foo4",
             "",
-        ])+"\n")
+        ]) + "\n")
 
     def setUp(self):
         self.ldap = LDAPObject(self.server.ldap_uri, bytes_mode=False)

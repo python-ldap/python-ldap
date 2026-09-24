@@ -45,8 +45,8 @@ TESTCASES_UTF8 = (
 
 # broken schema of Oracle Internet Directory
 TESTCASES_BROKEN_OID = (
-    "BLUBB DI 'BLU B B ER'MUST 'BLAH' ", #['BLUBB', 'DI', 'BLU B B ER', 'MUST', 'BLAH']
-    "BLUBBER DI 'BLU'BB ER' DA 'BLAH' ", #["BLUBBER", "DI", "BLU'BB ER", "DA", "BLAH"]
+    "BLUBB DI 'BLU B B ER'MUST 'BLAH' ",  # ['BLUBB', 'DI', 'BLU B B ER', 'MUST', 'BLAH']
+    "BLUBBER DI 'BLU'BB ER' DA 'BLAH' ",  # ["BLUBBER", "DI", "BLU'BB ER", "DA", "BLAH"]
 )
 
 # for quoted single quotes inside string values
@@ -65,6 +65,7 @@ TESTCASES_BROKEN = (
 #    "BLUB 'DA\\'",
 #    "( BLUB )) DA (",
 )
+
 
 class TestSplitTokens(unittest.TestCase):
     """

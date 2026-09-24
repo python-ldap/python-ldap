@@ -287,10 +287,10 @@ class BaseSyncreplTests:
         # insert some Foo* objects via ldapadd
         cls.server.ldapadd(
             LDIF_TEMPLATE % {
-                'suffix':cls.server.suffix,
-                'rootdn':cls.server.root_dn,
-                'rootcn':cls.server.root_cn,
-                'rootpw':cls.server.root_pw,
+                'suffix': cls.server.suffix,
+                'rootdn': cls.server.root_dn,
+                'rootcn': cls.server.root_cn,
+                'rootpw': cls.server.root_pw,
                 'dc': cls.server.suffix.split(',')[0][3:],
             }
         )
@@ -418,7 +418,6 @@ class BaseSyncreplTests:
 
         # Server data should still be intact.
         self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
-
 
     # TODO:
     # * Make a new client, with a data store, and close.  Then, load a new

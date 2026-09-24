@@ -95,8 +95,8 @@ class AsyncSearchHandler:
         list of client-side LDAP controls
     """
     self._msgId = self._l.search_ext(
-      searchRoot,searchScope,filterStr,
-      attrList,attrsOnly,serverctrls,clientctrls,timeout,sizelimit
+      searchRoot, searchScope, filterStr,
+      attrList, attrsOnly, serverctrls, clientctrls, timeout, sizelimit
     )
     self._afterFirstResult = 1
 
@@ -137,41 +137,41 @@ class AsyncSearchHandler:
 
     self.preProcessing()
     result_counter = 0
-    end_result_counter = ignoreResultsNumber+processResultsCount
+    end_result_counter = ignoreResultsNumber + processResultsCount
     go_ahead = 1
     partial = 0
     self.beginResultsDropped = 0
     self.endResultBreak = result_counter
     try:
-      result_type,result_list = None,None
+      result_type, result_list = None, None
       while go_ahead:
         while result_type is None and not result_list:
-          result_type,result_list,_result_msgid,_result_serverctrls = self._l.result3(self._msgId,0,timeout)
+          result_type, result_list, _result_msgid, _result_serverctrls = self._l.result3(self._msgId, 0, timeout)
           if self._afterFirstResult:
             self.afterFirstResult()
             self._afterFirstResult = 0
         if not result_list:
           break
         if result_type not in SEARCH_RESULT_TYPES:
-          raise WrongResultType(result_type,SEARCH_RESULT_TYPES)
+          raise WrongResultType(result_type, SEARCH_RESULT_TYPES)
         # Loop over list of search results
         for result_item in result_list:
-          if result_counter<ignoreResultsNumber:
+          if result_counter < ignoreResultsNumber:
             self.beginResultsDropped += 1
-          elif processResultsCount==0 or result_counter<end_result_counter:
-            self._processSingleResult(result_type,result_item)
+          elif processResultsCount == 0 or result_counter < end_result_counter:
+            self._processSingleResult(result_type, result_item)
           else:
-            go_ahead = 0 # break-out from while go_ahead
+            go_ahead = 0  # break-out from while go_ahead
             partial = 1
-            break # break-out from this for-loop
+            break  # break-out from this for-loop
           result_counter += 1
-        result_type,result_list = None,None
+        result_type, result_list = None, None
         self.endResultBreak = result_counter
     finally:
-      if partial and self._msgId!=None:
+      if partial and self._msgId is not None:
         self._l.abandon(self._msgId)
     self.postProcessing()
-    return partial # processResults()
+    return partial  # processResults()
 
   def _processSingleResult(
     self,
@@ -198,7 +198,7 @@ class List(AsyncSearchHandler):
   """
 
   def __init__(self, l: ldap.ldapobject.LDAPObject) -> None:
-    AsyncSearchHandler.__init__(self,l)
+    AsyncSearchHandler.__init__(self, l)
     self.allResults: list[tuple[int, LDAPSearchResult]] = []
 
   def _processSingleResult(
@@ -206,7 +206,7 @@ class List(AsyncSearchHandler):
     resultType: int,
     resultItem: LDAPSearchResult,
   ) -> None:
-    self.allResults.append((resultType,resultItem))
+    self.allResults.append((resultType, resultItem))
 
 
 class Dict(AsyncSearchHandler):
@@ -215,7 +215,7 @@ class Dict(AsyncSearchHandler):
   """
 
   def __init__(self, l: ldap.ldapobject.LDAPObject) -> None:
-    AsyncSearchHandler.__init__(self,l)
+    AsyncSearchHandler.__init__(self, l)
     self.allEntries: dict[str, LDAPEntryDict] = {}
 
   def _processSingleResult(
@@ -225,7 +225,7 @@ class Dict(AsyncSearchHandler):
   ) -> None:
     if resultType in ENTRY_RESULT_TYPES:
       # Search continuations are ignored
-      dn,entry = resultItem
+      dn, entry = resultItem
       self.allEntries[dn] = entry
 
 
@@ -240,9 +240,9 @@ class IndexedDict(Dict):
     l: ldap.ldapobject.LDAPObject,
     indexed_attrs: Sequence[str] | None = None,
   ) -> None:
-    Dict.__init__(self,l)
+    Dict.__init__(self, l)
     self.indexed_attrs = indexed_attrs or ()
-    self.index: dict[str, dict[bytes, list[str]]] = {}.fromkeys(self.indexed_attrs,{})
+    self.index: dict[str, dict[bytes, list[str]]] = {}.fromkeys(self.indexed_attrs, {})
 
   def _processSingleResult(
     self,
@@ -251,7 +251,7 @@ class IndexedDict(Dict):
   ) -> None:
     if resultType in ENTRY_RESULT_TYPES:
       # Search continuations are ignored
-      dn,entry = resultItem
+      dn, entry = resultItem
       self.allEntries[dn] = entry
       for a in self.indexed_attrs:
         if a in entry:
@@ -259,7 +259,7 @@ class IndexedDict(Dict):
             try:
               self.index[a][v].append(dn)
             except KeyError:
-              self.index[a][v] = [ dn ]
+              self.index[a][v] = [dn]
 
 
 class FileWriter(AsyncSearchHandler):
@@ -280,7 +280,7 @@ class FileWriter(AsyncSearchHandler):
     headerStr: str = '',
     footerStr: str = '',
   ) -> None:
-    AsyncSearchHandler.__init__(self,l)
+    AsyncSearchHandler.__init__(self, l)
     self._f = f
     self.headerStr = headerStr
     self.footerStr = footerStr
@@ -319,11 +319,11 @@ class LDIFWriter(FileWriter):
     headerStr: str = '',
     footerStr: str = '',
   ) -> None:
-    if isinstance(writer_obj,ldif.LDIFWriter):
+    if isinstance(writer_obj, ldif.LDIFWriter):
       self._ldif_writer = writer_obj
     else:
       self._ldif_writer = ldif.LDIFWriter(writer_obj)
-    FileWriter.__init__(self,l,self._ldif_writer._output_file,headerStr,footerStr)
+    FileWriter.__init__(self, l, self._ldif_writer._output_file, headerStr, footerStr)
 
   def _processSingleResult(
     self,
@@ -332,5 +332,5 @@ class LDIFWriter(FileWriter):
   ) -> None:
     if resultType in ENTRY_RESULT_TYPES:
       # Search continuations are ignored
-      dn,entry = resultItem
-      self._ldif_writer.unparse(dn,entry)
+      dn, entry = resultItem
+      self._ldif_writer.unparse(dn, entry)

@@ -26,7 +26,7 @@ except IndexError:
   sys.exit(1)
 
 # Set debugging level
-#ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
+# ldap.set_option(ldap.OPT_DEBUG_LEVEL,255)
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
@@ -41,10 +41,10 @@ if ldap_url.cred is None:
   ldap_url.cred = getpass.getpass()
 
 try:
-  ldap_conn.simple_bind_s(ldap_url.who,ldap_url.cred)
+  ldap_conn.simple_bind_s(ldap_url.who, ldap_url.cred)
 
 except ldap.INVALID_CREDENTIALS as e:
-  print('Simple bind failed:',str(e))
+  print('Simple bind failed:', str(e))
   sys.exit(1)
 
 psc = PersistentSearchControl()
@@ -53,24 +53,24 @@ msg_id = ldap_conn.search_ext(
   ldap_url.dn,
   ldap_url.scope,
   ldap_url.filterstr,
-  attrlist = ldap_url.attrs or ['*','+'],
+  attrlist=ldap_url.attrs or ['*', '+'],
   serverctrls=[psc],
 )
 
 while True:
   try:
-    res_type,res_data,res_msgid,_,_,_ = ldap_conn.result4(
+    res_type, res_data, res_msgid, _, _, _ = ldap_conn.result4(
       msg_id,
       all=0,
       timeout=10.0,
       add_ctrls=1,
       add_intermediates=1,
-      resp_ctrl_classes={EntryChangeNotificationControl.controlType:EntryChangeNotificationControl},
+      resp_ctrl_classes={EntryChangeNotificationControl.controlType: EntryChangeNotificationControl},
     )
   except ldap.TIMEOUT:
     print('Timeout waiting for results...')
   else:
-    for dn,entry,srv_ctrls in res_data:
+    for dn, entry, srv_ctrls in res_data:
       ecn_ctrls = [
         c
         for c in srv_ctrls
@@ -78,6 +78,6 @@ while True:
       ]
 
       if ecn_ctrls:
-        changeType,previousDN,changeNumber = ecn_ctrls[0].changeType,ecn_ctrls[0].previousDN,ecn_ctrls[0].changeNumber
+        changeType, previousDN, changeNumber = ecn_ctrls[0].changeType, ecn_ctrls[0].previousDN, ecn_ctrls[0].changeNumber
         change_type_desc = CHANGE_TYPES_STR[changeType]
-        print('changeType: %s (%d), changeNumber: %s, previousDN: %s' % (change_type_desc,changeType,changeNumber,repr(previousDN)))
+        print('changeType: %s (%d), changeNumber: %s, previousDN: %s' % (change_type_desc, changeType, changeNumber, repr(previousDN)))

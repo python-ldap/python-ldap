@@ -7,7 +7,7 @@ from ldap import _ldap
 from ldap.pkginfo import __version__
 
 
-assert _ldap.__version__==__version__, \
+assert _ldap.__version__ == __version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 
 import ldap.functions  # noqa: E402
@@ -19,19 +19,19 @@ def escape_dn_chars(s: str) -> str:
   with a back-slash (see RFC 4514, section 2.4)
   """
   if s:
-    s = s.replace('\\','\\\\')
-    s = s.replace(',' ,'\\,')
-    s = s.replace('+' ,'\\+')
-    s = s.replace('"' ,'\\"')
-    s = s.replace('<' ,'\\<')
-    s = s.replace('>' ,'\\>')
-    s = s.replace(';' ,'\\;')
-    s = s.replace('=' ,'\\=')
+    s = s.replace('\\', '\\\\')
+    s = s.replace(',', '\\,')
+    s = s.replace('+', '\\+')
+    s = s.replace('"', '\\"')
+    s = s.replace('<', '\\<')
+    s = s.replace('>', '\\>')
+    s = s.replace(';', '\\;')
+    s = s.replace('=', '\\=')
     # RFC 4514 requires NULL (U+0000) to be escaped as hex pair "\00"
-    s = s.replace('\x00' ,'\\00')
-    if s[-1]==' ':
-      s = ''.join((s[:-1],'\\ '))
-    if s[0]=='#' or s[0]==' ':
+    s = s.replace('\x00', '\\00')
+    if s[-1] == ' ':
+      s = ''.join((s[:-1], '\\ '))
+    if s[0] == '#' or s[0] == ' ':
       s = f'\\{s}'
   return s
 
@@ -54,7 +54,7 @@ def str2dn(dn: str, flags: int = 0) -> list[list[tuple[str, str, int]]]:
   """
   if not dn:
     return []
-  return ldap.functions._ldap_function_call(None,_ldap.str2dn,dn,flags)  # type: ignore
+  return ldap.functions._ldap_function_call(None, _ldap.str2dn, dn, flags)  # type: ignore
 
 
 def dn2str(dn: list[list[tuple[str, str, int]]], flags: int = 0) -> str:
@@ -70,8 +70,8 @@ def dn2str(dn: list[list[tuple[str, str, int]]], flags: int = 0) -> str:
     return ldap.functions._ldap_function_call(None, _ldap.dn2str, dn, flags)  # type: ignore
   return ','.join([
     '+'.join([
-      '='.join((atype,escape_dn_chars(avalue or '')))
-      for atype,avalue,dummy in rdn])
+      '='.join((atype, escape_dn_chars(avalue or '')))
+      for atype, avalue, dummy in rdn])
     for rdn in dn
   ])
 
@@ -86,18 +86,18 @@ def explode_dn(dn: str, notypes: bool = False, flags: int = 0) -> list[str]:
   """
   if not dn:
     return []
-  dn_decomp = str2dn(dn,flags)
+  dn_decomp = str2dn(dn, flags)
   rdn_list = []
   for rdn in dn_decomp:
     if notypes:
       rdn_list.append('+'.join([
         escape_dn_chars(avalue or '')
-        for atype,avalue,dummy in rdn
+        for atype, avalue, dummy in rdn
       ]))
     else:
       rdn_list.append('+'.join([
-        '='.join((atype,escape_dn_chars(avalue or '')))
-        for atype,avalue,dummy in rdn
+        '='.join((atype, escape_dn_chars(avalue or '')))
+        for atype, avalue, dummy in rdn
       ]))
   return rdn_list
 
@@ -113,11 +113,11 @@ def explode_rdn(rdn: str, notypes: bool = False, flags: int = 0) -> list[str]:
   """
   if not rdn:
     return []
-  rdn_decomp = str2dn(rdn,flags)[0]
+  rdn_decomp = str2dn(rdn, flags)[0]
   if notypes:
-    return [avalue or '' for atype,avalue,dummy in rdn_decomp]
+    return [avalue or '' for atype, avalue, dummy in rdn_decomp]
   else:
-    return ['='.join((atype,escape_dn_chars(avalue or ''))) for atype,avalue,dummy in rdn_decomp]
+    return ['='.join((atype, escape_dn_chars(avalue or ''))) for atype, avalue, dummy in rdn_decomp]
 
 
 def is_dn(s: str, flags: int = 0) -> bool:
@@ -126,7 +126,7 @@ def is_dn(s: str, flags: int = 0) -> bool:
   distinguished host_name (DN), otherwise False is returned.
   """
   try:
-    str2dn(s,flags)
+    str2dn(s, flags)
   except Exception:
     return False
   else:
