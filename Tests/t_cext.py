@@ -252,7 +252,7 @@ class TestLdapCExtension(SlapdTestCase):
             ldap_type()
 
     def test_simple_bind(self):
-        l = self._open_conn()
+        self._open_conn()
 
     def test_simple_bind_fileno(self):
         with self._open_conn_fd() as (_fd, l):
@@ -470,7 +470,7 @@ class TestLdapCExtension(SlapdTestCase):
         # try a false compare
         m = l.compare_ext(dn, "userPassword", "bad_string")
         with self.assertRaises(_ldap.COMPARE_FALSE) as e:
-            r = l.result4(m, _ldap.MSG_ALL, self.timeout)
+            l.result4(m, _ldap.MSG_ALL, self.timeout)
 
         self.assertEqual(e.exception.args[0]['msgid'], m)
         self.assertEqual(e.exception.args[0]['msgtype'], _ldap.RES_COMPARE)
@@ -480,7 +480,7 @@ class TestLdapCExtension(SlapdTestCase):
         # try a true compare
         m = l.compare_ext(dn, "userPassword", "the_password")
         with self.assertRaises(_ldap.COMPARE_TRUE) as e:
-            r = l.result4(m, _ldap.MSG_ALL, self.timeout)
+            l.result4(m, _ldap.MSG_ALL, self.timeout)
 
         self.assertEqual(e.exception.args[0]['msgid'], m)
         self.assertEqual(e.exception.args[0]['msgtype'], _ldap.RES_COMPARE)
@@ -490,7 +490,7 @@ class TestLdapCExtension(SlapdTestCase):
         # try a compare on bad attribute
         m = l.compare_ext(dn, "badAttribute", "ignoreme")
         with self.assertRaises(_ldap.error) as e:
-            r = l.result4(m, _ldap.MSG_ALL, self.timeout)
+            l.result4(m, _ldap.MSG_ALL, self.timeout)
 
         self.assertEqual(e.exception.args[0]['msgid'], m)
         self.assertEqual(e.exception.args[0]['msgtype'], _ldap.RES_COMPARE)

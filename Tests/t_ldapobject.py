@@ -176,11 +176,10 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
                 self.assertEqual(type(value), bytes)
 
     def test_search_accepts_unicode_dn(self):
-        base = self.server.suffix
         l = self._ldap_conn
 
         with self.assertRaises(ldap.NO_SUCH_OBJECT):
-            result = l.search_s("CN=abc\U0001f498def", ldap.SCOPE_SUBTREE)
+            l.search_s("CN=abc\U0001f498def", ldap.SCOPE_SUBTREE)
 
     def test_filterstr_accepts_unicode(self):
         l = self._ldap_conn
@@ -382,7 +381,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         m = l.search_ext(self.server.suffix, ldap.SCOPE_SUBTREE, '(objectClass=*)')
         l.abandon(m)
         with self.assertRaises(ldap.TIMEOUT):
-            result = l.result(m, timeout=0.001)
+            l.result(m, timeout=0.001)
 
     def assertIsSubclass(self, cls, other):
         self.assertTrue(
@@ -494,13 +493,13 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         base = self.server.suffix
         l = self._ldap_conn
         with self.assertRaises(ldap.NO_SUCH_OBJECT):
-            result = l.compare_s('cn=invalid,%s' % base, 'cn', b'Foo2')
+            l.compare_s('cn=invalid,%s' % base, 'cn', b'Foo2')
 
     def test_compare_s_invalidattr(self):
         base = self.server.suffix
         l = self._ldap_conn
         with self.assertRaises(ldap.UNDEFINED_TYPE):
-            result = l.compare_s('cn=Foo1,%s' % base, 'invalidattr', b'invalid')
+            l.compare_s('cn=Foo1,%s' % base, 'invalidattr', b'invalid')
 
     def test_compare_true_exception_contains_message_id(self):
         base = self.server.suffix
@@ -580,7 +579,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         valid_attrlist_parameters = [{"a": "2"}, ["a", "b"], {}, set(), {"a", "b"}]
 
         for attrlist in valid_attrlist_parameters:
-            out = l.search_ext(
+            l.search_ext(
                 "%s" % self.server.suffix, ldap.SCOPE_SUBTREE, attrlist=attrlist
             )
 
