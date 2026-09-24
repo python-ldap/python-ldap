@@ -68,3 +68,9 @@ repos:
         pass_filenames: false
         additional_dependencies:
           - types-pyasn1==0.6.0.20250914
+  - repo: https://github.com/astral-sh/ty-pre-commit
+    rev: v0.0.90
+    hooks:
+      - id: ty
+        additional_dependencies:
+          - types-pyasn1==0.6.0.20250914
