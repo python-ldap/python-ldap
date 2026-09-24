@@ -174,6 +174,5 @@ def DecodeControlTuples(
   return result
 
 
-# Import the standard sub-modules
 from ldap.controls.simple import *
 from ldap.controls.libldap import *
