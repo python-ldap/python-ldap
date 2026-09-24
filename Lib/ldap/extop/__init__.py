@@ -84,5 +84,5 @@ class ExtendedResponse:
     return value
 
 
-from ldap.extop.dds import RefreshRequest, RefreshResponse
-from ldap.extop.passwd import PasswordModifyResponse
+from ldap.extop.dds import RefreshRequest, RefreshResponse  # noqa: E402
+from ldap.extop.passwd import PasswordModifyResponse  # noqa: E402
