@@ -73,6 +73,7 @@ Contents
    resources.rst
    contributing.rst
    faq.rst
+   changelog.rst
 
 
 Indices and tables
