@@ -1,4 +1,5 @@
 """Compatibility wrappers for Py2/Py3."""
+
 from __future__ import annotations
 
 import warnings
@@ -20,8 +21,7 @@ warnings.warn(
 IterableUserDict = UserDict
 
 
-def reraise(exc_type: type[BaseException], exc_value: BaseException,
-            exc_traceback: TracebackType | None) -> NoReturn:
+def reraise(exc_type: type[BaseException], exc_value: BaseException, exc_traceback: TracebackType | None) -> NoReturn:
     """Re-raise an exception given information from sys.exc_info()
 
     Note that unlike six.reraise, this does not support replacing the

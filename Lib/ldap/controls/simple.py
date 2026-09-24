@@ -16,153 +16,144 @@ from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl, RequestControl, 
 
 
 class ValueLessRequestControl(RequestControl):
-  """
-  Base class for controls without a controlValue.
-  The presence of the control in a LDAPv3 request changes the server's
-  behaviour when processing the request simply based on the controlType.
+    """
+    Base class for controls without a controlValue.
+    The presence of the control in a LDAPv3 request changes the server's
+    behaviour when processing the request simply based on the controlType.
 
-  controlType
-    OID of the request control
-  criticality
-    criticality request control
-  """
+    controlType
+      OID of the request control
+    criticality
+      criticality request control
+    """
 
-  def __init__(
-    self, controlType: str | None = None, criticality: bool = False
-  ) -> None:
-    self.controlType = controlType
-    self.criticality = criticality
+    def __init__(self, controlType: str | None = None, criticality: bool = False) -> None:
+        self.controlType = controlType
+        self.criticality = criticality
 
-  def encodeControlValue(self) -> None:
-    return None
+    def encodeControlValue(self) -> None:
+        return None
 
 
 class OctetStringInteger(LDAPControl):
-  """
-  Base class with controlValue being unsigend integer values
+    """
+    Base class with controlValue being unsigend integer values
 
-  integerValue
-    Integer to be sent as OctetString
-  """
+    integerValue
+      Integer to be sent as OctetString
+    """
 
-  def __init__(
-    self,
-    controlType: str | None = None,
-    criticality: bool = False,
-    integerValue: int | None = None
-  ) -> None:
-    self.controlType = controlType
-    self.criticality = criticality
-    self.integerValue = integerValue
+    def __init__(self, controlType: str | None = None, criticality: bool = False, integerValue: int | None = None) -> None:
+        self.controlType = controlType
+        self.criticality = criticality
+        self.integerValue = integerValue
 
-  def encodeControlValue(self) -> bytes:
-    return struct.pack('!Q', self.integerValue)
+    def encodeControlValue(self) -> bytes:
+        return struct.pack('!Q', self.integerValue)
 
-  def decodeControlValue(self, encodedControlValue: bytes) -> None:
-    self.integerValue = struct.unpack('!Q', encodedControlValue)[0]
+    def decodeControlValue(self, encodedControlValue: bytes) -> None:
+        self.integerValue = struct.unpack('!Q', encodedControlValue)[0]
 
 
 class BooleanControl(LDAPControl):
-  """
-  Base class for simple request controls with boolean control value.
+    """
+    Base class for simple request controls with boolean control value.
 
-  Constructor argument and class attribute:
+    Constructor argument and class attribute:
 
-  booleanValue
-    Boolean (True/False or 1/0) which is the boolean controlValue.
-  """
+    booleanValue
+      Boolean (True/False or 1/0) which is the boolean controlValue.
+    """
 
-  def __init__(
-    self,
-    controlType: str | None = None,
-    criticality: bool = False,
-    booleanValue: bool = False
-  ) -> None:
-    self.controlType = controlType
-    self.criticality = criticality
-    self.booleanValue = booleanValue
+    def __init__(self, controlType: str | None = None, criticality: bool = False, booleanValue: bool = False) -> None:
+        self.controlType = controlType
+        self.criticality = criticality
+        self.booleanValue = booleanValue
 
-  def encodeControlValue(self) -> bytes:
-    return encoder.encode(self.booleanValue, asn1Spec=univ.Boolean())  # type: ignore
+    def encodeControlValue(self) -> bytes:
+        return encoder.encode(self.booleanValue, asn1Spec=univ.Boolean())  # type: ignore
 
-  def decodeControlValue(self, encodedControlValue: bytes) -> None:
-    decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=univ.Boolean())
-    self.booleanValue = bool(int(decodedValue))
+    def decodeControlValue(self, encodedControlValue: bytes) -> None:
+        decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=univ.Boolean())
+        self.booleanValue = bool(int(decodedValue))
 
 
 class ManageDSAITControl(ValueLessRequestControl):
-  """
-  Manage DSA IT Control
-  """
+    """
+    Manage DSA IT Control
+    """
 
-  def __init__(self, criticality: bool = False) -> None:
-    ValueLessRequestControl.__init__(self, ldap.CONTROL_MANAGEDSAIT, criticality=False)
+    def __init__(self, criticality: bool = False) -> None:
+        ValueLessRequestControl.__init__(self, ldap.CONTROL_MANAGEDSAIT, criticality=False)
 
 
 class RelaxRulesControl(ValueLessRequestControl):
-  """
-  Relax Rules Control
-  """
+    """
+    Relax Rules Control
+    """
 
-  def __init__(self, criticality: bool = False) -> None:
-    ValueLessRequestControl.__init__(self, ldap.CONTROL_RELAX, criticality=False)
+    def __init__(self, criticality: bool = False) -> None:
+        ValueLessRequestControl.__init__(self, ldap.CONTROL_RELAX, criticality=False)
 
 
 class ProxyAuthzControl(RequestControl):
-  """
-  Proxy Authorization Control
+    """
+    Proxy Authorization Control
 
-  authzId
-    string containing the authorization ID indicating the identity
-    on behalf which the server should process the request
-  """
+    authzId
+      string containing the authorization ID indicating the identity
+      on behalf which the server should process the request
+    """
 
-  def __init__(self, criticality: bool, authzId: str) -> None:
-    if isinstance(authzId, str):
-        encoded = authzId.encode('utf-8')
-    else:
-        encoded = authzId
-    RequestControl.__init__(self, ldap.CONTROL_PROXY_AUTHZ, criticality, encoded)
+    def __init__(self, criticality: bool, authzId: str) -> None:
+        if isinstance(authzId, str):
+            encoded = authzId.encode('utf-8')
+        else:
+            encoded = authzId
+        RequestControl.__init__(self, ldap.CONTROL_PROXY_AUTHZ, criticality, encoded)
 
 
 class AuthorizationIdentityRequestControl(ValueLessRequestControl):
-  """
-  Authorization Identity Request and Response Controls
-  """
-  controlType = '2.16.840.1.113730.3.4.16'
+    """
+    Authorization Identity Request and Response Controls
+    """
 
-  def __init__(self, criticality: bool) -> None:
-    ValueLessRequestControl.__init__(self, self.controlType, criticality)
+    controlType = '2.16.840.1.113730.3.4.16'
+
+    def __init__(self, criticality: bool) -> None:
+        ValueLessRequestControl.__init__(self, self.controlType, criticality)
 
 
 class AuthorizationIdentityResponseControl(ResponseControl):
-  """
-  Authorization Identity Request and Response Controls
+    """
+    Authorization Identity Request and Response Controls
 
-  Class attributes:
+    Class attributes:
 
-  authzId
-    decoded authorization identity
-  """
-  controlType = '2.16.840.1.113730.3.4.15'
+    authzId
+      decoded authorization identity
+    """
 
-  def decodeControlValue(self, encodedControlValue: bytes) -> None:
-    self.authzId = encodedControlValue.decode('utf-8')
+    controlType = '2.16.840.1.113730.3.4.15'
+
+    def decodeControlValue(self, encodedControlValue: bytes) -> None:
+        self.authzId = encodedControlValue.decode('utf-8')
 
 
 KNOWN_RESPONSE_CONTROLS[AuthorizationIdentityResponseControl.controlType] = AuthorizationIdentityResponseControl
 
 
 class GetEffectiveRightsControl(RequestControl):
-  """
-  Get Effective Rights Control
-  """
-  controlType = '1.3.6.1.4.1.42.2.27.9.5.2'
+    """
+    Get Effective Rights Control
+    """
 
-  def __init__(self, criticality: bool, authzId: str | None = None) -> None:
-    encoded: bytes | None
-    if isinstance(authzId, str):
-        encoded = authzId.encode('utf-8')
-    else:
-        encoded = authzId
-    RequestControl.__init__(self, self.controlType, criticality, encoded)
+    controlType = '1.3.6.1.4.1.42.2.27.9.5.2'
+
+    def __init__(self, criticality: bool, authzId: str | None = None) -> None:
+        encoded: bytes | None
+        if isinstance(authzId, str):
+            encoded = authzId.encode('utf-8')
+        else:
+            encoded = authzId
+        RequestControl.__init__(self, self.controlType, criticality, encoded)

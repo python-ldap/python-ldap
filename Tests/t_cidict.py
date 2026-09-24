@@ -50,11 +50,7 @@ class TestCidict(unittest.TestCase):
         self.assertEqual(cix.has_key("AbCDef"), False)
 
     def test_strlist_deprecated(self):
-        strlist_funcs = [
-            ldap.cidict.strlist_intersection,
-            ldap.cidict.strlist_minus,
-            ldap.cidict.strlist_union
-        ]
+        strlist_funcs = [ldap.cidict.strlist_intersection, ldap.cidict.strlist_minus, ldap.cidict.strlist_union]
         for strlist_func in strlist_funcs:
             with warnings.catch_warnings(record=True) as w:
                 warnings.resetwarnings()
@@ -73,9 +69,7 @@ class TestCidict(unittest.TestCase):
         self.assertEqual(len(w), 1)
 
     def test_copy(self):
-        cix1 = ldap.cidict.cidict(
-            {"a": 1, "B": 2}
-        )
+        cix1 = ldap.cidict.cidict({"a": 1, "B": 2})
         cix2 = cix1.copy()
         self.assertEqual(cix1, cix2)
         cix1["c"] = 3

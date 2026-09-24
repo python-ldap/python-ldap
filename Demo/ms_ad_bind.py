@@ -26,11 +26,11 @@ l.simple_bind_s(userPrincipalName, password)
 
 # SASL bind with mech DIGEST-MD5 with sAMAccountName as SASL user name
 sasl_auth = ldap.sasl.sasl(
-  {
-    ldap.sasl.CB_AUTHNAME: sAMAccountName,
-    ldap.sasl.CB_PASS: password,
-  },
-  'DIGEST-MD5'
+    {
+        ldap.sasl.CB_AUTHNAME: sAMAccountName,
+        ldap.sasl.CB_PASS: password,
+    },
+    'DIGEST-MD5',
 )
 l.sasl_interactive_bind_s("", sasl_auth)
 

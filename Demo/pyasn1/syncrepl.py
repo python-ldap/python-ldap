@@ -93,18 +93,14 @@ class SyncReplClient(ReconnectLDAPObject, SyncreplConsumer):
             # extension will call syncrepl_delete instead when it detects a
             # delete notice
             if refreshDeletes is False:
-                deletedEntries = [
-                    uuid
-                    for uuid in self.__data
-                    if uuid not in self.__presentUUIDs and uuid != 'cookie'
-                ]
+                deletedEntries = [uuid for uuid in self.__data if uuid not in self.__presentUUIDs and uuid != 'cookie']
                 self.syncrepl_delete(deletedEntries)
             # Phase is now completed, reset the list
             self.__presentUUIDs = {}
         else:
             # Note down all the UUIDs we have been sent
             for uuid in uuids:
-                    self.__presentUUIDs[uuid] = True
+                self.__presentUUIDs[uuid] = True
 
     def syncrepl_refreshdone(self):
         logger.info('Initial synchronization is now done, persist phase begins')
@@ -147,11 +143,11 @@ except IndexError:
         'Usage:\n'
         f'{sys.argv[0]} <LDAP URL> <pathname of database>\n'
         f'{sys.argv[0]} "ldap://127.0.0.1/cn=users,dc=test'
-         '?*'
-         '?sub'
-         '?(objectClass=*)'
-         '?bindname=uid=admin%2ccn=users%2cdc=test,'
-         'X-BINDPW=password" db.shelve'
+        '?*'
+        '?sub'
+        '?(objectClass=*)'
+        '?bindname=uid=admin%2ccn=users%2cdc=test,'
+        'X-BINDPW=password" db.shelve'
     )
     sys.exit(1)
 except ValueError as e:
@@ -181,7 +177,7 @@ while watcher_running:
         ldap_url.scope or ldap.SCOPE_SUBTREE,
         mode='refreshAndPersist',
         attrlist=ldap_url.attrs,
-        filterstr=ldap_url.filterstr or '(objectClass=*)'
+        filterstr=ldap_url.filterstr or '(objectClass=*)',
     )
 
     try:

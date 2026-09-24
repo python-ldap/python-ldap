@@ -3,6 +3,7 @@ slapdtest - module for spawning test instances of OpenLDAP's slapd server
 
 See https://www.python-ldap.org/ for details.
 """
+
 from __future__ import annotations
 
 import atexit
@@ -82,15 +83,12 @@ T = TypeVar('T', bound=Any)
 
 
 def identity(test_item: T) -> T:
-    """Identity decorator
-
-    """
+    """Identity decorator"""
     return test_item
 
 
 def skip_unless_ci(reason: str, feature: str | None = None) -> Callable[..., Any]:
-    """Skip test unless test case is executed on CI like Travis CI
-    """
+    """Skip test unless test case is executed on CI like Travis CI"""
     if not os.environ.get('CI') or feature in CI_DISABLED:
         return unittest.skip(reason)
     else:
@@ -111,24 +109,21 @@ def requires_tls() -> Callable[..., Any]:
 
 def requires_sasl() -> Callable[..., Any]:
     if not ldap.SASL_AVAIL:
-        return skip_unless_ci(
-            "test needs ldap.SASL_AVAIL", feature='SASL')
+        return skip_unless_ci("test needs ldap.SASL_AVAIL", feature='SASL')
     else:
         return identity
 
 
 def requires_ldapi() -> Callable[..., Any]:
     if not HAVE_LDAPI:
-        return skip_unless_ci(
-            "test needs ldapi support (AF_UNIX)", feature='LDAPI')
+        return skip_unless_ci("test needs ldapi support (AF_UNIX)", feature='LDAPI')
     else:
         return identity
 
 
 def requires_init_fd() -> Callable[..., Any]:
     if not ldap.INIT_FD_AVAIL:
-        return skip_unless_ci(
-            "test needs ldap.INIT_FD", feature='INIT_FD')
+        return skip_unless_ci("test needs ldap.INIT_FD", feature='INIT_FD')
     else:
         return identity
 
@@ -144,11 +139,11 @@ def _add_sbin(path: str) -> str:
 
 
 def combined_logger(
-        log_name: str,
-        log_level: int = logging.WARNING,
-        sys_log_format: str = '%(levelname)s %(message)s',
-        console_log_format: str = '%(asctime)s %(levelname)s %(message)s',
-    ) -> logging.Logger:
+    log_name: str,
+    log_level: int = logging.WARNING,
+    sys_log_format: str = '%(levelname)s %(message)s',
+    console_log_format: str = '%(asctime)s %(levelname)s %(message)s',
+) -> logging.Logger:
     """
     Returns a combined SysLogHandler/StreamHandler logging instance
     with formatters
@@ -162,8 +157,7 @@ def combined_logger(
     # for writing to syslog
     new_logger = logging.getLogger(log_name)
     if sys_log_format and os.path.exists('/dev/log'):
-        my_syslog_formatter = logging.Formatter(
-            fmt=f'{log_name} {sys_log_format}')
+        my_syslog_formatter = logging.Formatter(fmt=f'{log_name} {sys_log_format}')
         my_syslog_handler = logging.handlers.SysLogHandler(
             address='/dev/log',
             facility=SysLogHandler.LOG_DAEMON,
@@ -201,6 +195,7 @@ class SlapdObject:
 
         Added context manager functionality
     """
+
     slapd_conf_template = SLAPD_CONF_TEMPLATE
     database = 'mdb'
     suffix = 'dc=slapd-test,dc=python-ldap,dc=org'
@@ -208,12 +203,8 @@ class SlapdObject:
     root_pw = 'password'
     slapd_loglevel = 'stats stats2'
     local_host = LOCALHOST
-    testrunsubdirs = (
-        'slapd.d',
-    )
-    openldap_schema_files = (
-        'core.ldif',
-    )
+    testrunsubdirs = ('slapd.d',)
+    openldap_schema_files = ('core.ldif',)
 
     TMPDIR = os.environ.get('TMP', os.getcwd())
     SCHEMADIR: str | None
@@ -297,10 +288,7 @@ class SlapdObject:
             var_name = 'BIN'
         command = which(cmd, path=path)
         if command is None:
-            raise ValueError(
-                f"Command '{cmd}' not found. Set the {var_name} environment variable to "
-                f"override slapdtest's search path: {path}."
-            )
+            raise ValueError(f"Command '{cmd}' not found. Set the {var_name} environment variable to override slapdtest's search path: {path}.")
         return command
 
     def setup_rundir(self) -> None:
@@ -322,13 +310,11 @@ class SlapdObject:
         # the rest of the world is already destroyed.
         import os
         import os.path
+
         if not os.path.exists(self.testrundir):
             return
         self._log.debug('clean-up %s', self.testrundir)
-        for dirpath, dirnames, filenames in os.walk(
-                self.testrundir,
-                topdown=False
-            ):
+        for dirpath, dirnames, filenames in os.walk(self.testrundir, topdown=False):
             for filename in filenames:
                 self._log.debug('remove %s', os.path.join(dirpath, filename))
                 os.remove(os.path.join(dirpath, filename))
@@ -389,12 +375,7 @@ class SlapdObject:
         self._log.debug("importing configuration: %s", self._slapd_conf)
 
         self.slapadd(self.gen_config(), ["-n0"])
-        ldif_paths = [
-            schema
-            if os.path.exists(schema)
-            else os.path.join(self.SCHEMADIR or '', schema)
-            for schema in self.openldap_schema_files
-        ]
+        ldif_paths = [schema if os.path.exists(schema) else os.path.join(self.SCHEMADIR or '', schema) for schema in self.openldap_schema_files]
         for ldif_path in ldif_paths:
             self.slapadd(None, ["-n0", "-l", ldif_path])
 
@@ -402,14 +383,7 @@ class SlapdObject:
 
     def _test_config(self) -> None:
         self._log.debug('testing config %s', self._slapd_conf)
-        popen_list = [
-            self.PATH_SLAPD,
-            "-Ttest",
-            "-F", self._slapd_conf,
-            "-u",
-            "-v",
-            "-d", "config"
-        ]
+        popen_list = [self.PATH_SLAPD, "-Ttest", "-F", self._slapd_conf, "-u", "-v", "-d", "config"]
         p = subprocess.run(
             popen_list,
             stdout=subprocess.PIPE,
@@ -430,8 +404,10 @@ class SlapdObject:
             urls.append(self.ldapi_uri)
         slapd_args = [
             self.PATH_SLAPD,
-            '-F', self._slapd_conf,
-            '-h', ' '.join(urls),
+            '-F',
+            self._slapd_conf,
+            '-h',
+            ' '.join(urls),
         ]
         stderr = None
         if self._log.isEnabledFor(logging.DEBUG):
@@ -453,9 +429,7 @@ class SlapdObject:
                 self._stopped()
                 raise RuntimeError("slapd exited before opening port")
             try:
-                self._log.debug(
-                    "slapd connection check to %s", self.default_ldap_uri
-                )
+                self._log.debug("slapd connection check to %s", self.default_ldap_uri)
                 self.ldapwhoami()
             except RuntimeError:
                 if time.monotonic() >= deadline:
@@ -480,10 +454,7 @@ class SlapdObject:
             self._start_slapd()
             if self._proc is None:
                 raise RuntimeError("started slapd but self._proc is None")
-            self._log.debug(
-                'slapd with pid=%d listening on %s and %s',
-                self._proc.pid, self.ldap_uri, self.ldapi_uri
-            )
+            self._log.debug('slapd with pid=%d listening on %s and %s', self._proc.pid, self.ldap_uri, self.ldapi_uri)
 
     def stop(self, cleanup: bool = True) -> None:
         """
@@ -529,15 +500,18 @@ class SlapdObject:
     def _cli_auth_args(self) -> list[str]:
         if self.cli_sasl_external:
             authc_args = [
-                '-Y', 'EXTERNAL',
+                '-Y',
+                'EXTERNAL',
             ]
             if not self._log.isEnabledFor(logging.DEBUG):
                 authc_args.append('-Q')
         else:
             authc_args = [
                 '-x',
-                '-D', self.root_dn,
-                '-w', self.root_pw,
+                '-D',
+                self.root_dn,
+                '-w',
+                self.root_pw,
             ]
         return authc_args
 
@@ -561,13 +535,10 @@ class SlapdObject:
             else:
                 args = [ldapcommand, '-F', self._slapd_conf]
 
-        args += (extra_args or [])
+        args += extra_args or []
 
         self._log.debug('Run command: %r', ' '.join(args))
-        proc = subprocess.Popen(
-            args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
+        proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         self._log.debug('stdin_data=%r', stdin_data)
         stdout_data, stderr_data = proc.communicate(stdin_data)
         if stdout_data is not None:
@@ -575,9 +546,7 @@ class SlapdObject:
         if stderr_data is not None:
             self._log.debug('stderr_data=%r', stderr_data)
         if proc.wait() != 0:
-            raise RuntimeError(
-                f'{args!r} process failed:\n{stdout_data!r}\n{stderr_data!r}'
-            )
+            raise RuntimeError(f'{args!r} process failed:\n{stdout_data!r}\n{stderr_data!r}')
         return stdout_data, stderr_data
 
     def ldapwhoami(self, extra_args: list[str] | None = None) -> None:
@@ -590,22 +559,15 @@ class SlapdObject:
         """
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(self.PATH_LDAPADD, extra_args=extra_args,
-                        stdin_data=ldif.encode('utf-8'))
+        self._cli_popen(self.PATH_LDAPADD, extra_args=extra_args, stdin_data=ldif.encode('utf-8'))
 
     def ldapmodify(self, ldif: str, extra_args: list[str] | None = None) -> None:
         """
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args,
-                        stdin_data=ldif.encode('utf-8'))
+        self._cli_popen(self.PATH_LDAPMODIFY, extra_args=extra_args, stdin_data=ldif.encode('utf-8'))
 
-    def ldapdelete(
-        self,
-        dn: str,
-        recursive: bool = False,
-        extra_args: list[str] | None = None
-    ) -> None:
+    def ldapdelete(self, dn: str, recursive: bool = False, extra_args: list[str] | None = None) -> None:
         """
         Runs ldapdelete on this slapd instance, deleting 'dn'
         """
@@ -616,20 +578,11 @@ class SlapdObject:
         extra_args.append(dn)
         self._cli_popen(self.PATH_LDAPDELETE, extra_args=extra_args)
 
-    def slapadd(
-        self,
-        ldif: str | None,
-        extra_args: list[str] | None = None
-    ) -> None:
+    def slapadd(self, ldif: str | None, extra_args: list[str] | None = None) -> None:
         """
         Runs slapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(
-            self.PATH_SLAPD,
-            stdin_data=ldif.encode("utf-8") if ldif else None,
-            extra_args=extra_args,
-            tool='add'
-        )
+        self._cli_popen(self.PATH_SLAPD, stdin_data=ldif.encode("utf-8") if ldif else None, extra_args=extra_args, tool='add')
 
     def __enter__(self) -> Self:
         self.start()

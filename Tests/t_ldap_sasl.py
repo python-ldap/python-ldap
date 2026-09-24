@@ -3,6 +3,7 @@ Automatic tests for python-ldap's module ldap.sasl
 
 See https://www.python-ldap.org/ for details.
 """
+
 import os
 import unittest
 
@@ -69,10 +70,7 @@ class TestSasl(SlapdTestCase):
 
         auth = ldap.sasl.external("")
         ldap_conn.sasl_interactive_bind_s("", auth)
-        self.assertEqual(
-            ldap_conn.whoami_s().lower(),
-            f"dn:{self.server.root_dn.lower()}"
-        )
+        self.assertEqual(ldap_conn.whoami_s().lower(), f"dn:{self.server.root_dn.lower()}")
 
     @requires_tls()
     def test_external_tlscert(self):
@@ -86,10 +84,7 @@ class TestSasl(SlapdTestCase):
 
         auth = ldap.sasl.external()
         ldap_conn.sasl_interactive_bind_s("", auth)
-        self.assertEqual(
-            ldap_conn.whoami_s().lower(),
-            f"dn:{self.certsubject}"
-        )
+        self.assertEqual(ldap_conn.whoami_s().lower(), f"dn:{self.certsubject}")
 
 
 if __name__ == '__main__':

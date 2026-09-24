@@ -28,14 +28,20 @@ from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseContr
 
 class SortKeyType(univ.Sequence):
     componentType = namedtype.NamedTypes(
-            namedtype.NamedType('attributeType', univ.OctetString()),
-            namedtype.OptionalNamedType('orderingRule',
-                  univ.OctetString().subtype(  # type: ignore[no-untyped-call]
-                    implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
-                  )
-                ),
-            namedtype.DefaultedNamedType('reverseOrder', univ.Boolean(False).subtype(  # type: ignore[no-untyped-call]
-                implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1))))
+        namedtype.NamedType('attributeType', univ.OctetString()),
+        namedtype.OptionalNamedType(
+            'orderingRule',
+            univ.OctetString().subtype(  # type: ignore[no-untyped-call]
+                implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
+            ),
+        ),
+        namedtype.DefaultedNamedType(
+            'reverseOrder',
+            univ.Boolean(False).subtype(  # type: ignore[no-untyped-call]
+                implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1)
+            ),
+        ),
+    )
 
 
 class SortKeyListType(univ.SequenceOf):
@@ -45,8 +51,9 @@ class SortKeyListType(univ.SequenceOf):
 class SSSRequestControl(RequestControl):
     '''Order result server side
 
-        >>> s = SSSRequestControl(ordering_rules=['-cn'])
+    >>> s = SSSRequestControl(ordering_rules=['-cn'])
     '''
+
     controlType = '1.2.840.113556.1.4.473'
 
     def __init__(
@@ -89,26 +96,32 @@ class SSSRequestControl(RequestControl):
 
 class SortResultType(univ.Sequence):
     componentType = namedtype.NamedTypes(
-            namedtype.NamedType('sortResult', univ.Enumerated().subtype(  # type: ignore[no-untyped-call]
+        namedtype.NamedType(
+            'sortResult',
+            univ.Enumerated().subtype(  # type: ignore[no-untyped-call]
                 namedValues=namedval.NamedValues(
-                        ('success', 0),
-                        ('operationsError', 1),
-                        ('timeLimitExceeded', 3),
-                        ('strongAuthRequired', 8),
-                        ('adminLimitExceeded', 11),
-                        ('noSuchAttribute', 16),
-                        ('inappropriateMatching', 18),
-                        ('insufficientAccessRights', 50),
-                        ('busy', 51),
-                        ('unwillingToPerform', 53),
-                        ('other', 80)),
-                subtypeSpec=univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(
-                        0, 1, 3, 8, 11, 16, 18, 50, 51, 53, 80))),
-            namedtype.OptionalNamedType('attributeType',
-                  univ.OctetString().subtype(  # type: ignore[no-untyped-call]
-                    implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
-                  )
-                ))
+                    ('success', 0),
+                    ('operationsError', 1),
+                    ('timeLimitExceeded', 3),
+                    ('strongAuthRequired', 8),
+                    ('adminLimitExceeded', 11),
+                    ('noSuchAttribute', 16),
+                    ('inappropriateMatching', 18),
+                    ('insufficientAccessRights', 50),
+                    ('busy', 51),
+                    ('unwillingToPerform', 53),
+                    ('other', 80),
+                ),
+                subtypeSpec=univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0, 1, 3, 8, 11, 16, 18, 50, 51, 53, 80),
+            ),
+        ),
+        namedtype.OptionalNamedType(
+            'attributeType',
+            univ.OctetString().subtype(  # type: ignore[no-untyped-call]
+                implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
+            ),
+        ),
+    )
 
 
 class SSSResponseControl(ResponseControl):

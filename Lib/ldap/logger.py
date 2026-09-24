@@ -6,7 +6,6 @@ import logging
 
 
 class logging_file_class:
-
     def __init__(self, logging_level: int) -> None:
         self._logging_level = logging_level
 
