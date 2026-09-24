@@ -4,7 +4,7 @@ This sample script demonstrates the use of the dereference control
 (see https://tools.ietf.org/html/draft-masarati-ldap-deref)
 """
 
-import pprint,ldap,ldap.modlist,ldap.resiter
+import pprint,ldap,ldap.resiter
 
 from ldap.controls.deref import DereferenceControl
 
