@@ -9,7 +9,6 @@ from typing import Any, TYPE_CHECKING
 
 from uuid import UUID
 
-# Imports from pyasn1
 from pyasn1.type import tag, namedtype, namedval, univ, constraint
 from pyasn1.codec.ber import encoder, decoder
 

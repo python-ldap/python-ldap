@@ -10,7 +10,6 @@ __all__ = [
   'PasswordExpiredControl',
 ]
 
-# Imports from python-ldap 2.4+
 import ldap.controls
 from ldap.controls import RequestControl,ResponseControl,ValueLessRequestControl,KNOWN_RESPONSE_CONTROLS
 

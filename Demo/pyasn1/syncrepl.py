@@ -8,17 +8,14 @@ Notes:
 The bound user needs read access to the attributes entryDN and entryCSN.
 """
 
-# Import modules from Python standard lib
 import logging
 import shelve
 import signal
 import sys
 import time
 
-# Import the python-ldap modules
 import ldap
 import ldapurl
-# Import specific classes from python-ldap
 from ldap.ldapobject import ReconnectLDAPObject
 from ldap.syncrepl import SyncreplConsumer
 

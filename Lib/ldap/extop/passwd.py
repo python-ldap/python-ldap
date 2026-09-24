@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from ldap.extop import ExtendedResponse
 
-# Imports from pyasn1
 from pyasn1.type import namedtype, univ, tag
 from pyasn1.codec.der import decoder
 

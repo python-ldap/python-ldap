@@ -83,6 +83,5 @@ class ExtendedResponse:
     return value
 
 
-# Import sub-modules
 from ldap.extop.dds import RefreshRequest, RefreshResponse
 from ldap.extop.passwd import PasswordModifyResponse

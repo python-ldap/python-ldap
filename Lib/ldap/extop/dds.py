@@ -8,7 +8,6 @@ See https://www.python-ldap.org/ for details.
 from __future__ import annotations
 from ldap.extop import ExtendedRequest,ExtendedResponse
 
-# Imports from pyasn1
 from pyasn1.type import namedtype,univ,tag
 from pyasn1.codec.der import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPDN
