@@ -14,7 +14,7 @@ class MyLDAPObject(LDAPObject, ResultProcessor):
     pass
 
 
-uri = "ldap://ipa.demo1.freeipa.org"
+uri = 'ldap://ipa.demo1.freeipa.org'
 
 l = MyLDAPObject(uri, trace_level=0)
 l.simple_bind_s('uid=admin,cn=users,cn=accounts,dc=demo1,dc=freeipa,dc=org', 'Secret123')

@@ -28,17 +28,17 @@ def escape_filter_chars(assertion_value: str, escape_mode: int = 0) -> str:
         If 2 all chars are escaped.
     """
     if not isinstance(assertion_value, str):
-        raise TypeError("assertion_value must be of type str.")
+        raise TypeError('assertion_value must be of type str.')
     if escape_mode:
         r = []
         if escape_mode == 1:
             for c in assertion_value:
-                if c < '0' or c > 'z' or c in "\\*()":
-                    c = f"\\{ord(c):02x}"
+                if c < '0' or c > 'z' or c in '\\*()':
+                    c = f'\\{ord(c):02x}'
                 r.append(c)
         elif escape_mode == 2:
             for c in assertion_value:
-                r.append(f"\\{ord(c):02x}")
+                r.append(f'\\{ord(c):02x}')
         else:
             raise ValueError('escape_mode must be 0, 1 or 2.')
         s = ''.join(r)

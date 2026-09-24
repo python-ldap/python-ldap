@@ -12,7 +12,7 @@ ldap.set_option(ldap.OPT_DEBUG_LEVEL, 0)
 
 for ldap_uri, sasl_mech, sasl_cb_value_dict in [
     (
-        "ldap://nb2.stroeder.local:1390/",
+        'ldap://nb2.stroeder.local:1390/',
         'CRAM-MD5',
         {
             ldap.sasl.CB_AUTHNAME: 'fred',
@@ -20,7 +20,7 @@ for ldap_uri, sasl_mech, sasl_cb_value_dict in [
         },
     ),
     (
-        "ldap://nb2.stroeder.local:1390/",
+        'ldap://nb2.stroeder.local:1390/',
         'PLAIN',
         {
             ldap.sasl.CB_AUTHNAME: 'fred',
@@ -28,17 +28,17 @@ for ldap_uri, sasl_mech, sasl_cb_value_dict in [
         },
     ),
     (
-        "ldap://nb2.stroeder.local:1390/",
+        'ldap://nb2.stroeder.local:1390/',
         'LOGIN',
         {
             ldap.sasl.CB_AUTHNAME: 'fred',
             ldap.sasl.CB_PASS: 'secret',
         },
     ),
-    ("ldapi://%2Ftmp%2Fopenldap-socket/", 'EXTERNAL', {}),
-    ("ldap://nb2.stroeder.local:1390/", 'GSSAPI', {}),
+    ('ldapi://%2Ftmp%2Fopenldap-socket/', 'EXTERNAL', {}),
+    ('ldap://nb2.stroeder.local:1390/', 'GSSAPI', {}),
     (
-        "ldap://nb2.stroeder.local:1390/",
+        'ldap://nb2.stroeder.local:1390/',
         'NTLM',
         {
             ldap.sasl.CB_AUTHNAME: 'fred',
@@ -46,7 +46,7 @@ for ldap_uri, sasl_mech, sasl_cb_value_dict in [
         },
     ),
     (
-        "ldap://nb2.stroeder.local:1390/",
+        'ldap://nb2.stroeder.local:1390/',
         'DIGEST-MD5',
         {
             ldap.sasl.CB_AUTHNAME: 'fred',
@@ -61,7 +61,7 @@ for ldap_uri, sasl_mech, sasl_cb_value_dict in [
     # Set protocol version to LDAPv3 to enable SASL bind!
     l.protocol_version = 3
     try:
-        l.sasl_interactive_bind_s("", sasl_auth)
+        l.sasl_interactive_bind_s('', sasl_auth)
     except ldap.LDAPError as e:
         print('Error using SASL mechanism', sasl_auth.mech, str(e))
     else:

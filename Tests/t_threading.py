@@ -30,7 +30,7 @@ ITERATIONS = int(os.environ.get('PYTHON_LDAP_THREAD_ITERATIONS', '200'))
 class TestFreeThreadingDeclaration(unittest.TestCase):
     def test_gil_stays_disabled(self):
         """Importing _ldap must not re-enable the GIL."""
-        self.assertEqual(GIL_STARTS_ENABLED, gil_enabled(), f"importing _ldap changed the GIL state to {gil_enabled()}")
+        self.assertEqual(GIL_STARTS_ENABLED, gil_enabled(), f'importing _ldap changed the GIL state to {gil_enabled()}')
 
 
 class ThreadedMixin:
@@ -57,7 +57,7 @@ class ThreadedMixin:
         gc.collect()
 
 
-@unittest.skipUnless(hasattr(concurrent.futures, 'ThreadPoolExecutor'), "threaded subinterpreters are not supported")
+@unittest.skipUnless(hasattr(concurrent.futures, 'ThreadPoolExecutor'), 'threaded subinterpreters are not supported')
 class SubinterpreterMixin:
     def run_in_threads(self, routine, count=THREAD_COUNT):
         # TODO: Might use concurrent.interpreters and its create_queue instead
@@ -92,9 +92,9 @@ class Template:
             import _ldap
 
             for _ in range(ITERATIONS):
-                l = _ldap.initialize("ldap://:0")
+                l = _ldap.initialize('ldap://:0')
                 with self.assertRaises(_ldap.LDAPError):
-                    msgid = l.search_ext("cn=test", _ldap.SCOPE_SUBTREE, '(bad=filter')
+                    msgid = l.search_ext('cn=test', _ldap.SCOPE_SUBTREE, '(bad=filter')
                     l.result4(msgid, _ldap.MSG_ALL, 0)
                 del l
 
@@ -106,18 +106,18 @@ class Template:
 
             for i in range(ITERATIONS):
                 # A pure initialize() does not touch the network
-                _ldap.initialize("ldap://")
+                _ldap.initialize('ldap://')
 
         self.run_in_threads(create_objects)
 
 
-@unittest.skipUnless(_ldap.LIBLDAP_R, "libldap is not built thread-safe")
-@unittest.skipIf(GIL_STARTS_ENABLED, "free threading not enabled")
+@unittest.skipUnless(_ldap.LIBLDAP_R, 'libldap is not built thread-safe')
+@unittest.skipIf(GIL_STARTS_ENABLED, 'free threading not enabled')
 class TestFreeThreading(Template, ThreadedMixin, unittest.TestCase):
     pass
 
 
-@unittest.skipUnless(_ldap.LIBLDAP_R, "libldap is not built thread-safe")
+@unittest.skipUnless(_ldap.LIBLDAP_R, 'libldap is not built thread-safe')
 class TestSubinterpreters(Template, SubinterpreterMixin, unittest.TestCase):
     pass
 

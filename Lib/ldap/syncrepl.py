@@ -382,7 +382,7 @@ class SyncreplConsumer(_Base):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         if not isinstance(self, SimpleLDAPObject):
-            raise TypeError(f"Expecting to be a subclass of {SimpleLDAPObject}")
+            raise TypeError(f'Expecting to be a subclass of {SimpleLDAPObject}')
         super().__init__(*args, **kwargs)
 
     def syncrepl_search(
@@ -598,7 +598,7 @@ class OpenLDAPSyncreplCookie:
     sid: int = 0
     _csnset: dict[str, str]
 
-    def __init__(self, cookie: str | bytes = "") -> None:
+    def __init__(self, cookie: str | bytes = '') -> None:
         self._csnset = {}
 
         if cookie:
@@ -646,7 +646,7 @@ class OpenLDAPSyncreplCookie:
         Return the cookie as a string, use in syncrepl_get_cookie() or when
         storing the state for later use.
         """
-        cookie = f"rid={self.rid or 0:03},sid={self.sid or 0:03x}"
+        cookie = f'rid={self.rid or 0:03},sid={self.sid or 0:03x}'
         if self._csnset:
             cookie += ',csn='
             cookie += ';'.join(csn for sid, csn in sorted(self._csnset.items()))

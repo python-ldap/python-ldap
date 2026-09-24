@@ -49,10 +49,10 @@ class SortKeyListType(univ.SequenceOf):
 
 
 class SSSRequestControl(RequestControl):
-    '''Order result server side
+    """Order result server side
 
     >>> s = SSSRequestControl(ordering_rules=['-cn'])
-    '''
+    """
 
     controlType = '1.2.840.113556.1.4.473'
 

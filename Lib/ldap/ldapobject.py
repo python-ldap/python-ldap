@@ -40,7 +40,7 @@ class LDAPBytesWarning(BytesWarning):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         warnings.warn(
-            "LDAPBytesWarning is deprecated and will be removed in the future",
+            'LDAPBytesWarning is deprecated and will be removed in the future',
             DeprecationWarning,
         )
         super().__init__(*args, **kwargs)
@@ -61,15 +61,15 @@ class SimpleLDAPObject:
     """
 
     CLASSATTR_OPTION_MAPPING = {
-        "protocol_version": ldap.OPT_PROTOCOL_VERSION,
-        "deref": ldap.OPT_DEREF,
-        "referrals": ldap.OPT_REFERRALS,
-        "timelimit": ldap.OPT_TIMELIMIT,
-        "sizelimit": ldap.OPT_SIZELIMIT,
-        "network_timeout": ldap.OPT_NETWORK_TIMEOUT,
-        "error_number": ldap.OPT_ERROR_NUMBER,
-        "error_string": ldap.OPT_ERROR_STRING,
-        "matched_dn": ldap.OPT_MATCHED_DN,
+        'protocol_version': ldap.OPT_PROTOCOL_VERSION,
+        'deref': ldap.OPT_DEREF,
+        'referrals': ldap.OPT_REFERRALS,
+        'timelimit': ldap.OPT_TIMELIMIT,
+        'sizelimit': ldap.OPT_SIZELIMIT,
+        'network_timeout': ldap.OPT_NETWORK_TIMEOUT,
+        'error_number': ldap.OPT_ERROR_NUMBER,
+        'error_string': ldap.OPT_ERROR_STRING,
+        'matched_dn': ldap.OPT_MATCHED_DN,
     }
 
     def __init__(
@@ -88,9 +88,9 @@ class SimpleLDAPObject:
         self._uri = uri
         self._ldap_object_lock = self._ldap_lock('opcall')
         if fileno is not None:
-            if not hasattr(_ldap, "initialize_fd"):
-                raise ValueError("libldap does not support initialize_fd")
-            if hasattr(fileno, "fileno"):
+            if not hasattr(_ldap, 'initialize_fd'):
+                raise ValueError('libldap does not support initialize_fd')
+            if hasattr(fileno, 'fileno'):
                 fileno = fileno.fileno()
             self._l = ldap.functions._ldap_function_call(ldap._ldap_module_lock, _ldap.initialize_fd, fileno, uri)
         else:
@@ -99,7 +99,7 @@ class SimpleLDAPObject:
         self.protocol_version = ldap.VERSION3
 
         if bytes_mode:
-            raise ValueError("bytes_mode is *not* supported under Python 3.")
+            raise ValueError('bytes_mode is *not* supported under Python 3.')
 
     @property
     def bytes_mode(self) -> bool:
@@ -133,7 +133,7 @@ class SimpleLDAPObject:
         try:
             try:
                 result = func(*args, **kwargs)
-                if __debug__ and self._trace_level >= 2 and func.__name__ != "unbind_ext":
+                if __debug__ and self._trace_level >= 2 and func.__name__ != 'unbind_ext':
                     diagnostic_message_success = self._l.get_option(ldap.OPT_DIAGNOSTIC_MESSAGE)
             finally:
                 self._ldap_object_lock.release()
@@ -572,7 +572,7 @@ class SimpleLDAPObject:
             respoid, respvalue = res
             if extop_resp_class.responseName != respoid:
                 raise ldap.PROTOCOL_ERROR(
-                    f"Wrong OID in extended response! Expected {extop_resp_class.responseName}, got {respoid}"
+                    f'Wrong OID in extended response! Expected {extop_resp_class.responseName}, got {respoid}'
                 )
             return extop_resp_class(extop_resp_class.responseName, respvalue)
         else:
@@ -691,7 +691,7 @@ class SimpleLDAPObject:
         respoid, respvalue = self.extop_result(msgid, all=1, timeout=self.timeout)
 
         if respoid != PasswordModifyResponse.responseName:
-            raise ldap.PROTOCOL_ERROR(f"Unexpected OID {respoid} in extended response!")
+            raise ldap.PROTOCOL_ERROR(f'Unexpected OID {respoid} in extended response!')
         assert respoid is None
 
         if extract_newpw and respvalue:
