@@ -5,7 +5,6 @@ See https://www.python-ldap.org/ for details.
 """
 
 from __future__ import annotations
-import sys
 
 from typing import ClassVar, TYPE_CHECKING
 from collections.abc import Iterator, MutableMapping

@@ -9,7 +9,6 @@ import unittest
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
-import ldap
 
 import ldif
 from ldap.ldapobject import SimpleLDAPObject

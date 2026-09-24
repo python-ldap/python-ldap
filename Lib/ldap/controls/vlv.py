@@ -11,12 +11,10 @@ __all__ = [
   'VLVResponseControl',
 ]
 
-import ldap
-from ldap.ldapobject import LDAPObject
 from ldap.controls import (RequestControl, ResponseControl,
-        KNOWN_RESPONSE_CONTROLS, DecodeControlTuples)
+        KNOWN_RESPONSE_CONTROLS)
 
-from pyasn1.type import univ, namedtype, tag, namedval, constraint
+from pyasn1.type import univ, namedtype, tag, namedval
 from pyasn1.codec.ber import encoder, decoder
 
 

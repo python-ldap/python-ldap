@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys,time,ldap,ldap.ldapobject,ldapurl
+import sys,ldap,ldap.ldapobject,ldapurl
 
 from ldap.ldapobject import *
 

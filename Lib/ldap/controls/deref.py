@@ -11,10 +11,8 @@ __all__ = [
   'DereferenceControl',
 ]
 
-import ldap.controls
 from ldap.controls import LDAPControl,KNOWN_RESPONSE_CONTROLS
 
-import pyasn1_modules.rfc2251
 from pyasn1.type import namedtype,univ,tag
 from pyasn1.codec.ber import encoder,decoder
 from pyasn1_modules.rfc2251 import LDAPDN,AttributeDescription,AttributeDescriptionList,AttributeValue

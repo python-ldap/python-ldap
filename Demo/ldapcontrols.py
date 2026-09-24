@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import ldap,ldapurl,pprint
+import ldap,pprint
 
 from ldap.controls import LDAPControl,BooleanControl
 

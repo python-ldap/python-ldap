@@ -4,7 +4,7 @@ This sample script demonstrates the use of the server-side-sorting control
 (see RFC 2891)
 """
 
-import pprint,ldap
+import ldap
 
 from ldap.ldapobject import LDAPObject
 from ldap.controls.sss import SSSRequestControl

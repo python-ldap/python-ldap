@@ -26,7 +26,7 @@ if __debug__:
   # Tracing is only supported in debugging mode
   import traceback
 
-import sys,time,pprint
+import time,pprint
 from ldap import _ldap
 import ldap, ldap.cidict, ldap.sasl, ldap.functions
 import warnings
