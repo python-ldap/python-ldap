@@ -10,10 +10,10 @@ Project
 
   **A2**: “Jump into the C ;-)”
 
-  **A3**: see file CHANGES in source distribution
+  **A3**: see file CHANGELOG.rst in source distribution
   or `repository`_.
 
-.. _repository: https://github.com/python-ldap/python-ldap/blob/main/CHANGES
+.. _repository: https://github.com/python-ldap/python-ldap/blob/main/CHANGELOG.rst
 
 
 Usage
