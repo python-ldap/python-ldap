@@ -1,0 +1,25 @@
+---
+BasedOnStyle: LLVM
+TabWidth: 8
+UseTab: ForIndentation
+IndentWidth: 8
+AlignEscapedNewlinesLeft: true
+# AlignOperands: true
+ColumnLimit: 220
+
+BinPackArguments: true
+
+# Äußeren Initializer nach "{" umbrechen
+Cpp11BracedListStyle: true
+
+# Verhindert möglichst das Zusammenziehen kurzer Blöcke
+AllowShortBlocksOnASingleLine: Never
+
+# Fortsetzungszeilen
+ContinuationIndentWidth: 4
+
+# Argumente/Initializer nicht unnötig an einer gemeinsamen Spalte ausrichten
+AlignAfterOpenBracket: Align
+
+# Binäre Operatoren sinnvoll behandeln
+BreakBeforeBinaryOperators: None
