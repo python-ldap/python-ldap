@@ -12,7 +12,7 @@ from ldap.pkginfo import __version__, __author__, __license__
 from ldap.controls import RequestControl, ResponseControl
 
 from ldap._types import LDAPAddModList, LDAPModifyModList, LDAPEntryDict
-from typing import Any, BinaryIO, Callable, TextIO, Type
+from typing import Any, BinaryIO, Callable, TextIO
 
 __all__ = [
   'LDAPObject',

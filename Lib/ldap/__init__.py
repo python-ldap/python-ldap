@@ -13,7 +13,8 @@ import os
 import sys
 
 import threading
-from typing import Any, Type
+from typing import Any
+
 from ldap._types import *
 
 
@@ -62,7 +63,7 @@ class LDAPLock:
 
   def __init__(
     self,
-    lock_class: Type[Any] | None = None,
+    lock_class: type[Any] | None = None,
     desc: str = ''
   ) -> None:
     """
