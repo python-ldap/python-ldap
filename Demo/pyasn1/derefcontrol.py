@@ -11,7 +11,7 @@ import ldap.resiter
 from ldap.controls.deref import DereferenceControl
 
 
-uri = "ldap://ipa.demo1.freeipa.org"
+uri = 'ldap://ipa.demo1.freeipa.org'
 
 
 class MyLDAPObject(ldap.ldapobject.LDAPObject, ldap.resiter.ResultProcessor):

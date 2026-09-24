@@ -4,8 +4,8 @@ from ldap.controls import SimplePagedResultsControl
 from ldap.ldapobject import ReconnectLDAPObject
 
 
-url = "ldap://localhost:1390/"
-base = "dc=stroeder,dc=de"
+url = 'ldap://localhost:1390/'
+base = 'dc=stroeder,dc=de'
 search_flt = r'(objectClass=*)'
 
 searchreq_attrlist = ['cn', 'entryDN', 'entryUUID', 'mail', 'objectClass']
@@ -96,7 +96,7 @@ class MyLDAPObject(ReconnectLDAPObject, PagedResultsSearchObject):
 ldap.set_option(ldap.OPT_REFERRALS, 0)
 l = MyLDAPObject(url, trace_level=2, retry_max=100, retry_delay=2)
 l.protocol_version = 3
-l.simple_bind_s("", "")
+l.simple_bind_s('', '')
 l.page_size = 10
 
 # Send search request

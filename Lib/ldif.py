@@ -176,7 +176,7 @@ class LDIFWriter:
         elif mod_len == 3:
             changetype = 'modify'
         else:
-            raise ValueError("modlist item of wrong length: %d" % (mod_len))
+            raise ValueError('modlist item of wrong length: %d' % (mod_len))
         self._unparseAttrTypeandValue('changetype', changetype.encode('ascii'))
         for mod in modlist:
             # Note: the following order will give mod_vals the right type
@@ -188,7 +188,7 @@ class LDIFWriter:
                 mod = cast(LDAPModListAddEntry, mod)
                 mod_type, mod_vals = mod
             else:
-                raise ValueError("Subsequent modlist item of wrong length")
+                raise ValueError('Subsequent modlist item of wrong length')
             if mod_vals:
                 if isinstance(mod_vals, bytes):
                     self._unparseAttrTypeandValue(mod_type, mod_vals)

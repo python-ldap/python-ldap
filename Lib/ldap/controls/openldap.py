@@ -63,7 +63,7 @@ class SearchNoOpMixIn(_Base):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         if not isinstance(self, SimpleLDAPObject):
-            raise TypeError(f"Expecting to be a subclass of {SimpleLDAPObject}")
+            raise TypeError(f'Expecting to be a subclass of {SimpleLDAPObject}')
         super().__init__(*args, **kwargs)
 
     def noop_search_st(

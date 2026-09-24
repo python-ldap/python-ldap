@@ -690,7 +690,7 @@ class TestModifyRecords(TestLDIFParser):
             except ValueError:
                 pass
             else:
-                self.fail(f"should have raised ValueError: {bad_ldif_string!r}")
+                self.fail(f'should have raised ValueError: {bad_ldif_string!r}')
 
     def test_mod_increment(self):
         self.check_records(

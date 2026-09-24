@@ -253,9 +253,9 @@ class SubSchema:
                 continue
             # FIXME: This assertion is superfluous?
             assert se_obj.__class__ == schema_element_class, (
-                f"Schema element referenced by {se_oid} must be of class {schema_element_class.__name__} but was {se_obj.__class__}"
+                f'Schema element referenced by {se_oid} must be of class {schema_element_class.__name__} but was {se_obj.__class__}'
             )
-            for s in getattr(se_obj, "sup", ()) or ('_',):
+            for s in getattr(se_obj, 'sup', ()) or ('_',):
                 sup_oid = self.getoid(schema_element_class, s)
                 try:
                     tree[sup_oid].append(se_oid)
@@ -402,7 +402,7 @@ class SubSchema:
             else:
                 if result is not None:
                     warnings.warn(
-                        f"multiple leaf structural objectclasses: {result}, {oid}",
+                        f'multiple leaf structural objectclasses: {result}, {oid}',
                         category=DeprecationWarning,
                         stacklevel=2,
                     )

@@ -134,11 +134,11 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         with self.assertRaises(TypeError) as e:
             l.search_s(base.encode('utf-8'), ldap.SCOPE_SUBTREE, '(cn=Foo*)', ['*'])
         # Python 3.4.x does not include 'search_ext()' in message
-        self.assertEqual("search_ext() argument 1 must be str, not bytes", str(e.exception))
+        self.assertEqual('search_ext() argument 1 must be str, not bytes', str(e.exception))
 
         with self.assertRaises(TypeError) as e:
             l.search_s(base, ldap.SCOPE_SUBTREE, b'(cn=Foo*)', ['*'])
-        self.assertEqual("search_ext() argument 3 must be str, not bytes", str(e.exception))
+        self.assertEqual('search_ext() argument 3 must be str, not bytes', str(e.exception))
 
         with self.assertRaises(TypeError) as e:
             l.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Foo*)', [b'*'])
@@ -161,7 +161,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         l = self._ldap_conn
 
         with self.assertRaises(ldap.NO_SUCH_OBJECT):
-            l.search_s("CN=abc\U0001f498def", ldap.SCOPE_SUBTREE)
+            l.search_s('CN=abc\U0001f498def', ldap.SCOPE_SUBTREE)
 
     def test_filterstr_accepts_unicode(self):
         l = self._ldap_conn
@@ -255,7 +255,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         l = self._ldap_conn
         dn = l.search_subschemasubentry_s()
         self.assertIsInstance(dn, str)
-        self.assertEqual(dn, "cn=Subschema")
+        self.assertEqual(dn, 'cn=Subschema')
         subschema = l.read_subschemasubentry_s(dn)
         self.assertIsInstance(subschema, dict)
         self.assertEqual(
@@ -265,18 +265,18 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
     def test004_enotconn(self):
         l = self.ldap_object_class('ldap://127.0.0.1:42')
         try:
-            m = l.simple_bind_s("", "")
+            m = l.simple_bind_s('', '')
             r = l.result4(m, ldap.MSG_ALL, self.timeout)
         except ldap.SERVER_DOWN as ldap_err:
             errno_val = ldap_err.args[0]['errno']
             if errno_val != errno.ENOTCONN:
-                self.fail("expected errno=%d, got %d" % (errno.ENOTCONN, errno_val))
+                self.fail('expected errno=%d, got %d' % (errno.ENOTCONN, errno_val))
             info = ldap_err.args[0]['info']
             expected_info = os.strerror(errno.ENOTCONN)
             if info != expected_info:
-                self.fail(f"expected info={expected_info!r}, got {info!r}")
+                self.fail(f'expected info={expected_info!r}, got {info!r}')
         else:
-            self.fail(f"expected SERVER_DOWN, got {r!r}")
+            self.fail(f'expected SERVER_DOWN, got {r!r}')
 
     def test005_invalid_credentials(self):
         l = self.ldap_object_class(self.server.ldap_uri)
@@ -287,7 +287,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         except ldap.INVALID_CREDENTIALS:
             pass
         else:
-            self.fail(f"expected INVALID_CREDENTIALS, got {r!r}")
+            self.fail(f'expected INVALID_CREDENTIALS, got {r!r}')
 
     @requires_sasl()
     @requires_ldapi()
@@ -319,7 +319,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertEqual(l.get_option(ldap.OPT_X_SASL_SSF_MAX), 256)
 
         l.sasl_external_bind_s()
-        with self.assertRaisesRegex(ValueError, "write-only option"):
+        with self.assertRaisesRegex(ValueError, 'write-only option'):
             l.get_option(ldap.OPT_X_SASL_SSF_EXTERNAL)
         l.set_option(ldap.OPT_X_SASL_SSF_EXTERNAL, 256)
         self.assertEqual(l.whoami_s(), 'dn:' + self.server.root_dn.lower())
@@ -373,13 +373,13 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             self.assertEqual(l.whoami_s(), 'dn:' + self.server.root_dn)
 
     @requires_tls()
-    @unittest.skipUnless(hasattr(ldap, "OPT_X_TLS_PEERCERT"), reason="Requires OPT_X_TLS_PEERCERT")
+    @unittest.skipUnless(hasattr(ldap, 'OPT_X_TLS_PEERCERT'), reason='Requires OPT_X_TLS_PEERCERT')
     def test_get_tls_peercert(self):
         l = self.ldap_object_class(self.server.ldap_uri)
         peercert = l.get_option(ldap.OPT_X_TLS_PEERCERT)
         self.assertEqual(peercert, None)
         with self.assertRaises(ValueError):
-            l.set_option(ldap.OPT_X_TLS_PEERCERT, b"")
+            l.set_option(ldap.OPT_X_TLS_PEERCERT, b'')
 
         l.set_option(ldap.OPT_X_TLS_CACERTFILE, self.server.cafile)
         l.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
@@ -389,7 +389,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         self.assertTrue(peercert)
         self.assertIsInstance(peercert, bytes)
 
-        with open(self.server.servercert, "rb") as f:
+        with open(self.server.servercert, 'rb') as f:
             server_cert = f.read()
         pem_body = PEM_CERT_RE.search(server_cert).group(1)
         server_der = base64.b64decode(pem_body)
@@ -450,19 +450,19 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         msgid = l.compare(f'cn=Foo1,{base}', 'cn', b'Foo1')
         with self.assertRaises(ldap.COMPARE_TRUE) as cm:
             l.result()
-        self.assertEqual(cm.exception.args[0]["msgid"], msgid)
+        self.assertEqual(cm.exception.args[0]['msgid'], msgid)
 
     def test_async_search_no_such_object_exception_contains_message_id(self):
-        msgid = self._ldap_conn.search("CN=XXX", ldap.SCOPE_SUBTREE)
+        msgid = self._ldap_conn.search('CN=XXX', ldap.SCOPE_SUBTREE)
         with self.assertRaises(ldap.NO_SUCH_OBJECT) as cm:
             self._ldap_conn.result()
-        self.assertEqual(cm.exception.args[0]["msgid"], msgid)
+        self.assertEqual(cm.exception.args[0]['msgid'], msgid)
 
     def test_passwd_s(self):
         l = self._ldap_conn
 
         # first, create a user to change password on
-        dn = "cn=PasswordTest," + self.server.suffix
+        dn = 'cn=PasswordTest,' + self.server.suffix
         result, pmsg, msgid, ctrls = l.add_ext_s(
             dn,
             [
@@ -479,17 +479,17 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
 
         # try changing password with a wrong old-pw
         with self.assertRaises(ldap.UNWILLING_TO_PERFORM):
-            l.passwd_s(dn, "bogus", "ignored")
+            l.passwd_s(dn, 'bogus', 'ignored')
 
         # have the server generate a new random pw
-        respoid, respvalue = l.passwd_s(dn, "initial", None, extract_newpw=True)
+        respoid, respvalue = l.passwd_s(dn, 'initial', None, extract_newpw=True)
         self.assertEqual(respoid, None)
 
         password = respvalue.genPasswd
         self.assertIsInstance(password, bytes)
 
         # try changing password back
-        respoid, respvalue = l.passwd_s(dn, password, "initial")
+        respoid, respvalue = l.passwd_s(dn, password, 'initial')
         self.assertEqual(respoid, None)
         self.assertEqual(respvalue, None)
 
@@ -498,22 +498,22 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
     def test_slapadd(self):
         with self.assertRaises(ldap.INVALID_DN_SYNTAX):
             self._ldap_conn.add_s(
-                f"myAttribute=foobar,ou=Container,{self.server.suffix}",
+                f'myAttribute=foobar,ou=Container,{self.server.suffix}',
                 [
-                    ("objectClass", b'myClass'),
-                    ("myAttribute", b'foobar'),
+                    ('objectClass', b'myClass'),
+                    ('myAttribute', b'foobar'),
                 ],
             )
 
-        self.server.slapadd(SCHEMA_TEMPLATE, ["-n0"])
+        self.server.slapadd(SCHEMA_TEMPLATE, ['-n0'])
         self.server.restart()
         self.reset_connection()
 
         self._ldap_conn.add_s(
-            f"myAttribute=foobar,ou=Container,{self.server.suffix}",
+            f'myAttribute=foobar,ou=Container,{self.server.suffix}',
             [
-                ("objectClass", b'myClass'),
-                ("myAttribute", b'foobar'),
+                ('objectClass', b'myClass'),
+                ('myAttribute', b'foobar'),
             ],
         )
 
@@ -525,10 +525,10 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
 
         l = self._ldap_conn
 
-        valid_attrlist_parameters = [{"a": "2"}, ["a", "b"], {}, set(), {"a", "b"}]
+        valid_attrlist_parameters = [{'a': '2'}, ['a', 'b'], {}, set(), {'a', 'b'}]
 
         for attrlist in valid_attrlist_parameters:
-            l.search_ext(f"{self.server.suffix}", ldap.SCOPE_SUBTREE, attrlist=attrlist)
+            l.search_ext(f'{self.server.suffix}', ldap.SCOPE_SUBTREE, attrlist=attrlist)
 
     def test_invalid_attrlist_parameter_types(self):
         """Tests the case when an invalid parameter type is passed to search_ext
@@ -537,13 +537,13 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         that isn't a string should raise a TypeError. The exception is the string type itself.
         """
 
-        invalid_attrlist_parameters = [{1: 2}, 0, object(), "string"]
+        invalid_attrlist_parameters = [{1: 2}, 0, object(), 'string']
 
         l = self._ldap_conn
 
         for attrlist in invalid_attrlist_parameters:
             with self.assertRaises(TypeError):
-                l.search_ext(f"{self.server.suffix}", ldap.SCOPE_SUBTREE, attrlist=attrlist)
+                l.search_ext(f'{self.server.suffix}', ldap.SCOPE_SUBTREE, attrlist=attrlist)
 
     def test_referral_error(self):
         """Tests the case where a modify cannot be serviced as under a
@@ -551,17 +551,17 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         l = self._open_ldap_conn(bytes_mode=False)
 
         l.set_option(ldap.OPT_REFERRALS, 0)
-        dn = f"cn=delegated,ou=Container,{self.server.suffix}"
+        dn = f'cn=delegated,ou=Container,{self.server.suffix}'
         l.add_s(
             dn,
             [
-                ("objectClass", [b'referral', b'extensibleObject']),
-                ("ref", b'ldap://ldap.example.com'),
+                ('objectClass', [b'referral', b'extensibleObject']),
+                ('ref', b'ldap://ldap.example.com'),
             ],
         )
 
         try:
-            target = f"cn=test,{dn}"
+            target = f'cn=test,{dn}'
             with self.assertRaises(ldap.REFERRAL) as e:
                 l.modify_s(target, [])
             result = e.exception
@@ -694,11 +694,11 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
             lo.simple_bind_s(bind_dn, 'user1_pw')
             lo._retry_max = 10e4
             lo._retry_delay = 0.001
-            lo.search_ext_s(self.server.suffix, ldap.SCOPE_SUBTREE, "cn=user1", attrlist=["cn"])
+            lo.search_ext_s(self.server.suffix, ldap.SCOPE_SUBTREE, 'cn=user1', attrlist=['cn'])
             start_barrier.wait()
             end_time = time.time() + run_time
             while time.time() < end_time:
-                lo.search_ext_s(self.server.suffix, ldap.SCOPE_SUBTREE, filterstr="cn=user1", attrlist=["cn"])
+                lo.search_ext_s(self.server.suffix, ldap.SCOPE_SUBTREE, filterstr='cn=user1', attrlist=['cn'])
 
         def reconnect_search_thread():
             try:

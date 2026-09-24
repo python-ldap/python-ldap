@@ -13,7 +13,7 @@ from urllib.request import urlopen  # noqa: F401
 
 
 warnings.warn(
-    "The ldap.compat module is deprecated and will be removed in the future",
+    'The ldap.compat module is deprecated and will be removed in the future',
     DeprecationWarning,
 )
 
