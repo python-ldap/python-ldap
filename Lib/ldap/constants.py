@@ -429,9 +429,9 @@ def render_pyi() -> str:  # pragma: no cover
     for name in sorted(int_names + str_names, key=str.casefold):
         typ = 'str' if name in str_names else 'int'
         lines.append(f'{name}: {typ}\n')
-    lines.append('\n\n')
+    lines.append('\n')
     for name in sorted(error_names, key=str.casefold):
-        lines.extend((f'class {name}(LDAPError):\n', '    errnum: ClassVar[int] = ...\n', '\n\n'))
+        lines.extend((f'class {name}(LDAPError):\n', '    errnum: ClassVar[int] = ...\n', '\n'))
     lines.append(END)
 
     pyi = _pyi_path().read_text()
