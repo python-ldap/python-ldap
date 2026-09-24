@@ -401,7 +401,7 @@ def print_header() -> None:  # pragma: no cover
     print(' *')
     print(' * Please do any modifications there, then re-generate this file')
     print(' */')
-    print('')
+    print()
 
     current_requirements: list[str] = []
 
