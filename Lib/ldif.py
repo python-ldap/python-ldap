@@ -393,7 +393,7 @@ class LDIFParser:
       return '-',None
     try:
       colon_pos = unfolded_line.index(':')
-    except ValueError as e:
+    except ValueError:
       raise ValueError('no value-spec in %s' % (repr(unfolded_line)))
     attr_type = unfolded_line[0:colon_pos]
     # if needed attribute value is BASE64 decoded
