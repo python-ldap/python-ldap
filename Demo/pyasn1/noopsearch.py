@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Demo script for counting searching with OpenLDAP's no-op control
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Do a search with the LDAP URL specified at command-line.
 

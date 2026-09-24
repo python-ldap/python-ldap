@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 This sample script demonstrates the use of the pre-read control (see RFC 4527).
 

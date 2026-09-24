@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Various examples how to connect to a LDAP host with the new
 factory function ldap.initialize() introduced in OpenLDAP 2 API.

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Demo script for Persistent Search Control
 (see https://tools.ietf.org/html/draft-ietf-ldapext-psearch)

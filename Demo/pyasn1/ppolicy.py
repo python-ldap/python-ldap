@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Demo script for Password Policy Controls
 (see https://tools.ietf.org/html/draft-behera-ldap-password-policy)

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os,ldap,pickle
 
 temp_file_name = os.path.join(os.environ.get('TMP','/tmp'),'pickle_ldap-%d' % (os.getpid()))

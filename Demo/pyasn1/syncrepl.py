@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 This script implements a syncrepl consumer which syncs data from an OpenLDAP
 server to a local (shelve) database.
@@ -140,8 +140,8 @@ signal.signal(signal.SIGINT, commenceShutdown)
 try:
     ldap_url = ldapurl.LDAPUrl(sys.argv[1])
     database_path = sys.argv[2]
-except IndexError,e:
-    print (
+except IndexError:
+    print((
         'Usage:\n'
         '{script_name} <LDAP URL> <pathname of database>\n'
         '{script_name} "ldap://127.0.0.1/cn=users,dc=test'
@@ -150,7 +150,7 @@ except IndexError,e:
          '?(objectClass=*)'
          '?bindname=uid=admin%2ccn=users%2cdc=test,'
          'X-BINDPW=password" db.shelve'
-    ).format(script_name=sys.argv[0])
+    ).format(script_name=sys.argv[0]))
     sys.exit(1)
 except ValueError as e:
     print('Error parsing command-line arguments:',str(e))

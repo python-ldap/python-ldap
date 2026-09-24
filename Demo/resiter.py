@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Demo for using ldap.resiter.ResultProcessor
 written by Michael Stroeder <michael@stroeder.com>

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys,getpass
 import ldap
 
@@ -24,7 +25,7 @@ try:
 	 ]
        )
 
-except _ldap.LDAPError:
+except ldap.LDAPError:
     pass
 
 #
@@ -36,7 +37,7 @@ print("Updating", repr(dn))
 
 try:
 	l.delete_s(dn)
-except:
+except ldap.LDAPError:
 	pass
 
 l.add_s(dn,
@@ -97,7 +98,7 @@ l.add_s(dn,
 
 res = l.search_s(
 	"ou=CSEE, o=UQ, c=AU",
-	_ldap.SCOPE_SUBTREE,
+	ldap.SCOPE_SUBTREE,
 	"objectclass=*",
       )
 print(res)
