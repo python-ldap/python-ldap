@@ -11,6 +11,7 @@ hinting that this is not the actual ldap._ldap.
 
 See https://www.python-ldap.org/ for details.
 """
+
 import sys
 
 from constants import CONSTANTS

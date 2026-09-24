@@ -17,87 +17,80 @@ from ldap.ldapobject import SimpleLDAPObject
 
 
 if TYPE_CHECKING:
-  _Base = SimpleLDAPObject
+    _Base = SimpleLDAPObject
 else:
-  _Base = object
+    _Base = object
 
 __all__ = [
-  'SearchNoOpControl',
-  'SearchNoOpMixIn',
+    'SearchNoOpControl',
+    'SearchNoOpMixIn',
 ]
 
 
 class SearchNoOpControl(ValueLessRequestControl, ResponseControl):
-  """
-  No-op control attached to search operations implementing sort of a
-  count operation
+    """
+    No-op control attached to search operations implementing sort of a
+    count operation
 
-  see https://www.openldap.org/its/index.cgi?findid=6598
-  """
-  controlType = '1.3.6.1.4.1.4203.666.5.18'
+    see https://www.openldap.org/its/index.cgi?findid=6598
+    """
 
-  def __init__(self, criticality: bool = False) -> None:
-    self.criticality = criticality
+    controlType = '1.3.6.1.4.1.4203.666.5.18'
 
-  class SearchNoOpControlValue(univ.Sequence):
-    pass
+    def __init__(self, criticality: bool = False) -> None:
+        self.criticality = criticality
 
-  def decodeControlValue(self, encodedControlValue: bytes) -> None:
-    decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=self.SearchNoOpControlValue())
-    self.resultCode = int(decodedValue[0])
-    self.numSearchResults = int(decodedValue[1])
-    self.numSearchContinuations = int(decodedValue[2])
+    class SearchNoOpControlValue(univ.Sequence):
+        pass
+
+    def decodeControlValue(self, encodedControlValue: bytes) -> None:
+        decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=self.SearchNoOpControlValue())
+        self.resultCode = int(decodedValue[0])
+        self.numSearchResults = int(decodedValue[1])
+        self.numSearchContinuations = int(decodedValue[2])
 
 
 ldap.controls.KNOWN_RESPONSE_CONTROLS[SearchNoOpControl.controlType] = SearchNoOpControl
 
 
 class SearchNoOpMixIn(_Base):
-  """
-  Mix-in class to be used with class LDAPObject and friends.
+    """
+    Mix-in class to be used with class LDAPObject and friends.
 
-  It adds a convenience method noop_search_st() to LDAPObject
-  for easily using the no-op search control.
-  """
-  def __init__(self, *args: Any, **kwargs: Any) -> None:
-    if not isinstance(self, SimpleLDAPObject):
-      raise TypeError(f"Expecting to be a subclass of {SimpleLDAPObject}")
-    super().__init__(*args, **kwargs)
+    It adds a convenience method noop_search_st() to LDAPObject
+    for easily using the no-op search control.
+    """
 
-  def noop_search_st(
-    self,
-    base: str,
-    scope: int = ldap.SCOPE_SUBTREE,
-    filterstr: str = '(objectClass=*)',
-    timeout: int = -1,
-  ) -> tuple[int, int] | tuple[None, None]:
-    msg_id = None
-    try:
-      msg_id = self.search_ext(
-        base,
-        scope,
-        filterstr=filterstr,
-        attrlist=['1.1'],
-        timeout=timeout,
-        serverctrls=[SearchNoOpControl(criticality=True)],
-      )
-      _, _, _, search_response_ctrls = self.result3(msg_id, all=1, timeout=timeout)
-    except (
-      ldap.TIMEOUT,
-      ldap.TIMELIMIT_EXCEEDED,
-      ldap.SIZELIMIT_EXCEEDED,
-      ldap.ADMINLIMIT_EXCEEDED
-    ):
-      if msg_id is not None:
-        self.abandon(msg_id)
-      raise
-    else:
-      noop_srch_ctrl = [
-        c
-        for c in search_response_ctrls or []
-        if isinstance(c, SearchNoOpControl)
-      ]
-      if noop_srch_ctrl:
-        return noop_srch_ctrl[0].numSearchResults, noop_srch_ctrl[0].numSearchContinuations
-      else:
-        return (None, None)
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        if not isinstance(self, SimpleLDAPObject):
+            raise TypeError(f"Expecting to be a subclass of {SimpleLDAPObject}")
+        super().__init__(*args, **kwargs)
+
+    def noop_search_st(
+        self,
+        base: str,
+        scope: int = ldap.SCOPE_SUBTREE,
+        filterstr: str = '(objectClass=*)',
+        timeout: int = -1,
+    ) -> tuple[int, int] | tuple[None, None]:
+        msg_id = None
+        try:
+            msg_id = self.search_ext(
+                base,
+                scope,
+                filterstr=filterstr,
+                attrlist=['1.1'],
+                timeout=timeout,
+                serverctrls=[SearchNoOpControl(criticality=True)],
+            )
+            _, _, _, search_response_ctrls = self.result3(msg_id, all=1, timeout=timeout)
+        except (ldap.TIMEOUT, ldap.TIMELIMIT_EXCEEDED, ldap.SIZELIMIT_EXCEEDED, ldap.ADMINLIMIT_EXCEEDED):
+            if msg_id is not None:
+                self.abandon(msg_id)
+            raise
+        else:
+            noop_srch_ctrl = [c for c in search_response_ctrls or [] if isinstance(c, SearchNoOpControl)]
+            if noop_srch_ctrl:
+                return noop_srch_ctrl[0].numSearchResults, noop_srch_ctrl[0].numSearchContinuations
+            else:
+                return (None, None)

@@ -11,7 +11,7 @@ import ldap.resiter
 
 
 class LDAPObject(ldap.ldapobject.LDAPObject, ldap.resiter.ResultProcessor):
-  pass
+    pass
 
 
 l = LDAPObject('ldap://localhost:1390', trace_level=1)
@@ -20,6 +20,6 @@ msgid = l.search('dc=stroeder,dc=de', ldap.SCOPE_SUBTREE, '(cn=m*)')
 
 result_iter = l.allresults(msgid)
 for result_type, result_list, result_msgid, result_serverctrls in result_iter:
-  print(result_type, result_list, result_msgid, result_serverctrls)
+    print(result_type, result_list, result_msgid, result_serverctrls)
 
 l.unbind_s()

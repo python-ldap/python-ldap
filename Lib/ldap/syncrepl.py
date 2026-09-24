@@ -3,6 +3,7 @@ ldap.syncrepl - for implementing syncrepl consumer (see RFC 4533)
 
 See https://www.python-ldap.org/ for project details.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -28,6 +29,7 @@ class SyncUUID(univ.OctetString):
     """
     syncUUID ::= OCTET STRING (SIZE(16))
     """
+
     subtypeSpec = constraint.ValueSizeConstraint(16, 16)  # type: ignore[assignment]
 
 
@@ -39,37 +41,36 @@ class SyncCookie(univ.OctetString):
 
 class SyncRequestMode(univ.Enumerated):
     """
-           mode ENUMERATED {
-               -- 0 unused
-               refreshOnly       (1),
-               -- 2 reserved
-               refreshAndPersist (3)
-           },
+    mode ENUMERATED {
+        -- 0 unused
+        refreshOnly       (1),
+        -- 2 reserved
+        refreshAndPersist (3)
+    },
     """
-    namedValues = namedval.NamedValues(
-        ('refreshOnly', 1),
-        ('refreshAndPersist', 3)
-    )
+
+    namedValues = namedval.NamedValues(('refreshOnly', 1), ('refreshAndPersist', 3))
     subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(1, 3)
 
 
 class SyncRequestValue(univ.Sequence):
     """
-       syncRequestValue ::= SEQUENCE {
-           mode ENUMERATED {
-               -- 0 unused
-               refreshOnly       (1),
-               -- 2 reserved
-               refreshAndPersist (3)
-           },
-           cookie     syncCookie OPTIONAL,
-           reloadHint BOOLEAN DEFAULT FALSE
-       }
+    syncRequestValue ::= SEQUENCE {
+        mode ENUMERATED {
+            -- 0 unused
+            refreshOnly       (1),
+            -- 2 reserved
+            refreshAndPersist (3)
+        },
+        cookie     syncCookie OPTIONAL,
+        reloadHint BOOLEAN DEFAULT FALSE
+    }
     """
+
     componentType = namedtype.NamedTypes(
         namedtype.NamedType('mode', SyncRequestMode()),
         namedtype.OptionalNamedType('cookie', SyncCookie()),
-        namedtype.DefaultedNamedType('reloadHint', univ.Boolean(False))
+        namedtype.DefaultedNamedType('reloadHint', univ.Boolean(False)),
     )
 
 
@@ -83,6 +84,7 @@ class SyncRequestControl(RequestControl):
     The Sync Request Control is only applicable to the SearchRequest
     Message.
     """
+
     controlType = '1.3.6.1.4.1.4203.1.9.1.1'
 
     def __init__(
@@ -112,39 +114,34 @@ class SyncRequestControl(RequestControl):
 
 class SyncStateOp(univ.Enumerated):
     """
-           state ENUMERATED {
-               present (0),
-               add (1),
-               modify (2),
-               delete (3)
-           },
+    state ENUMERATED {
+        present (0),
+        add (1),
+        modify (2),
+        delete (3)
+    },
     """
-    namedValues = namedval.NamedValues(
-        ('present', 0),
-        ('add', 1),
-        ('modify', 2),
-        ('delete', 3)
-    )
+
+    namedValues = namedval.NamedValues(('present', 0), ('add', 1), ('modify', 2), ('delete', 3))
     subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0, 1, 2, 3)
 
 
 class SyncStateValue(univ.Sequence):
     """
-       syncStateValue ::= SEQUENCE {
-           state ENUMERATED {
-               present (0),
-               add (1),
-               modify (2),
-               delete (3)
-           },
-           entryUUID syncUUID,
-           cookie    syncCookie OPTIONAL
-       }
+    syncStateValue ::= SEQUENCE {
+        state ENUMERATED {
+            present (0),
+            add (1),
+            modify (2),
+            delete (3)
+        },
+        entryUUID syncUUID,
+        cookie    syncCookie OPTIONAL
+    }
     """
+
     componentType = namedtype.NamedTypes(
-        namedtype.NamedType('state', SyncStateOp()),
-        namedtype.NamedType('entryUUID', SyncUUID()),
-        namedtype.OptionalNamedType('cookie', SyncCookie())
+        namedtype.NamedType('state', SyncStateOp()), namedtype.NamedType('entryUUID', SyncUUID()), namedtype.OptionalNamedType('cookie', SyncCookie())
     )
 
 
@@ -158,6 +155,7 @@ class SyncStateControl(ResponseControl):
     The Sync State Control is only applicable to SearchResultEntry and
     SearchResultReference Messages.
     """
+
     controlType = '1.3.6.1.4.1.4203.1.9.1.2'
     opnames = ('present', 'add', 'modify', 'delete')
 
@@ -179,14 +177,14 @@ KNOWN_RESPONSE_CONTROLS[SyncStateControl.controlType] = SyncStateControl
 
 class SyncDoneValue(univ.Sequence):
     """
-       syncDoneValue ::= SEQUENCE {
-           cookie          syncCookie OPTIONAL,
-           refreshDeletes  BOOLEAN DEFAULT FALSE
-       }
+    syncDoneValue ::= SEQUENCE {
+        cookie          syncCookie OPTIONAL,
+        refreshDeletes  BOOLEAN DEFAULT FALSE
+    }
     """
+
     componentType = namedtype.NamedTypes(
-        namedtype.OptionalNamedType('cookie', SyncCookie()),
-        namedtype.DefaultedNamedType('refreshDeletes', univ.Boolean(False))
+        namedtype.OptionalNamedType('cookie', SyncCookie()), namedtype.DefaultedNamedType('refreshDeletes', univ.Boolean(False))
     )
 
 
@@ -200,6 +198,7 @@ class SyncDoneControl(ResponseControl):
     The Sync Done Control is only applicable to the SearchResultDone
     Message.
     """
+
     controlType = '1.3.6.1.4.1.4203.1.9.1.3'
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
@@ -221,27 +220,27 @@ KNOWN_RESPONSE_CONTROLS[SyncDoneControl.controlType] = SyncDoneControl
 
 class RefreshDelete(univ.Sequence):
     """
-           refreshDelete  [1] SEQUENCE {
-               cookie         syncCookie OPTIONAL,
-               refreshDone    BOOLEAN DEFAULT TRUE
-           },
+    refreshDelete  [1] SEQUENCE {
+        cookie         syncCookie OPTIONAL,
+        refreshDone    BOOLEAN DEFAULT TRUE
+    },
     """
+
     componentType = namedtype.NamedTypes(
-        namedtype.OptionalNamedType('cookie', SyncCookie()),
-        namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True))
+        namedtype.OptionalNamedType('cookie', SyncCookie()), namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True))
     )
 
 
 class RefreshPresent(univ.Sequence):
     """
-           refreshPresent [2] SEQUENCE {
-               cookie         syncCookie OPTIONAL,
-               refreshDone    BOOLEAN DEFAULT TRUE
-           },
+    refreshPresent [2] SEQUENCE {
+        cookie         syncCookie OPTIONAL,
+        refreshDone    BOOLEAN DEFAULT TRUE
+    },
     """
+
     componentType = namedtype.NamedTypes(
-        namedtype.OptionalNamedType('cookie', SyncCookie()),
-        namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True))
+        namedtype.OptionalNamedType('cookie', SyncCookie()), namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True))
     )
 
 
@@ -249,68 +248,71 @@ class SyncUUIDs(univ.SetOf):
     """
     syncUUIDs      SET OF syncUUID
     """
+
     componentType = SyncUUID()  # type: ignore[assignment]
 
 
 class SyncIdSet(univ.Sequence):
     """
-     syncIdSet      [3] SEQUENCE {
-         cookie         syncCookie OPTIONAL,
-         refreshDeletes BOOLEAN DEFAULT FALSE,
-         syncUUIDs      SET OF syncUUID
-     }
+    syncIdSet      [3] SEQUENCE {
+        cookie         syncCookie OPTIONAL,
+        refreshDeletes BOOLEAN DEFAULT FALSE,
+        syncUUIDs      SET OF syncUUID
+    }
     """
+
     componentType = namedtype.NamedTypes(
         namedtype.OptionalNamedType('cookie', SyncCookie()),
         namedtype.DefaultedNamedType('refreshDeletes', univ.Boolean(False)),
-        namedtype.NamedType('syncUUIDs', SyncUUIDs())
+        namedtype.NamedType('syncUUIDs', SyncUUIDs()),
     )
 
 
 class SyncInfoValue(univ.Choice):
     """
-       syncInfoValue ::= CHOICE {
-           newcookie      [0] syncCookie,
-           refreshDelete  [1] SEQUENCE {
-               cookie         syncCookie OPTIONAL,
-               refreshDone    BOOLEAN DEFAULT TRUE
-           },
-           refreshPresent [2] SEQUENCE {
-               cookie         syncCookie OPTIONAL,
-               refreshDone    BOOLEAN DEFAULT TRUE
-           },
-           syncIdSet      [3] SEQUENCE {
-               cookie         syncCookie OPTIONAL,
-               refreshDeletes BOOLEAN DEFAULT FALSE,
-               syncUUIDs      SET OF syncUUID
-           }
-       }
+    syncInfoValue ::= CHOICE {
+        newcookie      [0] syncCookie,
+        refreshDelete  [1] SEQUENCE {
+            cookie         syncCookie OPTIONAL,
+            refreshDone    BOOLEAN DEFAULT TRUE
+        },
+        refreshPresent [2] SEQUENCE {
+            cookie         syncCookie OPTIONAL,
+            refreshDone    BOOLEAN DEFAULT TRUE
+        },
+        syncIdSet      [3] SEQUENCE {
+            cookie         syncCookie OPTIONAL,
+            refreshDeletes BOOLEAN DEFAULT FALSE,
+            syncUUIDs      SET OF syncUUID
+        }
+    }
     """
+
     componentType = namedtype.NamedTypes(
         namedtype.NamedType(
             'newcookie',
             SyncCookie().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
-            )
+            ),
         ),
         namedtype.NamedType(
             'refreshDelete',
             RefreshDelete().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1)
-            )
+            ),
         ),
         namedtype.NamedType(
             'refreshPresent',
             RefreshPresent().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 2)
-            )
+            ),
         ),
         namedtype.NamedType(
             'syncIdSet',
             SyncIdSet().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 3)
-            )
-        )
+            ),
+        ),
     )
 
 
@@ -321,6 +323,7 @@ class SyncInfoMessage:
     1.3.6.1.4.1.4203.1.9.1.4 and responseValue contains a BER-encoded
     syncInfoValue.  The criticality is FALSE (and hence absent).
     """
+
     responseName = '1.3.6.1.4.1.4203.1.9.1.4'
 
     def __init__(self, encodedMessage: bytes) -> None:

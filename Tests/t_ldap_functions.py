@@ -39,30 +39,11 @@ class TestFunction(unittest.TestCase):
         """
         test function escape_string_tmpl()
         """
+        self.assertEqual(ldap.escape_str(escape_filter_chars, '(&(objectClass=aeUser)(uid=%s))', 'foo'), '(&(objectClass=aeUser)(uid=foo))')
         self.assertEqual(
-            ldap.escape_str(
-                escape_filter_chars,
-                '(&(objectClass=aeUser)(uid=%s))',
-                'foo'
-            ),
-            '(&(objectClass=aeUser)(uid=foo))'
+            ldap.escape_str(escape_filter_chars, '(&(objectClass=aeUser)(uid=%s))', 'foo)bar'), '(&(objectClass=aeUser)(uid=foo\\29bar))'
         )
-        self.assertEqual(
-            ldap.escape_str(
-                escape_filter_chars,
-                '(&(objectClass=aeUser)(uid=%s))',
-                'foo)bar'
-            ),
-            '(&(objectClass=aeUser)(uid=foo\\29bar))'
-        )
-        self.assertEqual(
-            ldap.escape_str(
-                escape_dn_chars,
-                'uid=%s',
-                'foo=bar'
-            ),
-            'uid=foo\\=bar'
-        )
+        self.assertEqual(ldap.escape_str(escape_dn_chars, 'uid=%s', 'foo=bar'), 'uid=foo\\=bar')
         self.assertEqual(
             ldap.escape_str(
                 escape_dn_chars,
@@ -71,7 +52,7 @@ class TestFunction(unittest.TestCase):
                 'foo+',
                 '+bar',
             ),
-            'uid=foo\\=bar,cn=foo\\+,cn=\\+bar,dc=example,dc=com'
+            'uid=foo\\=bar,cn=foo\\+,cn=\\+bar,dc=example,dc=com',
         )
 
 

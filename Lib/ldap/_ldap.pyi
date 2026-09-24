@@ -8,11 +8,8 @@ LIBLDAP_R: int
 OPT_OFF: int
 OPT_ON: int
 
-class LDAPError(Exception):
-    ...
-
-class error(Exception):
-    ...
+class LDAPError(Exception): ...
+class error(Exception): ...
 
 # BEGIN GENERATED
 # Regenerate with: python Lib/ldap/constants.py --pyi

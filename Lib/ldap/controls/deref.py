@@ -9,8 +9,8 @@ from __future__ import annotations
 
 
 __all__ = [
-  'DEREF_CONTROL_OID',
-  'DereferenceControl',
+    'DEREF_CONTROL_OID',
+    'DereferenceControl',
 ]
 
 from pyasn1.codec.ber import decoder, encoder
@@ -31,20 +31,15 @@ AttributeList = AttributeDescriptionList
 
 
 class DerefSpec(univ.Sequence):
-  componentType = namedtype.NamedTypes(
-    namedtype.NamedType(
-      'derefAttr',
-      AttributeDescription()
-    ),
-    namedtype.NamedType(
-      'attributes',
-      AttributeList()
-    ),
-  )
+    componentType = namedtype.NamedTypes(
+        namedtype.NamedType('derefAttr', AttributeDescription()),
+        namedtype.NamedType('attributes', AttributeList()),
+    )
 
 
 class DerefSpecs(univ.SequenceOf):
-  componentType = DerefSpec()  # type: ignore[assignment]
+    componentType = DerefSpec()  # type: ignore[assignment]
+
 
 # Response types
 # ---------------------------------------------------------------------------
@@ -55,25 +50,25 @@ class AttributeValues(univ.SetOf):
 
 
 class PartialAttribute(univ.Sequence):
-  componentType = namedtype.NamedTypes(
-    namedtype.NamedType('type', AttributeDescription()),
-    namedtype.NamedType('vals', AttributeValues()),
-  )
+    componentType = namedtype.NamedTypes(
+        namedtype.NamedType('type', AttributeDescription()),
+        namedtype.NamedType('vals', AttributeValues()),
+    )
 
 
 class PartialAttributeList(univ.SequenceOf):
-  componentType = PartialAttribute()  # type: ignore[assignment]
-  tagSet = univ.Sequence.tagSet.tagImplicitly(  # type: ignore[no-untyped-call]
-    tag.Tag(tag.tagClassContext, tag.tagFormatConstructed, 0)
-  )
+    componentType = PartialAttribute()  # type: ignore[assignment]
+    tagSet = univ.Sequence.tagSet.tagImplicitly(  # type: ignore[no-untyped-call]
+        tag.Tag(tag.tagClassContext, tag.tagFormatConstructed, 0)
+    )
 
 
 class DerefRes(univ.Sequence):
-  componentType = namedtype.NamedTypes(
-    namedtype.NamedType('derefAttr', AttributeDescription()),
-    namedtype.NamedType('derefVal', LDAPDN()),
-    namedtype.OptionalNamedType('attrVals', PartialAttributeList()),
-  )
+    componentType = namedtype.NamedTypes(
+        namedtype.NamedType('derefAttr', AttributeDescription()),
+        namedtype.NamedType('derefVal', LDAPDN()),
+        namedtype.OptionalNamedType('attrVals', PartialAttributeList()),
+    )
 
 
 class DerefResultControlValue(univ.SequenceOf):
@@ -81,49 +76,46 @@ class DerefResultControlValue(univ.SequenceOf):
 
 
 class DereferenceControl(LDAPControl):
-  controlType = DEREF_CONTROL_OID
+    controlType = DEREF_CONTROL_OID
 
-  def __init__(
-    self,
-    criticality: bool = False,
-    derefSpecs: dict[str, list[str]] | None = None,
-  ) -> None:
-    LDAPControl.__init__(self, self.controlType, criticality)
-    self.derefSpecs = derefSpecs or {}
+    def __init__(
+        self,
+        criticality: bool = False,
+        derefSpecs: dict[str, list[str]] | None = None,
+    ) -> None:
+        LDAPControl.__init__(self, self.controlType, criticality)
+        self.derefSpecs = derefSpecs or {}
 
-  def _derefSpecs(self) -> DerefSpecs:
-    deref_specs = DerefSpecs()
-    for i, (deref_attr, deref_attribute_names) in enumerate(self.derefSpecs.items()):
-      deref_spec = DerefSpec()
-      deref_attributes = AttributeList()
-      for j in range(len(deref_attribute_names)):
-        deref_attributes.setComponentByPosition(j, deref_attribute_names[j])
-      deref_spec.setComponentByName('derefAttr', AttributeDescription(deref_attr))
-      deref_spec.setComponentByName('attributes', deref_attributes)
-      deref_specs.setComponentByPosition(i, deref_spec)
-    return deref_specs
+    def _derefSpecs(self) -> DerefSpecs:
+        deref_specs = DerefSpecs()
+        for i, (deref_attr, deref_attribute_names) in enumerate(self.derefSpecs.items()):
+            deref_spec = DerefSpec()
+            deref_attributes = AttributeList()
+            for j in range(len(deref_attribute_names)):
+                deref_attributes.setComponentByPosition(j, deref_attribute_names[j])
+            deref_spec.setComponentByName('derefAttr', AttributeDescription(deref_attr))
+            deref_spec.setComponentByName('attributes', deref_attributes)
+            deref_specs.setComponentByPosition(i, deref_spec)
+        return deref_specs
 
-  def encodeControlValue(self) -> bytes:
-    return encoder.encode(self._derefSpecs())  # type: ignore
+    def encodeControlValue(self) -> bytes:
+        return encoder.encode(self._derefSpecs())  # type: ignore
 
-  def decodeControlValue(self, encodedControlValue: bytes) -> None:
-    decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=DerefResultControlValue())
-    # Starting from the inside out:
-    #   The innermost dict maps attribute names to lists of attribute values
-    #       (note: the attribute values are encoded as str, not bytes)
-    #   The tuple pairs a DN and one of the above dicts.
-    #   The outermost dict maps the dereferenced attribute to a list of the above tuples
-    self.derefRes: dict[str, list[tuple[str, dict[str, list[str]]]]] = {}
-    for deref_res in decodedValue:
-      deref_attr, deref_val, deref_vals = deref_res[0], deref_res[1], deref_res[2]
-      partial_attrs_dict = {
-        str(tv[0]): [str(v) for v in tv[1]]
-        for tv in deref_vals or []
-      }
-      try:
-        self.derefRes[str(deref_attr)].append((str(deref_val), partial_attrs_dict))
-      except KeyError:
-        self.derefRes[str(deref_attr)] = [(str(deref_val), partial_attrs_dict)]
+    def decodeControlValue(self, encodedControlValue: bytes) -> None:
+        decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=DerefResultControlValue())
+        # Starting from the inside out:
+        #   The innermost dict maps attribute names to lists of attribute values
+        #       (note: the attribute values are encoded as str, not bytes)
+        #   The tuple pairs a DN and one of the above dicts.
+        #   The outermost dict maps the dereferenced attribute to a list of the above tuples
+        self.derefRes: dict[str, list[tuple[str, dict[str, list[str]]]]] = {}
+        for deref_res in decodedValue:
+            deref_attr, deref_val, deref_vals = deref_res[0], deref_res[1], deref_res[2]
+            partial_attrs_dict = {str(tv[0]): [str(v) for v in tv[1]] for tv in deref_vals or []}
+            try:
+                self.derefRes[str(deref_attr)].append((str(deref_val), partial_attrs_dict))
+            except KeyError:
+                self.derefRes[str(deref_attr)] = [(str(deref_val), partial_attrs_dict)]
 
 
 KNOWN_RESPONSE_CONTROLS[DereferenceControl.controlType] = DereferenceControl

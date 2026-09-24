@@ -15,12 +15,8 @@ COOKIE = b'cookie'
 
 class TestLibldapControls(unittest.TestCase):
     def test_pagedresults_encode(self):
-        pr = pagedresults.SimplePagedResultsControl(
-            size=SIZE, cookie=COOKIE
-        )
-        lib = libldap.SimplePagedResultsControl(
-            size=SIZE, cookie=COOKIE
-        )
+        pr = pagedresults.SimplePagedResultsControl(size=SIZE, cookie=COOKIE)
+        lib = libldap.SimplePagedResultsControl(size=SIZE, cookie=COOKIE)
         self.assertEqual(pr.encodeControlValue(), lib.encodeControlValue())
         self.assertEqual(pr.encodeControlValue(), PRC_BER)
 

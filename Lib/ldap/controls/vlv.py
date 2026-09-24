@@ -9,8 +9,8 @@ from __future__ import annotations
 
 
 __all__ = [
-  'VLVRequestControl',
-  'VLVResponseControl',
+    'VLVRequestControl',
+    'VLVResponseControl',
 ]
 
 from pyasn1.codec.ber import decoder, encoder
@@ -21,26 +21,30 @@ from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseContr
 
 class ByOffsetType(univ.Sequence):
     tagSet = univ.Sequence.tagSet.tagImplicitly(  # type: ignore[no-untyped-call]
-            tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0))
-    componentType = namedtype.NamedTypes(
-            namedtype.NamedType('offset', univ.Integer()),
-            namedtype.NamedType('contentCount', univ.Integer()))
+        tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
+    )
+    componentType = namedtype.NamedTypes(namedtype.NamedType('offset', univ.Integer()), namedtype.NamedType('contentCount', univ.Integer()))
 
 
 class TargetType(univ.Choice):
     componentType = namedtype.NamedTypes(
-            namedtype.NamedType('byOffset', ByOffsetType()),
-            namedtype.NamedType('greaterThanOrEqual', univ.OctetString().subtype(  # type: ignore[no-untyped-call]
-                implicitTag=tag.Tag(tag.tagClassContext,
-                    tag.tagFormatSimple, 1))))
+        namedtype.NamedType('byOffset', ByOffsetType()),
+        namedtype.NamedType(
+            'greaterThanOrEqual',
+            univ.OctetString().subtype(  # type: ignore[no-untyped-call]
+                implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1)
+            ),
+        ),
+    )
 
 
 class VirtualListViewRequestType(univ.Sequence):
     componentType = namedtype.NamedTypes(
-            namedtype.NamedType('beforeCount', univ.Integer()),
-            namedtype.NamedType('afterCount', univ.Integer()),
-            namedtype.NamedType('target', TargetType()),
-            namedtype.OptionalNamedType('contextID', univ.OctetString()))
+        namedtype.NamedType('beforeCount', univ.Integer()),
+        namedtype.NamedType('afterCount', univ.Integer()),
+        namedtype.NamedType('target', TargetType()),
+        namedtype.OptionalNamedType('contextID', univ.OctetString()),
+    )
 
 
 class VLVRequestControl(RequestControl):
@@ -57,11 +61,9 @@ class VLVRequestControl(RequestControl):
         context_id: str | None = None,
     ):
         RequestControl.__init__(self, self.controlType, criticality)
-        assert (offset is not None and content_count is not None) or \
-               greater_than_or_equal, \
-            ValueError(
-                'offset and content_count must be set together or greater_than_or_equal must be used'
-            )
+        assert (offset is not None and content_count is not None) or greater_than_or_equal, ValueError(
+            'offset and content_count must be set together or greater_than_or_equal must be used'
+        )
         self.before_count = before_count
         self.after_count = after_count
         self.offset = offset
@@ -81,8 +83,7 @@ class VLVRequestControl(RequestControl):
             target.setComponentByName('byOffset', by_offset)
         elif self.greater_than_or_equal:
             target = TargetType()
-            target.setComponentByName('greaterThanOrEqual',
-                    self.greater_than_or_equal)
+            target.setComponentByName('greaterThanOrEqual', self.greater_than_or_equal)
         else:
             raise NotImplementedError
         p.setComponentByName('target', target)
@@ -93,26 +94,26 @@ class VLVRequestControl(RequestControl):
 
 class VirtualListViewResultType(univ.Enumerated):
     namedValues = namedval.NamedValues(
-               ('success', 0),
-               ('operationsError', 1),
-               ('protocolError', 3),
-               ('unwillingToPerform', 53),
-               ('insufficientAccessRights', 50),
-               ('adminLimitExceeded', 11),
-               ('innapropriateMatching', 18),
-               ('sortControlMissing', 60),
-               ('offsetRangeError', 61),
-               ('other', 80),
+        ('success', 0),
+        ('operationsError', 1),
+        ('protocolError', 3),
+        ('unwillingToPerform', 53),
+        ('insufficientAccessRights', 50),
+        ('adminLimitExceeded', 11),
+        ('innapropriateMatching', 18),
+        ('sortControlMissing', 60),
+        ('offsetRangeError', 61),
+        ('other', 80),
     )
 
 
 class VirtualListViewResponseType(univ.Sequence):
     componentType = namedtype.NamedTypes(
-            namedtype.NamedType('targetPosition', univ.Integer()),
-            namedtype.NamedType('contentCount', univ.Integer()),
-            namedtype.NamedType('virtualListViewResult',
-                VirtualListViewResultType()),
-            namedtype.OptionalNamedType('contextID', univ.OctetString()))
+        namedtype.NamedType('targetPosition', univ.Integer()),
+        namedtype.NamedType('contentCount', univ.Integer()),
+        namedtype.NamedType('virtualListViewResult', VirtualListViewResultType()),
+        namedtype.OptionalNamedType('contextID', univ.OctetString()),
+    )
 
 
 class VLVResponseControl(ResponseControl):
