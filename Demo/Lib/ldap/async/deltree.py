@@ -48,7 +48,7 @@ class DeleteLeafs(ldap.asyncsearch.AsyncSearchHandler):
       else:
         try:
           self._l.delete_s(dn)
-        except ldap.NOT_ALLOWED_ON_NONLEAF as e:
+        except ldap.NOT_ALLOWED_ON_NONLEAF:
           self.nonLeafEntries.append(dn)
         else:
           self.deletedEntries += 1

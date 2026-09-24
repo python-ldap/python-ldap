@@ -62,7 +62,7 @@ except (
   ldap.TIMEOUT,
   ldap.TIMELIMIT_EXCEEDED,
   ldap.SIZELIMIT_EXCEEDED,
-  ldap.ADMINLIMIT_EXCEEDED) as e:
+  ldap.ADMINLIMIT_EXCEEDED):
   ldap_conn.abandon(msg_id)
   sys.exit(1)
 
