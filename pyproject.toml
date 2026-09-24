@@ -81,10 +81,69 @@ where = ["Lib"]
 [tool.setuptools.package-dir]
 "" = "Lib"
 
-[tool.isort]
-line_length = 88
-known_first_party = ["ldap", "_ldap", "ldapurl", "ldif", "slapdtest"]
-sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+[tool.ruff]
+# ruff 0.16.8
+target-version = "py39"
+output-format = "concise"
+
+line-length = 120
+indent-width = 4
+
+[tool.ruff.lint]
+task-tags = ["TODO", "FIXME"]
+extend-select = [
+ "C90",  # complex-structure
+]
+ignore = [
+ # conflict with --preview or --unsafe-fixes
+ "RUF100", # unused-noqa
+ # too many violations
+ "UP031", # printf-string-formatting
+ "RUF012", # mutable-class-default
+ # a few auto-unfixable violations leftover
+ "SIM115", # open-file-with-context-handler
+ "EXE002", # shebang-missing-executable-file
+ "B018", # useless-expression
+ "E722", # bare-except
+ "BLE001", # blind-except
+ "PLW0602", # global-variable-not-assigned
+ "PLW1508", # invalid-envvar-default
+ "S110", # try-except-pass
+ "SIM102", # collapsible-if
+ "SIM113", # enumerate-for-loop
+ "SIM103", # needless-bool
+ "LOG015", # root-logger-call
+ "PLW1510", # subprocess-run-without-check
+ "TRY004", # type-check-without-type-error
+ "TRY401", # verbose-log-message
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.format]
+quote-style = "single"  # https://github.com/astral-sh/ruff/issues/7525
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+multiline-quotes = "double"
+inline-quotes = "single"
+
+[tool.ruff.lint.flake8-unused-arguments]
+ignore-variadic-names = true
+
+[tool.ruff.lint.flake8-pytest-style]
+parametrize-names-type = "csv"
+
+[tool.ruff.lint.flake8-annotations]
+ignore-fully-untyped = true
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["ldap", "_ldap", "ldapurl", "ldif", "slapdtest"]
+known-third-party = ["pyasn1", "pyasn1_modules"]
+known-local-folder = []
+lines-after-imports = 2
 
 [tool.coverage.run]
 branch = true
