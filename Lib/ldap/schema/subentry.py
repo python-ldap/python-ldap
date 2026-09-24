@@ -329,7 +329,9 @@ class SubSchema:
             se_obj = self.sed[se_class][se_oid]
         except KeyError:
             if raise_keyerror:
-                raise KeyError(f'No ldap.schema.{se_class.__name__} instance with nameoroid {nameoroid!r} and se_oid {se_oid!r}')
+                raise KeyError(
+                    f'No ldap.schema.{se_class.__name__} instance with nameoroid {nameoroid!r} and se_oid {se_oid!r}'
+                )
             elif default is None:
                 return None
             else:
@@ -399,7 +401,11 @@ class SubSchema:
                     break
             else:
                 if result is not None:
-                    warnings.warn(f"multiple leaf structural objectclasses: {result}, {oid}", category=DeprecationWarning, stacklevel=2)
+                    warnings.warn(
+                        f"multiple leaf structural objectclasses: {result}, {oid}",
+                        category=DeprecationWarning,
+                        stacklevel=2,
+                    )
                 result = oid
         return result
 

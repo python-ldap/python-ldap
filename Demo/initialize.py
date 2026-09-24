@@ -91,7 +91,9 @@ print("""##################################################################
 """)
 
 # Create LDAPObject instance
-l = ldap.initialize('ldapi://%2ftmp%2fopenldap-socket', trace_level=ldapmodule_trace_level, trace_file=ldapmodule_trace_file)
+l = ldap.initialize(
+    'ldapi://%2ftmp%2fopenldap-socket', trace_level=ldapmodule_trace_level, trace_file=ldapmodule_trace_file
+)
 # Set LDAP protocol version used
 l.protocol_version = ldap.VERSION3
 # Try an explicit anon bind to provoke failure

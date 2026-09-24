@@ -15,7 +15,16 @@ class PagedResultsSearchObject:
     page_size = 50
 
     def paged_search_ext_s(
-        self, base, scope, filterstr='(objectClass=*)', attrlist=None, attrsonly=0, serverctrls=None, clientctrls=None, timeout=-1, sizelimit=0
+        self,
+        base,
+        scope,
+        filterstr='(objectClass=*)',
+        attrlist=None,
+        attrsonly=0,
+        serverctrls=None,
+        clientctrls=None,
+        timeout=-1,
+        sizelimit=0,
     ):
         """
         Behaves exactly like LDAPObject.search_ext_s() but internally uses the
@@ -91,7 +100,9 @@ l.simple_bind_s("", "")
 l.page_size = 10
 
 # Send search request
-result_pages, all_results = l.paged_search_ext_s(base, ldap.SCOPE_SUBTREE, search_flt, attrlist=searchreq_attrlist, serverctrls=None)
+result_pages, all_results = l.paged_search_ext_s(
+    base, ldap.SCOPE_SUBTREE, search_flt, attrlist=searchreq_attrlist, serverctrls=None
+)
 
 l.unbind_s()
 

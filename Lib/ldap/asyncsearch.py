@@ -94,7 +94,9 @@ class AsyncSearchHandler:
         clientctrls
             list of client-side LDAP controls
         """
-        self._msgId = self._l.search_ext(searchRoot, searchScope, filterStr, attrList, attrsOnly, serverctrls, clientctrls, timeout, sizelimit)
+        self._msgId = self._l.search_ext(
+            searchRoot, searchScope, filterStr, attrList, attrsOnly, serverctrls, clientctrls, timeout, sizelimit
+        )
         self._afterFirstResult = 1
 
     def preProcessing(self) -> Any:
@@ -143,7 +145,9 @@ class AsyncSearchHandler:
             result_type, result_list = None, None
             while go_ahead:
                 while result_type is None and not result_list:
-                    result_type, result_list, _result_msgid, _result_serverctrls = self._l.result3(self._msgId, 0, timeout)
+                    result_type, result_list, _result_msgid, _result_serverctrls = self._l.result3(
+                        self._msgId, 0, timeout
+                    )
                     if self._afterFirstResult:
                         self.afterFirstResult()
                         self._afterFirstResult = 0

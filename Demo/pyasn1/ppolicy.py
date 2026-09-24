@@ -29,7 +29,9 @@ except (IndexError, ValueError):
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
-ldap_conn = ldap.ldapobject.LDAPObject(ldap_url.initializeUrl(), trace_level=ldapmodule_trace_level, trace_file=ldapmodule_trace_file)
+ldap_conn = ldap.ldapobject.LDAPObject(
+    ldap_url.initializeUrl(), trace_level=ldapmodule_trace_level, trace_file=ldapmodule_trace_file
+)
 
 if ldap_url.cred is None:
     print(f'Password for {ldap_url.who!r}:')
@@ -45,6 +47,10 @@ else:
     if res_ctrls[0].controlType == PasswordPolicyControl.controlType:
         ppolicy_ctrl = res_ctrls[0]
         print('PasswordPolicyControl')
-        print('error', repr(ppolicy_ctrl.error), (ppolicy_ctrl.error is not None) * repr(PasswordPolicyError(ppolicy_ctrl.error)))
+        print(
+            'error',
+            repr(ppolicy_ctrl.error),
+            (ppolicy_ctrl.error is not None) * repr(PasswordPolicyError(ppolicy_ctrl.error)),
+        )
         print('timeBeforeExpiration', repr(ppolicy_ctrl.timeBeforeExpiration))
         print('graceAuthNsRemaining', repr(ppolicy_ctrl.graceAuthNsRemaining))

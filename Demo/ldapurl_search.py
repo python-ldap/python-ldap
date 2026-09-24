@@ -32,7 +32,9 @@ l.protocol_version = 3
 l.set_option(ldap.OPT_REFERRALS, 0)
 l.simple_bind_s((ldap_url.who or ''), (ldap_url.cred or ''))
 
-result = l.search_s(ldap_url.dn, ldap_url.scope or ldap.SCOPE_SUBTREE, ldap_url.filterstr or '(objectClass=*)', ldap_url.attrs or ['*'])
+result = l.search_s(
+    ldap_url.dn, ldap_url.scope or ldap.SCOPE_SUBTREE, ldap_url.filterstr or '(objectClass=*)', ldap_url.attrs or ['*']
+)
 
 pprint.pprint(result)
 

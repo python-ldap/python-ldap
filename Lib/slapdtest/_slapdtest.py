@@ -288,7 +288,9 @@ class SlapdObject:
             var_name = 'BIN'
         command = which(cmd, path=path)
         if command is None:
-            raise ValueError(f"Command '{cmd}' not found. Set the {var_name} environment variable to override slapdtest's search path: {path}.")
+            raise ValueError(
+                f"Command '{cmd}' not found. Set the {var_name} environment variable to override slapdtest's search path: {path}."
+            )
         return command
 
     def setup_rundir(self) -> None:
@@ -375,7 +377,10 @@ class SlapdObject:
         self._log.debug("importing configuration: %s", self._slapd_conf)
 
         self.slapadd(self.gen_config(), ["-n0"])
-        ldif_paths = [schema if os.path.exists(schema) else os.path.join(self.SCHEMADIR or '', schema) for schema in self.openldap_schema_files]
+        ldif_paths = [
+            schema if os.path.exists(schema) else os.path.join(self.SCHEMADIR or '', schema)
+            for schema in self.openldap_schema_files
+        ]
         for ldif_path in ldif_paths:
             self.slapadd(None, ["-n0", "-l", ldif_path])
 
@@ -582,7 +587,9 @@ class SlapdObject:
         """
         Runs slapadd on this slapd instance, passing it the ldif content
         """
-        self._cli_popen(self.PATH_SLAPD, stdin_data=ldif.encode("utf-8") if ldif else None, extra_args=extra_args, tool='add')
+        self._cli_popen(
+            self.PATH_SLAPD, stdin_data=ldif.encode("utf-8") if ldif else None, extra_args=extra_args, tool='add'
+        )
 
     def __enter__(self) -> Self:
         self.start()

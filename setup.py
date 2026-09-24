@@ -120,7 +120,8 @@ setup(
             runtime_library_dirs=(not sys.platform.startswith("win")) * LDAP_CLASS.library_dirs,
             py_limited_api=LIMITED_API,
             define_macros=LDAP_CLASS.defines
-            + ('sasl' in LDAP_CLASS.libs or 'sasl2' in LDAP_CLASS.libs or 'libsasl' in LDAP_CLASS.libs) * [('HAVE_SASL', None)]
+            + ('sasl' in LDAP_CLASS.libs or 'sasl2' in LDAP_CLASS.libs or 'libsasl' in LDAP_CLASS.libs)
+            * [('HAVE_SASL', None)]
             + ('ssl' in LDAP_CLASS.libs and 'crypto' in LDAP_CLASS.libs) * [('HAVE_TLS', None)]
             + LIMITED_API * [('Py_LIMITED_API', hex(LIMITED_API_FLOOR).upper())]
             + [

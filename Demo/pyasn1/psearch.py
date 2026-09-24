@@ -30,7 +30,9 @@ except IndexError:
 ldapmodule_trace_level = 2
 ldapmodule_trace_file = sys.stderr
 
-ldap_conn = ldap.ldapobject.LDAPObject(ldap_url.initializeUrl(), trace_level=ldapmodule_trace_level, trace_file=ldapmodule_trace_file)
+ldap_conn = ldap.ldapobject.LDAPObject(
+    ldap_url.initializeUrl(), trace_level=ldapmodule_trace_level, trace_file=ldapmodule_trace_file
+)
 
 if ldap_url.cred is None:
     print(f'Password for {ldap_url.who!r}:')
@@ -70,6 +72,13 @@ while True:
             ecn_ctrls = [c for c in srv_ctrls if c.controlType == EntryChangeNotificationControl.controlType]
 
             if ecn_ctrls:
-                changeType, previousDN, changeNumber = ecn_ctrls[0].changeType, ecn_ctrls[0].previousDN, ecn_ctrls[0].changeNumber
+                changeType, previousDN, changeNumber = (
+                    ecn_ctrls[0].changeType,
+                    ecn_ctrls[0].previousDN,
+                    ecn_ctrls[0].changeNumber,
+                )
                 change_type_desc = CHANGE_TYPES_STR[changeType]
-                print('changeType: %s (%d), changeNumber: %s, previousDN: %s' % (change_type_desc, changeType, changeNumber, repr(previousDN)))
+                print(
+                    'changeType: %s (%d), changeNumber: %s, previousDN: %s'
+                    % (change_type_desc, changeType, changeNumber, repr(previousDN))
+                )

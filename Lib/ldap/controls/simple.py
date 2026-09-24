@@ -43,7 +43,9 @@ class OctetStringInteger(LDAPControl):
       Integer to be sent as OctetString
     """
 
-    def __init__(self, controlType: str | None = None, criticality: bool = False, integerValue: int | None = None) -> None:
+    def __init__(
+        self, controlType: str | None = None, criticality: bool = False, integerValue: int | None = None
+    ) -> None:
         self.controlType = controlType
         self.criticality = criticality
         self.integerValue = integerValue

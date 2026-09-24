@@ -41,7 +41,11 @@ class TestModlist(unittest.TestCase):
             test_modlist.sort()
             result_modlist = addModlist(entry)
             result_modlist.sort()
-            self.assertEqual(test_modlist, result_modlist, f'addModlist({entry!r}) returns\n{result_modlist!r}\ninstead of\n{test_modlist!r}.')
+            self.assertEqual(
+                test_modlist,
+                result_modlist,
+                f'addModlist({entry!r}) returns\n{result_modlist!r}\ninstead of\n{test_modlist!r}.',
+            )
 
     modifyModlist_tests = [
         (
@@ -133,7 +137,9 @@ class TestModlist(unittest.TestCase):
             result_modlist.sort()
 
             self.assertEqual(
-                test_modlist, result_modlist, f'modifyModlist({old_entry!r},{new_entry!r}) returns\n{result_modlist!r}\ninstead of\n{test_modlist!r}.'
+                test_modlist,
+                result_modlist,
+                f'modifyModlist({old_entry!r},{new_entry!r}) returns\n{result_modlist!r}\ninstead of\n{test_modlist!r}.',
             )
 
 
