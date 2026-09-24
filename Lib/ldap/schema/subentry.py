@@ -278,7 +278,7 @@ class SubSchema:
     """
     Get an OID by name or OID
     """
-    nameoroid_stripped = nameoroid.split(';')[0].strip()
+    nameoroid_stripped = nameoroid.split(';', maxsplit=1)[0].strip()
     if nameoroid_stripped in self.sed[se_class]:
       # name_or_oid is already a registered OID
       return nameoroid_stripped
