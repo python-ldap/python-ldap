@@ -67,11 +67,11 @@ except (
   sys.exit(1)
 
 
-noop_srch_ctrl = [
+noop_srch_ctrl = next(
   c
   for c in search_response_ctrls
   if c.controlType==SearchNoOpControl.controlType
-][0]
+)
 
 print('Number of search results: %d' % noop_srch_ctrl.numSearchResults)
 print('Number of search continuations: %d' % noop_srch_ctrl.numSearchContinuations)
