@@ -60,7 +60,7 @@ Homepage = "https://www.python-ldap.org/"
 Documentation = "https://python-ldap.readthedocs.io/"
 Repository = "https://github.com/python-ldap/python-ldap"
 Download = "https://pypi.org/project/python-ldap/"
-Changelog = "https://github.com/python-ldap/python-ldap/blob/main/CHANGES"
+Changelog = "https://github.com/python-ldap/python-ldap/blob/main/CHANGELOG.rst"
 Issues = "https://github.com/python-ldap/python-ldap/issues"
 
 [tool.setuptools]

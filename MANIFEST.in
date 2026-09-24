@@ -1,4 +1,4 @@
-include MANIFEST.in Makefile CHANGES INSTALL LICENCE README TODO
+include MANIFEST.in Makefile CHANGELOG.rst INSTALL LICENCE README TODO
 include tox.ini
 include Modules/*.c Modules/*.h
 include Lib/ldap/py.typed
