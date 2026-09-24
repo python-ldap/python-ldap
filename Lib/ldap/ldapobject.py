@@ -153,7 +153,7 @@ class SimpleLDAPObject:
       except IndexError:
         pass
       if __debug__ and self._trace_level>=2:
-        self._trace_file.write('=> LDAPError - {}: {}\n'.format(e.__class__.__name__,str(e)))
+        self._trace_file.write(f'=> LDAPError - {e.__class__.__name__}: {e!s}\n')
       raise
     else:
       if __debug__ and self._trace_level>=2:
@@ -174,9 +174,7 @@ class SimpleLDAPObject:
     elif name in self.__dict__:
       return self.__dict__[name]
     else:
-      raise AttributeError('{} has no attribute {}'.format(
-        self.__class__.__name__,repr(name)
-      ))
+      raise AttributeError(f'{self.__class__.__name__} has no attribute {name!r}')
 
   def fileno(self) -> int:
     """
@@ -1303,9 +1301,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
       while reconnect_counter:
         counter_text = '%d. (of %d)' % (retry_max-reconnect_counter+1,retry_max)
         if __debug__ and self._trace_level>=1:
-          self._trace_file.write('*** Trying {} reconnect to {}...\n'.format(
-            counter_text,uri
-          ))
+          self._trace_file.write(f'*** Trying {counter_text} reconnect to {uri}...\n')
         try:
           try:
             # Do the connect
@@ -1321,9 +1317,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
             raise
         except (ldap.SERVER_DOWN,ldap.TIMEOUT):
           if __debug__ and self._trace_level>=1:
-            self._trace_file.write('*** {} reconnect to {} failed\n'.format(
-              counter_text,uri
-            ))
+            self._trace_file.write(f'*** {counter_text} reconnect to {uri} failed\n')
           reconnect_counter -= 1
           if not reconnect_counter:
             raise
@@ -1332,9 +1326,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
           time.sleep(retry_delay)
         else:
           if __debug__ and self._trace_level>=1:
-            self._trace_file.write('*** {} reconnect to {} successful => repeat last operation\n'.format(
-              counter_text,uri
-            ))
+            self._trace_file.write(f'*** {counter_text} reconnect to {uri} successful => repeat last operation\n')
           self._reconnects_done += 1
           break
     finally:

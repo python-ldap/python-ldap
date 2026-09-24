@@ -82,14 +82,14 @@ class LDAPLock:
     if __debug__:
       global _trace_level
       if _trace_level>=self._min_trace_level:
-        _trace_file.write('***{}.acquire() {} {}\n'.format(self.__class__.__name__,repr(self),self._desc))
+        _trace_file.write(f'***{self.__class__.__name__}.acquire() {self!r} {self._desc}\n')
     return self._lock.acquire()
 
   def release(self) -> None:
     if __debug__:
       global _trace_level
       if _trace_level>=self._min_trace_level:
-        _trace_file.write('***{}.release() {} {}\n'.format(self.__class__.__name__,repr(self),self._desc))
+        _trace_file.write(f'***{self.__class__.__name__}.release() {self!r} {self._desc}\n')
     self._lock.release()
 
 

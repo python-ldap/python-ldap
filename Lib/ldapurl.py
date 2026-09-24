@@ -124,12 +124,7 @@ class LDAPUrlExtension:
     return self.unparse()
 
   def __repr__(self) -> str:
-    return '<{}.{} instance at {}: {}>'.format(
-      self.__class__.__module__,
-      self.__class__.__name__,
-      hex(id(self)),
-      self.__dict__
-    )
+    return f'<{self.__class__.__module__}.{self.__class__.__name__} instance at {hex(id(self))}: {self.__dict__}>'
 
   def __eq__(self, other: object) -> bool:
     if not isinstance(other, self.__class__):
@@ -169,8 +164,7 @@ class LDAPUrlExtensions(LDAPUrlExtensionsBase):
                             + type(value).__name__)
         if name != value.extype:
             raise ValueError(
-                "key {!r} does not match extension type {!r}".format(
-                    name, value.extype))
+                f"key {name!r} does not match extension type {value.extype!r}")
         self._data[name] = value
 
     def __getitem__(self, name: str) -> LDAPUrlExtension:
@@ -189,12 +183,7 @@ class LDAPUrlExtensions(LDAPUrlExtensionsBase):
         return ','.join(str(v) for v in self.values())
 
     def __repr__(self) -> str:
-        return '<{}.{} instance at {}: {}>'.format(
-            self.__class__.__module__,
-            self.__class__.__name__,
-            hex(id(self)),
-            self._data
-        )
+        return f'<{self.__class__.__module__}.{self.__class__.__name__} instance at {hex(id(self))}: {self._data}>'
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
@@ -377,10 +366,7 @@ class LDAPUrl:
       hostport = ldapUrlEscape(self.hostport)
     else:
       hostport = self.hostport
-    ldap_url = '{}://{}/{}?{}?{}?{}'.format(
-      self.urlscheme,
-      hostport,dn,attrs_str,scope_str,filterstr
-    )
+    ldap_url = f'{self.urlscheme}://{hostport}/{dn}?{attrs_str}?{scope_str}?{filterstr}'
     if self.extensions:
       ldap_url += '?' + self.extensions.unparse()
     return ldap_url
@@ -416,26 +402,17 @@ class LDAPUrl:
             raise TypeError("hrefTarget must be str, not "
                             + type(hrefTarget).__name__)
         target = ' target="%s"' % html.escape(hrefTarget, quote=True)
-    return '<a{} href="{}{}">{}</a>'.format(
-        target, html.escape(urlPrefix, quote=True), html.escape(self.unparse(), quote=True), html.escape(hrefText, quote=False)
-    )
+    return f'<a{target} href="{html.escape(urlPrefix, quote=True)}{html.escape(self.unparse(), quote=True)}">{html.escape(hrefText, quote=False)}</a>'
 
   def __str__(self) -> str:
     return self.unparse()
 
   def __repr__(self) -> str:
-    return '<{}.{} instance at {}: {}>'.format(
-      self.__class__.__module__,
-      self.__class__.__name__,
-      hex(id(self)),
-      self.__dict__
-    )
+    return f'<{self.__class__.__module__}.{self.__class__.__name__} instance at {hex(id(self))}: {self.__dict__}>'
 
   def __getattr__(self, name: str) -> str | None:
     if name not in self.attr2extype:
-      raise AttributeError('{} has no attribute {}'.format(
-        self.__class__.__name__,name
-      ))
+      raise AttributeError(f'{self.__class__.__name__} has no attribute {name}')
 
     extype = self.attr2extype[name]
     if self.extensions is None or extype not in self.extensions:
