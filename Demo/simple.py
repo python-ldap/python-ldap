@@ -8,7 +8,7 @@ import ldap
 l = ldap.open("marta.it.uq.edu.au")
 
 login_dn = "cn=root,ou=CSEE,o=UQ,c=AU"
-login_pw = getpass.getpass("Password for %s: " % login_dn)
+login_pw = getpass.getpass(f"Password for {login_dn}: ")
 l.simple_bind_s(login_dn, login_pw)
 
 #

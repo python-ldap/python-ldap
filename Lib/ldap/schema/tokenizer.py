@@ -58,11 +58,11 @@ def split_tokens(s: str) -> list[str]:
             parts.append(cpar)
         elif residue == '$':
             if not parens:
-                raise ValueError("'$' outside parenthesis in %r" % (s))
+                raise ValueError(f"'$' outside parenthesis in {s!r}")
         else:
             raise ValueError(residue, s)
     if parens:
-        raise ValueError("Unbalanced parenthesis in %r" % (s))
+        raise ValueError(f"Unbalanced parenthesis in {s!r}")
     return parts
 
 

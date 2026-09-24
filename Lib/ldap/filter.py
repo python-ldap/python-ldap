@@ -34,11 +34,11 @@ def escape_filter_chars(assertion_value: str, escape_mode: int = 0) -> str:
     if escape_mode==1:
       for c in assertion_value:
         if c < '0' or c > 'z' or c in "\\*()":
-          c = "\\%02x" % ord(c)
+          c = f"\\{ord(c):02x}"
         r.append(c)
     elif escape_mode==2:
       for c in assertion_value:
-        r.append("\\%02x" % ord(c))
+        r.append(f"\\{ord(c):02x}")
     else:
       raise ValueError('escape_mode must be 0, 1 or 2.')
     s = ''.join(r)

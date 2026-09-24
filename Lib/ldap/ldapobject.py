@@ -117,7 +117,7 @@ class SimpleLDAPObject:
 
   def _ldap_lock(self, desc: str = '') -> ldap.LDAPLock:
     if ldap.LIBLDAP_R:
-      return ldap.LDAPLock(desc='%s within %s' %(desc,repr(self)))
+      return ldap.LDAPLock(desc=f'{desc} within {self!r}')
     else:
       return ldap._ldap_module_lock
 
@@ -156,8 +156,8 @@ class SimpleLDAPObject:
     else:
       if __debug__ and self._trace_level>=2:
         if not diagnostic_message_success is None:
-          self._trace_file.write('=> diagnosticMessage: %s\n' % (repr(diagnostic_message_success)))
-        self._trace_file.write('=> result:\n%s\n' % (pprint.pformat(result)))
+          self._trace_file.write(f'=> diagnosticMessage: {diagnostic_message_success!r}\n')
+        self._trace_file.write(f'=> result:\n{pprint.pformat(result)}\n')
     return result
 
   def __setattr__(self, name: str, value: Any) -> None:
@@ -663,7 +663,7 @@ class SimpleLDAPObject:
     respoid, respvalue = self.extop_result(msgid, all=1, timeout=self.timeout)
 
     if respoid != PasswordModifyResponse.responseName:
-      raise ldap.PROTOCOL_ERROR("Unexpected OID %s in extended response!" % respoid)
+      raise ldap.PROTOCOL_ERROR(f"Unexpected OID {respoid} in extended response!")
     assert respoid is None
 
     if extract_newpw and respvalue:
@@ -1122,7 +1122,7 @@ class SimpleLDAPObject:
       sizelimit=2,
     )
     if len(r)!=1:
-      raise NO_UNIQUE_ENTRY('No or non-unique search result for %s' % (repr(filterstr)))
+      raise NO_UNIQUE_ENTRY(f'No or non-unique search result for {filterstr!r}')
     return r[0]
 
   def read_rootdse_s(
@@ -1213,7 +1213,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
                               trace_stack_limit, bytes_mode,
                               bytes_strictness=bytes_strictness,
                               fileno=fileno)
-    self._reconnect_lock = ldap.LDAPLock(desc='reconnect lock within %s' % (repr(self)))
+    self._reconnect_lock = ldap.LDAPLock(desc=f'reconnect lock within {self!r}')
     self._retry_max = retry_max
     self._retry_delay = retry_delay
     self._start_tls = 0
@@ -1244,7 +1244,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
     if self._last_bind is not None and isinstance(self._last_bind[0], str):
         self._last_bind = getattr(SimpleLDAPObject, self._last_bind[0]), self._last_bind[1], self._last_bind[2]
     self._ldap_object_lock = self._ldap_lock()
-    self._reconnect_lock = ldap.LDAPLock(desc='reconnect lock within %s' % (repr(self)))
+    self._reconnect_lock = ldap.LDAPLock(desc=f'reconnect lock within {self!r}')
     # XXX cannot pickle file, use default trace file
     self._trace_file = ldap._trace_file
     self.reconnect(self._uri,force=True)
@@ -1318,7 +1318,7 @@ class ReconnectLDAPObject(SimpleLDAPObject):
           if not reconnect_counter:
             raise
           if __debug__ and self._trace_level>=1:
-            self._trace_file.write('=> delay %s...\n' % (retry_delay))
+            self._trace_file.write(f'=> delay {retry_delay}...\n')
           time.sleep(retry_delay)
         else:
           if __debug__ and self._trace_level>=1:

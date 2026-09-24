@@ -14,7 +14,7 @@ import ldapurl
 try:
   ldapUrl = ldapurl.LDAPUrl(ldapUrl=sys.argv[1])
 except IndexError:
-  print('Usage: %s [LDAP URL]' % (sys.argv[0]))
+  print(f'Usage: {sys.argv[0]} [LDAP URL]')
   sys.exit(1)
 
 for a in [

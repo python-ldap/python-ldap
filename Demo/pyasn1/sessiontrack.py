@@ -21,7 +21,7 @@ from ldap.controls.sessiontrack import SESSION_TRACKING_FORMAT_OID_USERNAME, Ses
 try:
   ldap_url = ldapurl.LDAPUrl(sys.argv[1])
 except (IndexError, ValueError):
-  print('Usage: %s <LDAP URL>' % (sys.argv[0]))
+  print(f'Usage: {sys.argv[0]} <LDAP URL>')
   sys.exit(1)
 
 # Set debugging level
@@ -36,7 +36,7 @@ ldap_conn = ldap.ldapobject.LDAPObject(
 )
 
 if ldap_url.who and ldap_url.cred is None:
-  print('Password for %s:' % (repr(ldap_url.who)))
+  print(f'Password for {ldap_url.who!r}:')
   ldap_url.cred = getpass.getpass()
 
 try:

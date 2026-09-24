@@ -431,7 +431,7 @@ class TestLDAPUrl(unittest.TestCase):
             else:
                 failed_urls.append(bad)
         if failed_urls:
-          self.fail("These LDAP URLs should have raised ValueError: %r" % failed_urls)
+          self.fail(f"These LDAP URLs should have raised ValueError: {failed_urls!r}")
 
     def test_html_href(self):
         u = ldapurl.LDAPUrl('ldap://root.openldap.org/dc=openldap,dc=org')
@@ -439,7 +439,7 @@ class TestLDAPUrl(unittest.TestCase):
 
     def test_html_href_escaping(self):
         bad_chars = '<"&\'>'
-        u = ldapurl.LDAPUrl('ldap://%s/dc=%s,dc=org?scope=%s' % (bad_chars, bad_chars, bad_chars))
+        u = ldapurl.LDAPUrl(f'ldap://{bad_chars}/dc={bad_chars},dc=org?scope={bad_chars}')
         self.assertEqual(u.htmlHREF(), '<a href="ldap://&lt;&quot;&amp;&#x27;&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;&quot;&amp;&#x27;&gt;??">ldap://&lt;"&amp;\'&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;"&amp;\'&gt;??</a>')
         self.assertEqual(u.htmlHREF(bad_chars, bad_chars, bad_chars), '<a target="&lt;&quot;&amp;&#x27;&gt;" href="&lt;&quot;&amp;&#x27;&gt;ldap://&lt;&quot;&amp;&#x27;&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;&quot;&amp;&#x27;&gt;??">&lt;"&amp;\'&gt;</a>')
 

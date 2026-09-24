@@ -163,7 +163,7 @@ def DecodeControlTuples(
       control = knownLDAPControls[controlType]()
     except KeyError:
       if criticality:
-        raise ldap.UNAVAILABLE_CRITICAL_EXTENSION('Received unexpected critical response control with controlType %s' % (repr(controlType)))
+        raise ldap.UNAVAILABLE_CRITICAL_EXTENSION(f'Received unexpected critical response control with controlType {controlType!r}')
     else:
       control.controlType,control.criticality = controlType,criticality
       try:

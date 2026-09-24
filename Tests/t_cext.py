@@ -73,7 +73,7 @@ class TestLdapCExtension(SlapdTestCase):
         """
         if self._writesuffix is not None:
             return self._writesuffix
-        self._writesuffix = 'ou=write tests,%s' % self.server.suffix
+        self._writesuffix = f'ou=write tests,{self.server.suffix}'
         # Add writeable subtree
         self.server.ldapadd(
             "\n".join([
@@ -387,7 +387,7 @@ class TestLdapCExtension(SlapdTestCase):
         except _ldap.TIMEOUT:
             pass
         else:
-            self.fail("expected TIMEOUT, got %r" % r)
+            self.fail(f"expected TIMEOUT, got {r!r}")
 
     def test_search_ext_all(self):
         l = self._open_conn()
@@ -508,7 +508,7 @@ class TestLdapCExtension(SlapdTestCase):
         except _ldap.NO_SUCH_OBJECT:
             pass
         else:
-            self.fail("expected NO_SUCH_OBJECT, got %r" % r)
+            self.fail(f"expected NO_SUCH_OBJECT, got {r!r}")
 
     def test_delete(self):
         l = self._open_conn()
@@ -547,7 +547,7 @@ class TestLdapCExtension(SlapdTestCase):
         except _ldap.NO_SUCH_OBJECT:
             pass
         else:
-            self.fail("expected NO_SUCH_OBJECT, got %r" % r)
+            self.fail(f"expected NO_SUCH_OBJECT, got {r!r}")
 
     def test_modify_no_such_object_empty_attrs(self):
         """
@@ -566,7 +566,7 @@ class TestLdapCExtension(SlapdTestCase):
         except _ldap.NO_SUCH_OBJECT:
             pass
         else:
-            self.fail("expected NO_SUCH_OBJECT, got %r" % r)
+            self.fail(f"expected NO_SUCH_OBJECT, got {r!r}")
 
     def test_modify(self):
         """
@@ -751,7 +751,7 @@ class TestLdapCExtension(SlapdTestCase):
         except _ldap.UNWILLING_TO_PERFORM:
             pass
         else:
-            self.fail("expected UNWILLING_TO_PERFORM, got %r" % r)
+            self.fail(f"expected UNWILLING_TO_PERFORM, got {r!r}")
         # try changing password with a correct old-pw
         m = l.passwd(dn, "initial", "changed")
         result, pmsg, msgid, ctrls = l.result4(m, _ldap.MSG_ALL, self.timeout)
@@ -834,7 +834,7 @@ class TestLdapCExtension(SlapdTestCase):
                 self.fail("expected errno=%d, got %d"
                           % (errno.ENOTCONN, errno_val))
         else:
-            self.fail("expected SERVER_DOWN, got %r" % r)
+            self.fail(f"expected SERVER_DOWN, got {r!r}")
 
     def test_invalid_filter(self):
         l = self._open_conn(bind=False)
@@ -850,7 +850,7 @@ class TestLdapCExtension(SlapdTestCase):
         except _ldap.FILTER_ERROR:
             pass
         else:
-            self.fail("expected FILTER_ERROR, got %r" % r)
+            self.fail(f"expected FILTER_ERROR, got {r!r}")
 
     def test_invalid_credentials(self):
         l = self._open_conn(bind=False)
@@ -861,7 +861,7 @@ class TestLdapCExtension(SlapdTestCase):
         except _ldap.INVALID_CREDENTIALS:
             pass
         else:
-            self.fail("expected INVALID_CREDENTIALS, got %r" % r)
+            self.fail(f"expected INVALID_CREDENTIALS, got {r!r}")
 
     # TODO: test_extop
 

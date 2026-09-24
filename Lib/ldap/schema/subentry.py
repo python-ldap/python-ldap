@@ -51,7 +51,7 @@ class OIDNotUnique(SubschemaError):
     self.desc = desc
 
   def __str__(self) -> str:
-    return 'OID not unique for %s' % (self.desc)
+    return f'OID not unique for {self.desc}'
 
 
 class NameNotUnique(SubschemaError):
@@ -60,7 +60,7 @@ class NameNotUnique(SubschemaError):
     self.desc = desc
 
   def __str__(self) -> str:
-    return 'NAME not unique for %s' % (self.desc)
+    return f'NAME not unique for {self.desc}'
 
 
 class SubSchema:
@@ -551,7 +551,7 @@ class SubSchema:
               schema_attr_type = self.sed[AttributeType][a]
             except KeyError:
               if raise_keyerror:
-                raise KeyError('No attribute type found in sub schema by name %s' % (a))
+                raise KeyError(f'No attribute type found in sub schema by name {a}')
               # If there's no schema element for this attribute type
               # but still KeyError is to be ignored we filter it away
               del l[a]

@@ -43,9 +43,9 @@ attrvalue_pattern = r'(([^,]|\\,)+|".*?")'
 attrtypeandvalue_pattern = attrtype_pattern + r'[ ]*=[ ]*' + attrvalue_pattern
 rdn_pattern   = attrtypeandvalue_pattern + r'([ ]*\+[ ]*' + attrtypeandvalue_pattern + r')*[ ]*'
 dn_pattern   = rdn_pattern + r'([ ]*,[ ]*' + rdn_pattern + r')*[ ]*'
-dn_regex   = re.compile('^%s$' % dn_pattern)
+dn_regex   = re.compile(f'^{dn_pattern}$')
 
-ldif_pattern = '^((dn(:|::) %(dn_pattern)s)|(%(attrtype_pattern)s(:|::) .*)$)+' % vars()
+ldif_pattern = '^((dn(:|::) {dn_pattern})|({attrtype_pattern}(:|::) .*)$)+'.format(**vars())
 
 MOD_OP_INTEGER = {
   'add':0, # ldap.MOD_ADD
@@ -220,7 +220,7 @@ class LDIFWriter:
     elif isinstance(record,list):
       self._unparseChangeRecord(record)
     else:
-      raise ValueError('Argument record must be dictionary or list instead of %s' % (repr(record)))
+      raise ValueError(f'Argument record must be dictionary or list instead of {record!r}')
     # Write empty line separating the records
     self._output_file.write(self._last_line_sep)
     # Count records written
@@ -398,7 +398,7 @@ class LDIFParser:
     try:
       colon_pos = unfolded_line.index(':')
     except ValueError:
-      raise ValueError('no value-spec in %s' % (repr(unfolded_line)))
+      raise ValueError(f'no value-spec in {unfolded_line!r}')
     attr_type = unfolded_line[0:colon_pos]
     # if needed attribute value is BASE64 decoded
     value_spec = unfolded_line[colon_pos:colon_pos+2]
@@ -620,7 +620,7 @@ class LDIFParser:
         # v is still bytes, spec says it should be valid utf-8; decode it.
         changetype = v.decode('utf-8').lower()
         if changetype not in valid_changetype_set:
-          raise ValueError('Invalid changetype: %s' % repr(v))
+          raise ValueError(f'Invalid changetype: {v!r}')
         k,v = next_key_and_value()
 
       if changetype=='modify':
