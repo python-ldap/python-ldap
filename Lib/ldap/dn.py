@@ -32,7 +32,7 @@ def escape_dn_chars(s: str) -> str:
     if s[-1]==' ':
       s = ''.join((s[:-1],'\\ '))
     if s[0]=='#' or s[0]==' ':
-      s = ''.join(('\\',s))
+      s = f'\\{s}'
   return s
 
 
