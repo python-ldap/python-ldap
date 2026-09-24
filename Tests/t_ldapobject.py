@@ -577,7 +577,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
 
         l = self._ldap_conn
 
-        valid_attrlist_parameters = [{"a": "2"}, ["a", "b"], {}, set(), set(["a", "b"])]
+        valid_attrlist_parameters = [{"a": "2"}, ["a", "b"], {}, set(), {"a", "b"}]
 
         for attrlist in valid_attrlist_parameters:
             out = l.search_ext(
