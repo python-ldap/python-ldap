@@ -330,7 +330,6 @@ class LDIFParser:
     Process a single content LDIF record. This method should be
     implemented by applications using LDIFParser.
     """
-    pass
 
   @property
   def _file_sends_bytes(self) -> bool:
@@ -523,7 +522,6 @@ class LDIFParser:
         dn (str): DN of the new object to be created
         entry (dict): Data of the new object to be created
     """
-    pass
 
   def handle_modify(
     self,
@@ -536,7 +534,6 @@ class LDIFParser:
     This method should be implemented by applications using LDIFParser.
     """
     controls = [] or None
-    pass
 
   def handle_modrdn(
     self,
@@ -557,7 +554,6 @@ class LDIFParser:
             from the entry
         newsuperior (str): DN of the new parent
     """
-    pass
 
   def handle_delete(
     self,
@@ -571,7 +567,6 @@ class LDIFParser:
     Args:
         dn (str): DN of the existing object to be deleted
     """
-    pass
 
   def parse_change_records(self) -> None:  # noqa: C901
     # Local symbol for better performance
