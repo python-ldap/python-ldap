@@ -524,7 +524,6 @@ class SyncreplConsumer(_Base):
         Called by syncrepl_poll() to store a new cookie provided by the server.
         """
         # FIXME: The cookie is an opaque octet string, so the type should be bytes?
-        pass
 
     def syncrepl_get_cookie(self) -> str | bytes | None:
         """
@@ -554,7 +553,6 @@ class SyncreplConsumer(_Base):
         syncrepl_present() should reset the list of recorded uuids, without
         deleting any entries.
         """
-        pass
 
     def syncrepl_delete(self, uuids: list[str]) -> None:
         """
@@ -562,7 +560,6 @@ class SyncreplConsumer(_Base):
         of UUIDs of the entries to be deleted is given in the
         uuids parameter.
         """
-        pass
 
     def syncrepl_entry(self, dn: str, attrs: LDAPEntryDict, uuid: str) -> None:
         """
@@ -572,7 +569,6 @@ class SyncreplConsumer(_Base):
         any future modification (including dn modification), deletion,
         and presentation operations.
         """
-        pass
 
     def syncrepl_refreshdone(self) -> None:
         """
@@ -581,7 +577,6 @@ class SyncreplConsumer(_Base):
         It indicates that initial synchronization is done and persist phase
         follows.
         """
-        pass
 
 
 class OpenLDAPSyncreplCookie:
