@@ -19,8 +19,6 @@ import ldap
 
 from pyasn1.error import PyAsn1Error
 
-from typing import Type
-
 
 __all__ = [
   'KNOWN_RESPONSE_CONTROLS',
@@ -41,7 +39,7 @@ __all__ = [
 ]
 
 # response control OID to class registry
-KNOWN_RESPONSE_CONTROLS: dict[str, Type["ResponseControl"]] = {}
+KNOWN_RESPONSE_CONTROLS: dict[str, type["ResponseControl"]] = {}
 
 
 class RequestControl:
@@ -143,7 +141,7 @@ def RequestControlTuples(
 
 def DecodeControlTuples(
     ldapControlTuples: list[tuple[str, bool, bytes]] | None,
-    knownLDAPControls: dict[str, Type[ResponseControl]] | None = None,
+    knownLDAPControls: dict[str, type[ResponseControl]] | None = None,
   ) -> list[ResponseControl]:
   """
   Returns list of readily decoded ResponseControl objects
