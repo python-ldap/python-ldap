@@ -15,6 +15,7 @@ __all__ = [
 
 
 
+
 from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import constraint, namedtype, namedval, tag, univ
 
@@ -53,8 +54,10 @@ class SSSRequestControl(RequestControl):
     def __init__(
         self,
         criticality: bool = False,
-        ordering_rules: list[str] | str = [],
+        ordering_rules: list[str] | str | None = None,
     ):
+        if ordering_rules is None:
+            ordering_rules = []
         RequestControl.__init__(self,self.controlType,criticality)
         self.ordering_rules = ordering_rules
         if isinstance(ordering_rules, str):
