@@ -7,7 +7,7 @@ See https://www.python-ldap.org/ for details.
 # This is also the overall release version number
 
 from __future__ import annotations
-from ldap.pkginfo import __version__, __author__, __license__
+from ldap.pkginfo import __version__, __author__, __license__  # noqa: F401
 
 import os
 import sys
@@ -21,7 +21,7 @@ from ldap._types import *
 if __debug__:
   # Tracing is only supported in debugging mode
   import atexit
-  import traceback
+  import traceback  # noqa: F401
   _trace_level = int(os.environ.get("PYTHON_LDAP_TRACE_LEVEL", 0))
   _trace_file_path = os.environ.get("PYTHON_LDAP_TRACE_FILE")
   if _trace_file_path is None:
@@ -93,11 +93,11 @@ class LDAPLock:
 # Create module-wide lock for serializing all calls into underlying LDAP lib
 _ldap_module_lock = LDAPLock(desc='Module wide')
 
-from ldap.functions import initialize,get_option,set_option,escape_str,strf_secs,strp_secs
+from ldap.functions import initialize,get_option,set_option,escape_str,strf_secs,strp_secs  # noqa: F401
 
-from ldap.ldapobject import NO_UNIQUE_ENTRY, LDAPBytesWarning
+from ldap.ldapobject import NO_UNIQUE_ENTRY, LDAPBytesWarning  # noqa: F401
 
-from ldap.dn import explode_dn,explode_rdn,str2dn,dn2str
+from ldap.dn import explode_dn,explode_rdn,str2dn,dn2str  # noqa: F401
 del str2dn
 del dn2str
 
