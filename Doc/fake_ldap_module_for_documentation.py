@@ -18,7 +18,7 @@ import sys
 sys.modules['ldap._ldap'] = sys.modules[__name__]
 
 from constants import CONSTANTS
-from pkginfo import __version__
+from pkginfo import __version__  # noqa: F401
 
 for constant in CONSTANTS:
     globals()[constant.name] = constant

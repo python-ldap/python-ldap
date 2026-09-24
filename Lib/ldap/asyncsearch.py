@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import ldap
 
-from ldap.pkginfo import __version__
+from ldap.pkginfo import __version__  # noqa: F401
 from ldap.controls import RequestControl
 from typing import Any, TextIO, TYPE_CHECKING
 from collections.abc import Iterable, Sequence

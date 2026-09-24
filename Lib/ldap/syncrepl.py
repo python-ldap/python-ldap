@@ -12,7 +12,7 @@ from uuid import UUID
 from pyasn1.type import tag, namedtype, namedval, univ, constraint
 from pyasn1.codec.ber import encoder, decoder
 
-from ldap.pkginfo import __version__, __author__, __license__
+from ldap.pkginfo import __version__, __author__, __license__  # noqa: F401
 from ldap.controls import RequestControl, ResponseControl, KNOWN_RESPONSE_CONTROLS
 from ldap.ldapobject import SimpleLDAPObject
 from ldap import RES_SEARCH_RESULT, RES_SEARCH_ENTRY, RES_INTERMEDIATE

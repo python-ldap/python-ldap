@@ -13,7 +13,7 @@ the examples of digest_md5 and gssapi.
 """
 
 from __future__ import annotations
-from ldap.pkginfo import __version__
+from ldap.pkginfo import __version__  # noqa: F401
 
 if __debug__:
     # Tracing is only supported in debugging mode

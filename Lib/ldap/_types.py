@@ -8,7 +8,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, MutableMapping, Optional, Sequence, Union
 
-from ldap.pkginfo import __version__
+from ldap.pkginfo import __version__  # noqa: F401
 
 
 if sys.version_info >= (3, 10):  # workaround for mypy, which cannot distinguish between real imports in except clause

@@ -12,10 +12,10 @@ warnings.warn(
 
 from collections import UserDict
 IterableUserDict = UserDict
-from urllib.parse import quote, quote_plus, unquote, urlparse
-from urllib.request import urlopen
-from collections.abc import MutableMapping
-from shutil import which
+from urllib.parse import quote, quote_plus, unquote, urlparse  # noqa: F401
+from urllib.request import urlopen  # noqa: F401
+from collections.abc import MutableMapping  # noqa: F401
+from shutil import which  # noqa: F401
 
 def reraise(exc_type: type[BaseException], exc_value: BaseException,
             exc_traceback: TracebackType | None) -> NoReturn:

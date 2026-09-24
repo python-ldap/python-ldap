@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from os import strerror
 
-from ldap.pkginfo import __version__, __author__, __license__
+from ldap.pkginfo import __version__, __author__, __license__  # noqa: F401
 
 from ldap.controls import RequestControl, ResponseControl
 

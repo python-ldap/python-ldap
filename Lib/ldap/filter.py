@@ -8,7 +8,7 @@ Compatibility:
 """
 
 from __future__ import annotations
-from ldap.pkginfo import __version__
+from ldap.pkginfo import __version__  # noqa: F401
 
 from ldap import _ldap
 from ldap.functions import strf_secs
