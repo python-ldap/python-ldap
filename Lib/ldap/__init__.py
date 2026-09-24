@@ -42,7 +42,7 @@ from ldap import _ldap
 
 assert _ldap.__version__==__version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
-from ldap._ldap import *
+from ldap._ldap import *  # noqa: E402
 
 
 # call into libldap to initialize it right now
@@ -96,15 +96,10 @@ class LDAPLock:
 # Create module-wide lock for serializing all calls into underlying LDAP lib
 _ldap_module_lock = LDAPLock(desc='Module wide')
 
-from ldap.dn import dn2str, explode_dn, explode_rdn, str2dn  # noqa: F401
-from ldap.functions import escape_str, get_option, initialize, set_option, strf_secs, strp_secs  # noqa: F401
-from ldap.ldapobject import NO_UNIQUE_ENTRY, LDAPBytesWarning  # noqa: F401
+from ldap.functions import escape_str, get_option, initialize, set_option, strf_secs, strp_secs  # noqa: E402, F401, I001
+from ldap.dn import explode_dn, explode_rdn  # noqa: E402, F401
+from ldap.ldapobject import NO_UNIQUE_ENTRY, LDAPBytesWarning  # noqa: E402, F401
 
-
-del str2dn
-del dn2str
-
-# More constants
 
 # For compatibility of 2.3 and 2.4 OpenLDAP API
 OPT_DIAGNOSTIC_MESSAGE = OPT_ERROR_STRING

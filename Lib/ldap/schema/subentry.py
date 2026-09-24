@@ -28,7 +28,7 @@ SCHEMA_ATTR_MAPPING: dict[type[SchemaElement], str] = {}
 
 # Note: this cannot be moved up due to circular imports:
 #       ldap.schema.models imports the two dicts above
-from ldap.schema.models import (
+from ldap.schema.models import (  # noqa: E402
     AttributeType,
     DITContentRule,
     ObjectClass,

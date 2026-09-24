@@ -21,10 +21,10 @@ sys.path.insert(0, os.path.join(_doc_dir, '../Lib/'))
 sys.path.insert(0, os.path.join(_doc_dir, '../Lib/ldap'))
 
 # Import fake `_ldap` module
-import fake_ldap_module_for_documentation  # noqa: F401
+import fake_ldap_module_for_documentation  # noqa: E402, F401
 
 # Now ldap can be used normally
-from ldap import __version__
+from ldap import __version__  # noqa: E402
 
 
 # General configuration

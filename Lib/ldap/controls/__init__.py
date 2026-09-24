@@ -17,9 +17,9 @@ from ldap.pkginfo import __version__
 assert _ldap.__version__==__version__, \
        ImportError(f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!')
 
-from pyasn1.error import PyAsn1Error
+from pyasn1.error import PyAsn1Error  # noqa: E402
 
-import ldap
+import ldap  # noqa: E402
 
 
 __all__ = [
@@ -176,5 +176,5 @@ def DecodeControlTuples(
   return result
 
 
-from ldap.controls.libldap import *
-from ldap.controls.simple import *
+from ldap.controls.libldap import *  # noqa: E402
+from ldap.controls.simple import *  # noqa: E402
