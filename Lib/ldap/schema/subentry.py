@@ -142,8 +142,7 @@ class SubSchema:
               while new_se_id in self.sed[se_class]:
                 new_se_id = ';'.join((se_id,str(suffix_counter)))
                 suffix_counter += 1
-              else:
-                se_id = new_se_id
+              se_id = new_se_id
             elif check_uniqueness>=2:
               raise OIDNotUnique(attr_value.decode('utf-8', errors='backslashreplace'))
 
