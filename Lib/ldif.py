@@ -82,7 +82,7 @@ def list_dict(l: list[str]) -> dict[str, None]:
   """
   return a dictionary with all items of l being the keys of the dictionary
   """
-  return {i: None for i in l}
+  return dict.fromkeys(l)
 
 
 class LDIFWriter:
