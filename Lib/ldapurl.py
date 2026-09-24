@@ -10,13 +10,18 @@ from __future__ import annotations
 __version__ = '3.4.7'
 
 __all__ = [
+  'LDAP_SCOPE_BASE',
+  'LDAP_SCOPE_ONELEVEL',
+  'LDAP_SCOPE_SUBTREE',
   # constants
-  'SEARCH_SCOPE','SEARCH_SCOPE_STR',
-  'LDAP_SCOPE_BASE','LDAP_SCOPE_ONELEVEL','LDAP_SCOPE_SUBTREE',
-  # functions
-  'isLDAPUrl',
+  'SEARCH_SCOPE',
+  'SEARCH_SCOPE_STR',
+  'LDAPUrl',
   # classes
-  'LDAPUrlExtension','LDAPUrlExtensions','LDAPUrl'
+  'LDAPUrlExtension',
+  'LDAPUrlExtensions',
+  # functions
+  'isLDAPUrl'
 ]
 
 import html

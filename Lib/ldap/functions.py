@@ -9,11 +9,14 @@ from ldap.pkginfo import __version__  # noqa: F401
 
 
 __all__ = [
-  'initialize',
-  'explode_dn','explode_rdn',
-  'get_option','set_option',
   'escape_str',
-  'strf_secs','strp_secs',
+  'explode_dn',
+  'explode_rdn',
+  'get_option',
+  'initialize',
+  'set_option',
+  'strf_secs',
+  'strp_secs',
 ]
 
 import pprint

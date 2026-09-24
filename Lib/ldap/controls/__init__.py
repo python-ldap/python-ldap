@@ -27,17 +27,17 @@ __all__ = [
   # Classes
   'AssertionControl',
   'BooleanControl',
+  'DecodeControlTuples',
   'LDAPControl',
   'ManageDSAITControl',
   'MatchedValuesControl',
   'RelaxRulesControl',
   'RequestControl',
+  # Functions
+  'RequestControlTuples',
   'ResponseControl',
   'SimplePagedResultsControl',
   'ValueLessRequestControl',
-  # Functions
-  'RequestControlTuples',
-  'DecodeControlTuples',
 ]
 
 # response control OID to class registry

@@ -6,8 +6,8 @@ See https://www.python-ldap.org/ for project details.
 """
 
 __all__ = [
-  'PasswordExpiringControl',
   'PasswordExpiredControl',
+  'PasswordExpiringControl',
 ]
 
 from ldap.controls import KNOWN_RESPONSE_CONTROLS, ResponseControl
