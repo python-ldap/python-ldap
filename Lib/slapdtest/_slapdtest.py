@@ -549,7 +549,7 @@ class SlapdObject:
         if ldap_uri is None:
             ldap_uri = self.default_ldap_uri
 
-        if ldapcommand.split("/")[-1].startswith("ldap"):
+        if ldapcommand.rsplit("/", maxsplit=1)[-1].startswith("ldap"):
             args = [ldapcommand, '-H', ldap_uri] + self._cli_auth_args()
         else:
             if tool:
