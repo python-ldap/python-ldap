@@ -235,11 +235,9 @@ class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
         """
         Handles adds and changes (including DN changes).
         """
-        if uuid in self.uuid_dn:
-            # Catch changing DNs.
-            if dn != self.uuid_dn[uuid]:
-                # Delete data associated with old DN.
-                del self.dn_attrs[self.uuid_dn[uuid]]
+        if uuid in self.uuid_dn and dn != self.uuid_dn[uuid]:
+            # Delete data associated with old DN.
+            del self.dn_attrs[self.uuid_dn[uuid]]
 
         # Update both maps.
         self.uuid_dn[uuid] = dn
