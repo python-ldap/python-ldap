@@ -521,10 +521,10 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             ]
 
             self.tester.modify_s(
-                "olcDatabase={1}%s,cn=config" % (self.server.database),
+                f"olcDatabase={{1}}{self.server.database},cn=config",
                 modifications)
             tester2.modify_s(
-                "olcDatabase={1}%s,cn=config" % (self.server.database),
+                f"olcDatabase={{1}}{self.server.database},cn=config",
                 modifications)
 
             tester2.search(
@@ -560,23 +560,23 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
 
             # send some mods to both
             modification = [('objectClass', [b'device'])]
-            self.tester.add_s("cn=server1,%s" % self.suffix, modification)
+            self.tester.add_s(f"cn=server1,{self.suffix}", modification)
 
-            csn1 = self.tester.read_s("cn=server1,%s" % self.suffix,
+            csn1 = self.tester.read_s(f"cn=server1,{self.suffix}",
                                       attrlist=['entryCSN']
                                       )['entryCSN'][0].decode('utf8')
 
-            tester2.add_s("cn=server2,%s" % self.suffix, modification)
-            csn2 = tester2.read_s("cn=server2,%s" % self.suffix,
+            tester2.add_s(f"cn=server2,{self.suffix}", modification)
+            csn2 = tester2.read_s(f"cn=server2,{self.suffix}",
                                   attrlist=['entryCSN']
                                   )['entryCSN'][0].decode('utf8')
 
             new_state = LDAP_ENTRIES.copy()
-            new_state["cn=server1,%s" % self.suffix] = {
+            new_state[f"cn=server1,{self.suffix}"] = {
                 "objectClass": [b"device"],
                 "cn": [b"server1"],
             }
-            new_state["cn=server2,%s" % self.suffix] = {
+            new_state[f"cn=server2,{self.suffix}"] = {
                 "objectClass": [b"device"],
                 "cn": [b"server2"],
             }
@@ -609,8 +609,8 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
 
             # self.tester seems to have been unbound by the time
             # self.addCleanup callbacks get called? Cleanup manually...
-            self.tester.delete_s("cn=server1,%s" % self.suffix)
-            self.tester.delete_s("cn=server2,%s" % self.suffix)
+            self.tester.delete_s(f"cn=server1,{self.suffix}")
+            self.tester.delete_s(f"cn=server2,{self.suffix}")
 
 
 class DecodeSyncreplProtoTests(unittest.TestCase):

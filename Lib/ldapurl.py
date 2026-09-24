@@ -275,7 +275,7 @@ class LDAPUrl:
     urlscheme,host,dn,attrs,scope,filterstr,extensions
     """
     if not isLDAPUrl(ldap_url):
-      raise ValueError('Value %s for ldap_url does not seem to be a LDAP URL.' % (repr(ldap_url)))
+      raise ValueError(f'Value {ldap_url!r} for ldap_url does not seem to be a LDAP URL.')
     scheme,rest = ldap_url.split('://',1)
     self.urlscheme = scheme.lower()
     slash_pos = rest.find('/')
@@ -309,7 +309,7 @@ class LDAPUrl:
       try:
         self.scope = SEARCH_SCOPE[scope]
       except KeyError:
-        raise ValueError('Invalid search scope %s' % (repr(scope)))
+        raise ValueError(f'Invalid search scope {scope!r}')
     if paramlist_len>=4:
       filterstr = paramlist[3].strip()
       if not filterstr:
@@ -401,7 +401,7 @@ class LDAPUrl:
         if not isinstance(hrefTarget, str):
             raise TypeError("hrefTarget must be str, not "
                             + type(hrefTarget).__name__)
-        target = ' target="%s"' % html.escape(hrefTarget, quote=True)
+        target = f' target="{html.escape(hrefTarget, quote=True)}"'
     return f'<a{target} href="{html.escape(urlPrefix, quote=True)}{html.escape(self.unparse(), quote=True)}">{html.escape(hrefText, quote=False)}</a>'
 
   def __str__(self) -> str:

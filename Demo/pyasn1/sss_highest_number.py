@@ -20,12 +20,12 @@ l.simple_bind_s('uid=admin,cn=users,cn=accounts,dc=demo1,dc=freeipa,dc=org','Sec
 
 for id_attr in ('uidNumber','gidNumber'):
   # reverse sorting request control
-  sss_control = SSSRequestControl(ordering_rules=['-%s' % (id_attr)])
+  sss_control = SSSRequestControl(ordering_rules=[f'-{id_attr}'])
   # send search request
   msg_id = l.search_ext(
     'dc=demo1,dc=freeipa,dc=org',
     ldap.SCOPE_SUBTREE,
-    '(%s=*)' % (id_attr),
+    f'({id_attr}=*)',
     attrlist=[id_attr],
     sizelimit=1,
     serverctrls = [sss_control],
@@ -38,7 +38,7 @@ for id_attr in ('uidNumber','gidNumber'):
   except ldap.SIZELIMIT_EXCEEDED:
     pass
   # print result
-  print('Highest value of %s' % (id_attr))
+  print(f'Highest value of {id_attr}')
   if ldap_result:
     dn,entry = ldap_result[0]
     print('->',entry[id_attr])
