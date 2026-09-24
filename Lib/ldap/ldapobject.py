@@ -132,7 +132,7 @@ class SimpleLDAPObject:
         self._trace_file.write('*** {} {} - {}\n{}\n'.format(
           repr(self),
           self._uri,
-          '.'.join((self.__class__.__name__,func.__name__)),
+          f'{self.__class__.__name__}.{func.__name__}',
           pprint.pformat((args,kwargs))
         ))
         if self._trace_level>=9:

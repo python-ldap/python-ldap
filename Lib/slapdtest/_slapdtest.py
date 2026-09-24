@@ -160,7 +160,7 @@ def combined_logger(
     new_logger = logging.getLogger(log_name)
     if sys_log_format and os.path.exists('/dev/log'):
         my_syslog_formatter = logging.Formatter(
-            fmt=' '.join((log_name, sys_log_format)))
+            fmt=f'{log_name} {sys_log_format}')
         my_syslog_handler = logging.handlers.SysLogHandler(
             address='/dev/log',
             facility=SysLogHandler.LOG_DAEMON,

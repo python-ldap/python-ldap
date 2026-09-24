@@ -157,7 +157,7 @@ class LDIFWriter:
       # Encode with base64
       encoded = b64encode(attr_value).decode('ascii')
       encoded = encoded.replace('\n','')
-      self._unfold_lines(':: '.join([attr_type, encoded]))
+      self._unfold_lines(f'{attr_type}:: {encoded}')
     else:
       self._unfold_lines(': '.join([attr_type, attr_value.decode('ascii')]))
 
