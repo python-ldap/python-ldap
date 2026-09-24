@@ -161,7 +161,7 @@ class SubSchema:
     # Turn set into list, maybe more handy for applications
     self.non_unique_oids = list(non_unique_oids)
 
-    return # subSchema.__init__()
+    # return subSchema.__init__()
 
 
   def ldap_entry(self) -> dict[str, list[str]]:
