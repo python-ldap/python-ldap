@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import ldap
 
 host="localhost:1390"

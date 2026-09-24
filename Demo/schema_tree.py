@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Outputs the object class tree read from LDAPv3 schema
 of a given server
@@ -8,7 +9,7 @@ Usage: schema_oc_tree.py [--html] [LDAP URL]
 import sys,getopt,ldap,ldap.schema
 
 
-ldap.trace_level = 1
+ldap._trace_level = 1
 
 def PrintSchemaTree(schema,se_class,se_tree,se_oid,level):
   """ASCII text output for console"""
@@ -43,7 +44,7 @@ ldap.set_option(ldap.OPT_DEBUG_LEVEL,0)
 
 ldap._trace_level = 0
 
-subschemasubentry_dn,schema = ldap.schema.urlfetch(sys.argv[-1],ldap.trace_level)
+subschemasubentry_dn,schema = ldap.schema.urlfetch(sys.argv[-1],ldap._trace_level)
 
 if subschemasubentry_dn is None:
   print('No sub schema sub entry found!')
@@ -82,7 +83,7 @@ if html_output:
   for a in schema.listall(ldap.schema.AttributeType):
     if at_tree[a]:
       HTMLSchemaTree(schema,ldap.schema.AttributeType,at_tree,a,0)
-      print
+      print()
 
   print("""</dl>
 </body>
@@ -92,7 +93,7 @@ if html_output:
 else:
 
   print('*** Object class tree ***\n')
-  print
+  print()
   PrintSchemaTree(schema,ldap.schema.ObjectClass,oc_tree,'2.5.6.0',0)
 
   print('\n*** Attribute types tree ***\n')

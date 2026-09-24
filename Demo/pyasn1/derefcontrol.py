@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 This sample script demonstrates the use of the dereference control
 (see https://tools.ietf.org/html/draft-masarati-ldap-deref)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 This sample script demonstrates the use of the server-side-sorting control
 (see RFC 2891)

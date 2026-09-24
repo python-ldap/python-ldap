@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Example showing the use of the password extended operation.
 """

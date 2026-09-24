@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # How to bind to MS AD with python-ldap and various methods
 
 import ldap,ldap.sasl

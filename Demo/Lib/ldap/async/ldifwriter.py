@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 ldifwriter - using ldap.asyncsearch module for output of LDIF stream
              of LDAP search results

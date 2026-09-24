@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 ldifwriter - using ldap.asyncsearch module for retrieving partial results
              in a list even though the exception ldap.SIZELIMIT_EXCEEDED

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 ldifcopy - reads LDIF from stdin, retrieve values by URL and
            write resulting LDIF to stdout
