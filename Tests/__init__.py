@@ -2,7 +2,7 @@
 Automatic tests for python-ldap
 
 See https://www.python-ldap.org/ for details.
-"""
+"""  # noqa: N999
 
 from . import (
     t_bind,  # noqa: F401
