@@ -3,20 +3,21 @@ Automatic tests for python-ldap's module ldap.syncrepl
 
 See https://www.python-ldap.org/ for details.
 """
+
+import binascii
 import os
 import shelve
 import unittest
-import binascii
+
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap
 from ldap.ldapobject import SimpleLDAPObject
-from ldap.syncrepl import SyncreplConsumer, SyncInfoMessage, \
-        OpenLDAPSyncreplCookie
-
+from ldap.syncrepl import OpenLDAPSyncreplCookie, SyncInfoMessage, SyncreplConsumer
 from slapdtest import SlapdObject, SlapdTestCase
+
 
 # a template string for generating simple slapd.conf file
 SLAPD_CONF_PROVIDER_TEMPLATE = r"""dn: cn=config
@@ -100,36 +101,24 @@ cn: Foo4
 
 # NOTE: For the dict, it needs to be kept up-to-date as we make changes!
 LDAP_ENTRIES = {
-    'ou=Container,dc=slapd-test,dc=python-ldap,dc=org': {
-        'objectClass': [b'organizationalUnit'],
-        'ou': [b'Container']
-    },
-    'cn=Foo2,dc=slapd-test,dc=python-ldap,dc=org': {
-        'objectClass': [b'organizationalRole'],
-        'cn': [b'Foo2']
-    },
+    'ou=Container,dc=slapd-test,dc=python-ldap,dc=org': {'objectClass': [b'organizationalUnit'], 'ou': [b'Container']},
+    'cn=Foo2,dc=slapd-test,dc=python-ldap,dc=org': {'objectClass': [b'organizationalRole'], 'cn': [b'Foo2']},
     'cn=Foo4,ou=Container,dc=slapd-test,dc=python-ldap,dc=org': {
         'objectClass': [b'organizationalRole'],
-        'cn': [b'Foo4']
+        'cn': [b'Foo4'],
     },
     'cn=Manager,dc=slapd-test,dc=python-ldap,dc=org': {
         'objectClass': [b'applicationProcess', b'simpleSecurityObject'],
         'userPassword': [b'password'],
-        'cn': [b'Manager']
+        'cn': [b'Manager'],
     },
-    'cn=Foo3,dc=slapd-test,dc=python-ldap,dc=org': {
-        'objectClass': [b'organizationalRole'],
-        'cn': [b'Foo3']
-    },
-    'cn=Foo1,dc=slapd-test,dc=python-ldap,dc=org': {
-        'objectClass': [b'organizationalRole'],
-        'cn': [b'Foo1']
-    },
+    'cn=Foo3,dc=slapd-test,dc=python-ldap,dc=org': {'objectClass': [b'organizationalRole'], 'cn': [b'Foo3']},
+    'cn=Foo1,dc=slapd-test,dc=python-ldap,dc=org': {'objectClass': [b'organizationalRole'], 'cn': [b'Foo1']},
     'dc=slapd-test,dc=python-ldap,dc=org': {
         'objectClass': [b'dcObject', b'organization'],
         'dc': [b'slapd-test'],
-        'o': [b'slapd-test']
-    }
+        'o': [b'slapd-test'],
+    },
 }
 
 
@@ -199,11 +188,7 @@ class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
         """
         Take the params, add the syncrepl search ID, and call the proper poll.
         """
-        return self.syncrepl_poll(
-            self.search_id,
-            timeout=timeout,
-            all=all
-        )
+        return self.syncrepl_poll(self.search_id, timeout=timeout, all=all)
 
     def syncrepl_get_cookie(self):
         """
@@ -286,11 +271,12 @@ class BaseSyncreplTests:
         super().setUpClass()
         # insert some Foo* objects via ldapadd
         cls.server.ldapadd(
-            LDIF_TEMPLATE % {
-                'suffix':cls.server.suffix,
-                'rootdn':cls.server.root_dn,
-                'rootcn':cls.server.root_cn,
-                'rootpw':cls.server.root_pw,
+            LDIF_TEMPLATE
+            % {
+                'suffix': cls.server.suffix,
+                'rootdn': cls.server.root_dn,
+                'rootcn': cls.server.root_cn,
+                'rootpw': cls.server.root_pw,
                 'dc': cls.server.suffix.split(',')[0][3:],
             }
         )
@@ -308,32 +294,20 @@ class BaseSyncreplTests:
         raise NotImplementedError
 
     def test_refreshOnly_search(self):
-        '''
+        """
         Test to see if we can initialize a syncrepl search.
-        '''
-        self.tester.search(
-            self.suffix,
-            'refreshOnly'
-        )
+        """
+        self.tester.search(self.suffix, 'refreshOnly')
 
     def test_refreshAndPersist_search(self):
-        self.tester.search(
-            self.suffix,
-            'refreshAndPersist'
-        )
+        self.tester.search(self.suffix, 'refreshAndPersist')
 
     def test_refreshOnly_poll_full(self):
         """
         Test doing a full refresh cycle, and check what we got.
         """
-        self.tester.search(
-            self.suffix,
-            'refreshOnly'
-        )
-        poll_result = self.tester.poll(
-            all=1,
-            timeout=None
-        )
+        self.tester.search(self.suffix, 'refreshOnly')
+        poll_result = self.tester.poll(all=1, timeout=None)
         self.assertFalse(poll_result)
         self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
 
@@ -341,17 +315,11 @@ class BaseSyncreplTests:
         """
         Test the refresh part of refresh-and-persist, and check what we got.
         """
-        self.tester.search(
-            self.suffix,
-            'refreshAndPersist'
-        )
+        self.tester.search(self.suffix, 'refreshAndPersist')
 
         # Make sure to stop the test before going into persist mode.
         while self.tester.refresh_done is not True:
-            poll_result = self.tester.poll(
-                all=0,
-                timeout=None
-            )
+            poll_result = self.tester.poll(all=0, timeout=None)
             self.assertTrue(poll_result)
 
         self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
@@ -360,17 +328,11 @@ class BaseSyncreplTests:
         """
         Make sure refreshAndPersist can handle a search with timeouts.
         """
-        self.tester.search(
-            self.suffix,
-            'refreshAndPersist'
-        )
+        self.tester.search(self.suffix, 'refreshAndPersist')
 
         # Run a quick refresh, that shouldn't have any changes.
         while self.tester.refresh_done is not True:
-            poll_result = self.tester.poll(
-                all=0,
-                timeout=None
-            )
+            poll_result = self.tester.poll(all=0, timeout=None)
             self.assertTrue(poll_result)
 
         # Again, server data should not have changed.
@@ -378,28 +340,17 @@ class BaseSyncreplTests:
 
         # Run a search with timeout.
         # Nothing is changing the server, so it shoud timeout.
-        self.assertRaises(
-            ldap.TIMEOUT,
-            self.tester.poll,
-            all=0,
-            timeout=1
-        )
+        self.assertRaises(ldap.TIMEOUT, self.tester.poll, all=0, timeout=1)
 
     def test_refreshAndPersist_cancelled(self):
         """
         Make sure refreshAndPersist can handle cancelling a syncrepl search.
         """
-        self.tester.search(
-            self.suffix,
-            'refreshAndPersist'
-        )
+        self.tester.search(self.suffix, 'refreshAndPersist')
 
         # Run a quick refresh, that shouldn't have any changes.
         while self.tester.refresh_done is not True:
-            poll_result = self.tester.poll(
-                all=0,
-                timeout=None
-            )
+            poll_result = self.tester.poll(all=0, timeout=None)
             self.assertTrue(poll_result)
 
         # Again, server data should not have changed.
@@ -409,16 +360,10 @@ class BaseSyncreplTests:
         self.tester.cancel()
 
         # Run another poll, without timeout, but which should cancel out.
-        self.assertRaises(
-            ldap.CANCELLED,
-            self.tester.poll,
-            all=1,
-            timeout=None
-        )
+        self.assertRaises(ldap.CANCELLED, self.tester.poll, all=1, timeout=None)
 
         # Server data should still be intact.
         self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
-
 
     # TODO:
     # * Make a new client, with a data store, and close.  Then, load a new
@@ -438,12 +383,7 @@ class BaseSyncreplTests:
 class TestSyncrepl(BaseSyncreplTests, SlapdTestCase):
     def setUp(self):
         super().setUp()
-        self.tester = SyncreplClient(
-            self.server.ldap_uri,
-            self.server.root_dn,
-            self.server.root_pw,
-            bytes_mode=False
-        )
+        self.tester = SyncreplClient(self.server.ldap_uri, self.server.root_dn, self.server.root_pw, bytes_mode=False)
         self.suffix = self.server.suffix
 
 
@@ -459,17 +399,12 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
 
     def setUp(self):
         super().setUp()
-        self.tester = self.MPRClient(
-            self.server.ldap_uri,
-            self.server.root_dn,
-            self.server.root_pw,
-            bytes_mode=False
-        )
+        self.tester = self.MPRClient(self.server.ldap_uri, self.server.root_dn, self.server.root_pw, bytes_mode=False)
         self.suffix = self.server.suffix
 
         # An active MPR should not have a sid=000 server in it
         if self.server.server_id == 0:
-            self.skipTest("Server got serverid 0 assigned")
+            self.skipTest('Server got serverid 0 assigned')
 
     def test_mpr_refresh_and_persist(self):
         """
@@ -482,12 +417,9 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             if self.server2.server_id % 4096 == 0:
                 self.server2.server_id = 1
 
-        with self.server2 as server2:
+        with self.server2:
             tester2 = self.MPRClient(
-                self.server2.ldap_uri,
-                self.server2.root_dn,
-                self.server2.root_pw,
-                bytes_mode=False
+                self.server2.ldap_uri, self.server2.root_dn, self.server2.root_pw, bytes_mode=False
             )
             self.addCleanup(tester2.unbind_s)
 
@@ -498,36 +430,36 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
 
             # Run a quick refresh, that shouldn't have any changes.
             while self.tester.refresh_done is not True:
-                poll_result = self.tester.poll(
-                    all=0,
-                    timeout=None
-                )
+                poll_result = self.tester.poll(all=0, timeout=None)
                 self.assertTrue(poll_result)
 
             # Again, server data should not have changed.
             self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
 
             # set up replication between both
-            coords = [(1, self.server.ldap_uri, self.suffix,
-                       self.server.root_dn, self.server.root_pw),
-                      (2, self.server2.ldap_uri, self.suffix,
-                       self.server2.root_dn, self.server2.root_pw),
+            coords = [
+                (1, self.server.ldap_uri, self.suffix, self.server.root_dn, self.server.root_pw),
+                (2, self.server2.ldap_uri, self.suffix, self.server2.root_dn, self.server2.root_pw),
             ]
             modifications = [
-                (ldap.MOD_ADD, "olcSyncrepl", [
-                    ('rid=%d provider=%s searchbase="%s" type=refreshAndPersist '
-                     'bindmethod=simple binddn="%s" credentials="%s" '
-                     'retry="1 +"' % coord).encode() for coord in coords]),
+                (
+                    ldap.MOD_ADD,
+                    'olcSyncrepl',
+                    [
+                        (
+                            'rid=%d provider=%s searchbase="%s" type=refreshAndPersist '
+                            'bindmethod=simple binddn="%s" credentials="%s" '
+                            'retry="1 +"' % coord
+                        ).encode()
+                        for coord in coords
+                    ],
+                ),
                 # do we still support 2.4.x? Change to olcMultiProvider if not
-                (ldap.MOD_REPLACE, "olcMirrorMode", [b"TRUE"]),
+                (ldap.MOD_REPLACE, 'olcMirrorMode', [b'TRUE']),
             ]
 
-            self.tester.modify_s(
-                "olcDatabase={1}%s,cn=config" % (self.server.database),
-                modifications)
-            tester2.modify_s(
-                "olcDatabase={1}%s,cn=config" % (self.server.database),
-                modifications)
+            self.tester.modify_s(f'olcDatabase={{1}}{self.server.database},cn=config', modifications)
+            tester2.modify_s(f'olcDatabase={{1}}{self.server.database},cn=config', modifications)
 
             tester2.search(
                 self.suffix,
@@ -535,13 +467,9 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             )
 
             # Wait till server2 catches up
-            while tester2.refresh_done is not True or \
-                    tester2.cookie.unparse() != self.tester.cookie.unparse():
+            while tester2.refresh_done is not True or tester2.cookie.unparse() != self.tester.cookie.unparse():
                 try:
-                    poll_result = tester2.poll(
-                        all=0,
-                        timeout=None
-                    )
+                    poll_result = tester2.poll(all=0, timeout=None)
                     self.assertTrue(poll_result)
                 except ldap.NO_SUCH_OBJECT:
                     # 2.6+ Allows a refreshAndPersist against an empty DB, but
@@ -562,57 +490,46 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
 
             # send some mods to both
             modification = [('objectClass', [b'device'])]
-            self.tester.add_s("cn=server1,%s" % self.suffix, modification)
+            self.tester.add_s(f'cn=server1,{self.suffix}', modification)
 
-            csn1 = self.tester.read_s("cn=server1,%s" % self.suffix,
-                                      attrlist=['entryCSN']
-                                      )['entryCSN'][0].decode('utf8')
+            csn1 = self.tester.read_s(f'cn=server1,{self.suffix}', attrlist=['entryCSN'])['entryCSN'][0].decode('utf8')
 
-            tester2.add_s("cn=server2,%s" % self.suffix, modification)
-            csn2 = tester2.read_s("cn=server2,%s" % self.suffix,
-                                  attrlist=['entryCSN']
-                                  )['entryCSN'][0].decode('utf8')
+            tester2.add_s(f'cn=server2,{self.suffix}', modification)
+            csn2 = tester2.read_s(f'cn=server2,{self.suffix}', attrlist=['entryCSN'])['entryCSN'][0].decode('utf8')
 
             new_state = LDAP_ENTRIES.copy()
-            new_state["cn=server1,%s" % self.suffix] = {
-                "objectClass": [b"device"],
-                "cn": [b"server1"],
+            new_state[f'cn=server1,{self.suffix}'] = {
+                'objectClass': [b'device'],
+                'cn': [b'server1'],
             }
-            new_state["cn=server2,%s" % self.suffix] = {
-                "objectClass": [b"device"],
-                "cn": [b"server2"],
+            new_state[f'cn=server2,{self.suffix}'] = {
+                'objectClass': [b'device'],
+                'cn': [b'server2'],
             }
 
             # Wait for the cookie to sync up, a failure would be that this
             # doesn't happen, so impose a timeout
-            while csn1 not in self.tester.cookie.unparse() or \
-                    csn2 not in self.tester.cookie.unparse() or \
-                    csn1 not in tester2.cookie.unparse() or \
-                    csn2 not in tester2.cookie.unparse():
-                if csn1 not in self.tester.cookie.unparse() or \
-                        csn2 not in self.tester.cookie.unparse():
-                    poll_result = self.tester.poll(
-                        all=0,
-                        timeout=5
-                    )
+            while (
+                csn1 not in self.tester.cookie.unparse()
+                or csn2 not in self.tester.cookie.unparse()
+                or csn1 not in tester2.cookie.unparse()
+                or csn2 not in tester2.cookie.unparse()
+            ):
+                if csn1 not in self.tester.cookie.unparse() or csn2 not in self.tester.cookie.unparse():
+                    poll_result = self.tester.poll(all=0, timeout=5)
                     self.assertTrue(poll_result)
-                if csn1 not in tester2.cookie.unparse() or \
-                        csn2 not in tester2.cookie.unparse():
-                    poll_result = tester2.poll(
-                        all=0,
-                        timeout=5
-                    )
+                if csn1 not in tester2.cookie.unparse() or csn2 not in tester2.cookie.unparse():
+                    poll_result = tester2.poll(all=0, timeout=5)
                     self.assertTrue(poll_result)
 
-            self.assertEqual(self.tester.cookie.unparse(),
-                             tester2.cookie.unparse())
+            self.assertEqual(self.tester.cookie.unparse(), tester2.cookie.unparse())
             self.assertEqual(self.tester.dn_attrs, new_state)
             self.assertEqual(tester2.dn_attrs, new_state)
 
             # self.tester seems to have been unbound by the time
             # self.addCleanup callbacks get called? Cleanup manually...
-            self.tester.delete_s("cn=server1,%s" % self.suffix)
-            self.tester.delete_s("cn=server2,%s" % self.suffix)
+            self.tester.delete_s(f'cn=server1,{self.suffix}')
+            self.tester.delete_s(f'cn=server2,{self.suffix}')
 
 
 class DecodeSyncreplProtoTests(unittest.TestCase):
@@ -648,12 +565,13 @@ class DecodeSyncreplProtoTests(unittest.TestCase):
         self.assertEqual(sim.refreshDelete, None)
         self.assertEqual(sim.refreshPresent, None)
         self.assertEqual(sim.newcookie, None)
-        self.assertEqual(sim.syncIdSet,
+        self.assertEqual(
+            sim.syncIdSet,
             {
                 'cookie': 'ldapkdc.example.com:38901#cn=directory manager:dc=example,dc=com:(objectClass=*)#3',
                 'syncUUIDs': ['8dc44601-a936-11ea-8aaf-f248c5fa5780'],
-                'refreshDeletes': True
-            }
+                'refreshDeletes': True,
+            },
         )
 
 

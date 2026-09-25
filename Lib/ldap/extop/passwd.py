@@ -7,11 +7,10 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import annotations
 
-from ldap.extop import ExtendedResponse
-
-# Imports from pyasn1
-from pyasn1.type import namedtype, univ, tag
 from pyasn1.codec.der import decoder
+from pyasn1.type import namedtype, tag, univ
+
+from ldap.extop import ExtendedResponse
 
 
 class PasswordModifyResponse(ExtendedResponse):
@@ -22,9 +21,8 @@ class PasswordModifyResponse(ExtendedResponse):
             namedtype.OptionalNamedType(
                 'genPasswd',
                 univ.OctetString().subtype(  # type: ignore[no-untyped-call]
-                    implicitTag=tag.Tag(tag.tagClassContext,
-                                        tag.tagFormatSimple, 0)
-                )
+                    implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
+                ),
             )
         )
 

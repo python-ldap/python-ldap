@@ -1,0 +1,58 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+    - id: check-added-large-files
+      exclude: "^Tests/data/.*[.]ldif$"
+    - id: check-json
+    - id: check-xml
+    - id: check-yaml
+    - id: check-merge-conflict
+    - id: pretty-format-json
+    - id: trailing-whitespace
+      exclude: "^Tests/data/.*[.]ldif$"
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+    - id: python-check-blanket-noqa
+    - id: python-no-eval
+    - id: rst-backticks
+    - id: rst-directive-colons
+    - id: rst-inline-touching-normal
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.8
+    hooks:
+      - id: ruff-format
+        alias: "ruff-format-check"
+        args: ["--check"]
+      - id: ruff-format
+        alias: "ruff-format-fix"
+        stages: [manual]
+      - id: ruff-check
+        alias: "ruff"
+      - id: ruff-check
+        alias: "ruff-fix"
+        stages: [manual]
+        args: ["--fix"]
+      - id: ruff-check
+        alias: "ruff-statistics"
+        stages: [manual]
+        args: ["--statistics"]
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v23.1.1
+    hooks:
+      - id: clang-format
+        alias: "clang-format-fix"
+        types_or: [c]
+        stages: [manual]
+      - id: clang-format
+        alias: "clang-format-check"
+        types_or: [c]
+        args: ["--dry-run"]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.19.1
+    hooks:
+      - id: mypy
+        pass_filenames: false
+        additional_dependencies:
+          - types-pyasn1==0.6.0.20250914

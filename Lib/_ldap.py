@@ -8,7 +8,9 @@ It will go away evetually, use ldap._ldap if you need it.
 # FIXME: raise a warning in 4.0, remove this in 5.0
 from ldap._ldap import *
 from ldap._ldap import (
-        __version__, __license__, __author__,
+    __author__,  # noqa: F401
+    __license__,  # noqa: F401
+    __version__,  # noqa: F401
 )
 # _VENDOR_VERSION_RUNTIME is missing above, this is intentional as it never
 # existed in a released version, import it from ldap._ldap

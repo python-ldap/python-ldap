@@ -2,14 +2,12 @@
 ldap.asyncsearch - handle async LDAP search operations
 
 See https://www.python-ldap.org/ for details.
-"""
+"""  # noqa: N999
+
 import warnings
 
 from ldap.asyncsearch import *
-from ldap.pkginfo import __version__
+from ldap.pkginfo import __version__  # noqa: F401
 
-warnings.warn(
-    "'ldap.async module' is deprecated, import 'ldap.asyncsearch' instead.",
-    DeprecationWarning,
-    stacklevel=2
-)
+
+warnings.warn("'ldap.async module' is deprecated, import 'ldap.asyncsearch' instead.", DeprecationWarning, stacklevel=2)

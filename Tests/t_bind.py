@@ -1,6 +1,7 @@
 import os
 import unittest
 
+
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
@@ -10,15 +11,15 @@ from slapdtest import SlapdTestCase
 
 
 class TestBinds(SlapdTestCase):
-    unicode_val = "abc\U0001f498def"
+    unicode_val = 'abc\U0001f498def'
     unicode_val_bytes = unicode_val.encode('utf-8')
-    dn_unicode = "CN=" + unicode_val
+    dn_unicode = 'CN=' + unicode_val
     dn_bytes = dn_unicode.encode('utf-8')
 
     def _get_ldapobject(self, bytes_mode=None):
         l = LDAPObject(self.server.ldap_uri, bytes_mode=bytes_mode)
         l.protocol_version = 3
-        l.set_option(ldap.OPT_REFERRALS,0)
+        l.set_option(ldap.OPT_REFERRALS, 0)
         return l
 
     def test_simple_bind(self):
@@ -28,10 +29,10 @@ class TestBinds(SlapdTestCase):
 
     def test_unicode_bind(self):
         l = self._get_ldapobject(False)
-        l.simple_bind(self.dn_unicode, "ascii")
+        l.simple_bind(self.dn_unicode, 'ascii')
 
         l = self._get_ldapobject(False)
-        l.simple_bind("CN=user", self.unicode_val)
+        l.simple_bind('CN=user', self.unicode_val)
 
     def test_unicode_bind_no_bytesmode(self):
         l = self._get_ldapobject(False)

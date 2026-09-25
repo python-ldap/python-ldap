@@ -10,79 +10,75 @@ response.
 """
 
 from __future__ import annotations
-from ldap.pkginfo import __version__
 
 from typing import Any
 
+from ldap.pkginfo import __version__  # noqa: F401
+
 
 __all__ = [
-  'ExtendedRequest',
-  'ExtendedResponse',
-  # dds
-  'RefreshRequest',
-  'RefreshResponse',
-  # passwd
-  'PasswordModifyResponse',
+    'ExtendedRequest',
+    'ExtendedResponse',
+    # passwd
+    'PasswordModifyResponse',
+    # dds
+    'RefreshRequest',
+    'RefreshResponse',
 ]
 
 
 class ExtendedRequest:
-  """
-  Generic base class for a LDAPv3 extended operation request
-
-  requestName
-      OID as string of the LDAPv3 extended operation request
-  requestValue
-      value of the LDAPv3 extended operation request
-      (here it is the BER-encoded ASN.1 request value)
-  """
-
-  def __init__(self, requestName: str, requestValue: bytes | None) -> None:
-    self.requestName = requestName
-    self.requestValue = requestValue
-
-  def __repr__(self) -> str:
-    return f'{self.__class__.__name__}({self.requestName},{self.requestValue!r})'
-
-  def encodedRequestValue(self) -> bytes | None:
     """
-    returns the BER-encoded ASN.1 request value composed by class attributes
-    set before
+    Generic base class for a LDAPv3 extended operation request
+
+    requestName
+        OID as string of the LDAPv3 extended operation request
+    requestValue
+        value of the LDAPv3 extended operation request
+        (here it is the BER-encoded ASN.1 request value)
     """
-    return self.requestValue
+
+    def __init__(self, requestName: str, requestValue: bytes | None) -> None:
+        self.requestName = requestName
+        self.requestValue = requestValue
+
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}({self.requestName},{self.requestValue!r})'
+
+    def encodedRequestValue(self) -> bytes | None:
+        """
+        returns the BER-encoded ASN.1 request value composed by class attributes
+        set before
+        """
+        return self.requestValue
 
 
 class ExtendedResponse:
-  """
-  Generic base class for a LDAPv3 extended operation response
-
-  requestName
-      OID as string of the LDAPv3 extended operation response
-  encodedResponseValue
-      BER-encoded ASN.1 value of the LDAPv3 extended operation response
-  """
-
-  responseName: str | None
-
-  def __init__(
-    self,
-    responseName: str | None,
-    encodedResponseValue: bytes | None
-  ) -> None:
-    self.responseName = responseName
-    self.responseValue = self.decodeResponseValue(encodedResponseValue)
-
-  def __repr__(self) -> str:
-    return f'{self.__class__.__name__}({self.responseName},{self.responseValue!r})'
-
-  def decodeResponseValue(self, value: bytes | None) -> Any:
     """
-    decodes the BER-encoded ASN.1 extended operation response value and
-    sets the appropriate class attributes
+    Generic base class for a LDAPv3 extended operation response
+
+    requestName
+        OID as string of the LDAPv3 extended operation response
+    encodedResponseValue
+        BER-encoded ASN.1 value of the LDAPv3 extended operation response
     """
-    return value
+
+    responseName: str | None
+
+    def __init__(self, responseName: str | None, encodedResponseValue: bytes | None) -> None:
+        self.responseName = responseName
+        self.responseValue = self.decodeResponseValue(encodedResponseValue)
+
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}({self.responseName},{self.responseValue!r})'
+
+    def decodeResponseValue(self, value: bytes | None) -> Any:
+        """
+        decodes the BER-encoded ASN.1 extended operation response value and
+        sets the appropriate class attributes
+        """
+        return value
 
 
-# Import sub-modules
-from ldap.extop.dds import RefreshRequest, RefreshResponse
-from ldap.extop.passwd import PasswordModifyResponse
+from ldap.extop.dds import RefreshRequest, RefreshResponse  # noqa: E402
+from ldap.extop.passwd import PasswordModifyResponse  # noqa: E402

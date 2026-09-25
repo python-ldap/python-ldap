@@ -8,6 +8,7 @@ import os
 import unittest
 import warnings
 
+
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 import ldap
@@ -25,40 +26,36 @@ class TestCidict(unittest.TestCase):
         """
         self.assertEqual(ldap.dn.is_dn('foobar,ou=ae-dir'), False)
         data = {
-            'AbCDeF':123,
+            'AbCDeF': 123,
         }
         cix = ldap.cidict.cidict(data)
-        self.assertEqual(cix["ABCDEF"], 123)
-        self.assertEqual(cix.get("ABCDEF", None), 123)
-        self.assertIsNone(cix.get("not existent", None))
-        cix["xYZ"] = 987
-        self.assertEqual(cix["XyZ"], 987)
-        self.assertEqual(cix.get("xyz", None), 987)
+        self.assertEqual(cix['ABCDEF'], 123)
+        self.assertEqual(cix.get('ABCDEF', None), 123)
+        self.assertIsNone(cix.get('not existent', None))
+        cix['xYZ'] = 987
+        self.assertEqual(cix['XyZ'], 987)
+        self.assertEqual(cix.get('xyz', None), 987)
         cix_keys = sorted(cix.keys())
-        self.assertEqual(cix_keys, ['AbCDeF','xYZ'])
+        self.assertEqual(cix_keys, ['AbCDeF', 'xYZ'])
         cix_keys = sorted(cix)
-        self.assertEqual(cix_keys, ['AbCDeF','xYZ'])
+        self.assertEqual(cix_keys, ['AbCDeF', 'xYZ'])
         cix_items = sorted(cix.items())
-        self.assertEqual(cix_items, [('AbCDeF',123), ('xYZ',987)])
-        del cix["abcdEF"]
-        self.assertEqual("abcdef" in cix._keys, False)
-        self.assertEqual("AbCDef" in cix._keys, False)
-        self.assertEqual("abcdef" in cix, False)
-        self.assertEqual("AbCDef" in cix, False)
-        self.assertEqual(cix.has_key("abcdef"), False)
-        self.assertEqual(cix.has_key("AbCDef"), False)
+        self.assertEqual(cix_items, [('AbCDeF', 123), ('xYZ', 987)])
+        del cix['abcdEF']
+        self.assertEqual('abcdef' in cix._keys, False)
+        self.assertEqual('AbCDef' in cix._keys, False)
+        self.assertEqual('abcdef' in cix, False)
+        self.assertEqual('AbCDef' in cix, False)
+        self.assertEqual(cix.has_key('abcdef'), False)
+        self.assertEqual(cix.has_key('AbCDef'), False)
 
     def test_strlist_deprecated(self):
-        strlist_funcs = [
-            ldap.cidict.strlist_intersection,
-            ldap.cidict.strlist_minus,
-            ldap.cidict.strlist_union
-        ]
+        strlist_funcs = [ldap.cidict.strlist_intersection, ldap.cidict.strlist_minus, ldap.cidict.strlist_union]
         for strlist_func in strlist_funcs:
             with warnings.catch_warnings(record=True) as w:
                 warnings.resetwarnings()
-                warnings.simplefilter("always", DeprecationWarning)
-                strlist_func(["a"], ["b"])
+                warnings.simplefilter('always', DeprecationWarning)
+                strlist_func(['a'], ['b'])
             self.assertEqual(len(w), 1)
 
     def test_cidict_data(self):
@@ -72,17 +69,15 @@ class TestCidict(unittest.TestCase):
         self.assertEqual(len(w), 1)
 
     def test_copy(self):
-        cix1 = ldap.cidict.cidict(
-            {"a": 1, "B": 2}
-        )
+        cix1 = ldap.cidict.cidict({'a': 1, 'B': 2})
         cix2 = cix1.copy()
         self.assertEqual(cix1, cix2)
-        cix1["c"] = 3
-        self.assertNotIn("c", cix2)
-        cix2["C"] = 4
+        cix1['c'] = 3
+        self.assertNotIn('c', cix2)
+        cix2['C'] = 4
         self.assertNotEqual(cix1, cix2)
-        self.assertEqual(list(cix1.keys()), ["a", "B", "c"])
-        self.assertEqual(list(cix2.keys()), ["a", "B", "C"])
+        self.assertEqual(list(cix1.keys()), ['a', 'B', 'c'])
+        self.assertEqual(list(cix2.keys()), ['a', 'B', 'C'])
 
 
 if __name__ == '__main__':

@@ -8,7 +8,8 @@ from __future__ import annotations
 
 import re
 import warnings
-from typing import Any, Mapping, Union
+from collections.abc import Mapping
+from typing import Any, Union
 
 from ldap._types import TypeAlias
 
@@ -21,21 +22,21 @@ LDAPTokenDict: TypeAlias = Mapping[str, LDAPTokenDictValue]
 (Mapping because of variance)."""
 
 TOKENS_FINDALL = re.compile(
-    r"(\()"           # opening parenthesis
-    r"|"              # or
-    r"(\))"           # closing parenthesis
-    r"|"              # or
-    r"([^'$()\s]+)"   # string of length >= 1 without '$() or whitespace
-    r"|"              # or
+    r'(\()'  # opening parenthesis
+    r'|'  # or
+    r'(\))'  # closing parenthesis
+    r'|'  # or
+    r"([^'$()\s]+)"  # string of length >= 1 without '$() or whitespace
+    r'|'  # or
     r"('(?:[^'\\]|\\.)*'(?!\w))"
-                      # any string or empty string surrounded by unescaped
-                      # single quotes except if right quote is succeeded by
-                      # alphanumeric char
-    r"|"              # or
-    r"([^\s]+?)",     # residue, all non-whitespace strings
+    # any string or empty string surrounded by unescaped
+    # single quotes except if right quote is succeeded by
+    # alphanumeric char
+    r'|'  # or
+    r'([^\s]+?)',  # residue, all non-whitespace strings
 ).findall
 
-UNESCAPE_PATTERN = re.compile(r"\\(.)")
+UNESCAPE_PATTERN = re.compile(r'\\(.)')
 
 
 def split_tokens(s: str) -> list[str]:
@@ -57,18 +58,15 @@ def split_tokens(s: str) -> list[str]:
             parts.append(cpar)
         elif residue == '$':
             if not parens:
-                raise ValueError("'$' outside parenthesis in %r" % (s))
+                raise ValueError(f"'$' outside parenthesis in {s!r}")
         else:
             raise ValueError(residue, s)
     if parens:
-        raise ValueError("Unbalanced parenthesis in %r" % (s))
+        raise ValueError(f'Unbalanced parenthesis in {s!r}')
     return parts
 
 
-def parse_tokens(
-    tokens: list[str],
-    known_tokens: list[str]
-) -> tuple[str, LDAPTokenDict]:
+def parse_tokens(tokens: list[str], known_tokens: list[str]) -> tuple[str, LDAPTokenDict]:
     """
     Process a list of tokens and return a dictionary of known tokens with all
     values
@@ -88,8 +86,8 @@ def parse_tokens(
     """
 
     assert len(tokens) > 2, ValueError(tokens)
-    assert tokens[0].strip() == "(", ValueError(tokens)
-    assert tokens[-1].strip() == ")", ValueError(tokens)
+    assert tokens[0].strip() == '(', ValueError(tokens)
+    assert tokens[-1].strip() == ')', ValueError(tokens)
 
     oid = tokens[1]
     result = {}
@@ -110,21 +108,21 @@ def parse_tokens(
 
         if next_token in known_tokens:
             # non-valued
-            value: LDAPTokenDictValue = (())
+            value: LDAPTokenDictValue = ()
 
-        elif next_token == "(":
+        elif next_token == '(':
             # multi-valued
-            i += 1 # Consume left parentheses
+            i += 1  # Consume left parentheses
             start = i
-            while i < len(tokens) and tokens[i] != ")":
+            while i < len(tokens) and tokens[i] != ')':
                 i += 1
             value = tuple(filter(lambda v: v != '$', tokens[start:i]))
-            i += 1 # Consume right parentheses
+            i += 1  # Consume right parentheses
 
         else:
             # single-valued
             value = (next_token,)
-            i += 1 # Consume single value
+            i += 1  # Consume single value
 
         result[token] = value
 
@@ -143,8 +141,7 @@ def extract_tokens(
     from known_tokens and the OID is not returned.
     """
     warnings.warn(
-        'ldap.schema.tokenizer.extract_tokens() is deprecated, '
-        'use parse_tokens() instead',
+        'ldap.schema.tokenizer.extract_tokens() is deprecated, use parse_tokens() instead',
         category=DeprecationWarning,
         stacklevel=2,
     )
@@ -152,5 +149,5 @@ def extract_tokens(
     if len(l) > 2:
         result.update(parse_tokens(l, list(known_tokens))[1])
     else:
-        assert l[0].strip() == "(" and l[-1].strip() == ")", ValueError(l)
+        assert l[0].strip() == '(' and l[-1].strip() == ')', ValueError(l)
     return result
