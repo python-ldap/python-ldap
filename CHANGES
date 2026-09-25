@@ -37,6 +37,8 @@ Fixes:
 * ``ldap.controls.pwdpolicy.PasswordExpiredControl`` finally returns reported
   status
 * corrected ldap.functions export list to remove long gone items
+* corrected ldapurl export list to add documented but missing ``ldapUrlEscape``
+  and ``LDAP_SCOPE_SUBORDINATES``
 
 Deprecations:
 * See above note for ``ldap.schema.SubSchema.get_structural_oc`` and its users
