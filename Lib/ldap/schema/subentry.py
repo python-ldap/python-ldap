@@ -438,7 +438,7 @@ class SubSchema:
       # list all AUXILIARY object classes
       return self.listall(ObjectClass,[('kind',[2])])
 
-  def attribute_types(
+  def attribute_types(  # noqa: C901
     self,
     object_class_list: Iterable[str],
     attr_type_filter: Iterable[tuple[str, Iterable[str | int]]] | None = None,

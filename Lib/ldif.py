@@ -572,7 +572,7 @@ class LDIFParser:
     """
     pass
 
-  def parse_change_records(self) -> None:
+  def parse_change_records(self) -> None:  # noqa: C901
     # Local symbol for better performance
     next_key_and_value = self._next_key_and_value
     # Consume empty lines
