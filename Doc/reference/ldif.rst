@@ -1,7 +1,9 @@
-#####################################
-:mod:`ldif` LDIF parser and generator
-#####################################
+##############################################################
+:py:mod:`ldap.ldif` / :py:mod:`ldif` LDIF parser and generator
+##############################################################
 
+.. py:module:: ldap.ldif
+   :synopsis: Parses and generates LDIF files
 .. py:module:: ldif
    :synopsis: Parses and generates LDIF files
 .. moduleauthor:: python-ldap project (see https://www.python-ldap.org/)
@@ -15,6 +17,15 @@ package.
 .. seealso::
 
    :rfc:`2849` - The LDAP Data Interchange Format (LDIF) - Technical Specification
+
+The module is available under two names.  New code should import
+:py:mod:`ldap.ldif`; the historical name ``ldif`` refers to the same public API,
+will be deprecated in 4.0 (when ``ldif`` becomes the alias) and removed in a
+later version.
+
+.. versionadded:: 3.5.0
+
+   The :py:mod:`ldap.ldif` name intended to replace :py:mod:`ldif`.
 
 
 Functions

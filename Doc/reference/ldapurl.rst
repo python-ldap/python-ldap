@@ -1,7 +1,9 @@
-###################################
-:py:mod:`ldapurl` LDAP URL handling
-###################################
+########################################################
+:py:mod:`ldap.url` / :py:mod:`ldapurl` LDAP URL handling
+########################################################
 
+.. py:module:: ldap.url
+   :synopsis: Parses and generates LDAP URLs
 .. py:module:: ldapurl
    :synopsis: Parses and generates LDAP URLs
 .. moduleauthor:: python-ldap project (see https://www.python-ldap.org/)
@@ -14,6 +16,15 @@ alone without  the rest of the python-ldap package.
 .. seealso::
 
    :rfc:`4516` - The LDAP URL Format
+
+The module is available under two names.  New code should import
+:py:mod:`ldap.url`; the historical name ``ldapurl`` refers to the same public
+API, will be deprecated in 4.0 (when ``ldapurl`` becomes the alias) and removed
+in a later version.
+
+.. versionadded:: 3.5.0
+
+   The :py:mod:`ldap.url` name intended to replace :py:mod:`ldapurl`.
 
 
 Constants

@@ -29,11 +29,17 @@ API changes:
   STRUCTURAL object classes has produced undefined behaviour in the past and it
   does again. This and ``ldap.schema.{SubSchema,Entry}.attribute_types`` with
   DIT content rules enforced will raise an error in future versions
+* New modules ``ldap.ldif`` and ``ldap.url``, they are the future home for
+  ``ldif`` and ``ldapurl`` and new code should target these as both ``ldif``
+  and ``ldapurl`` will go away eventually
 
 Fixes:
 * ``ldap.controls.pwdpolicy.PasswordExpiredControl`` finally returns reported
   status
 * corrected ldap.functions export list to remove long gone items
+* corrected ldapurl export list to add documented but missing ``ldapUrlEscape``
+  and ``LDAP_SCOPE_SUBORDINATES``
+* corrected ldif export list to add missing names
 
 Deprecations:
 * See above note for ``ldap.schema.SubSchema.get_structural_oc`` and its users

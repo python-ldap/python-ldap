@@ -6,18 +6,29 @@ This file handles only the C extension modules (_ldap) configuration,
 while pyproject.toml handles all project metadata, dependencies, and other settings.
 """
 
+import importlib.util
+import pathlib
 import sys,os,sysconfig
 from setuptools import setup, Extension
-
-if sys.version_info < (3, 6):
-  raise RuntimeError(
-    'The C API from Python 3.6+ is required, found %s' % sys.version_info
-  )
+from types import ModuleType
 
 from configparser import ConfigParser
 
-sys.path.insert(0, os.path.join(os.getcwd(), 'Lib/ldap'))
-import pkginfo
+_lib_dir = pathlib.Path(__file__).parent / 'Lib'
+
+
+def _load_our_module(name: str) -> ModuleType:
+    """Load a module from Lib/ without importing the intermediate packages"""
+    path = (_lib_dir / name.replace('.', '/')).with_suffix('.py')
+    spec = importlib.util.spec_from_file_location(
+        f'_ldap_bootstrap.{name}', path
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+pkginfo = _load_our_module('ldap.pkginfo')
 
 SETUP_OPTIONS = {}
 

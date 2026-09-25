@@ -11,8 +11,9 @@ __all__ = [
   # constants
   'SEARCH_SCOPE','SEARCH_SCOPE_STR',
   'LDAP_SCOPE_BASE','LDAP_SCOPE_ONELEVEL','LDAP_SCOPE_SUBTREE',
+  'LDAP_SCOPE_SUBORDINATES',
   # functions
-  'isLDAPUrl',
+  'isLDAPUrl','ldapUrlEscape',
   # classes
   'LDAPUrlExtension','LDAPUrlExtensions','LDAPUrl'
 ]

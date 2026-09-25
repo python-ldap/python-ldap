@@ -9,6 +9,8 @@ __version__ = '3.4.7'
 __all__ = [
   # constants
   'ldif_pattern',
+  'CHANGE_TYPES',
+  'MOD_OP_INTEGER',
   # functions
   'CreateLDIF','ParseLDIF',
   # classes
