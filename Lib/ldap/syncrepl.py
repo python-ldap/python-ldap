@@ -434,7 +434,7 @@ class SyncreplConsumer(_Base):
         self.__refreshDone = False
         return self.search_ext(base, scope, **search_args)
 
-    def syncrepl_poll(
+    def syncrepl_poll(  # noqa: C901
         self,
         msgid: int = -1,
         timeout: int | None = None,
