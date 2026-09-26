@@ -760,7 +760,7 @@ class Test01_ReconnectLDAPObject(Test00_SimpleLDAPObject):
         def reconnect_search_thread():
             try:
                 _reconnect_search_thread()
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 - the worker must report every thread failure
                 excs.append((str(exc), traceback.format_exc()))
 
         threads = [threading.Thread(target=reconnect_search_thread) for _ in range(thread_count)]

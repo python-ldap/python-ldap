@@ -127,7 +127,7 @@ def is_dn(s: str, flags: int = 0) -> bool:
   """
   try:
     str2dn(s,flags)
-  except Exception:
+  except Exception:  # noqa: BLE001 - the parser may raise multiple backend exceptions
     return False
   else:
     return True
