@@ -410,7 +410,8 @@ class SlapdObject:
         p = subprocess.run(
             popen_list,
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT
+            stderr=subprocess.STDOUT,
+            check=False,
         )
         if p.returncode != 0:
             self._log.error(p.stdout.decode("utf-8"))
