@@ -738,6 +738,58 @@ l_ldap_sasl_bind_s(LDAPObject *self, PyObject *args)
 }
 
 static PyObject *
+l_ldap_sasl_bind(LDAPObject *self, PyObject *args)
+{
+    const char *dn;
+    const char *mechanism;
+    struct berval cred;
+    Py_ssize_t cred_len;
+
+    PyObject *serverctrls = Py_None;
+    PyObject *clientctrls = Py_None;
+    LDAPControl **server_ldcs = NULL;
+    LDAPControl **client_ldcs = NULL;
+
+    int msgid;
+    int ldaperror;
+
+    if (!PyArg_ParseTuple(args, "zzz#|OO:sasl_bind", &dn, &mechanism, &cred.bv_val, &cred_len, &serverctrls,
+                          &clientctrls))
+        return NULL;
+
+    if (not_valid(self))
+        return NULL;
+
+    cred.bv_len = (ber_len_t)cred_len;
+
+    if (!Py_IsNone(serverctrls)) {
+        if (!LDAPControls_from_object(serverctrls, &server_ldcs))
+            return NULL;
+    }
+    if (!Py_IsNone(clientctrls)) {
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL(server_ldcs);
+            return NULL;
+        }
+    }
+
+    LDAP_BEGIN_ALLOW_THREADS(self);
+    ldaperror = ldap_sasl_bind(self->ldap, dn, mechanism, cred.bv_val ? &cred : NULL, (LDAPControl **)server_ldcs,
+                               (LDAPControl **)client_ldcs, &msgid);
+    LDAP_END_ALLOW_THREADS(self);
+
+    LDAPControl_List_DEL(server_ldcs);
+    LDAPControl_List_DEL(client_ldcs);
+
+    if (ldaperror != LDAP_SUCCESS) {
+        PyObject *module = PyType_GetModuleByDef(Py_TYPE((PyObject *)self), LDAPMod_moduledef);
+        return LDAPerror(module, self->ldap);
+    }
+
+    return PyLong_FromLong(msgid);
+}
+
+static PyObject *
 l_ldap_sasl_interactive_bind_s(LDAPObject *self, PyObject *args)
 {
     char *c_mechanism;
@@ -1122,8 +1174,7 @@ l_ldap_result4(LDAPObject *self, PyObject *args)
         res_msgid = ldap_msgid(msg);
 
     if (res_type == LDAP_RES_SEARCH_ENTRY) {
-        /* LDAPmessage_to_python will parse entries and read the controls for each entry
-         */
+        /* LDAPmessage_to_python will parse entries and read the controls for each entry */
     } else if (res_type == LDAP_RES_SEARCH_REFERENCE) {
         /* LDAPmessage_to_python will parse refs and read the controls for each res */
     } else if (res_type == LDAP_RES_INTERMEDIATE) {
@@ -1519,6 +1570,7 @@ static PyMethodDef l_ldap_methods[] = {
     {"simple_bind", (PyCFunction)l_ldap_simple_bind, METH_VARARGS},
 #ifdef HAVE_SASL
     {"sasl_interactive_bind_s", (PyCFunction)l_ldap_sasl_interactive_bind_s, METH_VARARGS},
+    {"sasl_bind", (PyCFunction)l_ldap_sasl_bind, METH_VARARGS},
     {"sasl_bind_s", (PyCFunction)l_ldap_sasl_bind_s, METH_VARARGS},
 #endif
     {"compare_ext", (PyCFunction)l_ldap_compare_ext, METH_VARARGS},

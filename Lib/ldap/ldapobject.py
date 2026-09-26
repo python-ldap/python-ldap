@@ -423,6 +423,29 @@ class SimpleLDAPObject:
             RequestControlTuples(clientctrls),
         )
 
+    def sasl_bind(
+        self,
+        dn: str,
+        mechanism: str,
+        cred: str,
+        serverctrls: list[RequestControl] | None = None,
+        clientctrls: list[RequestControl] | None = None,
+    ) -> int:
+        """
+        sasl_bind(dn, mechanism, cred [,serverctrls=None[,clientctrls=None]]) -> int
+
+        Send a SASL bind request asynchronously. Use the returned message ID
+        with :meth:`result` to wait for the bind response.
+        """
+        return self._ldap_call(  # type: ignore[no-any-return]
+            self._l.sasl_bind,
+            dn,
+            mechanism,
+            cred,
+            RequestControlTuples(serverctrls),
+            RequestControlTuples(clientctrls),
+        )
+
     def compare_ext(
         self,
         dn: str,
