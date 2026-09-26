@@ -90,7 +90,7 @@ def identity(test_item: T) -> T:
 def skip_unless_ci(reason: str, feature: str | None = None) -> Callable[..., Any]:
     """Skip test unless test case is executed on CI like Travis CI
     """
-    if not os.environ.get('CI', False) or feature in CI_DISABLED:
+    if not os.environ.get('CI') or feature in CI_DISABLED:
         return unittest.skip(reason)
     else:
         # Don't skip on Travis
