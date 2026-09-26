@@ -1,18 +1,16 @@
-import unittest
-
 import slapdtest
 
 
-class TestSlapdObject(unittest.TestCase):
+class TestSlapdObject:
     def test_context_manager(self):
         with slapdtest.SlapdObject() as server:
-            self.assertIsNotNone(server._proc)
-        self.assertIsNone(server._proc)
+            assert server._proc is not None
+        assert server._proc is None
 
     def test_context_manager_after_start(self):
         server = slapdtest.SlapdObject()
         server.start()
-        self.assertIsNotNone(server._proc)
+        assert server._proc is not None
         with server:
-            self.assertIsNotNone(server._proc)
-        self.assertIsNone(server._proc)
+            assert server._proc is not None
+        assert server._proc is None

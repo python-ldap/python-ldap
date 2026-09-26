@@ -5,8 +5,9 @@ See https://www.python-ldap.org/ for details.
 """
 
 import os
-import unittest
 from urllib.parse import quote
+
+import pytest
 
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -25,7 +26,7 @@ class MyLDAPUrl(LDAPUrl):
     }
 
 
-class TestIsLDAPUrl(unittest.TestCase):
+class TestIsLDAPUrl:
     is_ldap_url_tests = {
         # Examples from RFC2255
         'ldap:///o=University%20of%20Michigan,c=US': 1,
@@ -56,9 +57,7 @@ class TestIsLDAPUrl(unittest.TestCase):
     def test_isLDAPUrl(self):
         for ldap_url, expected in self.is_ldap_url_tests.items():
             result = ldapurl.isLDAPUrl(ldap_url)
-            self.assertEqual(
-                result,
-                expected,
+            assert result == expected, (
                 'isLDAPUrl("%s") returns %d instead of %d.'
                 % (
                     ldap_url,
@@ -69,11 +68,11 @@ class TestIsLDAPUrl(unittest.TestCase):
             if expected:
                 LDAPUrl(ldapUrl=ldap_url)
             else:
-                with self.assertRaises(ValueError):
+                with pytest.raises(ValueError):
                     LDAPUrl(ldapUrl=ldap_url)
 
 
-class TestParseLDAPUrl(unittest.TestCase):
+class TestParseLDAPUrl:
     parse_ldap_url_tests = [
         ('ldap://root.openldap.org/dc=openldap,dc=org', LDAPUrl(hostport='root.openldap.org', dn='dc=openldap,dc=org')),
         (
@@ -163,21 +162,17 @@ class TestParseLDAPUrl(unittest.TestCase):
     def test_ldapurl(self):
         for ldap_url_str, test_ldap_url_obj in self.parse_ldap_url_tests:
             ldap_url_obj = LDAPUrl(ldapUrl=ldap_url_str)
-            self.assertEqual(
-                ldap_url_obj,
-                test_ldap_url_obj,
-                f'Attributes of LDAPUrl({ldap_url_str!r}) are:\n{ldap_url_obj!r}\ninstead of:\n{test_ldap_url_obj!r}',
+            assert ldap_url_obj == test_ldap_url_obj, (
+                f'Attributes of LDAPUrl({ldap_url_str!r}) are:\n{ldap_url_obj!r}\ninstead of:\n{test_ldap_url_obj!r}'
             )
             unparsed_ldap_url_str = test_ldap_url_obj.unparse()
             unparsed_ldap_url_obj = LDAPUrl(ldapUrl=unparsed_ldap_url_str)
-            self.assertEqual(
-                unparsed_ldap_url_obj,
-                test_ldap_url_obj,
-                f'Attributes of LDAPUrl({unparsed_ldap_url_str!r}) are:\n{unparsed_ldap_url_obj!r}\ninstead of:\n{test_ldap_url_obj!r}',
+            assert unparsed_ldap_url_obj == test_ldap_url_obj, (
+                f'Attributes of LDAPUrl({unparsed_ldap_url_str!r}) are:\n{unparsed_ldap_url_obj!r}\ninstead of:\n{test_ldap_url_obj!r}'
             )
 
 
-class TestLDAPUrl(unittest.TestCase):
+class TestLDAPUrl:
     def test_combo(self):
         u = MyLDAPUrl(
             'ldap://127.0.0.1:1234/dc=example,dc=com'
@@ -191,194 +186,193 @@ class TestLDAPUrl(unittest.TestCase):
             + quote('???')
             + ',trace=8'
         )
-        self.assertEqual(u.urlscheme, 'ldap')
-        self.assertEqual(u.hostport, '127.0.0.1:1234')
-        self.assertEqual(u.dn, 'dc=example,dc=com')
-        self.assertEqual(u.attrs, ['attr1', 'attr2', 'attr3'])
-        self.assertEqual(u.scope, ldapurl.LDAP_SCOPE_SUBTREE)
-        self.assertEqual(u.filterstr, '(objectClass=*)')
-        self.assertEqual(len(u.extensions), 3)
-        self.assertEqual(u.who, 'cn=d,c=au')
-        self.assertEqual(u.cred, '???')
-        self.assertEqual(u.trace_level, '8')
+        assert u.urlscheme == 'ldap'
+        assert u.hostport == '127.0.0.1:1234'
+        assert u.dn == 'dc=example,dc=com'
+        assert u.attrs == ['attr1', 'attr2', 'attr3']
+        assert u.scope == ldapurl.LDAP_SCOPE_SUBTREE
+        assert u.filterstr == '(objectClass=*)'
+        assert len(u.extensions) == 3
+        assert u.who == 'cn=d,c=au'
+        assert u.cred == '???'
+        assert u.trace_level == '8'
 
     def test_parse_default_hostport(self):
         u = LDAPUrl('ldap://')
-        self.assertEqual(u.urlscheme, 'ldap')
-        self.assertEqual(u.hostport, '')
+        assert u.urlscheme == 'ldap'
+        assert u.hostport == ''
 
     def test_parse_empty_dn(self):
         u = LDAPUrl('ldap://')
-        self.assertEqual(u.dn, '')
+        assert u.dn == ''
         u = LDAPUrl('ldap:///')
-        self.assertEqual(u.dn, '')
+        assert u.dn == ''
         u = LDAPUrl('ldap:///?')
-        self.assertEqual(u.dn, '')
+        assert u.dn == ''
 
     def test_parse_default_attrs(self):
         u = LDAPUrl('ldap://')
-        self.assertIsNone(u.attrs)
+        assert u.attrs is None
 
     def test_parse_default_scope(self):
         u = LDAPUrl('ldap://')
-        self.assertIsNone(u.scope)  # RFC4516 s3
+        assert u.scope is None  # RFC4516 s3
 
     def test_parse_default_filter(self):
         u = LDAPUrl('ldap://')
-        self.assertIsNone(u.filterstr)  # RFC4516 s3
+        assert u.filterstr is None  # RFC4516 s3
 
     def test_parse_default_extensions(self):
         u = LDAPUrl('ldap://')
-        self.assertEqual(len(u.extensions), 0)
+        assert len(u.extensions) == 0
 
     def test_parse_schemes(self):
         u = LDAPUrl('ldap://')
-        self.assertEqual(u.urlscheme, 'ldap')
+        assert u.urlscheme == 'ldap'
         u = LDAPUrl('ldapi://')
-        self.assertEqual(u.urlscheme, 'ldapi')
+        assert u.urlscheme == 'ldapi'
         u = LDAPUrl('ldaps://')
-        self.assertEqual(u.urlscheme, 'ldaps')
+        assert u.urlscheme == 'ldaps'
 
     def test_parse_hostport(self):
         u = LDAPUrl('ldap://a')
-        self.assertEqual(u.hostport, 'a')
+        assert u.hostport == 'a'
         u = LDAPUrl('ldap://a.b')
-        self.assertEqual(u.hostport, 'a.b')
+        assert u.hostport == 'a.b'
         u = LDAPUrl('ldap://a.')
-        self.assertEqual(u.hostport, 'a.')
+        assert u.hostport == 'a.'
         u = LDAPUrl('ldap://%61%62:%32/')
-        self.assertEqual(u.hostport, 'ab:2')
+        assert u.hostport == 'ab:2'
         u = LDAPUrl('ldap://[::1]/')
-        self.assertEqual(u.hostport, '[::1]')
+        assert u.hostport == '[::1]'
         u = LDAPUrl('ldap://[::1]')
-        self.assertEqual(u.hostport, '[::1]')
+        assert u.hostport == '[::1]'
         u = LDAPUrl('ldap://[::1]:123/')
-        self.assertEqual(u.hostport, '[::1]:123')
+        assert u.hostport == '[::1]:123'
         u = LDAPUrl('ldap://[::1]:123')
-        self.assertEqual(u.hostport, '[::1]:123')
+        assert u.hostport == '[::1]:123'
 
     def test_parse_dn(self):
         u = LDAPUrl('ldap:///')
-        self.assertEqual(u.dn, '')
+        assert u.dn == ''
         u = LDAPUrl('ldap:///dn=foo')
-        self.assertEqual(u.dn, 'dn=foo')
+        assert u.dn == 'dn=foo'
         u = LDAPUrl('ldap:///dn=foo%2cdc=bar')
-        self.assertEqual(u.dn, 'dn=foo,dc=bar')
+        assert u.dn == 'dn=foo,dc=bar'
         u = LDAPUrl('ldap:///dn=foo%20bar')
-        self.assertEqual(u.dn, 'dn=foo bar')
+        assert u.dn == 'dn=foo bar'
         u = LDAPUrl('ldap:///dn=foo%2fbar')
-        self.assertEqual(u.dn, 'dn=foo/bar')
+        assert u.dn == 'dn=foo/bar'
         u = LDAPUrl('ldap:///dn=foo%2fbar?')
-        self.assertEqual(u.dn, 'dn=foo/bar')
+        assert u.dn == 'dn=foo/bar'
         u = LDAPUrl('ldap:///dn=foo%3f?')
-        self.assertEqual(u.dn, 'dn=foo?')
+        assert u.dn == 'dn=foo?'
         u = LDAPUrl('ldap:///dn=foo%3f')
-        self.assertEqual(u.dn, 'dn=foo?')
+        assert u.dn == 'dn=foo?'
         u = LDAPUrl('ldap:///dn=str%c3%b6der.com')
-        self.assertEqual(u.dn, 'dn=str\xf6der.com')
+        assert u.dn == 'dn=str\xf6der.com'
 
     def test_parse_attrs(self):
         u = LDAPUrl('ldap:///?')
-        self.assertIsNone(u.attrs)
+        assert u.attrs is None
         u = LDAPUrl('ldap:///??')
-        self.assertIsNone(u.attrs)
+        assert u.attrs is None
         u = LDAPUrl('ldap:///?*?')
-        self.assertEqual(u.attrs, ['*'])
+        assert u.attrs == ['*']
         u = LDAPUrl('ldap:///?*,*?')
-        self.assertEqual(u.attrs, ['*', '*'])
+        assert u.attrs == ['*', '*']
         u = LDAPUrl('ldap:///?a')
-        self.assertEqual(u.attrs, ['a'])
+        assert u.attrs == ['a']
         u = LDAPUrl('ldap:///?%61')
-        self.assertEqual(u.attrs, ['a'])
+        assert u.attrs == ['a']
         u = LDAPUrl('ldap:///?a,b')
-        self.assertEqual(u.attrs, ['a', 'b'])
+        assert u.attrs == ['a', 'b']
         u = LDAPUrl('ldap:///?a%3fb')
-        self.assertEqual(u.attrs, ['a?b'])
+        assert u.attrs == ['a?b']
 
     def test_parse_scope_default(self):
         u = LDAPUrl('ldap:///??')
-        self.assertIsNone(u.scope)  # on opposite to RFC4516 s3 for referral chasing
+        assert u.scope is None  # on opposite to RFC4516 s3 for referral chasing
         u = LDAPUrl('ldap:///???')
-        self.assertIsNone(u.scope)  # on opposite to RFC4516 s3 for referral chasing
+        assert u.scope is None  # on opposite to RFC4516 s3 for referral chasing
 
     def test_parse_scope(self):
         u = LDAPUrl('ldap:///??sub')
-        self.assertEqual(u.scope, ldapurl.LDAP_SCOPE_SUBTREE)
+        assert u.scope == ldapurl.LDAP_SCOPE_SUBTREE
         u = LDAPUrl('ldap:///??sub?')
-        self.assertEqual(u.scope, ldapurl.LDAP_SCOPE_SUBTREE)
+        assert u.scope == ldapurl.LDAP_SCOPE_SUBTREE
         u = LDAPUrl('ldap:///??base')
-        self.assertEqual(u.scope, ldapurl.LDAP_SCOPE_BASE)
+        assert u.scope == ldapurl.LDAP_SCOPE_BASE
         u = LDAPUrl('ldap:///??base?')
-        self.assertEqual(u.scope, ldapurl.LDAP_SCOPE_BASE)
+        assert u.scope == ldapurl.LDAP_SCOPE_BASE
         u = LDAPUrl('ldap:///??one')
-        self.assertEqual(u.scope, ldapurl.LDAP_SCOPE_ONELEVEL)
+        assert u.scope == ldapurl.LDAP_SCOPE_ONELEVEL
         u = LDAPUrl('ldap:///??one?')
-        self.assertEqual(u.scope, ldapurl.LDAP_SCOPE_ONELEVEL)
+        assert u.scope == ldapurl.LDAP_SCOPE_ONELEVEL
         u = LDAPUrl('ldap:///??subordinates')
-        self.assertEqual(u.scope, ldapurl.LDAP_SCOPE_SUBORDINATES)
+        assert u.scope == ldapurl.LDAP_SCOPE_SUBORDINATES
         u = LDAPUrl('ldap:///??subordinates?')
-        self.assertEqual(u.scope, ldapurl.LDAP_SCOPE_SUBORDINATES)
+        assert u.scope == ldapurl.LDAP_SCOPE_SUBORDINATES
 
     def test_parse_filter(self):
         u = LDAPUrl('ldap:///???(cn=Bob)')
-        self.assertEqual(u.filterstr, '(cn=Bob)')
+        assert u.filterstr == '(cn=Bob)'
         u = LDAPUrl('ldap:///???(cn=Bob)?')
-        self.assertEqual(u.filterstr, '(cn=Bob)')
+        assert u.filterstr == '(cn=Bob)'
         u = LDAPUrl('ldap:///???(cn=Bob%20Smith)?')
-        self.assertEqual(u.filterstr, '(cn=Bob Smith)')
+        assert u.filterstr == '(cn=Bob Smith)'
         u = LDAPUrl('ldap:///???(cn=Bob/Smith)?')
-        self.assertEqual(u.filterstr, '(cn=Bob/Smith)')
+        assert u.filterstr == '(cn=Bob/Smith)'
         u = LDAPUrl('ldap:///???(cn=Bob:Smith)?')
-        self.assertEqual(u.filterstr, '(cn=Bob:Smith)')
+        assert u.filterstr == '(cn=Bob:Smith)'
         u = LDAPUrl('ldap:///???&(cn=Bob)(objectClass=user)?')
-        self.assertEqual(u.filterstr, '&(cn=Bob)(objectClass=user)')
+        assert u.filterstr == '&(cn=Bob)(objectClass=user)'
         u = LDAPUrl('ldap:///???|(cn=Bob)(objectClass=user)?')
-        self.assertEqual(u.filterstr, '|(cn=Bob)(objectClass=user)')
+        assert u.filterstr == '|(cn=Bob)(objectClass=user)'
         u = LDAPUrl('ldap:///???(cn=Q%3f)?')
-        self.assertEqual(u.filterstr, '(cn=Q?)')
+        assert u.filterstr == '(cn=Q?)'
         u = LDAPUrl('ldap:///???(cn=Q%3f)')
-        self.assertEqual(u.filterstr, '(cn=Q?)')
+        assert u.filterstr == '(cn=Q?)'
         u = LDAPUrl('ldap:///???(sn=Str%c3%b6der)')  # (possibly bad?)
-        self.assertEqual(u.filterstr, '(sn=Str\xf6der)')
+        assert u.filterstr == '(sn=Str\xf6der)'
         u = LDAPUrl('ldap:///???(sn=Str\\c3\\b6der)')
-        self.assertEqual(u.filterstr, '(sn=Str\\c3\\b6der)')  # (recommended)
+        assert u.filterstr == '(sn=Str\\c3\\b6der)'  # (recommended)
         u = LDAPUrl('ldap:///???(cn=*\\2a*)')
-        self.assertEqual(u.filterstr, '(cn=*\\2a*)')
+        assert u.filterstr == '(cn=*\\2a*)'
         u = LDAPUrl('ldap:///???(cn=*%5c2a*)')
-        self.assertEqual(u.filterstr, '(cn=*\\2a*)')
+        assert u.filterstr == '(cn=*\\2a*)'
 
     def test_parse_extensions(self):
         u = LDAPUrl('ldap:///????')
-        self.assertIsNone(u.extensions)
-        self.assertIsNone(u.who)
+        assert u.extensions is None
+        assert u.who is None
         u = LDAPUrl('ldap:///????bindname=cn=root')
-        self.assertEqual(len(u.extensions), 1)
-        self.assertEqual(u.who, 'cn=root')
+        assert len(u.extensions) == 1
+        assert u.who == 'cn=root'
         u = LDAPUrl('ldap:///????!bindname=cn=root')
-        self.assertEqual(len(u.extensions), 1)
-        self.assertEqual(u.who, 'cn=root')
+        assert len(u.extensions) == 1
+        assert u.who == 'cn=root'
         u = LDAPUrl('ldap:///????bindname=%3f,X-BINDPW=%2c')
-        self.assertEqual(len(u.extensions), 2)
-        self.assertEqual(u.who, '?')
-        self.assertEqual(u.cred, ',')
+        assert len(u.extensions) == 2
+        assert u.who == '?'
+        assert u.cred == ','
 
     def test_parse_extensions_nulls(self):
         u = LDAPUrl('ldap:///????bindname=%00name')
-        self.assertEqual(u.who, '\0name')
+        assert u.who == '\0name'
 
     def test_parse_extensions_5questions(self):
         u = LDAPUrl('ldap:///????bindname=?')
-        self.assertEqual(len(u.extensions), 1)
-        self.assertEqual(u.who, '?')
+        assert len(u.extensions) == 1
+        assert u.who == '?'
 
     def test_parse_extensions_novalue(self):
         u = LDAPUrl('ldap:///????bindname')
-        self.assertEqual(len(u.extensions), 1)
-        self.assertIsNone(u.who)
+        assert len(u.extensions) == 1
+        assert u.who is None
 
-    @unittest.expectedFailure
+    @pytest.mark.xfail
     def test_bad_urls(self):
-        failed_urls = []
         for bad in (
             '',
             'ldap:',
@@ -408,34 +402,21 @@ class TestLDAPUrl(unittest.TestCase):
             'ldap:///????a_b=0',  # extype contains only [-a-zA-Z0-9]
             'ldap:///????!!a=0',  # only one exclamation allowed
         ):
-            try:
+            with pytest.raises(ValueError):
                 LDAPUrl(bad)
-            except ValueError:
-                pass
-            else:
-                failed_urls.append(bad)
-        if failed_urls:
-            self.fail(f'These LDAP URLs should have raised ValueError: {failed_urls!r}')
 
     def test_html_href(self):
         u = ldapurl.LDAPUrl('ldap://root.openldap.org/dc=openldap,dc=org')
-        self.assertEqual(
-            u.htmlHREF(),
-            '<a href="ldap://root.openldap.org/dc%3Dopenldap%2Cdc%3Dorg???">ldap://root.openldap.org/dc%3Dopenldap%2Cdc%3Dorg???</a>',
+        assert u.htmlHREF() == (
+            '<a href="ldap://root.openldap.org/dc%3Dopenldap%2Cdc%3Dorg???">ldap://root.openldap.org/dc%3Dopenldap%2Cdc%3Dorg???</a>'
         )
 
     def test_html_href_escaping(self):
         bad_chars = '<"&\'>'
         u = ldapurl.LDAPUrl(f'ldap://{bad_chars}/dc={bad_chars},dc=org?scope={bad_chars}')
-        self.assertEqual(
-            u.htmlHREF(),
-            '<a href="ldap://&lt;&quot;&amp;&#x27;&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;&quot;&amp;&#x27;&gt;??">ldap://&lt;"&amp;\'&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;"&amp;\'&gt;??</a>',
+        assert u.htmlHREF() == (
+            '<a href="ldap://&lt;&quot;&amp;&#x27;&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;&quot;&amp;&#x27;&gt;??">ldap://&lt;"&amp;\'&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;"&amp;\'&gt;??</a>'
         )
-        self.assertEqual(
-            u.htmlHREF(bad_chars, bad_chars, bad_chars),
-            '<a target="&lt;&quot;&amp;&#x27;&gt;" href="&lt;&quot;&amp;&#x27;&gt;ldap://&lt;&quot;&amp;&#x27;&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;&quot;&amp;&#x27;&gt;??">&lt;"&amp;\'&gt;</a>',
+        assert u.htmlHREF(bad_chars, bad_chars, bad_chars) == (
+            '<a target="&lt;&quot;&amp;&#x27;&gt;" href="&lt;&quot;&amp;&#x27;&gt;ldap://&lt;&quot;&amp;&#x27;&gt;/dc%3D%3C%22%26%27%3E%2Cdc%3Dorg?scope=&lt;&quot;&amp;&#x27;&gt;??">&lt;"&amp;\'&gt;</a>'
         )
-
-
-if __name__ == '__main__':
-    unittest.main()
