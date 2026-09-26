@@ -807,10 +807,7 @@ class TestLdapCExtension(SlapdTestCase):
            on the underlying C library.
            This could me made to thrown an exception if you want the
            tests to be strict."""
-        if hasattr(obj, attrname):
-            return True
-        #self.fail("required attribute '%s' missing" % attrname)
-        return False
+        return hasattr(obj, attrname)
 
     def test_sasl(self):
         l = self._open_conn()
