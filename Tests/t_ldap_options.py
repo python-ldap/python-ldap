@@ -1,5 +1,6 @@
 import os
-import unittest
+
+import pytest
 
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -50,34 +51,34 @@ class BaseTestOptions:
             self.set_option(option, value)
             new = self.get_option(option)
             if expected is SENTINEL:
-                self.assertEqual(new, value)
+                assert new == value
             else:
-                self.assertEqual(new, expected)
+                assert new == expected
         finally:
             self.set_option(option, old)
-            self.assertEqual(self.get_option(option), old)
+            assert self.get_option(option) == old
 
     def test_invalid(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             self.get_option(-1)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             self.set_option(-1, '')
 
     def _test_timeout(self, option):
         self._check_option(option, 10.5)
         self._check_option(option, 0)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             self._check_option(option, -5)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             self.set_option(option, object)
-        with self.assertRaises(OverflowError):
+        with pytest.raises(OverflowError):
             self._check_option(option, 10**1000)
         old = self.get_option(option)
         try:
             self.set_option(option, None)
-            self.assertIsNone(self.get_option(option))
+            assert self.get_option(option) is None
             self.set_option(option, -1)
-            self.assertIsNone(self.get_option(option))
+            assert self.get_option(option) is None
         finally:
             self.set_option(option, old)
 
@@ -91,13 +92,13 @@ class BaseTestOptions:
         self._check_option(option, [])
         self._check_option(option, TEST_CTRL, TEST_CTRL_EXPECTED)
         self._check_option(option, tuple(TEST_CTRL), TEST_CTRL_EXPECTED)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             self.set_option(option, object)
 
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             # must contain a tuple
             self.set_option(option, [list(TEST_CTRL[0])])
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             # data must be bytes or None
             self.set_option(option, [TEST_CTRL[0][0], TEST_CTRL[0][1], 'data'])
 
@@ -109,7 +110,7 @@ class BaseTestOptions:
 
     def test_uri(self):
         self._check_option(ldap.OPT_URI, 'ldapi:///path/to/socket')
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             self.set_option(ldap.OPT_URI, object)
 
     @requires_tls()
@@ -119,13 +120,13 @@ class BaseTestOptions:
 
     def test_readonly(self):
         value = self.get_option(ldap.OPT_API_INFO)
-        self.assertIsInstance(value, dict)
-        with self.assertRaises(ValueError) as e:
+        assert isinstance(value, dict)
+        with pytest.raises(ValueError) as e:
             self.set_option(ldap.OPT_API_INFO, value)
-        self.assertIn('read-only', str(e.exception))
+        assert 'read-only' in str(e.value)
 
 
-class TestGlobalOptions(BaseTestOptions, unittest.TestCase):
+class TestGlobalOptions(BaseTestOptions):
     """Test setting/getting options globally"""
 
     def get_option(self, option):
@@ -140,10 +141,10 @@ class TestLDAPObjectOptions(BaseTestOptions, SlapdTestCase):
 
     ldap_object_class = SimpleLDAPObject
 
-    def setUp(self):
+    def setup_method(self):
         self.conn = self._open_ldap_conn(who=self.server.root_dn, cred=self.server.root_pw)
 
-    def tearDown(self):
+    def teardown_method(self):
         self.conn.unbind_s()
         self.conn = None
 
@@ -157,23 +158,23 @@ class TestLDAPObjectOptions(BaseTestOptions, SlapdTestCase):
         option = ldap.OPT_NETWORK_TIMEOUT
         old = self.get_option(option)
         try:
-            self.assertEqual(self.conn.network_timeout, old)
+            assert self.conn.network_timeout == old
 
             self.conn.network_timeout = 5
-            self.assertEqual(self.conn.network_timeout, 5)
-            self.assertEqual(self.get_option(option), 5)
+            assert self.conn.network_timeout == 5
+            assert self.get_option(option) == 5
 
             self.conn.network_timeout = -1
-            self.assertIsNone(self.conn.network_timeout)
-            self.assertIsNone(self.get_option(option))
+            assert self.conn.network_timeout is None
+            assert self.get_option(option) is None
 
             self.conn.network_timeout = 10.5
-            self.assertEqual(self.conn.network_timeout, 10.5)
-            self.assertEqual(self.get_option(option), 10.5)
+            assert self.conn.network_timeout == pytest.approx(10.5)
+            assert self.get_option(option) == pytest.approx(10.5)
 
             self.conn.network_timeout = None
-            self.assertIsNone(self.conn.network_timeout)
-            self.assertIsNone(self.get_option(option))
+            assert self.conn.network_timeout is None
+            assert self.get_option(option) is None
         finally:
             self.set_option(option, old)
 
@@ -192,10 +193,10 @@ class TestLDAPObjectOptions(BaseTestOptions, SlapdTestCase):
         )
         try:
             (paged,) = self.get_option(option)
-            self.assertIsInstance(paged, SimplePagedResultsControl)
-            self.assertEqual(paged.criticality, 0)
-            self.assertEqual(paged.size, 5)
-            self.assertEqual(paged.cookie, b'cookie')
+            assert isinstance(paged, SimplePagedResultsControl)
+            assert paged.criticality == 0
+            assert paged.size == 5
+            assert paged.cookie == b'cookie'
         finally:
             self.set_option(option, [])
 
@@ -203,19 +204,19 @@ class TestLDAPObjectOptions(BaseTestOptions, SlapdTestCase):
         # non-critical is dropped
         self.set_option(option, [SearchNoOpControl(criticality=1)])
         try:
-            with self.assertRaises(PyAsn1Error):
+            with pytest.raises(PyAsn1Error):
                 self.get_option(option)
         finally:
             self.set_option(option, [])
         self.set_option(option, [SearchNoOpControl(criticality=0)])
         try:
-            self.assertEqual(self.get_option(option), [])
+            assert self.get_option(option) == []
         finally:
             self.set_option(option, [])
 
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             self.set_option(option, object)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             # data must be bytes or None
             self.set_option(
                 option,
@@ -223,7 +224,3 @@ class TestLDAPObjectOptions(BaseTestOptions, SlapdTestCase):
                     RequestControl(TEST_CTRL[0][0], TEST_CTRL[0][1], 'data'),
                 ],
             )
-
-
-if __name__ == '__main__':
-    unittest.main()

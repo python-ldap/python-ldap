@@ -5,7 +5,6 @@ See https://www.python-ldap.org/ for details.
 """
 
 import os
-import unittest
 
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -15,7 +14,7 @@ import ldap
 from ldap.modlist import addModlist, modifyModlist
 
 
-class TestModlist(unittest.TestCase):
+class TestModlist:
     addModlist_tests = [
         (
             {
@@ -41,10 +40,8 @@ class TestModlist(unittest.TestCase):
             test_modlist.sort()
             result_modlist = addModlist(entry)
             result_modlist.sort()
-            self.assertEqual(
-                test_modlist,
-                result_modlist,
-                f'addModlist({entry!r}) returns\n{result_modlist!r}\ninstead of\n{test_modlist!r}.',
+            assert result_modlist == test_modlist, (
+                f'addModlist({entry!r}) returns\n{result_modlist!r}\ninstead of\n{test_modlist!r}.'
             )
 
     modifyModlist_tests = [
@@ -136,12 +133,6 @@ class TestModlist(unittest.TestCase):
             result_modlist = modifyModlist(old_entry, new_entry, case_ignore_attr_types=case_ignore_attr_types)
             result_modlist.sort()
 
-            self.assertEqual(
-                test_modlist,
-                result_modlist,
-                f'modifyModlist({old_entry!r},{new_entry!r}) returns\n{result_modlist!r}\ninstead of\n{test_modlist!r}.',
+            assert result_modlist == test_modlist, (
+                f'modifyModlist({old_entry!r},{new_entry!r}) returns\n{result_modlist!r}\ninstead of\n{test_modlist!r}.'
             )
-
-
-if __name__ == '__main__':
-    unittest.main()

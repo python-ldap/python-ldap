@@ -7,7 +7,8 @@ See https://www.python-ldap.org/ for details.
 import binascii
 import os
 import shelve
-import unittest
+
+import pytest
 
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -254,6 +255,8 @@ class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
 
 
 class BaseSyncreplTests:
+    __test__ = False
+
     """
     This is a test of all the basic Syncrepl operations.  It covers starting a
     search (both types of search), doing the refresh part of the search,
@@ -265,8 +268,8 @@ class BaseSyncreplTests:
     ldap_object_class = SimpleLDAPObject
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setup_class(cls):
+        super().setup_class()
         # insert some Foo* objects via ldapadd
         cls.server.ldapadd(
             LDIF_TEMPLATE
@@ -279,14 +282,14 @@ class BaseSyncreplTests:
             }
         )
 
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
+        super().setup_method()
         self.tester = None
         self.suffix = None
 
-    def tearDown(self):
+    def teardown_method(self):
         self.tester.unbind_s()
-        super().tearDown()
+        super().teardown_method()
 
     def create_client(self):
         raise NotImplementedError
@@ -306,8 +309,8 @@ class BaseSyncreplTests:
         """
         self.tester.search(self.suffix, 'refreshOnly')
         poll_result = self.tester.poll(all=1, timeout=None)
-        self.assertFalse(poll_result)
-        self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
+        assert not poll_result
+        assert self.tester.dn_attrs == LDAP_ENTRIES
 
     def test_refreshAndPersist_poll_only(self):
         """
@@ -318,9 +321,9 @@ class BaseSyncreplTests:
         # Make sure to stop the test before going into persist mode.
         while self.tester.refresh_done is not True:
             poll_result = self.tester.poll(all=0, timeout=None)
-            self.assertTrue(poll_result)
+            assert poll_result
 
-        self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
+        assert self.tester.dn_attrs == LDAP_ENTRIES
 
     def test_refreshAndPersist_timeout(self):
         """
@@ -331,14 +334,15 @@ class BaseSyncreplTests:
         # Run a quick refresh, that shouldn't have any changes.
         while self.tester.refresh_done is not True:
             poll_result = self.tester.poll(all=0, timeout=None)
-            self.assertTrue(poll_result)
+            assert poll_result
 
         # Again, server data should not have changed.
-        self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
+        assert self.tester.dn_attrs == LDAP_ENTRIES
 
         # Run a search with timeout.
         # Nothing is changing the server, so it shoud timeout.
-        self.assertRaises(ldap.TIMEOUT, self.tester.poll, all=0, timeout=1)
+        with pytest.raises(ldap.TIMEOUT):
+            self.tester.poll(all=0, timeout=1)
 
     def test_refreshAndPersist_cancelled(self):
         """
@@ -349,19 +353,20 @@ class BaseSyncreplTests:
         # Run a quick refresh, that shouldn't have any changes.
         while self.tester.refresh_done is not True:
             poll_result = self.tester.poll(all=0, timeout=None)
-            self.assertTrue(poll_result)
+            assert poll_result
 
         # Again, server data should not have changed.
-        self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
+        assert self.tester.dn_attrs == LDAP_ENTRIES
 
         # Request cancellation.
         self.tester.cancel()
 
         # Run another poll, without timeout, but which should cancel out.
-        self.assertRaises(ldap.CANCELLED, self.tester.poll, all=1, timeout=None)
+        with pytest.raises(ldap.CANCELLED):
+            self.tester.poll(all=1, timeout=None)
 
         # Server data should still be intact.
-        self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
+        assert self.tester.dn_attrs == LDAP_ENTRIES
 
     # TODO:
     # * Make a new client, with a data store, and close.  Then, load a new
@@ -379,13 +384,17 @@ class BaseSyncreplTests:
 
 
 class TestSyncrepl(BaseSyncreplTests, SlapdTestCase):
-    def setUp(self):
-        super().setUp()
+    __test__ = True
+
+    def setup_method(self):
+        super().setup_method()
         self.tester = SyncreplClient(self.server.ldap_uri, self.server.root_dn, self.server.root_pw, bytes_mode=False)
         self.suffix = self.server.suffix
 
 
 class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
+    __test__ = True
+
     class MPRClient(SyncreplClient):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
@@ -395,16 +404,16 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             self.cookie.update(cookie)
             super().syncrepl_set_cookie(self.cookie.unparse())
 
-    def setUp(self):
-        super().setUp()
+    def setup_method(self):
+        super().setup_method()
         self.tester = self.MPRClient(self.server.ldap_uri, self.server.root_dn, self.server.root_pw, bytes_mode=False)
         self.suffix = self.server.suffix
 
         # An active MPR should not have a sid=000 server in it
         if self.server.server_id == 0:
-            self.skipTest('Server got serverid 0 assigned')
+            pytest.skip('Server got serverid 0 assigned')
 
-    def test_mpr_refresh_and_persist(self):
+    def test_mpr_refresh_and_persist(self, request):
         """
         Make sure we process cookie updates from a live MPR cluster correctly
         """
@@ -419,7 +428,7 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             tester2 = self.MPRClient(
                 self.server2.ldap_uri, self.server2.root_dn, self.server2.root_pw, bytes_mode=False
             )
-            self.addCleanup(tester2.unbind_s)
+            request.addfinalizer(tester2.unbind_s)
 
             self.tester.search(
                 self.suffix,
@@ -429,10 +438,10 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             # Run a quick refresh, that shouldn't have any changes.
             while self.tester.refresh_done is not True:
                 poll_result = self.tester.poll(all=0, timeout=None)
-                self.assertTrue(poll_result)
+                assert poll_result
 
             # Again, server data should not have changed.
-            self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
+            assert self.tester.dn_attrs == LDAP_ENTRIES
 
             # set up replication between both
             coords = [
@@ -468,7 +477,7 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             while tester2.refresh_done is not True or tester2.cookie.unparse() != self.tester.cookie.unparse():
                 try:
                     poll_result = tester2.poll(all=0, timeout=None)
-                    self.assertTrue(poll_result)
+                    assert poll_result
                 except ldap.NO_SUCH_OBJECT:
                     # 2.6+ Allows a refreshAndPersist against an empty DB, but
                     # with older ones we need to retry until there's at least
@@ -479,7 +488,7 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
                     )
 
             # Again, server data should not have changed.
-            self.assertEqual(tester2.dn_attrs, LDAP_ENTRIES)
+            assert tester2.dn_attrs == LDAP_ENTRIES
 
             # From here on, things get little hairy, server1 might not have
             # finished its refresh from 2 and we can't easily confirm this
@@ -515,14 +524,14 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             ):
                 if csn1 not in self.tester.cookie.unparse() or csn2 not in self.tester.cookie.unparse():
                     poll_result = self.tester.poll(all=0, timeout=5)
-                    self.assertTrue(poll_result)
+                    assert poll_result
                 if csn1 not in tester2.cookie.unparse() or csn2 not in tester2.cookie.unparse():
                     poll_result = tester2.poll(all=0, timeout=5)
-                    self.assertTrue(poll_result)
+                    assert poll_result
 
-            self.assertEqual(self.tester.cookie.unparse(), tester2.cookie.unparse())
-            self.assertEqual(self.tester.dn_attrs, new_state)
-            self.assertEqual(tester2.dn_attrs, new_state)
+            assert self.tester.cookie.unparse() == tester2.cookie.unparse()
+            assert self.tester.dn_attrs == new_state
+            assert tester2.dn_attrs == new_state
 
             # self.tester seems to have been unbound by the time
             # self.addCleanup callbacks get called? Cleanup manually...
@@ -530,7 +539,7 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             self.tester.delete_s(f'cn=server2,{self.suffix}')
 
 
-class DecodeSyncreplProtoTests(unittest.TestCase):
+class DecodeSyncreplProtoTests:
     """
     Tests of the ASN.1 decoder for tricky cases or past issues to ensure that
     syncrepl messages are handled correctly.
@@ -560,18 +569,11 @@ class DecodeSyncreplProtoTests(unittest.TestCase):
 
         msgraw = binascii.unhexlify(msg)
         sim = SyncInfoMessage(msgraw)
-        self.assertEqual(sim.refreshDelete, None)
-        self.assertEqual(sim.refreshPresent, None)
-        self.assertEqual(sim.newcookie, None)
-        self.assertEqual(
-            sim.syncIdSet,
-            {
-                'cookie': 'ldapkdc.example.com:38901#cn=directory manager:dc=example,dc=com:(objectClass=*)#3',
-                'syncUUIDs': ['8dc44601-a936-11ea-8aaf-f248c5fa5780'],
-                'refreshDeletes': True,
-            },
-        )
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert sim.refreshDelete is None
+        assert sim.refreshPresent is None
+        assert sim.newcookie is None
+        assert sim.syncIdSet == {
+            'cookie': 'ldapkdc.example.com:38901#cn=directory manager:dc=example,dc=com:(objectClass=*)#3',
+            'syncUUIDs': ['8dc44601-a936-11ea-8aaf-f248c5fa5780'],
+            'refreshDeletes': True,
+        }

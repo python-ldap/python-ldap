@@ -604,7 +604,7 @@ class SlapdObject:
         self.stop(exc_type is None)
 
 
-class SlapdTestCase(unittest.TestCase):
+class SlapdTestCase:
     """
     test class which also clones or initializes a running slapd
     """
@@ -633,12 +633,18 @@ class SlapdTestCase(unittest.TestCase):
         ldap_conn.simple_bind_s(who or self.server.root_dn, cred or self.server.root_pw)
         return ldap_conn
 
+    def setup_method(self) -> None:
+        pass
+
+    def teardown_method(self) -> None:
+        pass
+
     @classmethod
-    def setUpClass(cls) -> None:
+    def setup_class(cls) -> None:
         cls.server = cls.server_class()
         cls.server.start()
 
     @classmethod
-    def tearDownClass(cls) -> None:
+    def teardown_class(cls) -> None:
         if cls.server is not None:
-            cls.server.stop(False)
+            cls.server.stop()
