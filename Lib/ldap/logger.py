@@ -11,7 +11,7 @@ class logging_file_class:
         self._logging_level = logging_level
 
     def write(self, msg: str) -> None:
-        logging.log(self._logging_level, msg[:-1])
+        logging.log(self._logging_level, msg[:-1])  # noqa: LOG015
 
     def flush(self) -> None:
         return
