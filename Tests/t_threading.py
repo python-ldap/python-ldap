@@ -46,7 +46,7 @@ class ThreadedMixin:
             try:
                 barrier.wait()
                 routine(index, count)
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 - the worker must report every thread failure
                 errors.append(exc)
 
         threads = [threading.Thread(target=worker, args=(i, count))

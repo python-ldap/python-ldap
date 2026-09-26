@@ -119,5 +119,5 @@ while True:
 
         else:
             print("unknown command - try '?' for help")
-    except Exception:
+    except (ldap.LDAPError, IndexError, AttributeError):
         print_exc()
