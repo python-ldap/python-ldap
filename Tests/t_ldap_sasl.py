@@ -5,7 +5,8 @@ See https://www.python-ldap.org/ for details.
 """
 
 import os
-import unittest
+
+import pytest
 
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -46,8 +47,8 @@ class TestSasl(SlapdTestCase):
     certsubject = 'cn=client,ou=slapd-test,o=python-ldap,c=de'
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setup_class(cls):
+        super().setup_class()
         ldif = LDIF.format(
             suffix=cls.server.suffix,
             rootdn=cls.server.root_dn,
@@ -65,21 +66,21 @@ class TestSasl(SlapdTestCase):
         ldap_conn = self.ldap_object_class(self.server.ldapi_uri)
 
         auth = ldap.sasl.external('some invalid user')
-        with self.assertRaises(ldap.INSUFFICIENT_ACCESS):
+        with pytest.raises(ldap.INSUFFICIENT_ACCESS):
             ldap_conn.sasl_interactive_bind_s('', auth)
 
         auth = ldap.sasl.external('')
         ldap_conn.sasl_interactive_bind_s('', auth)
-        self.assertEqual(ldap_conn.whoami_s().lower(), f'dn:{self.server.root_dn.lower()}')
+        assert ldap_conn.whoami_s().lower() == f'dn:{self.server.root_dn.lower()}'
 
     @requires_ldapi()
     def test_external_ldapi_async(self):
         ldap_conn = self.ldap_object_class(self.server.ldapi_uri)
 
         msgid = ldap_conn.sasl_bind('', 'EXTERNAL', '')
-        self.assertIsInstance(msgid, int)
+        assert isinstance(msgid, int)
         ldap_conn.result(msgid, all=1)
-        self.assertEqual(ldap_conn.whoami_s().lower(), f'dn:{self.server.root_dn.lower()}')
+        assert ldap_conn.whoami_s().lower() == f'dn:{self.server.root_dn.lower()}'
 
     @requires_tls()
     def test_external_tlscert(self):
@@ -93,8 +94,4 @@ class TestSasl(SlapdTestCase):
 
         auth = ldap.sasl.external()
         ldap_conn.sasl_interactive_bind_s('', auth)
-        self.assertEqual(ldap_conn.whoami_s().lower(), f'dn:{self.certsubject}')
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert ldap_conn.whoami_s().lower() == f'dn:{self.certsubject}'

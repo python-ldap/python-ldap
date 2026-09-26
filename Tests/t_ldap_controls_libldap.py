@@ -1,5 +1,4 @@
 import os
-import unittest
 
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -13,37 +12,33 @@ SIZE = 5
 COOKIE = b'cookie'
 
 
-class TestLibldapControls(unittest.TestCase):
+class TestLibldapControls:
     def test_pagedresults_encode(self):
         pr = pagedresults.SimplePagedResultsControl(size=SIZE, cookie=COOKIE)
         lib = libldap.SimplePagedResultsControl(size=SIZE, cookie=COOKIE)
-        self.assertEqual(pr.encodeControlValue(), lib.encodeControlValue())
-        self.assertEqual(pr.encodeControlValue(), PRC_BER)
+        assert pr.encodeControlValue() == lib.encodeControlValue()
+        assert pr.encodeControlValue() == PRC_BER
 
     def test_pagedresults_decode(self):
         pr = pagedresults.SimplePagedResultsControl()
         pr.decodeControlValue(PRC_BER)
-        self.assertEqual(pr.size, SIZE)
+        assert pr.size == SIZE
         # LDAPString (OCTET STRING)
-        self.assertIsInstance(pr.cookie, bytes)
-        self.assertEqual(pr.cookie, COOKIE)
+        assert isinstance(pr.cookie, bytes)
+        assert pr.cookie == COOKIE
 
         lib = libldap.SimplePagedResultsControl()
         lib.decodeControlValue(PRC_BER)
-        self.assertEqual(lib.size, SIZE)
-        self.assertIsInstance(lib.cookie, bytes)
-        self.assertEqual(lib.cookie, COOKIE)
+        assert lib.size == SIZE
+        assert isinstance(lib.cookie, bytes)
+        assert lib.cookie == COOKIE
 
     def test_matchedvalues(self):
         mvc = libldap.MatchedValuesControl()
         # unverified
-        self.assertEqual(mvc.encodeControlValue(), b'0\r\x87\x0bobjectClass')
+        assert mvc.encodeControlValue() == b'0\r\x87\x0bobjectClass'
 
     def test_assertioncontrol(self):
         ac = libldap.AssertionControl()
         # unverified
-        self.assertEqual(ac.encodeControlValue(), b'\x87\x0bobjectClass')
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert ac.encodeControlValue() == b'\x87\x0bobjectClass'
