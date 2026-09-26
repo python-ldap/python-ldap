@@ -26,7 +26,7 @@ if __debug__:
   if _trace_file_path is None:
     _trace_file = sys.stderr
   else:
-    _trace_file = open(_trace_file_path, 'a')
+    _trace_file = open(_trace_file_path, 'a')  # noqa: SIM115
     atexit.register(_trace_file.close)
   _trace_stack_limit = None
 else:

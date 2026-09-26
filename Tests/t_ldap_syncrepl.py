@@ -152,9 +152,9 @@ class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
         """
 
         if storage is not None:
-            self.data = shelve.open(storage)
-            self.uuid_dn = shelve.open(storage + 'uuid_dn')
-            self.dn_attrs = shelve.open(storage + 'dn_attrs')
+            self.data = shelve.open(storage)  # noqa: SIM115
+            self.uuid_dn = shelve.open(storage + 'uuid_dn')  # noqa: SIM115
+            self.dn_attrs = shelve.open(storage + 'dn_attrs')  # noqa: SIM115
             self.using_shelve = True
         else:
             self.data = {}
