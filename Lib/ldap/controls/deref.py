@@ -91,8 +91,7 @@ class DereferenceControl(LDAPControl):
 
   def _derefSpecs(self) -> DerefSpecs:
     deref_specs = DerefSpecs()
-    i = 0
-    for deref_attr,deref_attribute_names in self.derefSpecs.items():
+    for i, (deref_attr,deref_attribute_names) in enumerate(self.derefSpecs.items()):
       deref_spec = DerefSpec()
       deref_attributes = AttributeList()
       for j in range(len(deref_attribute_names)):
@@ -100,7 +99,6 @@ class DereferenceControl(LDAPControl):
       deref_spec.setComponentByName('derefAttr',AttributeDescription(deref_attr))
       deref_spec.setComponentByName('attributes',deref_attributes)
       deref_specs.setComponentByPosition(i,deref_spec)
-      i += 1
     return deref_specs
 
   def encodeControlValue(self) -> bytes:
