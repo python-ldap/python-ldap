@@ -113,9 +113,7 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         )
 
     def setUp(self):
-        try:
-            self._ldap_conn
-        except AttributeError:
+        if not hasattr(self, '_ldap_conn'):
             # open local LDAP connection
             self._ldap_conn = self._open_ldap_conn(bytes_mode=False)
 
