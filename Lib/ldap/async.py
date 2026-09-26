@@ -2,7 +2,7 @@
 ldap.asyncsearch - handle async LDAP search operations
 
 See https://www.python-ldap.org/ for details.
-"""
+"""  # noqa: N999
 import warnings
 
 from ldap.asyncsearch import *
