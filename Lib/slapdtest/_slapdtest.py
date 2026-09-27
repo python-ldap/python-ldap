@@ -14,12 +14,13 @@ import socket
 import subprocess
 import sys
 import time
-import unittest
 from collections.abc import Iterable
 from logging.handlers import SysLogHandler
 from shutil import which
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 from urllib.parse import quote_plus
+
+import pytest
 
 
 if TYPE_CHECKING:
@@ -90,7 +91,7 @@ def identity(test_item: T) -> T:
 def skip_unless_ci(reason: str, feature: str | None = None) -> Callable[..., Any]:
     """Skip test unless test case is executed on CI like Travis CI"""
     if not os.environ.get('CI') or feature in CI_DISABLED:
-        return unittest.skip(reason)
+        return cast(Callable[..., Any], pytest.mark.skip(reason=reason))
     else:
         # Don't skip on Travis
         return identity
