@@ -255,8 +255,6 @@ class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
 
 
 class BaseSyncreplTests:
-    __test__ = False
-
     """
     This is a test of all the basic Syncrepl operations.  It covers starting a
     search (both types of search), doing the refresh part of the search,
@@ -384,8 +382,6 @@ class BaseSyncreplTests:
 
 
 class TestSyncrepl(BaseSyncreplTests, SlapdTestCase):
-    __test__ = True
-
     def setup_method(self):
         super().setup_method()
         self.tester = SyncreplClient(self.server.ldap_uri, self.server.root_dn, self.server.root_pw, bytes_mode=False)
@@ -393,8 +389,6 @@ class TestSyncrepl(BaseSyncreplTests, SlapdTestCase):
 
 
 class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
-    __test__ = True
-
     class MPRClient(SyncreplClient):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
@@ -539,7 +533,7 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             self.tester.delete_s(f'cn=server2,{self.suffix}')
 
 
-class DecodeSyncreplProtoTests:
+class TestDecodeSyncreplProto:
     """
     Tests of the ASN.1 decoder for tricky cases or past issues to ensure that
     syncrepl messages are handled correctly.
