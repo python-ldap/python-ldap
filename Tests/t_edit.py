@@ -9,7 +9,7 @@ from ldap.ldapobject import LDAPObject
 from slapdtest import SlapdTestCase
 
 
-class EditionTests(SlapdTestCase):
+class TestEdition(SlapdTestCase):
     @classmethod
     def setup_class(cls):
         super().setup_class()
