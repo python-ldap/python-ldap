@@ -128,6 +128,6 @@ def is_dn(s: str, flags: int = 0) -> bool:
         return True
 
 
-def normalize(s: str, flags: int = 0) -> str:
+def normalize(dn: str, flags: int = ldap.DN_FORMAT_LDAPV3) -> str:
     """Returns a normalized distinguished name (DN)"""
-    return dn2str(str2dn(s, flags), flags)
+    return dn2str(str2dn(dn, flags), flags)
