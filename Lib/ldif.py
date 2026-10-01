@@ -219,7 +219,7 @@ class LDIFWriter:
     elif isinstance(record,list):
       self._unparseChangeRecord(record)
     else:
-      raise ValueError('Argument record must be dictionary or list instead of %s' % (repr(record)))
+      raise TypeError('Argument record must be dictionary or list instead of %s' % (repr(record)))
     # Write empty line separating the records
     self._output_file.write(self._last_line_sep)
     # Count records written
