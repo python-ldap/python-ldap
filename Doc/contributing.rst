@@ -156,6 +156,14 @@ Notable targets are:
 .. _LCOV: https://github.com/linux-test-project/lcov
 .. _Valgrind: http://valgrind.org/
 
+Using git blame
+---------------
+
+The code base has been reformatted in https://github.com/python-ldap/python-ldap/issues/657.
+This shows some negligible noise commits when using ``git blame``.
+To exclude these commits the following configuration can be set up locally
+- in every local clone of the repository:
+``git config blame.ignoreRevsFile .git-blame-ignore-revs``
 
 Reference leak tests
 --------------------
