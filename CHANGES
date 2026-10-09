@@ -5,10 +5,18 @@ Breaking:
   go, we couldn't find a safe way to keep it working with subclasses and are
   unaware of any users either
 
+Deprecated:
+* ``ldif.LDIFWriter.unparse()`` now emits a ``DeprecationWarning`` when
+  raising ``TypeError`` for a wrong-typed record, because it previously
+  raised ``ValueError``.  ``ValueError`` will be removed in a future
+  release.
+
 API changes:
 * ``ldif.LDIFWriter.unparse()`` now raises ``TypeError`` instead of
   ``ValueError`` when passed a record that is neither a dictionary nor a list,
-  matching the convention for an argument of the wrong type.
+  matching the convention for an argument of the wrong type.  A
+  ``DeprecationWarning`` is emitted alongside the ``TypeError`` so callers
+  catching the old ``ValueError`` can migrate.
 * The deprecated ``OPT_X_TLS`` option has been removed, as announced in the
   3.4.3 release notes. The ``OPT_X_TLS_*`` option constants (such as
   ``OPT_X_TLS_NEWCTX`` and ``OPT_X_TLS_REQUIRE_CERT``) are unaffected.
