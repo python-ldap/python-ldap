@@ -52,11 +52,9 @@ LDAPMod_initialize_fd(PyObject *module, PyObject *args)
 
     if (strcmp(lud->lud_scheme, "ldap") == 0) {
         proto = LDAP_PROTO_TCP;
-    }
-    else if (strcmp(lud->lud_scheme, "ldaps") == 0) {
+    } else if (strcmp(lud->lud_scheme, "ldaps") == 0) {
         proto = LDAP_PROTO_TCP;
-    }
-    else if (strcmp(lud->lud_scheme, "ldapi") == 0) {
+    } else if (strcmp(lud->lud_scheme, "ldapi") == 0) {
         proto = LDAP_PROTO_IPC;
     }
 #ifdef LDAP_CONNECTIONLESS
@@ -72,7 +70,7 @@ LDAPMod_initialize_fd(PyObject *module, PyObject *args)
     ldap_free_urldesc(lud);
 
     save = PyEval_SaveThread();
-    ret = ldap_init_fd((ber_socket_t) fd, proto, url, &ld);
+    ret = ldap_init_fd((ber_socket_t)fd, proto, url, &ld);
     PyEval_RestoreThread(save);
 
     if (ret != LDAP_SUCCESS)
@@ -102,7 +100,7 @@ LDAPMod_str2dn(PyObject *module, PyObject *args)
      */
     if (!PyArg_ParseTuple(args, "s#|i:str2dn", &str.bv_val, &str_len, &flags))
         return NULL;
-    str.bv_len = (ber_len_t) str_len;
+    str.bv_len = (ber_len_t)str_len;
 
     res = ldap_bv2dn(&str, &dn, flags);
     if (res != LDAP_SUCCESS)
@@ -129,11 +127,9 @@ LDAPMod_str2dn(PyObject *module, PyObject *args)
             LDAPAVA *ava = rdn[j];
             PyObject *tuple;
 
-            tuple = Py_BuildValue("(O&O&i)",
-                                  LDAPberval_to_unicode_object, &ava->la_attr,
+            tuple = Py_BuildValue("(O&O&i)", LDAPberval_to_unicode_object, &ava->la_attr,
                                   LDAPberval_to_unicode_object, &ava->la_value,
-                                  ava->la_flags & ~(LDAP_AVA_FREE_ATTR |
-                                                    LDAP_AVA_FREE_VALUE));
+                                  ava->la_flags & ~(LDAP_AVA_FREE_ATTR | LDAP_AVA_FREE_VALUE));
             if (!tuple) {
                 Py_DECREF(rdnlist);
                 goto failed;
@@ -152,7 +148,7 @@ LDAPMod_str2dn(PyObject *module, PyObject *args)
     result = tmp;
     tmp = NULL;
 
-  failed:
+failed:
     Py_XDECREF(tmp);
     ldap_dnfree(dn);
     return result;
@@ -198,7 +194,7 @@ LDAPMod_dn2str(PyObject *self, PyObject *args)
     LDAPDN dn = NULL;
     LDAPAVA *ava;
     LDAPAVA **rdn;
-    BerValue str = { 0, NULL };
+    BerValue str = {0, NULL};
     PyObject *py_rdn_seq = NULL, *py_ava_item = NULL;
     PyObject *py_name = NULL, *py_value = NULL, *py_encoding = NULL;
     PyObject *result = NULL;
@@ -225,14 +221,14 @@ LDAPMod_dn2str(PyObject *self, PyObject *args)
     }
 
     /* Allocate array of LDAPRDN pointers (+1 for NULL terminator) */
-    dn = (LDAPRDN *) calloc((size_t)nrdns + 1, sizeof(LDAPRDN));
+    dn = (LDAPRDN *)calloc((size_t)nrdns + 1, sizeof(LDAPRDN));
     if (dn == NULL) {
         PyErr_NoMemory();
         return NULL;
     }
 
     for (i = 0; i < nrdns; i++) {
-        py_rdn_seq = PySequence_GetItem(dn_list, i);  /* New reference */
+        py_rdn_seq = PySequence_GetItem(dn_list, i); /* New reference */
         if (py_rdn_seq == NULL) {
             goto error_cleanup;
         }
@@ -256,7 +252,7 @@ LDAPMod_dn2str(PyObject *self, PyObject *args)
         dn[i] = rdn;
 
         for (j = 0; j < navas; j++) {
-            py_ava_item = PySequence_GetItem(py_rdn_seq, j);  /* New reference */
+            py_ava_item = PySequence_GetItem(py_rdn_seq, j); /* New reference */
             if (py_ava_item == NULL) {
                 goto error_cleanup;
             }
@@ -266,9 +262,9 @@ LDAPMod_dn2str(PyObject *self, PyObject *args)
                 goto error_cleanup;
             }
 
-            py_name = PyTuple_GetItem(py_ava_item, 0);  /* Borrowed reference */
-            py_value = PyTuple_GetItem(py_ava_item, 1);  /* Borrowed reference */
-            py_encoding = PyTuple_GetItem(py_ava_item, 2);  /* Borrowed reference */
+            py_name = PyTuple_GetItem(py_ava_item, 0);     /* Borrowed reference */
+            py_value = PyTuple_GetItem(py_ava_item, 1);    /* Borrowed reference */
+            py_encoding = PyTuple_GetItem(py_ava_item, 2); /* Borrowed reference */
 
             if (!PyUnicode_Check(py_name) || !PyUnicode_Check(py_value) || !PyLong_Check(py_encoding)) {
                 PyErr_SetString(PyExc_TypeError, type_error_message);
@@ -283,7 +279,7 @@ LDAPMod_dn2str(PyObject *self, PyObject *args)
                 goto error_cleanup;
             }
 
-            ava = (LDAPAVA *) calloc(1, sizeof(LDAPAVA));
+            ava = (LDAPAVA *)calloc(1, sizeof(LDAPAVA));
 
             if (ava == NULL) {
                 PyErr_NoMemory();
@@ -298,7 +294,7 @@ LDAPMod_dn2str(PyObject *self, PyObject *args)
             }
             memcpy(ava->la_attr.bv_val, name_utf8, (size_t)name_len);
             ava->la_attr.bv_val[name_len] = '\0';
-            ava->la_attr.bv_len = (ber_len_t) name_len;
+            ava->la_attr.bv_len = (ber_len_t)name_len;
 
             ava->la_value.bv_val = (char *)malloc((size_t)value_len + 1);
             if (ava->la_value.bv_val == NULL) {
@@ -307,7 +303,7 @@ LDAPMod_dn2str(PyObject *self, PyObject *args)
             }
             memcpy(ava->la_value.bv_val, value_utf8, (size_t)value_len);
             ava->la_value.bv_val[value_len] = '\0';
-            ava->la_value.bv_len = (ber_len_t) value_len;
+            ava->la_value.bv_len = (ber_len_t)value_len;
 
             ava->la_flags = (int)PyLong_AsLong(py_encoding);
             if (PyErr_Occurred()) {
@@ -351,7 +347,7 @@ LDAPMod_dn2str(PyObject *self, PyObject *args)
 
     return result;
 
-  error_cleanup:
+error_cleanup:
     /* Free any partially built DN structure */
     _free_dn_structure(dn);
     dn = NULL;
@@ -413,11 +409,11 @@ LDAPMod_is_filter(PyObject *module, PyObject *args)
     BerElement *ber;
     int rc;
 
-    if(!PyArg_ParseTuple(args, "s:is_filter", &filter))
+    if (!PyArg_ParseTuple(args, "s:is_filter", &filter))
         return NULL;
 
     ber = ber_alloc_t(LBER_USE_DER);
-    if(ber == NULL) {
+    if (ber == NULL) {
         return PyErr_NoMemory();
     }
 

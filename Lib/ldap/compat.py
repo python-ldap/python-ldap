@@ -1,24 +1,27 @@
 """Compatibility wrappers for Py2/Py3."""
-from __future__ import annotations
-import warnings
 
+from __future__ import annotations
+
+import warnings
+from collections import UserDict
+from collections.abc import MutableMapping  # noqa: F401
+from shutil import which  # noqa: F401
 from types import TracebackType
 from typing import NoReturn
+from urllib.parse import quote, quote_plus, unquote, urlparse  # noqa: F401
+from urllib.request import urlopen  # noqa: F401
+
 
 warnings.warn(
-    "The ldap.compat module is deprecated and will be removed in the future",
+    'The ldap.compat module is deprecated and will be removed in the future',
     DeprecationWarning,
 )
 
-from collections import UserDict
-IterableUserDict = UserDict
-from urllib.parse import quote, quote_plus, unquote, urlparse
-from urllib.request import urlopen
-from collections.abc import MutableMapping
-from shutil import which
 
-def reraise(exc_type: type[BaseException], exc_value: BaseException,
-            exc_traceback: TracebackType | None) -> NoReturn:
+IterableUserDict = UserDict
+
+
+def reraise(exc_type: type[BaseException], exc_value: BaseException, exc_traceback: TracebackType | None) -> NoReturn:
     """Re-raise an exception given information from sys.exc_info()
 
     Note that unlike six.reraise, this does not support replacing the

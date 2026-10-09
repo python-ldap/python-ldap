@@ -3,22 +3,21 @@ ldap.syncrepl - for implementing syncrepl consumer (see RFC 4533)
 
 See https://www.python-ldap.org/ for project details.
 """
+
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
-
+from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
-# Imports from pyasn1
-from pyasn1.type import tag, namedtype, namedval, univ, constraint
-from pyasn1.codec.ber import encoder, decoder
+from pyasn1.codec.ber import decoder, encoder
+from pyasn1.type import constraint, namedtype, namedval, tag, univ
 
-from ldap.pkginfo import __version__, __author__, __license__
-from ldap.controls import RequestControl, ResponseControl, KNOWN_RESPONSE_CONTROLS
-from ldap.ldapobject import SimpleLDAPObject
-from ldap import RES_SEARCH_RESULT, RES_SEARCH_ENTRY, RES_INTERMEDIATE
-
+from ldap import RES_INTERMEDIATE, RES_SEARCH_ENTRY, RES_SEARCH_RESULT
 from ldap._types import LDAPEntryDict
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
+from ldap.ldapobject import SimpleLDAPObject
+from ldap.pkginfo import __author__, __license__, __version__  # noqa: F401
+
 
 __all__ = [
     'OpenLDAPSyncreplCookie',
@@ -30,6 +29,7 @@ class SyncUUID(univ.OctetString):
     """
     syncUUID ::= OCTET STRING (SIZE(16))
     """
+
     subtypeSpec = constraint.ValueSizeConstraint(16, 16)  # type: ignore[assignment]
 
 
@@ -41,37 +41,36 @@ class SyncCookie(univ.OctetString):
 
 class SyncRequestMode(univ.Enumerated):
     """
-           mode ENUMERATED {
-               -- 0 unused
-               refreshOnly       (1),
-               -- 2 reserved
-               refreshAndPersist (3)
-           },
+    mode ENUMERATED {
+        -- 0 unused
+        refreshOnly       (1),
+        -- 2 reserved
+        refreshAndPersist (3)
+    },
     """
-    namedValues = namedval.NamedValues(
-        ('refreshOnly', 1),
-        ('refreshAndPersist', 3)
-    )
+
+    namedValues = namedval.NamedValues(('refreshOnly', 1), ('refreshAndPersist', 3))
     subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(1, 3)
 
 
 class SyncRequestValue(univ.Sequence):
     """
-       syncRequestValue ::= SEQUENCE {
-           mode ENUMERATED {
-               -- 0 unused
-               refreshOnly       (1),
-               -- 2 reserved
-               refreshAndPersist (3)
-           },
-           cookie     syncCookie OPTIONAL,
-           reloadHint BOOLEAN DEFAULT FALSE
-       }
+    syncRequestValue ::= SEQUENCE {
+        mode ENUMERATED {
+            -- 0 unused
+            refreshOnly       (1),
+            -- 2 reserved
+            refreshAndPersist (3)
+        },
+        cookie     syncCookie OPTIONAL,
+        reloadHint BOOLEAN DEFAULT FALSE
+    }
     """
+
     componentType = namedtype.NamedTypes(
         namedtype.NamedType('mode', SyncRequestMode()),
         namedtype.OptionalNamedType('cookie', SyncCookie()),
-        namedtype.DefaultedNamedType('reloadHint', univ.Boolean(False))
+        namedtype.DefaultedNamedType('reloadHint', univ.Boolean(False)),
     )
 
 
@@ -85,6 +84,7 @@ class SyncRequestControl(RequestControl):
     The Sync Request Control is only applicable to the SearchRequest
     Message.
     """
+
     controlType = '1.3.6.1.4.1.4203.1.9.1.1'
 
     def __init__(
@@ -114,39 +114,36 @@ class SyncRequestControl(RequestControl):
 
 class SyncStateOp(univ.Enumerated):
     """
-           state ENUMERATED {
-               present (0),
-               add (1),
-               modify (2),
-               delete (3)
-           },
+    state ENUMERATED {
+        present (0),
+        add (1),
+        modify (2),
+        delete (3)
+    },
     """
-    namedValues = namedval.NamedValues(
-        ('present', 0),
-        ('add', 1),
-        ('modify', 2),
-        ('delete', 3)
-    )
+
+    namedValues = namedval.NamedValues(('present', 0), ('add', 1), ('modify', 2), ('delete', 3))
     subtypeSpec = univ.Enumerated.subtypeSpec + constraint.SingleValueConstraint(0, 1, 2, 3)
 
 
 class SyncStateValue(univ.Sequence):
     """
-       syncStateValue ::= SEQUENCE {
-           state ENUMERATED {
-               present (0),
-               add (1),
-               modify (2),
-               delete (3)
-           },
-           entryUUID syncUUID,
-           cookie    syncCookie OPTIONAL
-       }
+    syncStateValue ::= SEQUENCE {
+        state ENUMERATED {
+            present (0),
+            add (1),
+            modify (2),
+            delete (3)
+        },
+        entryUUID syncUUID,
+        cookie    syncCookie OPTIONAL
+    }
     """
+
     componentType = namedtype.NamedTypes(
         namedtype.NamedType('state', SyncStateOp()),
         namedtype.NamedType('entryUUID', SyncUUID()),
-        namedtype.OptionalNamedType('cookie', SyncCookie())
+        namedtype.OptionalNamedType('cookie', SyncCookie()),
     )
 
 
@@ -160,6 +157,7 @@ class SyncStateControl(ResponseControl):
     The Sync State Control is only applicable to SearchResultEntry and
     SearchResultReference Messages.
     """
+
     controlType = '1.3.6.1.4.1.4203.1.9.1.2'
     opnames = ('present', 'add', 'modify', 'delete')
 
@@ -175,19 +173,21 @@ class SyncStateControl(ResponseControl):
         self.state = self.__class__.opnames[int(state)]
         self.entryUUID = str(uuid)
 
+
 KNOWN_RESPONSE_CONTROLS[SyncStateControl.controlType] = SyncStateControl
 
 
 class SyncDoneValue(univ.Sequence):
     """
-       syncDoneValue ::= SEQUENCE {
-           cookie          syncCookie OPTIONAL,
-           refreshDeletes  BOOLEAN DEFAULT FALSE
-       }
+    syncDoneValue ::= SEQUENCE {
+        cookie          syncCookie OPTIONAL,
+        refreshDeletes  BOOLEAN DEFAULT FALSE
+    }
     """
+
     componentType = namedtype.NamedTypes(
         namedtype.OptionalNamedType('cookie', SyncCookie()),
-        namedtype.DefaultedNamedType('refreshDeletes', univ.Boolean(False))
+        namedtype.DefaultedNamedType('refreshDeletes', univ.Boolean(False)),
     )
 
 
@@ -201,6 +201,7 @@ class SyncDoneControl(ResponseControl):
     The Sync Done Control is only applicable to the SearchResultDone
     Message.
     """
+
     controlType = '1.3.6.1.4.1.4203.1.9.1.3'
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
@@ -216,32 +217,35 @@ class SyncDoneControl(ResponseControl):
         else:
             self.refreshDeletes = False
 
+
 KNOWN_RESPONSE_CONTROLS[SyncDoneControl.controlType] = SyncDoneControl
 
 
 class RefreshDelete(univ.Sequence):
     """
-           refreshDelete  [1] SEQUENCE {
-               cookie         syncCookie OPTIONAL,
-               refreshDone    BOOLEAN DEFAULT TRUE
-           },
+    refreshDelete  [1] SEQUENCE {
+        cookie         syncCookie OPTIONAL,
+        refreshDone    BOOLEAN DEFAULT TRUE
+    },
     """
+
     componentType = namedtype.NamedTypes(
         namedtype.OptionalNamedType('cookie', SyncCookie()),
-        namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True))
+        namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True)),
     )
 
 
 class RefreshPresent(univ.Sequence):
     """
-           refreshPresent [2] SEQUENCE {
-               cookie         syncCookie OPTIONAL,
-               refreshDone    BOOLEAN DEFAULT TRUE
-           },
+    refreshPresent [2] SEQUENCE {
+        cookie         syncCookie OPTIONAL,
+        refreshDone    BOOLEAN DEFAULT TRUE
+    },
     """
+
     componentType = namedtype.NamedTypes(
         namedtype.OptionalNamedType('cookie', SyncCookie()),
-        namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True))
+        namedtype.DefaultedNamedType('refreshDone', univ.Boolean(True)),
     )
 
 
@@ -249,68 +253,71 @@ class SyncUUIDs(univ.SetOf):
     """
     syncUUIDs      SET OF syncUUID
     """
+
     componentType = SyncUUID()  # type: ignore[assignment]
 
 
 class SyncIdSet(univ.Sequence):
     """
-     syncIdSet      [3] SEQUENCE {
-         cookie         syncCookie OPTIONAL,
-         refreshDeletes BOOLEAN DEFAULT FALSE,
-         syncUUIDs      SET OF syncUUID
-     }
+    syncIdSet      [3] SEQUENCE {
+        cookie         syncCookie OPTIONAL,
+        refreshDeletes BOOLEAN DEFAULT FALSE,
+        syncUUIDs      SET OF syncUUID
+    }
     """
+
     componentType = namedtype.NamedTypes(
         namedtype.OptionalNamedType('cookie', SyncCookie()),
         namedtype.DefaultedNamedType('refreshDeletes', univ.Boolean(False)),
-        namedtype.NamedType('syncUUIDs', SyncUUIDs())
+        namedtype.NamedType('syncUUIDs', SyncUUIDs()),
     )
 
 
 class SyncInfoValue(univ.Choice):
     """
-       syncInfoValue ::= CHOICE {
-           newcookie      [0] syncCookie,
-           refreshDelete  [1] SEQUENCE {
-               cookie         syncCookie OPTIONAL,
-               refreshDone    BOOLEAN DEFAULT TRUE
-           },
-           refreshPresent [2] SEQUENCE {
-               cookie         syncCookie OPTIONAL,
-               refreshDone    BOOLEAN DEFAULT TRUE
-           },
-           syncIdSet      [3] SEQUENCE {
-               cookie         syncCookie OPTIONAL,
-               refreshDeletes BOOLEAN DEFAULT FALSE,
-               syncUUIDs      SET OF syncUUID
-           }
-       }
+    syncInfoValue ::= CHOICE {
+        newcookie      [0] syncCookie,
+        refreshDelete  [1] SEQUENCE {
+            cookie         syncCookie OPTIONAL,
+            refreshDone    BOOLEAN DEFAULT TRUE
+        },
+        refreshPresent [2] SEQUENCE {
+            cookie         syncCookie OPTIONAL,
+            refreshDone    BOOLEAN DEFAULT TRUE
+        },
+        syncIdSet      [3] SEQUENCE {
+            cookie         syncCookie OPTIONAL,
+            refreshDeletes BOOLEAN DEFAULT FALSE,
+            syncUUIDs      SET OF syncUUID
+        }
+    }
     """
+
     componentType = namedtype.NamedTypes(
         namedtype.NamedType(
             'newcookie',
             SyncCookie().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
-            )
+            ),
         ),
         namedtype.NamedType(
             'refreshDelete',
             RefreshDelete().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1)
-            )
+            ),
         ),
         namedtype.NamedType(
             'refreshPresent',
             RefreshPresent().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 2)
-            )
+            ),
         ),
         namedtype.NamedType(
             'syncIdSet',
             SyncIdSet().subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 3)
-            )
-        )
+            ),
+        ),
     )
 
 
@@ -321,6 +328,7 @@ class SyncInfoMessage:
     1.3.6.1.4.1.4203.1.9.1.4 and responseValue contains a BER-encoded
     syncInfoValue.  The criticality is FALSE (and hence absent).
     """
+
     responseName = '1.3.6.1.4.1.4203.1.9.1.4'
 
     def __init__(self, encodedMessage: bytes) -> None:
@@ -374,7 +382,7 @@ class SyncreplConsumer(_Base):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         if not isinstance(self, SimpleLDAPObject):
-            raise TypeError(f"Expecting to be a subclass of {SimpleLDAPObject}")
+            raise TypeError(f'Expecting to be a subclass of {SimpleLDAPObject}')
         super().__init__(*args, **kwargs)
 
     def syncrepl_search(
@@ -426,7 +434,7 @@ class SyncreplConsumer(_Base):
         self.__refreshDone = False
         return self.search_ext(base, scope, **search_args)
 
-    def syncrepl_poll(
+    def syncrepl_poll(  # noqa: C901
         self,
         msgid: int = -1,
         timeout: int | None = None,
@@ -444,7 +452,7 @@ class SyncreplConsumer(_Base):
 
         """
         while True:
-            type, msg, mid, ctrls, n, v = self.result4(
+            type, msg, _mid, ctrls, _n, _v = self.result4(
                 msgid=msgid,
                 timeout=timeout,
                 add_intermediates=1,
@@ -518,7 +526,6 @@ class SyncreplConsumer(_Base):
             if all == 0:
                 return True
 
-
     # virtual methods -- subclass must override these to do useful work
 
     def syncrepl_set_cookie(self, cookie: str) -> None:
@@ -526,7 +533,6 @@ class SyncreplConsumer(_Base):
         Called by syncrepl_poll() to store a new cookie provided by the server.
         """
         # FIXME: The cookie is an opaque octet string, so the type should be bytes?
-        pass
 
     def syncrepl_get_cookie(self) -> str | bytes | None:
         """
@@ -556,7 +562,6 @@ class SyncreplConsumer(_Base):
         syncrepl_present() should reset the list of recorded uuids, without
         deleting any entries.
         """
-        pass
 
     def syncrepl_delete(self, uuids: list[str]) -> None:
         """
@@ -564,7 +569,6 @@ class SyncreplConsumer(_Base):
         of UUIDs of the entries to be deleted is given in the
         uuids parameter.
         """
-        pass
 
     def syncrepl_entry(self, dn: str, attrs: LDAPEntryDict, uuid: str) -> None:
         """
@@ -574,7 +578,6 @@ class SyncreplConsumer(_Base):
         any future modification (including dn modification), deletion,
         and presentation operations.
         """
-        pass
 
     def syncrepl_refreshdone(self) -> None:
         """
@@ -583,7 +586,6 @@ class SyncreplConsumer(_Base):
         It indicates that initial synchronization is done and persist phase
         follows.
         """
-        pass
 
 
 class OpenLDAPSyncreplCookie:
@@ -596,7 +598,7 @@ class OpenLDAPSyncreplCookie:
     sid: int = 0
     _csnset: dict[str, str]
 
-    def __init__(self, cookie: str | bytes = "") -> None:
+    def __init__(self, cookie: str | bytes = '') -> None:
         self._csnset = {}
 
         if cookie:
@@ -644,7 +646,7 @@ class OpenLDAPSyncreplCookie:
         Return the cookie as a string, use in syncrepl_get_cookie() or when
         storing the state for later use.
         """
-        cookie = f"rid={self.rid or 0:03},sid={self.sid or 0:03x}"
+        cookie = f'rid={self.rid or 0:03},sid={self.sid or 0:03x}'
         if self._csnset:
             cookie += ',csn='
             cookie += ';'.join(csn for sid, csn in sorted(self._csnset.items()))

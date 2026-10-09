@@ -1,4 +1,6 @@
 PYTHON=python3
+PRE_COMMIT=prek
+CLANG_FORMAT=clang-format
 LCOV_INFO=build/lcov.info
 LCOV_REPORT=build/lcov_report
 LCOV_REPORT_OPTIONS=--show-details -no-branch-coverage \
@@ -12,10 +14,9 @@ PYTHON_SUPP=/usr/share/doc/python3-devel/valgrind-python.supp
 .PHONY: all
 all:
 
-Modules/constants_generated.h: Lib/ldap/constants.py
-	$(PYTHON) $^ > $@
-	indent Modules/constants_generated.h
-	rm -f Modules/constants_generated.h~
+Modules/constants_generated.h: Lib/ldap/constants.py .clang-format
+	$(PYTHON) $< > $@
+	$(CLANG_FORMAT) -i $@
 
 .PHONY: clean
 clean:
@@ -84,16 +85,41 @@ valgrind: build $(PYTHON_SUPP)
 	fi
 
 # Code autoformatter
-.PHONY: autoformat indent black black-check
-autoformat: indent black
+.PHONY: autoformat lint lint-all clang clang-check ruff-check ruff-fix ruff-unsafe-fix ruff-statistics ruff-preview-statistics ruff-unsafe-preview-fix format-check format
+autoformat: format clang
 
-indent:
-	indent Modules/*.c
-	indent -npsl Modules/pythonldap.h
-	rm -f Modules/*.c~ Modules/*.h~
+lint:
+	{ git diff --name-only; git ls-files --others --exclude-standard; git diff --cached --name-only; } | xargs $(PRE_COMMIT) run --files
 
-black:
-	$(PYTHON) -m black $(CURDIR)
+lint-all:
+	$(PRE_COMMIT) run -a
 
-black-check:
-	$(PYTHON) -m black $(CURDIR) --check
+clang:
+	$(PRE_COMMIT) run -a --hook-stage manual clang-format-fix
+
+clang-check:
+	$(PRE_COMMIT) run -a clang-format-check
+
+ruff-check:
+	$(PRE_COMMIT) run -a ruff
+
+ruff-fix:
+	$(PRE_COMMIT) run -a --hook-stage manual ruff-fix
+
+ruff-unsafe-fix:
+	$(PRE_COMMIT) run -a --hook-stage manual ruff-unsafe-fix
+
+ruff-statistics:
+	$(PRE_COMMIT) run -a --hook-stage manual ruff-statistics
+
+ruff-preview-statistics:
+	$(PRE_COMMIT) run -a --hook-stage manual ruff-preview-statistics
+
+ruff-unsafe-preview-fix:
+	$(PRE_COMMIT) run -a --hook-stage manual ruff-unsafe-preview-fix
+
+format-check:
+	$(PRE_COMMIT) run -a ruff-format-check
+
+format:
+	$(PRE_COMMIT) run -a --hook-stage manual ruff-format-fix

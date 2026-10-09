@@ -3,12 +3,14 @@ types - type annotations which are shared across modules
 
 See https://www.python-ldap.org/ for details.
 """
+
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, MutableMapping, Optional, Sequence, Union
+from collections.abc import MutableMapping, Sequence
+from typing import TYPE_CHECKING, Optional, Union
 
-from ldap.pkginfo import __version__
+from ldap.pkginfo import __version__  # noqa: F401
 
 
 if sys.version_info >= (3, 10):  # workaround for mypy, which cannot distinguish between real imports in except clause
@@ -19,15 +21,15 @@ else:
     TypeAlias = object
 
 __all__ = [
-    'LDAPModListAddEntry',
-    'LDAPModListModifyEntry',
-    'LDAPModListEntry',
     'LDAPAddModList',
-    'LDAPModifyModList',
-    'LDAPModList',
-    'LDAPEntryDict',
     'LDAPControlTuple',
     'LDAPControlTuples',
+    'LDAPEntryDict',
+    'LDAPModList',
+    'LDAPModListAddEntry',
+    'LDAPModListEntry',
+    'LDAPModListModifyEntry',
+    'LDAPModifyModList',
     'LDAPSearchResult',
     'TypeAlias',
 ]
@@ -35,9 +37,7 @@ __all__ = [
 LDAPModListAddEntry = tuple[str, list[bytes]]
 """The type of an addition entry in a modlist."""
 
-LDAPModListModifyEntry = tuple[
-    int, str, Optional[Union[bytes, list[bytes]]]
-]
+LDAPModListModifyEntry = tuple[int, str, Optional[Union[bytes, list[bytes]]]]
 """The type of a modification entry in a modlist."""
 
 LDAPModListEntry = Union[LDAPModListAddEntry, LDAPModListModifyEntry]

@@ -7,62 +7,65 @@ See https://www.python-ldap.org/ for details.
 import os
 import unittest
 
+
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
 import ldap.schema
 
+
 # basic test cases
 TESTCASES_BASIC = (
-    (" BLUBBER DI BLUBB ", ["BLUBBER", "DI", "BLUBB"]),
-    ("BLUBBER DI BLUBB", ["BLUBBER", "DI", "BLUBB"]),
-    ("BL-UB-BER DI BL-UBB", ["BL-UB-BER", "DI", "BL-UBB"]),
-    ("BLUBBER  DI   BLUBB  ", ["BLUBBER", "DI", "BLUBB"]),
-    ("BLUBBER  DI  'BLUBB'   ", ["BLUBBER", "DI", "BLUBB"]),
-    ("BLUBBER ( DI ) 'BLUBB'   ", ["BLUBBER", "(", "DI", ")", "BLUBB"]),
-    ("BLUBBER(DI)", ["BLUBBER", "(", "DI", ")"]),
-    ("BLUBBER ( DI)", ["BLUBBER", "(", "DI", ")"]),
-    ("BLUBBER ''", ["BLUBBER", ""]),
-    ("( BLUBBER (DI 'BLUBB'))", ["(", "BLUBBER", "(", "DI", "BLUBB", ")", ")"]),
-    ("BLUBB (DA$BLAH)", ['BLUBB', "(", "DA", "BLAH", ")"]),
-    ("BLUBB ( DA $  BLAH )", ['BLUBB', "(", "DA", "BLAH", ")"]),
-    ("BLUBB (DA$ BLAH)", ['BLUBB', "(", "DA", "BLAH", ")"]),
-    ("BLUBB (DA $BLAH)", ['BLUBB', "(", "DA", "BLAH", ")"]),
-    ("BLUBB 'DA$BLAH'", ['BLUBB', "DA$BLAH"]),
+    (' BLUBBER DI BLUBB ', ['BLUBBER', 'DI', 'BLUBB']),
+    ('BLUBBER DI BLUBB', ['BLUBBER', 'DI', 'BLUBB']),
+    ('BL-UB-BER DI BL-UBB', ['BL-UB-BER', 'DI', 'BL-UBB']),
+    ('BLUBBER  DI   BLUBB  ', ['BLUBBER', 'DI', 'BLUBB']),
+    ("BLUBBER  DI  'BLUBB'   ", ['BLUBBER', 'DI', 'BLUBB']),
+    ("BLUBBER ( DI ) 'BLUBB'   ", ['BLUBBER', '(', 'DI', ')', 'BLUBB']),
+    ('BLUBBER(DI)', ['BLUBBER', '(', 'DI', ')']),
+    ('BLUBBER ( DI)', ['BLUBBER', '(', 'DI', ')']),
+    ("BLUBBER ''", ['BLUBBER', '']),
+    ("( BLUBBER (DI 'BLUBB'))", ['(', 'BLUBBER', '(', 'DI', 'BLUBB', ')', ')']),
+    ('BLUBB (DA$BLAH)', ['BLUBB', '(', 'DA', 'BLAH', ')']),
+    ('BLUBB ( DA $  BLAH )', ['BLUBB', '(', 'DA', 'BLAH', ')']),
+    ('BLUBB (DA$ BLAH)', ['BLUBB', '(', 'DA', 'BLAH', ')']),
+    ('BLUBB (DA $BLAH)', ['BLUBB', '(', 'DA', 'BLAH', ')']),
+    ("BLUBB 'DA$BLAH'", ['BLUBB', 'DA$BLAH']),
     ("BLUBB DI 'BLU B B ER' DA 'BLAH' ", ['BLUBB', 'DI', 'BLU B B ER', 'DA', 'BLAH']),
     ("BLUBB DI 'BLU B B ER' DA 'BLAH' LABER", ['BLUBB', 'DI', 'BLU B B ER', 'DA', 'BLAH', 'LABER']),
-    ("BLUBB\t'DA\tBLUB'", ['BLUBB', "DA\tBLUB"]),
+    ("BLUBB\t'DA\tBLUB'", ['BLUBB', 'DA\tBLUB']),
 )
 
 # UTF-8 raw strings
 TESTCASES_UTF8 = (
-    (" BL\xc3\x9cBBER D\xc3\x84 BL\xc3\x9cBB ", ["BL\xc3\x9cBBER", "D\xc3\x84", "BL\xc3\x9cBB"]),
-    ("BL\xc3\x9cBBER D\xc3\x84 BL\xc3\x9cBB", ["BL\xc3\x9cBBER", "D\xc3\x84", "BL\xc3\x9cBB"]),
-    ("BL\xc3\x9cBBER  D\xc3\x84   BL\xc3\x9cBB  ", ["BL\xc3\x9cBBER", "D\xc3\x84", "BL\xc3\x9cBB"]),
+    (' BL\xc3\x9cBBER D\xc3\x84 BL\xc3\x9cBB ', ['BL\xc3\x9cBBER', 'D\xc3\x84', 'BL\xc3\x9cBB']),
+    ('BL\xc3\x9cBBER D\xc3\x84 BL\xc3\x9cBB', ['BL\xc3\x9cBBER', 'D\xc3\x84', 'BL\xc3\x9cBB']),
+    ('BL\xc3\x9cBBER  D\xc3\x84   BL\xc3\x9cBB  ', ['BL\xc3\x9cBBER', 'D\xc3\x84', 'BL\xc3\x9cBB']),
 )
 
 # broken schema of Oracle Internet Directory
 TESTCASES_BROKEN_OID = (
-    "BLUBB DI 'BLU B B ER'MUST 'BLAH' ", #['BLUBB', 'DI', 'BLU B B ER', 'MUST', 'BLAH']
-    "BLUBBER DI 'BLU'BB ER' DA 'BLAH' ", #["BLUBBER", "DI", "BLU'BB ER", "DA", "BLAH"]
+    "BLUBB DI 'BLU B B ER'MUST 'BLAH' ",  # ['BLUBB', 'DI', 'BLU B B ER', 'MUST', 'BLAH']
+    "BLUBBER DI 'BLU'BB ER' DA 'BLAH' ",  # ["BLUBBER", "DI", "BLU'BB ER", "DA", "BLAH"]
 )
 
 # for quoted single quotes inside string values
 TESTCASES_ESCAPED_QUOTES = (
-    ("BLUBBER '\\''", ["BLUBBER", "'"]),
-    ("BLUBBER DI 'BLU\\'BB ER' DA 'BLAH' ", ["BLUBBER", "DI", "BLU'BB ER", "DA", "BLAH"]),
-    ("BLUBBER DI 'BLU\\' BB ER' DA 'BLAH' ", ["BLUBBER", "DI", "BLU' BB ER", "DA", "BLAH"]),
+    ("BLUBBER '\\''", ['BLUBBER', "'"]),
+    ("BLUBBER DI 'BLU\\'BB ER' DA 'BLAH' ", ['BLUBBER', 'DI', "BLU'BB ER", 'DA', 'BLAH']),
+    ("BLUBBER DI 'BLU\\' BB ER' DA 'BLAH' ", ['BLUBBER', 'DI', "BLU' BB ER", 'DA', 'BLAH']),
 )
 
 # test cases which should result in ValueError raised
 TESTCASES_BROKEN = (
-    "( BLUB",
-    "BLUB )",
+    '( BLUB',
+    'BLUB )',
     "BLUB 'DA",
-    "BLUB $ DA",
-#    "BLUB 'DA\\'",
-#    "( BLUB )) DA (",
+    'BLUB $ DA',
+    #    "BLUB 'DA\\'",
+    #    "( BLUB )) DA (",
 )
+
 
 class TestSplitTokens(unittest.TestCase):
     """
@@ -85,7 +88,8 @@ class TestSplitTokens(unittest.TestCase):
                 should_have_failed.append(test_value)
         if should_have_failed:
             self.fail(
-                '%d value(s) should have raised ValueError: %r' % (
+                '%d value(s) should have raised ValueError: %r'
+                % (
                     len(should_have_failed),
                     should_have_failed,
                 )

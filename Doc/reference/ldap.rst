@@ -217,7 +217,7 @@ the following option identifiers are defined as constants:
 .. py:data:: OPT_PROTOCOL_VERSION
 
    Sets the LDAP protocol version used for a connection. This is mapped to
-   object attribute `ldap.LDAPObject.protocol_version`
+   object attribute :attr:`ldap.LDAPObject.protocol_version`
 
 .. py:data:: OPT_REFERRALS
 
@@ -232,8 +232,8 @@ the following option identifiers are defined as constants:
 
    Server-side request controls that libldap attaches to every operation
    on the connection unless instructed otherwise (e.g. with
-   `search_ext(..., serverctrls=[...], ...)`), for example
-   :py:class:`ldap.controls.sessiontrack.SessionTrackingControl`.
+   :meth:`~ldap.LDAPObject.search_ext`\ ``(..., serverctrls=[...], ...)``),
+   for example :py:class:`ldap.controls.sessiontrack.SessionTrackingControl`.
    Same rules as :py:data:`OPT_CLIENT_CONTROLS`. Controls meant for a
    single operation belong in the ``serverctrls`` argument of that
    operation instead.

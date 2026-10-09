@@ -97,6 +97,15 @@ Specify a different one using, for example::
 
     make PYTHON=/usr/local/bin/python
 
+Linter make targets use ``prek`` to run pre-commit hooks.
+Specify a different one using, for example::
+
+    make PRE_COMMIT=/usr/local/bin/pre-commit
+
+See the `install instructions for prek`_.
+
+.. _install instructions for prek: https://prek.j178.dev/installation/
+
 Notable targets are:
 
 ``make autoformat``
@@ -105,7 +114,11 @@ Notable targets are:
     Note that no backups are made – please commit any other changes before
     using this target.
 
-    Requires the ``indent`` program and the ``black`` Python module.
+    Requires the ``clang-format`` program and the ``ruff`` Python module.
+
+    Related make targets are: ``lint`` (runs all pre-commit checks for staged changes),
+    ``lint-all`` (runs all pre-commit changes for all files), ``clang``, ``clang-check``,
+    ``ruff-check``, ``ruff-fix``, ``format-check``, ``format``.
 
 .. _PEP 7: https://www.python.org/dev/peps/pep-0007/
 .. _PEP 8: https://www.python.org/dev/peps/pep-0008/
@@ -197,10 +210,11 @@ remember:
 * When squashing, do edit commit messages to add references to the pull request
   and relevant discussions/issues, and to conform to Git best practices.
 
-  * Consider making the summary line suitable for the CHANGES document,
-    and starting it with a prefix like ``Lib:`` or ``Tests:``.
+  * Consider using conventional commit messages suitable for the CHANGES document,
+    by starting it with a type like ``fix:``, ``feat:`` or ``test:`` and a
+    optional scope like ``fix(ldapurl)``, ``feat(ldapobject)``.
 
-If you have good reason to break the “rules”, go ahead and break them,
+If you have good reason to break this guidelines, go ahead and break them,
 but mention why.
 
 

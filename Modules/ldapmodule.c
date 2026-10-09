@@ -2,7 +2,7 @@
 
 #include "pythonldap.h"
 
-#define _STR(x)        #x
+#define _STR(x) #x
 #define STR(x) _STR(x)
 
 LDAPAPIInfo LDAPMod_version_info = {
@@ -40,12 +40,9 @@ static PyMethodDef ldap_functions[] = {
     // ldapcontrol.c
     {"encode_page_control", LDAPMod_encode_rfc2696, METH_VARARGS},
     {"decode_page_control", LDAPMod_decode_rfc2696, METH_VARARGS},
-    {"encode_valuesreturnfilter_control", LDAPMod_encode_rfc3876,
-     METH_VARARGS},
-    {"encode_assertion_control", LDAPMod_encode_assertion_control,
-     METH_VARARGS},
-    {NULL, NULL}
-};
+    {"encode_valuesreturnfilter_control", LDAPMod_encode_rfc3876, METH_VARARGS},
+    {"encode_assertion_control", LDAPMod_encode_assertion_control, METH_VARARGS},
+    {NULL, NULL}};
 
 /* module initialisation */
 static PyModuleDef_Slot ldap_slots[] = {
@@ -58,8 +55,7 @@ static PyModuleDef_Slot ldap_slots[] = {
     {Py_mod_exec, LDAPMod_init_type},
     {Py_mod_exec, LDAPMod_init_constants},
     {Py_mod_exec, init_pkginfo},
-    {0, NULL}
-};
+    {0, NULL}};
 
 static struct PyModuleDef ldap_moduledef = {
     .m_base = PyModuleDef_HEAD_INIT,
@@ -77,7 +73,7 @@ PyMODINIT_FUNC
 PyInit__ldap()
 {
     /* Prepare global read-only state shared across all copies of this module */
-    struct ldap_apifeature_info info = { 1, "X_OPENLDAP_THREAD_SAFE", 0 };
+    struct ldap_apifeature_info info = {1, "X_OPENLDAP_THREAD_SAFE", 0};
 
     if (ldap_get_option(NULL, LDAP_OPT_API_INFO, &LDAPMod_version_info) != LDAP_SUCCESS) {
         PyErr_SetString(PyExc_ImportError, "unrecognised libldap version");

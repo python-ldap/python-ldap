@@ -5,20 +5,24 @@ names of variable case.
 
 See https://www.python-ldap.org/ for details.
 """
+
 from __future__ import annotations
+
 import warnings
-
-from collections.abc import MutableMapping
-from ldap.pkginfo import __version__
-
-from typing import (
-    Any,
+from collections.abc import (
     Iterator,
     Mapping,
+    MutableMapping,  # noqa: F401
     MutableMapping as MutableMappingType,
+)
+from typing import (
     TYPE_CHECKING,
+    Any,
     TypeVar,
 )
+
+from ldap.pkginfo import __version__  # noqa: F401
+
 
 T = TypeVar('T', bound=Any)
 
@@ -30,7 +34,8 @@ class cidict(MutableMappingType[str, T]):
     """
     Case-insensitive but case-respecting dictionary.
     """
-    __slots__ = ('_keys', '_data')
+
+    __slots__ = ('_data', '_keys')
 
     def __init__(self, default: Mapping[str, T] | None = None) -> None:
         self._keys: dict[str, str] = {}
@@ -88,8 +93,7 @@ class cidict(MutableMappingType[str, T]):
     def data(self) -> dict[str, T]:
         """Compatibility with older IterableUserDict-based implementation"""
         warnings.warn(
-            'ldap.cidict.cidict.data is an internal attribute; it may be ' +
-            'removed at any time',
+            'ldap.cidict.cidict.data is an internal attribute; it may be ' + 'removed at any time',
             category=DeprecationWarning,
             stacklevel=2,
         )
@@ -97,58 +101,50 @@ class cidict(MutableMappingType[str, T]):
 
 
 def strlist_minus(a: list[str], b: list[str]) -> list[str]:
-  """
-  Return list of all items in a which are not in b (a - b).
-  a,b are supposed to be lists of case-insensitive strings.
-  """
-  warnings.warn(
-    "strlist functions are deprecated and will be removed in 4.0",
-    category=DeprecationWarning,
-    stacklevel=2,
-  )
-  temp: cidict[str] = cidict()
-  for elt in b:
-    temp[elt] = elt
-  result = [
-    elt
-    for elt in a
-    if elt not in temp
-  ]
-  return result
+    """
+    Return list of all items in a which are not in b (a - b).
+    a,b are supposed to be lists of case-insensitive strings.
+    """
+    warnings.warn(
+        'strlist functions are deprecated and will be removed in 4.0',
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+    temp: cidict[str] = cidict()
+    for elt in b:
+        temp[elt] = elt
+    result = [elt for elt in a if elt not in temp]
+    return result
 
 
 def strlist_intersection(a: list[str], b: list[str]) -> list[str]:
-  """
-  Return intersection of two lists of case-insensitive strings a,b.
-  """
-  warnings.warn(
-    "strlist functions are deprecated and will be removed in 4.0",
-    category=DeprecationWarning,
-    stacklevel=2,
-  )
-  temp: cidict[str] = cidict()
-  for elt in a:
-    temp[elt] = elt
-  result = [
-    temp[elt]
-    for elt in b
-    if elt in temp
-  ]
-  return result
+    """
+    Return intersection of two lists of case-insensitive strings a,b.
+    """
+    warnings.warn(
+        'strlist functions are deprecated and will be removed in 4.0',
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+    temp: cidict[str] = cidict()
+    for elt in a:
+        temp[elt] = elt
+    result = [temp[elt] for elt in b if elt in temp]
+    return result
 
 
 def strlist_union(a: list[str], b: list[str]) -> list[str]:
-  """
-  Return union of two lists of case-insensitive strings a,b.
-  """
-  warnings.warn(
-    "strlist functions are deprecated and will be removed in 4.0",
-    category=DeprecationWarning,
-    stacklevel=2,
-  )
-  temp: cidict[str] = cidict()
-  for elt in a:
-    temp[elt] = elt
-  for elt in b:
-    temp[elt] = elt
-  return [x for x in temp.values()]
+    """
+    Return union of two lists of case-insensitive strings a,b.
+    """
+    warnings.warn(
+        'strlist functions are deprecated and will be removed in 4.0',
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+    temp: cidict[str] = cidict()
+    for elt in a:
+        temp[elt] = elt
+    for elt in b:
+        temp[elt] = elt
+    return [x for x in temp.values()]

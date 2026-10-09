@@ -1,11 +1,11 @@
 import os
 import unittest
 
+
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
-from ldap.controls import pagedresults
-from ldap.controls import libldap
+from ldap.controls import libldap, pagedresults
 
 
 PRC_BER = b'0\x0b\x02\x01\x05\x04\x06cookie'
@@ -15,12 +15,8 @@ COOKIE = b'cookie'
 
 class TestLibldapControls(unittest.TestCase):
     def test_pagedresults_encode(self):
-        pr = pagedresults.SimplePagedResultsControl(
-            size=SIZE, cookie=COOKIE
-        )
-        lib = libldap.SimplePagedResultsControl(
-            size=SIZE, cookie=COOKIE
-        )
+        pr = pagedresults.SimplePagedResultsControl(size=SIZE, cookie=COOKIE)
+        lib = libldap.SimplePagedResultsControl(size=SIZE, cookie=COOKIE)
         self.assertEqual(pr.encodeControlValue(), lib.encodeControlValue())
         self.assertEqual(pr.encodeControlValue(), PRC_BER)
 

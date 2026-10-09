@@ -3,14 +3,16 @@ ldap.resiter - processing LDAP results with iterators
 
 See https://www.python-ldap.org/ for details.
 """
+
 from __future__ import annotations
 
-from ldap.pkginfo import __version__, __author__, __license__
+from collections.abc import Iterator
+from typing import TYPE_CHECKING, Any
 
 from ldap.controls import ResponseControl
 from ldap.ldapobject import LDAPObject
+from ldap.pkginfo import __author__, __license__, __version__  # noqa: F401
 
-from typing import Any, Iterator, TYPE_CHECKING
 
 if TYPE_CHECKING:
     _Base = LDAPObject
@@ -25,7 +27,7 @@ class ResultProcessor(_Base):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         if not isinstance(self, LDAPObject):
-            raise TypeError(f"Expecting to be a subclass of {LDAPObject}")
+            raise TypeError(f'Expecting to be a subclass of {LDAPObject}')
         super().__init__(*args, **kwargs)
 
     def allresults(
@@ -38,25 +40,12 @@ class ResultProcessor(_Base):
         Generator function which returns an iterator for processing all LDAP operation
         results of the given msgid like retrieved with LDAPObject.result3() -> 4-tuple
         """
-        result_type, result_list, result_msgid, result_serverctrls, _, _ = \
-            self.result4(
-                msgid,
-                0,
-                timeout,
-                add_ctrls=add_ctrls
-            )
+        result_type, result_list, result_msgid, result_serverctrls, _, _ = self.result4(
+            msgid, 0, timeout, add_ctrls=add_ctrls
+        )
         while result_type and result_list:
-            yield (
-                result_type,
-                result_list,
-                result_msgid,
-                result_serverctrls
+            yield (result_type, result_list, result_msgid, result_serverctrls)
+            result_type, result_list, result_msgid, result_serverctrls, _, _ = self.result4(
+                msgid, 0, timeout, add_ctrls=add_ctrls
             )
-            result_type, result_list, result_msgid, result_serverctrls, _, _ = \
-                self.result4(
-                    msgid,
-                    0,
-                    timeout,
-                    add_ctrls=add_ctrls
-                )
-        return # allresults()
+        return  # allresults()

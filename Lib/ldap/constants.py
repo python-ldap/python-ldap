@@ -9,8 +9,12 @@ The information serves two purposes:
 - Provide support for building documentation without compiling python-ldap
 
 """
+
 from __future__ import annotations
-from typing import Any, Sequence, TYPE_CHECKING
+
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any
+
 
 if TYPE_CHECKING:
     import pathlib
@@ -20,8 +24,7 @@ if TYPE_CHECKING:
 
 
 class Constant:
-    """Base class for a definition of an OpenLDAP constant
-    """
+    """Base class for a definition of an OpenLDAP constant"""
 
     c_template: str | None = None
 
@@ -66,20 +69,19 @@ class TLSInt(Int):
 
 
 class Feature(Constant):
-    """Definition for a feature: 0 or 1 based on a C #ifdef
+    """Definition for a feature: 0 or 1 based on a C #ifdef"""
 
-    """
-
-    c_template = '\n'.join([  # noqa: FLY002
-        '',
-        '#ifdef {self_.c_feature}',
-        'if (PyModule_AddIntConstant(m, "{self_.name}", 1) != 0) goto error;',
-        '#else',
-        'if (PyModule_AddIntConstant(m, "{self_.name}", 0) != 0) goto error;',
-        '#endif',
-        '',
-    ])
-
+    c_template = '\n'.join(  # noqa: FLY002
+        [
+            '',
+            '#ifdef {self_.c_feature}',
+            'if (PyModule_AddIntConstant(m, "{self_.name}", 1) != 0) goto error;',
+            '#else',
+            'if (PyModule_AddIntConstant(m, "{self_.name}", 0) != 0) goto error;',
+            '#endif',
+            '',
+        ]
+    )
 
     def __init__(self, name: str, c_feature: str, **kwargs: Any) -> None:
         super().__init__(name, **kwargs)
@@ -155,21 +157,15 @@ CONSTANTS = (
     Error('USER_CANCELLED'),
     Error('VLV_ERROR'),
     Error('X_PROXY_AUTHZ_FAILURE'),
-
     Error('CANCELLED', requirements=['defined(LDAP_API_FEATURE_CANCEL)']),
     Error('NO_SUCH_OPERATION', requirements=['defined(LDAP_API_FEATURE_CANCEL)']),
     Error('TOO_LATE', requirements=['defined(LDAP_API_FEATURE_CANCEL)']),
     Error('CANNOT_CANCEL', requirements=['defined(LDAP_API_FEATURE_CANCEL)']),
-
     Error('ASSERTION_FAILED', optional=True),
-
     Error('PROXIED_AUTHORIZATION_DENIED', optional=True),
-
     # simple constants
-
     Int('API_VERSION'),
     Int('VENDOR_VERSION'),
-
     Int('PORT'),
     Int('VERSION1'),
     Int('VERSION2'),
@@ -179,7 +175,6 @@ CONSTANTS = (
     Int('VERSION_MAX'),
     Int('TAG_MESSAGE'),
     Int('TAG_MSGID'),
-
     Int('REQ_BIND'),
     Int('REQ_UNBIND'),
     Int('REQ_SEARCH'),
@@ -189,12 +184,10 @@ CONSTANTS = (
     Int('REQ_MODRDN'),
     Int('REQ_COMPARE'),
     Int('REQ_ABANDON'),
-
     Int('TAG_LDAPDN'),
     Int('TAG_LDAPCRED'),
     Int('TAG_CONTROLS'),
     Int('TAG_REFERRAL'),
-
     Int('REQ_EXTENDED'),
     Int('TAG_NEWSUPERIOR', requirements=[API_2004]),
     Int('TAG_EXOP_REQ_OID', requirements=[API_2004]),
@@ -202,13 +195,10 @@ CONSTANTS = (
     Int('TAG_EXOP_RES_OID', requirements=[API_2004]),
     Int('TAG_EXOP_RES_VALUE', requirements=[API_2004]),
     Int('TAG_SASL_RES_CREDS', requirements=[API_2004, 'defined(HAVE_SASL)']),
-
     Int('SASL_AUTOMATIC'),
     Int('SASL_INTERACTIVE'),
     Int('SASL_QUIET'),
-
     # reversibles
-
     Int('RES_BIND'),
     Int('RES_SEARCH_ENTRY'),
     Int('RES_SEARCH_RESULT'),
@@ -218,15 +208,11 @@ CONSTANTS = (
     Int('RES_MODRDN'),
     Int('RES_COMPARE'),
     Int('RES_ANY'),
-
     Int('RES_SEARCH_REFERENCE'),
     Int('RES_EXTENDED'),
     Int('RES_UNSOLICITED'),
-
     Int('RES_INTERMEDIATE'),
-
     # non-reversibles
-
     Int('AUTH_NONE'),
     Int('AUTH_SIMPLE'),
     Int('SCOPE_BASE'),
@@ -238,19 +224,15 @@ CONSTANTS = (
     Int('MOD_REPLACE'),
     Int('MOD_INCREMENT'),
     Int('MOD_BVALUES'),
-
     Int('MSG_ONE'),
     Int('MSG_ALL'),
     Int('MSG_RECEIVED'),
-
     # (error constants handled above)
-
     Int('DEREF_NEVER'),
     Int('DEREF_SEARCHING'),
     Int('DEREF_FINDING'),
     Int('DEREF_ALWAYS'),
     Int('NO_LIMIT'),
-
     Int('OPT_API_INFO'),
     Int('OPT_DEREF'),
     Int('OPT_SIZELIMIT'),
@@ -264,10 +246,8 @@ CONSTANTS = (
     Int('OPT_CLIENT_CONTROLS'),
     Int('OPT_API_FEATURE_INFO'),
     Int('OPT_HOST_NAME'),
-
     Int('OPT_DESC'),
     Int('OPT_DIAGNOSTIC_MESSAGE'),
-
     Int('OPT_ERROR_STRING'),
     Int('OPT_MATCHED_DN'),
     Int('OPT_DEBUG_LEVEL'),
@@ -276,9 +256,7 @@ CONSTANTS = (
     Int('OPT_NETWORK_TIMEOUT'),
     Int('OPT_TCP_USER_TIMEOUT', optional=True),
     Int('OPT_URI'),
-
     Int('OPT_DEFBASE', optional=True),
-
     TLSInt('OPT_X_TLS_CTX'),
     TLSInt('OPT_X_TLS_CACERTFILE'),
     TLSInt('OPT_X_TLS_CACERTDIR'),
@@ -293,38 +271,30 @@ CONSTANTS = (
     TLSInt('OPT_X_TLS_DEMAND'),
     TLSInt('OPT_X_TLS_ALLOW'),
     TLSInt('OPT_X_TLS_TRY'),
-
     TLSInt('OPT_X_TLS_VERSION', optional=True),
     TLSInt('OPT_X_TLS_CIPHER', optional=True),
     TLSInt('OPT_X_TLS_PEERCERT', optional=True),
-
     # only available if OpenSSL supports it => might cause
     # backward compatibility problems
     TLSInt('OPT_X_TLS_CRLCHECK', optional=True),
-
     TLSInt('OPT_X_TLS_CRLFILE', optional=True),
-
     TLSInt('OPT_X_TLS_CRL_NONE'),
     TLSInt('OPT_X_TLS_CRL_PEER'),
     TLSInt('OPT_X_TLS_CRL_ALL'),
     TLSInt('OPT_X_TLS_NEWCTX', optional=True),
     TLSInt('OPT_X_TLS_PROTOCOL_MIN', optional=True),
     TLSInt('OPT_X_TLS_PACKAGE', optional=True),
-
     # Added in OpenLDAP 2.4.52
     TLSInt('OPT_X_TLS_ECNAME', optional=True),
     TLSInt('OPT_X_TLS_REQUIRE_SAN', optional=True),
-
     # Added in OpenLDAP 2.5
     TLSInt('OPT_X_TLS_PEERCERT', optional=True),
     TLSInt('OPT_X_TLS_PROTOCOL_MAX', optional=True),
-
     TLSInt('OPT_X_TLS_PROTOCOL_SSL3', optional=True),
     TLSInt('OPT_X_TLS_PROTOCOL_TLS1_0', optional=True),
     TLSInt('OPT_X_TLS_PROTOCOL_TLS1_1', optional=True),
     TLSInt('OPT_X_TLS_PROTOCOL_TLS1_2', optional=True),
     TLSInt('OPT_X_TLS_PROTOCOL_TLS1_3', optional=True),
-
     Int('OPT_X_SASL_MECH'),
     Int('OPT_X_SASL_REALM'),
     Int('OPT_X_SASL_AUTHCID'),
@@ -340,7 +310,6 @@ CONSTANTS = (
     Int('OPT_X_KEEPALIVE_IDLE', optional=True),
     Int('OPT_X_KEEPALIVE_PROBES', optional=True),
     Int('OPT_X_KEEPALIVE_INTERVAL', optional=True),
-
     Int('DN_FORMAT_LDAP'),
     Int('DN_FORMAT_LDAPV3'),
     Int('DN_FORMAT_LDAPV2'),
@@ -354,39 +323,34 @@ CONSTANTS = (
     Int('DN_P_NOLEADTRAILSPACES'),
     Int('DN_P_NOSPACEAFTERRDN'),
     Int('DN_PEDANTIC'),
-
     Int('AVA_NULL'),
     Int('AVA_STRING'),
     Int('AVA_BINARY'),
     Int('AVA_NONPRINTABLE'),
-
     Int('OPT_SUCCESS'),
-
     # XXX - these should be errors
     Int('URL_ERR_BADSCOPE'),
     Int('URL_ERR_MEM'),
-
     Feature('SASL_AVAIL', 'HAVE_SASL'),
     Feature('TLS_AVAIL', 'HAVE_TLS'),
     Feature('INIT_FD_AVAIL', 'HAVE_LDAP_INIT_FD'),
-
-    Str("CONTROL_MANAGEDSAIT"),
-    Str("CONTROL_PROXY_AUTHZ"),
-    Str("CONTROL_SUBENTRIES"),
-    Str("CONTROL_VALUESRETURNFILTER"),
-    Str("CONTROL_ASSERT"),
-    Str("CONTROL_PRE_READ"),
-    Str("CONTROL_POST_READ"),
-    Str("CONTROL_SORTREQUEST"),
-    Str("CONTROL_SORTRESPONSE"),
-    Str("CONTROL_PAGEDRESULTS"),
-    Str("CONTROL_SYNC"),
-    Str("CONTROL_SYNC_STATE"),
-    Str("CONTROL_SYNC_DONE"),
-    Str("SYNC_INFO"),
-    Str("CONTROL_PASSWORDPOLICYREQUEST"),
-    Str("CONTROL_PASSWORDPOLICYRESPONSE"),
-    Str("CONTROL_RELAX"),
+    Str('CONTROL_MANAGEDSAIT'),
+    Str('CONTROL_PROXY_AUTHZ'),
+    Str('CONTROL_SUBENTRIES'),
+    Str('CONTROL_VALUESRETURNFILTER'),
+    Str('CONTROL_ASSERT'),
+    Str('CONTROL_PRE_READ'),
+    Str('CONTROL_POST_READ'),
+    Str('CONTROL_SORTREQUEST'),
+    Str('CONTROL_SORTRESPONSE'),
+    Str('CONTROL_PAGEDRESULTS'),
+    Str('CONTROL_SYNC'),
+    Str('CONTROL_SYNC_STATE'),
+    Str('CONTROL_SYNC_DONE'),
+    Str('SYNC_INFO'),
+    Str('CONTROL_PASSWORDPOLICYREQUEST'),
+    Str('CONTROL_PASSWORDPOLICYRESPONSE'),
+    Str('CONTROL_RELAX'),
 )
 
 
@@ -399,12 +363,12 @@ def print_header() -> None:  # pragma: no cover
     print(' *')
     print(' * Please do any modifications there, then re-generate this file')
     print(' */')
-    print('')
+    print()
 
     current_requirements: list[str] = []
 
     def pop_requirement() -> None:
-        popped = current_requirements.pop()
+        current_requirements.pop()
         print('#endif')
         print()
 
@@ -465,11 +429,9 @@ def render_pyi() -> str:  # pragma: no cover
     for name in sorted(int_names + str_names, key=str.casefold):
         typ = 'str' if name in str_names else 'int'
         lines.append(f'{name}: {typ}\n')
-    lines.append('\n\n')
+    lines.append('\n')
     for name in sorted(error_names, key=str.casefold):
-        lines.append(f'class {name}(LDAPError):\n')
-        lines.append('    errnum: ClassVar[int] = ...\n')
-        lines.append('\n\n')
+        lines.extend((f'class {name}(LDAPError):\n', '    errnum: ClassVar[int] = ...\n', '\n'))
     lines.append(END)
 
     pyi = _pyi_path().read_text()
@@ -494,21 +456,21 @@ def check_pyi() -> int:  # pragma: no cover
     if on_disk == expected:
         return 0
 
-    sys.stderr.writelines(difflib.unified_diff(
-        on_disk.splitlines(keepends=True),
-        expected.splitlines(keepends=True),
-        fromfile='%s (on disk)' % path,
-        tofile='%s (expected)' % path,
-    ))
-    sys.stderr.write(
-        '\n_ldap.pyi is out of date, regenerate it with:\n'
-        '    python Lib/ldap/constants.py --pyi\n'
+    sys.stderr.writelines(
+        difflib.unified_diff(
+            on_disk.splitlines(keepends=True),
+            expected.splitlines(keepends=True),
+            fromfile=f'{path} (on disk)',
+            tofile=f'{path} (expected)',
+        )
     )
+    sys.stderr.write('\n_ldap.pyi is out of date, regenerate it with:\n    python Lib/ldap/constants.py --pyi\n')
     return 1
 
 
 if __name__ == '__main__':
     import sys
+
     if len(sys.argv) > 1 and sys.argv[1] == '--pyi':
         generate_pyi()
     elif len(sys.argv) > 1 and sys.argv[1] == '--check-pyi':

@@ -3,16 +3,17 @@ Automatic tests for python-ldap's module ldap.sasl
 
 See https://www.python-ldap.org/ for details.
 """
+
 import os
 import unittest
+
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
 os.environ['LDAPNOINIT'] = '1'
 
-from ldap.ldapobject import SimpleLDAPObject
 import ldap.sasl
-from slapdtest import SlapdTestCase
-from slapdtest import requires_ldapi, requires_sasl, requires_tls
+from ldap.ldapobject import SimpleLDAPObject
+from slapdtest import SlapdTestCase, requires_ldapi, requires_sasl, requires_tls
 
 
 LDIF = """
@@ -42,7 +43,7 @@ class TestSasl(SlapdTestCase):
     ldap_object_class = SimpleLDAPObject
     # from Tests/certs/client.pem
     certuser = 'client'
-    certsubject = "cn=client,ou=slapd-test,o=python-ldap,c=de"
+    certsubject = 'cn=client,ou=slapd-test,o=python-ldap,c=de'
 
     @classmethod
     def setUpClass(cls):
@@ -63,16 +64,13 @@ class TestSasl(SlapdTestCase):
         # EXTERNAL authentication with LDAPI (AF_UNIX)
         ldap_conn = self.ldap_object_class(self.server.ldapi_uri)
 
-        auth = ldap.sasl.external("some invalid user")
+        auth = ldap.sasl.external('some invalid user')
         with self.assertRaises(ldap.INSUFFICIENT_ACCESS):
-            ldap_conn.sasl_interactive_bind_s("", auth)
+            ldap_conn.sasl_interactive_bind_s('', auth)
 
-        auth = ldap.sasl.external("")
-        ldap_conn.sasl_interactive_bind_s("", auth)
-        self.assertEqual(
-            ldap_conn.whoami_s().lower(),
-            f"dn:{self.server.root_dn.lower()}"
-        )
+        auth = ldap.sasl.external('')
+        ldap_conn.sasl_interactive_bind_s('', auth)
+        self.assertEqual(ldap_conn.whoami_s().lower(), f'dn:{self.server.root_dn.lower()}')
 
     @requires_tls()
     def test_external_tlscert(self):
@@ -85,11 +83,9 @@ class TestSasl(SlapdTestCase):
         ldap_conn.start_tls_s()
 
         auth = ldap.sasl.external()
-        ldap_conn.sasl_interactive_bind_s("", auth)
-        self.assertEqual(
-            ldap_conn.whoami_s().lower(),
-            f"dn:{self.certsubject}"
-        )
+        ldap_conn.sasl_interactive_bind_s('', auth)
+        self.assertEqual(ldap_conn.whoami_s().lower(), f'dn:{self.certsubject}')
+
 
 if __name__ == '__main__':
     unittest.main()
