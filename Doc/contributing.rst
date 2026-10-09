@@ -116,9 +116,22 @@ Notable targets are:
 
     Requires the ``clang-format`` program and the ``ruff`` Python module.
 
-    Related make targets are: ``lint`` (runs all pre-commit checks for staged changes),
-    ``lint-all`` (runs all pre-commit changes for all files), ``clang``, ``clang-check``,
-    ``ruff-check``, ``ruff-fix``, ``format-check``, ``format``.
+``format-check`` - checks Ruff formatting without modifying files
+``format`` - applies Ruff formatting fixes to all Python files
+
+``clang-check`` - checks ``clang-format`` compliance without modifying files
+``clang`` - applies ``clang-format`` fixes to all C files
+
+``lint`` - runs all applicable pre-commit checks only on files that are currently changed, staged, or not tracked by Git
+``lint-all`` - runs all regular pre-commit checks on the entire repository
+
+``ruff-statistics`` - reports Ruff lint statistics (makes sense after updating ruff)
+``ruff-preview-statistics`` - reports Ruff statistics with preview rules/features enabled
+
+``ruff-check`` - runs Ruff lint checks on all files
+``ruff-fix`` - applies the configured safe Ruff fixes
+``ruff-unsafe-fix`` - applies Ruff fixes including unsafe fixes (should be reviewed more carefully)
+``ruff-unsafe-preview-fix`` - applies Ruff fixes including unsafe fixes and preview rules/features
 
 .. _PEP 7: https://www.python.org/dev/peps/pep-0007/
 .. _PEP 8: https://www.python.org/dev/peps/pep-0008/
