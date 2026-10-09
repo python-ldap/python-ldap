@@ -3,7 +3,8 @@ import gc
 import os
 import sys
 import threading
-import unittest
+
+import pytest
 
 
 def gil_enabled():
@@ -27,10 +28,10 @@ THREAD_COUNT = int(os.environ.get('PYTHON_LDAP_THREAD_COUNT', '16'))
 ITERATIONS = int(os.environ.get('PYTHON_LDAP_THREAD_ITERATIONS', '200'))
 
 
-class TestFreeThreadingDeclaration(unittest.TestCase):
+class TestFreeThreadingDeclaration:
     def test_gil_stays_disabled(self):
         """Importing _ldap must not re-enable the GIL."""
-        self.assertEqual(GIL_STARTS_ENABLED, gil_enabled(), f'importing _ldap changed the GIL state to {gil_enabled()}')
+        assert GIL_STARTS_ENABLED == gil_enabled(), f'importing _ldap changed the GIL state to {gil_enabled()}'
 
 
 class ThreadedMixin:
@@ -57,7 +58,9 @@ class ThreadedMixin:
         gc.collect()
 
 
-@unittest.skipUnless(hasattr(concurrent.futures, 'ThreadPoolExecutor'), 'threaded subinterpreters are not supported')
+@pytest.mark.skipif(
+    not hasattr(concurrent.futures, 'ThreadPoolExecutor'), reason='threaded subinterpreters are not supported'
+)
 class SubinterpreterMixin:
     def run_in_threads(self, routine, count=THREAD_COUNT):
         # TODO: Might use concurrent.interpreters and its create_queue instead
@@ -70,7 +73,7 @@ class SubinterpreterMixin:
                 future.result()
             # not_done should only have futures in if there was an exception,
             # but result() above didn't raise?
-            self.assertFalse(not_done)
+            assert not not_done
         gc.collect()
 
 
@@ -93,9 +96,9 @@ class Template:
 
             for _ in range(ITERATIONS):
                 l = _ldap.initialize('ldap://:0')
-                with self.assertRaises(_ldap.LDAPError):
-                    msgid = l.search_ext('cn=test', _ldap.SCOPE_SUBTREE, '(bad=filter')
-                    l.result4(msgid, _ldap.MSG_ALL, 0)
+                with pytest.raises(_ldap.LDAPError):
+                    l.search_ext('cn=test', _ldap.SCOPE_SUBTREE, '(bad=filter')
+                    # l.result4(msgid, _ldap.MSG_ALL, 0)
                 del l
 
         self.run_in_threads(raise_through_module)
@@ -111,16 +114,12 @@ class Template:
         self.run_in_threads(create_objects)
 
 
-@unittest.skipUnless(_ldap.LIBLDAP_R, 'libldap is not built thread-safe')
-@unittest.skipIf(GIL_STARTS_ENABLED, 'free threading not enabled')
-class TestFreeThreading(Template, ThreadedMixin, unittest.TestCase):
+@pytest.mark.skipif(not _ldap.LIBLDAP_R, reason='libldap is not built thread-safe')
+@pytest.mark.skipif(GIL_STARTS_ENABLED, reason='free threading not enabled')
+class TestFreeThreading(Template, ThreadedMixin):
     pass
 
 
-@unittest.skipUnless(_ldap.LIBLDAP_R, 'libldap is not built thread-safe')
-class TestSubinterpreters(Template, SubinterpreterMixin, unittest.TestCase):
+@pytest.mark.skipif(not _ldap.LIBLDAP_R, reason='libldap is not built thread-safe')
+class TestSubinterpreters(Template, SubinterpreterMixin):
     pass
-
-
-if __name__ == '__main__':
-    unittest.main()

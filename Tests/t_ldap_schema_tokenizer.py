@@ -5,7 +5,8 @@ See https://www.python-ldap.org/ for details.
 """
 
 import os
-import unittest
+
+import pytest
 
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -67,7 +68,7 @@ TESTCASES_BROKEN = (
 )
 
 
-class TestSplitTokens(unittest.TestCase):
+class TestSplitTokens:
     """
     test function ldap.schema.tokenizer.split_tokens()
     """
@@ -75,7 +76,7 @@ class TestSplitTokens(unittest.TestCase):
     def _run_split_tokens_tests(self, test_cases):
         for test_value, test_result in test_cases:
             token_list = ldap.schema.split_tokens(test_value)
-            self.assertEqual(token_list, test_result)
+            assert token_list == test_result
 
     def _run_failure_tests(self, test_cases):
         should_have_failed = []
@@ -87,13 +88,7 @@ class TestSplitTokens(unittest.TestCase):
             else:
                 should_have_failed.append(test_value)
         if should_have_failed:
-            self.fail(
-                '%d value(s) should have raised ValueError: %r'
-                % (
-                    len(should_have_failed),
-                    should_have_failed,
-                )
-            )
+            pytest.fail('%d value(s) should have raised ValueError: %r' % (len(should_have_failed), should_have_failed))
 
     def test_basic(self):
         """
@@ -121,7 +116,3 @@ class TestSplitTokens(unittest.TestCase):
 
     def test_broken(self):
         self._run_failure_tests(TESTCASES_BROKEN)
-
-
-if __name__ == '__main__':
-    unittest.main()

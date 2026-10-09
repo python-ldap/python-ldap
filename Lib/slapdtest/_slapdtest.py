@@ -14,12 +14,13 @@ import socket
 import subprocess
 import sys
 import time
-import unittest
 from collections.abc import Iterable
 from logging.handlers import SysLogHandler
 from shutil import which
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 from urllib.parse import quote_plus
+
+import pytest
 
 
 if TYPE_CHECKING:
@@ -90,7 +91,7 @@ def identity(test_item: T) -> T:
 def skip_unless_ci(reason: str, feature: str | None = None) -> Callable[..., Any]:
     """Skip test unless test case is executed on CI like Travis CI"""
     if not os.environ.get('CI') or feature in CI_DISABLED:
-        return unittest.skip(reason)
+        return cast(Callable[..., Any], pytest.mark.skip(reason=reason))
     else:
         # Don't skip on Travis
         return identity
@@ -604,7 +605,7 @@ class SlapdObject:
         self.stop(exc_type is None)
 
 
-class SlapdTestCase(unittest.TestCase):
+class SlapdTestCase:
     """
     test class which also clones or initializes a running slapd
     """
@@ -633,12 +634,18 @@ class SlapdTestCase(unittest.TestCase):
         ldap_conn.simple_bind_s(who or self.server.root_dn, cred or self.server.root_pw)
         return ldap_conn
 
+    def setup_method(self) -> None:
+        pass
+
+    def teardown_method(self) -> None:
+        pass
+
     @classmethod
-    def setUpClass(cls) -> None:
+    def setup_class(cls) -> None:
         cls.server = cls.server_class()
         cls.server.start()
 
     @classmethod
-    def tearDownClass(cls) -> None:
+    def teardown_class(cls) -> None:
         if cls.server is not None:
-            cls.server.stop(False)
+            cls.server.stop()

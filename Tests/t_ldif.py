@@ -6,8 +6,9 @@ See https://www.python-ldap.org/ for details.
 
 import os
 import textwrap
-import unittest
 from collections import namedtuple
+
+import pytest
 
 
 try:
@@ -21,7 +22,7 @@ os.environ['LDAPNOINIT'] = '1'
 import ldif
 
 
-class TestLDIFParser(unittest.TestCase):
+class TestLDIFParser:
     """
     Various LDIF test cases
     """
@@ -52,9 +53,9 @@ class TestLDIFParser(unittest.TestCase):
             return ldif_parser.all_records
         elif self.record_type == 'modify':
             for change, modify in zip(ldif_parser.all_changes, ldif_parser.all_modify_changes):
-                self.assertEqual(change[0], 'modify')
+                assert change[0] == 'modify'
                 modify = TestLDIFParser.Mod(*modify)._asdict()
-                self.assertEqual(change[1], modify)
+                assert change[1] == modify
             return ldif_parser.all_modify_changes
         elif self.record_type == 'change':
             return ldif_parser.all_changes
@@ -84,7 +85,7 @@ class TestLDIFParser(unittest.TestCase):
             ignored_attr_types=ignored_attr_types,
             max_entries=max_entries,
         )
-        self.assertEqual(records, parsed_records)
+        assert records == parsed_records
         # We don't have an API to unparse arbitrary changes yet
         if self.record_type != 'change':
             generated_ldif = self._unparse_records(records)
@@ -93,7 +94,7 @@ class TestLDIFParser(unittest.TestCase):
                 ignored_attr_types=ignored_attr_types,
                 max_entries=max_entries,
             )
-            self.assertEqual(records, parsed_records2)
+            assert records == parsed_records2
 
 
 class TestEntryRecords(TestLDIFParser):
@@ -685,12 +686,8 @@ class TestModifyRecords(TestLDIFParser):
             """,
         ):
             ldif_string = textwrap.dedent(bad_ldif_string).lstrip() + '\n'
-            try:
+            with pytest.raises(ValueError):
                 self._parse_records(ldif_string)
-            except ValueError:
-                pass
-            else:
-                self.fail(f'should have raised ValueError: {bad_ldif_string!r}')
 
     def test_mod_increment(self):
         self.check_records(
@@ -854,9 +851,5 @@ class TestChangeRecords(TestLDIFParser):
             """,
         ):
             ldif_string = textwrap.dedent(bad_ldif_string).lstrip() + '\n'
-            with self.assertRaises(ValueError):
+            with pytest.raises(ValueError):
                 self._parse_records(ldif_string)
-
-
-if __name__ == '__main__':
-    unittest.main()

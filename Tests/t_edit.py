@@ -1,5 +1,4 @@
 import os
-import unittest
 
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -10,10 +9,10 @@ from ldap.ldapobject import LDAPObject
 from slapdtest import SlapdTestCase
 
 
-class EditionTests(SlapdTestCase):
+class TestEdition(SlapdTestCase):
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setup_class(cls):
+        super().setup_class()
         base = cls.server.suffix
         suffix_dc = base.split(',')[0][3:]
 
@@ -56,13 +55,13 @@ class EditionTests(SlapdTestCase):
             + '\n'
         )
 
-    def setUp(self):
+    def setup_method(self):
         self.ldap = LDAPObject(self.server.ldap_uri, bytes_mode=False)
         self.ldap.protocol_version = 3
         self.ldap.set_option(ldap.OPT_REFERRALS, 0)
         self.ldap.simple_bind_s(self.server.root_dn, self.server.root_pw)
 
-    def tearDown(self):
+    def teardown_method(self):
         self.ldap.unbind()
 
     def test_add_object(self):
@@ -78,17 +77,10 @@ class EditionTests(SlapdTestCase):
 
         # Lookup the object
         result = self.ldap.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Added)', ['*'])
-        self.assertEqual(
-            result,
-            [
-                ('cn=Added,ou=Container,' + base, {'cn': [b'Added'], 'objectClass': [b'organizationalRole']}),
-            ],
-        )
+        assert result == [
+            ('cn=Added,ou=Container,' + base, {'cn': [b'Added'], 'objectClass': [b'organizationalRole']}),
+        ]
         # Delete object
         self.ldap.delete_s(dn)
         result = self.ldap.search_s(base, ldap.SCOPE_SUBTREE, '(cn=Added)', ['*'])
-        self.assertEqual(result, [])
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert result == []
