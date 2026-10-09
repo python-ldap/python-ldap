@@ -160,6 +160,45 @@ General
    available except on macOS when python-ldap is compiled with system libldap.
 
 
+.. _ldap-mod-constants:
+
+Modify operation constants
+--------------------------
+
+These constants are used as the *mod_op* element of the tuples passed to
+:py:meth:`LDAPObject.modify_s` and friends (see
+:doc:`ldap-modlist`).
+
+.. py:data:: MOD_ADD
+
+   Add the given values to the attribute.
+
+.. py:data:: MOD_DELETE
+
+   Delete the given values from the attribute. If *mod_vals* is
+   :py:const:`None`, the whole attribute is removed.
+
+.. py:data:: MOD_REPLACE
+
+   Replace the attribute's values with the given values.
+
+.. py:data:: MOD_INCREMENT
+
+   Increment the attribute's integer value by the given value. This is an
+   LDAP extension defined in :rfc:`4525`; it is not supported by all
+   servers. The attribute must be a single-valued integer attribute with an
+   appropriate ordering rule (for example ``uidNumber``).
+
+.. py:data:: MOD_BVALUES
+
+   Bit flag that is OR-ed into *mod_op* to indicate that the values in the
+   modification are raw binary values (``struct berval``) rather than C
+   strings. This is handled for you: when a modification tuple is converted
+   for the C layer, python-ldap always OR-s this flag into *mod_op*, so the
+   flag does not appear in the value you pass and there is no need to set it
+   manually.
+
+
 .. _ldap-options:
 
 Options
