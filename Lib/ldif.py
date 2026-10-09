@@ -6,6 +6,8 @@ See https://www.python-ldap.org/ for details.
 from __future__ import annotations
 __version__ = '3.4.7'
 
+import warnings
+
 __all__ = [
   # constants
   'ldif_pattern',
@@ -219,7 +221,13 @@ class LDIFWriter:
     elif isinstance(record,list):
       self._unparseChangeRecord(record)
     else:
-      raise ValueError('Argument record must be dictionary or list instead of %s' % (repr(record)))
+      warnings.warn(
+        "LDIFWriter.unparse() will raise TypeError instead of ValueError "
+        "for a wrong-typed record in a future release",
+        DeprecationWarning,
+        stacklevel=2,
+      )
+      raise TypeError('Argument record must be dictionary or list instead of %s' % (repr(record)))
     # Write empty line separating the records
     self._output_file.write(self._last_line_sep)
     # Count records written
