@@ -13,8 +13,8 @@ permissions:
   contents: read
 
 jobs:
-  distros:
-    name: "Ubuntu with Python ${{ matrix.python-version }}"
+  test_ubuntu:
+    name: "Test with Python ${{ matrix.python-version }} on ${{ matrix.image }}"
     runs-on: "${{ matrix.image }}"
     strategy:
       fail-fast: false
@@ -36,23 +36,48 @@ jobs:
     steps:
       - name: Checkout
         uses: "actions/checkout@v6"
-      - name: Install apt dependencies
-        run: |
-          set -ex
-          sudo apt update
-          sudo apt install -y ldap-utils slapd enchant-2 libldap2-dev libsasl2-dev apparmor-utils
-      - name: Disable AppArmor
+      - name: "Install apt dependencies"
+        run: >
+          sudo apt-get update &&
+          sudo apt-get install -y ldap-utils slapd enchant-2 libldap2-dev libsasl2-dev apparmor-utils
+      - name: "Disable AppArmor"
         run: sudo aa-disable /usr/sbin/slapd
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+      - name: "Setup Python using uv"
+        uses: astral-sh/setup-uv@v7
         with:
+          version: "0.9"
           python-version: ${{ matrix.python-version }}
-          allow-prereleases: true
+          activate-environment: true
       - name: "Install Python dependencies"
-        run: |
-          set -xe
-          python -V
-          python -m pip install --upgrade pip setuptools
-          python -m pip install --upgrade tox tox-gh-actions
-      - name: "Test tox with Python ${{ matrix.python-version }}"
-        run: "python -m tox"
+        run: >
+          uv pip install --upgrade pip setuptools tox tox-gh-actions
+      - name: Test
+        run: python -m tox
+
+  test_fedora:
+    name: "Test with tox env ${{ matrix.tox_env }} on Fedora"
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        tox_env:
+          - py39
+          - py310
+          - py311
+          - py312
+          - py313
+          - py314
+          - py3-nosasltls
+          - py3-trace
+          - pypy3
+          - doc
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Test
+        uses: fedora-python/tox-github-action@v41.0
+        with:
+          tox_env: ${{ matrix.tox_env }}
+          dnf_install: >
+            @c-development openldap-devel python3-devel
+            openldap-servers openldap-clients lcov clang-analyzer valgrind
+            enchant python3-setuptools
