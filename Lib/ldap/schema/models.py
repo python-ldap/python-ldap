@@ -323,6 +323,7 @@ class AttributeType(SchemaElement):
     single_value: bool
     collective: bool
     syntax: str | None
+    syntax_len: int | None
     no_user_mod: bool
     usage: int
     sup: tuple[str, ...]
