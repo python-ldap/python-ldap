@@ -38,13 +38,13 @@ TOKENS_FINDALL = re.compile(
 UNESCAPE_PATTERN = re.compile(r'\\(.)')
 
 
-def split_tokens(s: str) -> list[str]:
+def split_tokens(sch_str: str) -> list[str]:
     """
     Returns list of syntax elements with quotes and spaces stripped.
     """
     parts = []
     parens = 0
-    for opar, cpar, unquoted, quoted, residue in TOKENS_FINDALL(s):
+    for opar, cpar, unquoted, quoted, residue in TOKENS_FINDALL(sch_str):
         if unquoted:
             parts.append(unquoted)
         elif quoted:
@@ -57,11 +57,11 @@ def split_tokens(s: str) -> list[str]:
             parts.append(cpar)
         elif residue == '$':
             if not parens:
-                raise ValueError(f"'$' outside parenthesis in {s!r}")
+                raise ValueError(f"'$' outside parenthesis in {sch_str!r}")
         else:
-            raise ValueError(residue, s)
+            raise ValueError(residue, sch_str)
     if parens:
-        raise ValueError(f'Unbalanced parenthesis in {s!r}')
+        raise ValueError(f'Unbalanced parenthesis in {sch_str!r}')
     return parts
 
 

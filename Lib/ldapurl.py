@@ -36,6 +36,12 @@ LDAP_SCOPE_ONELEVEL = 1
 LDAP_SCOPE_SUBTREE = 2
 LDAP_SCOPE_SUBORDINATES = 3
 
+LDAPURL_SCHEMES = {
+    'ldap://',
+    'ldaps://',
+    'ldapi://',
+}
+
 SEARCH_SCOPE_STR = {
     None: '',
     LDAP_SCOPE_BASE: 'base',
@@ -55,14 +61,14 @@ SEARCH_SCOPE = {
 }
 
 
-def isLDAPUrl(s: str) -> bool:
-    """Returns True if s is a LDAP URL, else False"""
-    return s.lower().startswith(('ldap://', 'ldaps://', 'ldapi://'))
+def isLDAPUrl(val: str) -> bool:
+    """Returns True if val is a LDAP URL, else False"""
+    return val.lower().startswith(tuple(LDAPURL_SCHEMES))
 
 
-def ldapUrlEscape(s: str) -> str:
-    """Returns URL encoding of string s"""
-    return quote(s).replace(',', '%2C').replace('/', '%2F')
+def ldapUrlEscape(val: str) -> str:
+    """Returns URL encoding of string val"""
+    return quote(val, safe='').replace('/', '%2F')
 
 
 class LDAPUrlExtension:
