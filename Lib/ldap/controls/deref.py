@@ -85,7 +85,7 @@ class DereferenceControl(LDAPControl):
         LDAPControl.__init__(self, self.controlType, criticality)
         self.derefSpecs = derefSpecs or {}
 
-    def _derefSpecs(self) -> DerefSpecs:
+    def _deref_specs(self) -> DerefSpecs:
         deref_specs = DerefSpecs()
         for i, (deref_attr, deref_attribute_names) in enumerate(self.derefSpecs.items()):
             deref_spec = DerefSpec()
@@ -98,7 +98,7 @@ class DereferenceControl(LDAPControl):
         return deref_specs
 
     def encodeControlValue(self) -> bytes:
-        return encoder.encode(self._derefSpecs())  # type: ignore
+        return encoder.encode(self._deref_specs())  # type: ignore
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
         decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=DerefResultControlValue())

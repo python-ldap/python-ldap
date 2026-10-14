@@ -15,27 +15,27 @@ assert _ldap.__version__ == __version__, ImportError(
 import ldap.functions  # noqa: E402
 
 
-def escape_dn_chars(s: str) -> str:
+def escape_dn_chars(dn: str) -> str:
     """
-    Escape all DN special characters found in s
+    Escape all DN special characters found in dn
     with a back-slash (see RFC 4514, section 2.4)
     """
-    if s:
-        s = s.replace('\\', '\\\\')
-        s = s.replace(',', '\\,')
-        s = s.replace('+', '\\+')
-        s = s.replace('"', '\\"')
-        s = s.replace('<', '\\<')
-        s = s.replace('>', '\\>')
-        s = s.replace(';', '\\;')
-        s = s.replace('=', '\\=')
+    if dn:
+        dn = dn.replace('\\', '\\\\')
+        dn = dn.replace(',', '\\,')
+        dn = dn.replace('+', '\\+')
+        dn = dn.replace('"', '\\"')
+        dn = dn.replace('<', '\\<')
+        dn = dn.replace('>', '\\>')
+        dn = dn.replace(';', '\\;')
+        dn = dn.replace('=', '\\=')
         # RFC 4514 requires NULL (U+0000) to be escaped as hex pair "\00"
-        s = s.replace('\x00', '\\00')
-        if s[-1] == ' ':
-            s = ''.join((s[:-1], '\\ '))
-        if s[0] == '#' or s[0] == ' ':
-            s = f'\\{s}'
-    return s
+        dn = dn.replace('\x00', '\\00')
+        if dn[-1] == ' ':
+            dn = ''.join((dn[:-1], '\\ '))
+        if dn[0] == '#' or dn[0] == ' ':
+            dn = f'\\{dn}'
+    return dn
 
 
 def str2dn(dn: str, flags: int = 0) -> list[list[tuple[str, str, int]]]:
@@ -115,19 +115,19 @@ def explode_rdn(rdn: str, notypes: bool = False, flags: int = 0) -> list[str]:
         return ['='.join((atype, escape_dn_chars(avalue or ''))) for atype, avalue, dummy in rdn_decomp]
 
 
-def is_dn(s: str, flags: int = 0) -> bool:
+def is_dn(dn: str, flags: int = 0) -> bool:
     """
-    Returns True if `s' can be parsed by ldap.dn.str2dn() as a
+    Returns True if `dn' can be parsed by ldap.dn.str2dn() as a
     distinguished host_name (DN), otherwise False is returned.
     """
     try:
-        str2dn(s, flags)
+        str2dn(dn, flags)
     except Exception:  # noqa: BLE001 - the parser may raise multiple backend exceptions
         return False
     else:
         return True
 
 
-def normalize(s: str, flags: int = 0) -> str:
+def normalize(dn: str, flags: int = 0) -> str:
     """Returns a normalized distinguished name (DN)"""
-    return dn2str(str2dn(s, flags), flags)
+    return dn2str(str2dn(dn, flags), flags)
