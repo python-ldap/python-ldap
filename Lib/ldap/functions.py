@@ -129,12 +129,12 @@ def set_option(option: int, invalue: Any) -> int:
     return _ldap_function_call(None, _ldap.set_option, option, invalue)  # type: ignore
 
 
-def escape_str(escape_func: Callable[[str], str], s: str, *args: str) -> str:
+def escape_str(escape_func: Callable[[str], str], fmt: str, *args: str) -> str:
     """
     Applies escape_func() to all items of `args' and returns a string based
     on format string `s'.
     """
-    return s % tuple(escape_func(v) for v in args)
+    return fmt % tuple(escape_func(v) for v in args)
 
 
 def strf_secs(secs: float) -> str:
