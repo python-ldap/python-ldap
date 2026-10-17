@@ -18,10 +18,26 @@ __all__ = ['RefreshRequest', 'RefreshResponse']
 
 
 class RefreshRequest(ExtendedRequest):
+    """
+    Refresh Request
+    (see https://tools.ietf.org/html/rfc2589#section-4.1)
+    """
+
     requestName = '1.3.6.1.4.1.1466.101.119.1'
     defaultRequestTtl = 86400
 
     class RefreshRequestValue(univ.Sequence):
+        """
+        ASN.1 definition::
+
+            SEQUENCE {
+                entryName  [0] LDAPDN,
+                requestTtl [1] INTEGER
+            }
+
+        (see https://tools.ietf.org/html/rfc2589#section-4.1)
+        """
+
         componentType = namedtype.NamedTypes(
             namedtype.NamedType(
                 'entryName', LDAPDN().subtype(implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0))
@@ -59,9 +75,22 @@ class RefreshRequest(ExtendedRequest):
 
 
 class RefreshResponse(ExtendedResponse):
+    """
+    Refresh Response
+    (see https://tools.ietf.org/html/rfc2589#section-4.2)
+    """
+
     responseName = '1.3.6.1.4.1.1466.101.119.1'
 
     class RefreshResponseValue(univ.Sequence):
+        """
+        ASN.1 definition::
+
+            SEQUENCE {
+                responseTtl [1] INTEGER
+            }
+        """
+
         componentType = namedtype.NamedTypes(
             namedtype.NamedType(
                 'responseTtl',

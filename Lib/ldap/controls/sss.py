@@ -17,13 +17,16 @@ __all__ = [
     'SSSRequestControl',
     'SSSResponseControl',
 ]
-#    SortKeyList ::= SEQUENCE OF SEQUENCE {
-#                     attributeType   AttributeDescription,
-#                     orderingRule    [0] MatchingRuleId OPTIONAL,
-#                     reverseOrder    [1] BOOLEAN DEFAULT FALSE }
 
 
 class SortKeyType(univ.Sequence):
+    """
+    SEQUENCE {
+       attributeType   AttributeDescription,
+       orderingRule    [0] MatchingRuleId OPTIONAL,
+       reverseOrder    [1] BOOLEAN DEFAULT FALSE }
+    """
+
     componentType = namedtype.NamedTypes(
         namedtype.NamedType('attributeType', univ.OctetString()),
         namedtype.OptionalNamedType(
@@ -42,6 +45,13 @@ class SortKeyType(univ.Sequence):
 
 
 class SortKeyListType(univ.SequenceOf):
+    """
+    SortKeyList ::= SEQUENCE OF SEQUENCE {
+                     attributeType   AttributeDescription,
+                     orderingRule    [0] MatchingRuleId OPTIONAL,
+                     reverseOrder    [1] BOOLEAN DEFAULT FALSE }
+    """
+
     componentType = SortKeyType()  # type: ignore[assignment]
 
 

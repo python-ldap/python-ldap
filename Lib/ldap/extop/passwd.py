@@ -100,6 +100,11 @@ class PasswordModifyResponse(ExtendedResponse):
     responseName = None
 
     class PasswordModifyResponseValue(univ.Sequence):
+        """
+        PasswdModifyResponseValue ::= SEQUENCE {
+           genPasswd [0] OCTET STRING OPTIONAL }
+        """
+
         componentType = namedtype.NamedTypes(
             namedtype.OptionalNamedType(
                 'genPasswd',
