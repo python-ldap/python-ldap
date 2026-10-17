@@ -36,6 +36,9 @@ if __debug__:
     # Tracing is only supported in debugging mode
     import traceback
 
+# format string used for Generalized Time attributes values with UTC
+DATETIME_FORMAT_UTC = r'%Y%m%d%H%M%SZ'
+
 
 def _ldap_function_call(
     lock: ldap.LDAPLock | None,
@@ -140,11 +143,11 @@ def strf_secs(secs: float) -> str:
     """
     Convert seconds since epoch to a string compliant to LDAP syntax GeneralizedTime
     """
-    return time.strftime('%Y%m%d%H%M%SZ', time.gmtime(secs))
+    return time.strftime(DATETIME_FORMAT_UTC, time.gmtime(secs))
 
 
-def strp_secs(dt_str: str) -> int:
+def strp_secs(dt_str: str) -> float:
     """
     Convert LDAP syntax GeneralizedTime to seconds since epoch
     """
-    return timegm(time.strptime(dt_str, '%Y%m%d%H%M%SZ'))
+    return timegm(time.strptime(dt_str, DATETIME_FORMAT_UTC))
