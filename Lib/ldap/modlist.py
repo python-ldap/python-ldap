@@ -16,6 +16,9 @@ from ldap._types import (
 from ldap.pkginfo import __version__  # noqa: F401
 
 
+__all__ = ['addModlist', 'modifyModlist']
+
+
 def addModlist(
     entry: LDAPEntryDict,
     ignore_attr_types: list[str] | None = None,
