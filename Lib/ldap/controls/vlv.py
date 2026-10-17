@@ -60,7 +60,7 @@ class VLVRequestControl(RequestControl):
         offset: int | None = None,
         content_count: int | None = None,
         greater_than_or_equal: str | None = None,
-        context_id: str | None = None,
+        context_id: bytes | None = None,
     ):
         RequestControl.__init__(self, self.controlType, criticality)
         assert (offset is not None and content_count is not None) or greater_than_or_equal, ValueError(
@@ -133,7 +133,7 @@ class VLVResponseControl(ResponseControl):
         self.virtualListViewResult = int(virtual_list_view_result)
         context_id = p.getComponentByName('contextID')
         if context_id.hasValue():
-            self.contextID: str | None = str(context_id)
+            self.contextID: bytes | None = bytes(context_id)
         else:
             self.contextID = None
         # backward compatibility class attributes
