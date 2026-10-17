@@ -83,7 +83,7 @@ class SearchNoOpMixIn(_Base):
                 timeout=timeout,
                 serverctrls=[SearchNoOpControl(criticality=True)],
             )
-            _, _, _, search_response_ctrls = self.result3(msg_id, all=1, timeout=timeout)
+            _, _, _, search_response_ctrls = self.result3(msg_id, all=True, timeout=timeout)
         except (ldap.TIMEOUT, ldap.TIMELIMIT_EXCEEDED, ldap.SIZELIMIT_EXCEEDED, ldap.ADMINLIMIT_EXCEEDED):
             if msg_id is not None:
                 self.abandon(msg_id)

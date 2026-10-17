@@ -67,7 +67,7 @@ class AsyncSearchHandler:
         searchScope: int,
         filterStr: str,
         attrList: list[str] | None = None,
-        attrsOnly: int = 0,
+        attrsOnly: bool = False,
         timeout: int = -1,
         sizelimit: int = 0,
         serverctrls: list[RequestControl] | None = None,
@@ -146,7 +146,7 @@ class AsyncSearchHandler:
             while go_ahead:
                 while result_type is None and not result_list:
                     result_type, result_list, _result_msgid, _result_serverctrls = self._l.result3(
-                        self._msgId, 0, timeout
+                        self._msgId, False, timeout
                     )
                     if self._afterFirstResult:
                         self.afterFirstResult()

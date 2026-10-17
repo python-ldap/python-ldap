@@ -20,7 +20,7 @@ class PagedResultsSearchObject:
         scope,
         filterstr='(objectClass=*)',
         attrlist=None,
-        attrsonly=0,
+        attrsonly=False,
         serverctrls=None,
         clientctrls=None,
         timeout=-1,

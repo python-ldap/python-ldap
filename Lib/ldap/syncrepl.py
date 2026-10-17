@@ -438,7 +438,7 @@ class SyncreplConsumer(_Base):
         self,
         msgid: int = -1,
         timeout: int | None = None,
-        all: int = 0,
+        all: bool = False,
     ) -> bool:
         """
         polls for and processes responses to the syncrepl_search() operation.
@@ -447,7 +447,7 @@ class SyncreplConsumer(_Base):
 
         If timeout is specified, raises ldap.TIMEOUT in the event of a timeout.
 
-        If all is set to a nonzero value, poll() will return only when finished
+        If all is true, poll() will return only when finished
         or when an exception is raised.
 
         """
@@ -455,9 +455,9 @@ class SyncreplConsumer(_Base):
             type, msg, _mid, ctrls, _n, _v = self.result4(
                 msgid=msgid,
                 timeout=timeout,
-                add_intermediates=1,
-                add_ctrls=1,
-                all=0,
+                add_intermediates=True,
+                add_ctrls=True,
+                all=False,
             )
 
             if type == RES_SEARCH_RESULT:
