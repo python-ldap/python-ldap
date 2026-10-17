@@ -36,6 +36,14 @@ from ldap.schema.models import (  # noqa: E402
 )
 
 
+__all__ = [
+    'NameNotUnique',
+    'OIDNotUnique',
+    'SubSchema',
+    'SubschemaError',
+]
+
+
 SchemaElementSubclass = TypeVar('SchemaElementSubclass', bound=SchemaElement)
 
 SCHEMA_ATTRS = list(SCHEMA_CLASS_MAPPING)
