@@ -90,24 +90,19 @@ def modifyModlist(
         elif old_value and new_value:
             # Replace existing attribute
             replace_attr_value = len(old_value) != len(new_value)
+
             if not replace_attr_value:
-                if attrtype_lower in case_ignore_attr_types_set:
-                    if attrtype_lower in strict_order_attr_types_set:
-                        old_value_set = [v.lower() for v in old_value]
-                        new_value_set = [v.lower() for v in new_value]
-                    else:
-                        old_value_set = {v.lower() for v in old_value}
-                        new_value_set = {v.lower() for v in new_value}
-                else:
-                    if attrtype_lower in strict_order_attr_types_set:
-                        old_value_set = [old_value]
-                        new_value_set = [new_value]
-                    else:
-                        old_value_set = set(old_value)
-                        new_value_set = set(new_value)
-                replace_attr_value = new_value_set != old_value_set
+                normalize = bytes.lower if attrtype_lower in case_ignore_attr_types_set else lambda v: v
+                collection = list if attrtype_lower in strict_order_attr_types_set else set
+                replace_attr_value = collection(map(normalize, old_value)) != collection(map(normalize, new_value))
+
             if replace_attr_value:
-                modlist.extend(((ldap.MOD_DELETE, attrtype, None), (ldap.MOD_ADD, attrtype, new_value)))
+                modlist.extend(
+                    (
+                        (ldap.MOD_DELETE, attrtype, None),
+                        (ldap.MOD_ADD, attrtype, new_value),
+                    )
+                )
         elif old_value and not new_value:
             # Completely delete an existing attribute
             modlist.append((ldap.MOD_DELETE, attrtype, None))
