@@ -93,7 +93,7 @@ class cidict(MutableMappingType[str, T]):
     def data(self) -> dict[str, T]:
         """Compatibility with older IterableUserDict-based implementation"""
         warnings.warn(
-            'ldap.cidict.cidict.data is an internal attribute; it may be ' + 'removed at any time',
+            'ldap.cidict.cidict.data is an internal attribute; it may be removed at any time',
             category=DeprecationWarning,
             stacklevel=2,
         )
