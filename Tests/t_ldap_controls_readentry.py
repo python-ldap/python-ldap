@@ -25,6 +25,19 @@ class TestLibldapControls(unittest.TestCase):
         self.assertIsInstance(pr.dn, str)
         self.assertEqual(pr.entry, {'entryUUID': [b'5d96cc2c-8e13-103a-8ca5-2f74868e0e44']})
 
+    def test_readentry_decode_utf8_dn(self):
+        dn = 'cn=Michael Ströder,dc=example,dc=org'
+        encoded_dn = dn.encode('utf-8')
+
+        # SearchResultEntry containing a UTF-8 DN and no attributes
+        encoded = b'\x64' + bytes([len(encoded_dn) + 4]) + b'\x04' + bytes([len(encoded_dn)]) + encoded_dn + b'\x30\x00'
+
+        pr = readentry.PostReadControl(True, ['entryUUID'])
+        pr.decodeControlValue(encoded)
+
+        self.assertEqual(pr.dn, dn)
+        self.assertEqual(pr.entry, {})
+
 
 if __name__ == '__main__':
     unittest.main()
