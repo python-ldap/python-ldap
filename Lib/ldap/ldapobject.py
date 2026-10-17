@@ -236,7 +236,7 @@ class SimpleLDAPObject:
     ) -> int | None:
         msgid = self.cancel(cancelid, serverctrls, clientctrls)
         try:
-            res = self.result(msgid, all=1, timeout=self.timeout)
+            res = self.result(msgid, all=True, timeout=self.timeout)
         except (ldap.CANCELLED, ldap.SUCCESS):
             res = None
         return res  # type: ignore[return-value]
@@ -268,7 +268,7 @@ class SimpleLDAPObject:
     ) -> tuple[Any, Any, Any, Any]:
         # FIXME: The return value could be more specific
         msgid = self.add_ext(dn, modlist, serverctrls, clientctrls)
-        resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid, all=1, timeout=self.timeout)
+        resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid, all=True, timeout=self.timeout)
         return resp_type, resp_data, resp_msgid, resp_ctrls
 
     def add(
@@ -318,7 +318,7 @@ class SimpleLDAPObject:
         simple_bind_s([who=''[,cred=''[,serverctrls=None[,clientctrls=None]]]]) -> 4-tuple
         """
         msgid = self.simple_bind(who, cred, serverctrls, clientctrls)
-        resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid, all=1, timeout=self.timeout)
+        resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid, all=True, timeout=self.timeout)
         return resp_type, resp_data, resp_msgid, resp_ctrls
 
     def bind(
@@ -343,7 +343,7 @@ class SimpleLDAPObject:
         bind_s(who, cred, method) -> None
         """
         msgid = self.bind(who, cred, method)
-        self.result(msgid, all=1, timeout=self.timeout)
+        self.result(msgid, all=True, timeout=self.timeout)
 
     def sasl_interactive_bind_s(
         self,
@@ -462,7 +462,7 @@ class SimpleLDAPObject:
     ) -> bool:
         msgid = self.compare_ext(dn, attr, value, serverctrls, clientctrls)
         try:
-            ldap_res = self.result3(msgid, all=1, timeout=self.timeout)
+            ldap_res = self.result3(msgid, all=True, timeout=self.timeout)
         except ldap.COMPARE_TRUE:
             return True
         except ldap.COMPARE_FALSE:
@@ -511,7 +511,7 @@ class SimpleLDAPObject:
         clientctrls: list[RequestControl] | None = None,
     ) -> tuple[Any, Any, Any, Any]:
         msgid = self.delete_ext(dn, serverctrls, clientctrls)
-        resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid, all=1, timeout=self.timeout)
+        resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid, all=True, timeout=self.timeout)
         return resp_type, resp_data, resp_msgid, resp_ctrls
 
     def delete(self, dn: str) -> int:
@@ -550,12 +550,12 @@ class SimpleLDAPObject:
     def extop_result(
         self,
         msgid: int = ldap.RES_ANY,
-        all: int = 1,
+        all: bool = True,
         timeout: float | None = None,
     ) -> tuple[str | None, bytes]:
         # FIXME: The timeout argument isn't used?
         _resulttype, _msg, _rmsgid, _respctrls, respoid, respvalue = self.result4(
-            msgid, all=1, timeout=self.timeout, add_ctrls=1, add_intermediates=1, add_extop=1
+            msgid, all=True, timeout=self.timeout, add_ctrls=True, add_intermediates=True, add_extop=True
         )
         return (respoid, respvalue)  # type: ignore[return-value]
 
@@ -567,7 +567,7 @@ class SimpleLDAPObject:
         extop_resp_class: type[ExtendedResponse] | None = None,
     ) -> tuple[str | None, bytes] | ExtendedResponse:
         msgid = self.extop(extreq, serverctrls, clientctrls)
-        res = self.extop_result(msgid, all=1, timeout=self.timeout)
+        res = self.extop_result(msgid, all=True, timeout=self.timeout)
         if extop_resp_class:
             respoid, respvalue = res
             if extop_resp_class.responseName != respoid:
@@ -600,7 +600,7 @@ class SimpleLDAPObject:
         clientctrls: list[RequestControl] | None = None,
     ) -> tuple[Any, Any, Any, Any]:
         msgid = self.modify_ext(dn, modlist, serverctrls, clientctrls)
-        resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid, all=1, timeout=self.timeout)
+        resp_type, resp_data, resp_msgid, resp_ctrls = self.result3(msgid, all=True, timeout=self.timeout)
         return resp_type, resp_data, resp_msgid, resp_ctrls
 
     def modify(
@@ -641,11 +641,11 @@ class SimpleLDAPObject:
         self,
         dn: str,
         newrdn: str,
-        delold: int = 1,
+        delold: bool = True,
     ) -> int:
         """
-        modrdn(dn, newrdn [,delold=1]) -> int
-        modrdn_s(dn, newrdn [,delold=1]) -> None
+        modrdn(dn, newrdn [,delold=True]) -> int
+        modrdn_s(dn, newrdn [,delold=True]) -> None
             Perform a modify RDN operation. These routines take dn, the
             DN of the entry whose RDN is to be changed, and newrdn, the
             new RDN to give to the entry. The optional parameter delold
@@ -662,7 +662,7 @@ class SimpleLDAPObject:
         self,
         dn: str,
         newrdn: str,
-        delold: int = 1,
+        delold: bool = True,
     ) -> None:
         return self.rename_s(dn, newrdn, None, delold)
 
@@ -688,7 +688,7 @@ class SimpleLDAPObject:
         extract_newpw: bool = False,
     ) -> tuple[None, bytes | PasswordModifyResponse]:
         msgid = self.passwd(user, oldpw, newpw, serverctrls, clientctrls)
-        respoid, respvalue = self.extop_result(msgid, all=1, timeout=self.timeout)
+        respoid, respvalue = self.extop_result(msgid, all=True, timeout=self.timeout)
 
         if respoid != PasswordModifyResponse.responseName:
             raise ldap.PROTOCOL_ERROR(f'Unexpected OID {respoid} in extended response!')
@@ -704,13 +704,13 @@ class SimpleLDAPObject:
         dn: str,
         newrdn: str,
         newsuperior: str | None = None,
-        delold: int = 1,
+        delold: bool = True,
         serverctrls: list[RequestControl] | None = None,
         clientctrls: list[RequestControl] | None = None,
     ) -> int:
         """
-        rename(dn, newrdn [, newsuperior=None [,delold=1][,serverctrls=None[,clientctrls=None]]]) -> int
-        rename_s(dn, newrdn [, newsuperior=None] [,delold=1][,serverctrls=None[,clientctrls=None]]) -> None
+        rename(dn, newrdn [, newsuperior=None [,delold=True][,serverctrls=None[,clientctrls=None]]]) -> int
+        rename_s(dn, newrdn [, newsuperior=None] [,delold=True][,serverctrls=None[,clientctrls=None]]) -> None
             Perform a rename entry operation. These routines take dn, the
             DN of the entry whose RDN is to be changed, newrdn, the
             new RDN, and newsuperior, the new parent DN, to give to the entry.
@@ -737,21 +737,21 @@ class SimpleLDAPObject:
         dn: str,
         newrdn: str,
         newsuperior: str | None = None,
-        delold: int = 1,
+        delold: bool = True,
         serverctrls: list[RequestControl] | None = None,
         clientctrls: list[RequestControl] | None = None,
     ) -> None:
         msgid = self.rename(dn, newrdn, newsuperior, delold, serverctrls, clientctrls)
-        _resp_type, _resp_data, _resp_msgid, _resp_ctrls = self.result3(msgid, all=1, timeout=self.timeout)
+        _resp_type, _resp_data, _resp_msgid, _resp_ctrls = self.result3(msgid, all=True, timeout=self.timeout)
 
     def result(
         self,
         msgid: int = ldap.RES_ANY,
-        all: int = 1,
+        all: bool = True,
         timeout: float | None = None,
     ) -> tuple[int | None, Any | None]:
         """
-        result([msgid=RES_ANY [,all=1 [,timeout=None]]]) -> (result_type, result_data)
+        result([msgid=RES_ANY [,all=True [,timeout=None]]]) -> (result_type, result_data)
 
             This method is used to wait for and return the result of an
             operation previously initiated by one of the LDAP asynchronous
@@ -806,7 +806,7 @@ class SimpleLDAPObject:
     def result2(
         self,
         msgid: int = ldap.RES_ANY,
-        all: int = 1,
+        all: bool = True,
         timeout: float | None = None,
     ) -> tuple[int | None, Any | None, int | None]:
         resp_type, resp_data, resp_msgid, _resp_ctrls = self.result3(msgid, all, timeout)
@@ -815,23 +815,29 @@ class SimpleLDAPObject:
     def result3(
         self,
         msgid: int = ldap.RES_ANY,
-        all: int = 1,
+        all: bool = True,
         timeout: float | None = None,
         resp_ctrl_classes: dict[str, type[ResponseControl]] | None = None,
     ) -> tuple[int | None, Any | None, int | None, list[ResponseControl] | None]:
         resp_type, resp_data, resp_msgid, decoded_resp_ctrls, _retoid, _retval = self.result4(
-            msgid, all, timeout, add_ctrls=0, add_intermediates=0, add_extop=0, resp_ctrl_classes=resp_ctrl_classes
+            msgid,
+            all,
+            timeout,
+            add_ctrls=False,
+            add_intermediates=False,
+            add_extop=False,
+            resp_ctrl_classes=resp_ctrl_classes,
         )
         return resp_type, resp_data, resp_msgid, decoded_resp_ctrls
 
     def result4(
         self,
         msgid: int = ldap.RES_ANY,
-        all: int = 1,
+        all: bool = True,
         timeout: float | None = None,
-        add_ctrls: int = 0,
-        add_intermediates: int = 0,
-        add_extop: int = 0,
+        add_ctrls: bool = False,
+        add_intermediates: bool = False,
+        add_extop: bool = False,
         resp_ctrl_classes: dict[str, type[ResponseControl]] | None = None,
     ) -> tuple[int | None, Any | None, int | None, list[ResponseControl] | None, Any | None, Any | None]:
         if timeout is None:
@@ -856,18 +862,18 @@ class SimpleLDAPObject:
         scope: int,
         filterstr: str | None = None,
         attrlist: list[str] | None = None,
-        attrsonly: int = 0,
+        attrsonly: bool = False,
         serverctrls: list[RequestControl] | None = None,
         clientctrls: list[RequestControl] | None = None,
         timeout: float = -1,
         sizelimit: int = 0,
     ) -> int:
         """
-        search(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0]]]) -> int
-        search_s(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0]]])
-        search_st(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,timeout=-1]]]])
-        search_ext(base,scope,[,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,serverctrls=None [,clientctrls=None [,timeout=-1 [,sizelimit=0]]]]]]])
-        search_ext_s(base,scope,[,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=0 [,serverctrls=None [,clientctrls=None [,timeout=-1 [,sizelimit=0]]]]]]])
+        search(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=False]]]) -> int
+        search_s(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=False]]])
+        search_st(base, scope [,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=False [,timeout=-1]]]])
+        search_ext(base,scope,[,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=False [,serverctrls=None [,clientctrls=None [,timeout=-1 [,sizelimit=0]]]]]]])
+        search_ext_s(base,scope,[,filterstr='(objectClass=*)' [,attrlist=None [,attrsonly=False [,serverctrls=None [,clientctrls=None [,timeout=-1 [,sizelimit=0]]]]]]])
 
             Perform an LDAP search operation, with base as the DN of
             the entry at which to start the search, scope being one of
@@ -927,7 +933,7 @@ class SimpleLDAPObject:
         scope: int,
         filterstr: str | None = None,
         attrlist: list[str] | None = None,
-        attrsonly: int = 0,
+        attrsonly: bool = False,
         serverctrls: list[RequestControl] | None = None,
         clientctrls: list[RequestControl] | None = None,
         timeout: float = -1,
@@ -936,7 +942,7 @@ class SimpleLDAPObject:
         msgid = self.search_ext(
             base, scope, filterstr, attrlist, attrsonly, serverctrls, clientctrls, timeout, sizelimit
         )
-        return self.result(msgid, all=1, timeout=timeout)[1]  # type: ignore[return-value]
+        return self.result(msgid, all=True, timeout=timeout)[1]  # type: ignore[return-value]
 
     def search(
         self,
@@ -944,7 +950,7 @@ class SimpleLDAPObject:
         scope: int,
         filterstr: str | None = None,
         attrlist: list[str] | None = None,
-        attrsonly: int = 0,
+        attrsonly: bool = False,
     ) -> int:
         return self.search_ext(base, scope, filterstr, attrlist, attrsonly, None, None)
 
@@ -954,7 +960,7 @@ class SimpleLDAPObject:
         scope: int,
         filterstr: str | None = None,
         attrlist: list[str] | None = None,
-        attrsonly: int = 0,
+        attrsonly: bool = False,
     ) -> list[tuple[str, LDAPEntryDict]]:
         return self.search_ext_s(base, scope, filterstr, attrlist, attrsonly, None, None, timeout=self.timeout)
 
@@ -964,7 +970,7 @@ class SimpleLDAPObject:
         scope: int,
         filterstr: str | None = None,
         attrlist: list[str] | None = None,
-        attrsonly: int = 0,
+        attrsonly: bool = False,
         timeout: float = -1,
     ) -> list[tuple[str, LDAPEntryDict]]:
         return self.search_ext_s(base, scope, filterstr, attrlist, attrsonly, None, None, timeout)
@@ -1011,7 +1017,7 @@ class SimpleLDAPObject:
     ) -> None:
         msgid = self.unbind_ext(serverctrls, clientctrls)
         if msgid is not None:
-            self.result3(msgid, all=1, timeout=self.timeout)
+            self.result3(msgid, all=True, timeout=self.timeout)
         if __debug__ and self._trace_level >= 1:
             try:
                 self._trace_file.flush()
@@ -1136,7 +1142,7 @@ class SimpleLDAPObject:
         scope: int = ldap.SCOPE_SUBTREE,
         filterstr: str | None = None,
         attrlist: list[str] | None = None,
-        attrsonly: int = 0,
+        attrsonly: bool = False,
         serverctrls: list[RequestControl] | None = None,
         clientctrls: list[RequestControl] | None = None,
         timeout: float = -1,
