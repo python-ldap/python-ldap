@@ -107,6 +107,9 @@ class LDAPUrlExtension:
         self.extype = self.extype.strip()
 
     def unparse(self) -> str:
+        """
+        generate string representation of single LDAP URL extension
+        """
         if self.exvalue is None:
             return '{}{}'.format('!' * (self.critical > 0), self.extype)
         else:
@@ -183,6 +186,9 @@ class LDAPUrlExtensions(LDAPUrlExtensionsBase):
         return self._data == other._data
 
     def parse(self, extListStr: str) -> None:
+        """
+        parse string into list of LDAPURLExtension instances
+        """
         for extension_str in extListStr.strip().split(','):
             if extension_str:
                 ext = LDAPUrlExtension(extension_str)
@@ -190,6 +196,9 @@ class LDAPUrlExtensions(LDAPUrlExtensionsBase):
                     self[ext.extype] = ext
 
     def unparse(self) -> str:
+        """
+        return comma-separated string representation of LDAP URL extensions
+        """
         return ','.join(val.unparse() for val in self.values())
 
 

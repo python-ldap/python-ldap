@@ -120,7 +120,7 @@ def RequestControlTuples(
 ) -> list[tuple[str | None, bool, bytes | None]] | None:
     """
     Return list of readily encoded 3-tuples which can be directly
-    passed to C module _ldap
+    passed to C module ldap._ldap
 
     ldapControls
         sequence-type of RequestControl objects
