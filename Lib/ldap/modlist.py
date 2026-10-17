@@ -31,7 +31,7 @@ def addModlist(
         attrvaluelist = [item for item in value if item is not None]
         if attrvaluelist:
             modlist.append((attrtype, value))
-    return modlist  # addModlist()
+    return modlist
 
 
 def modifyModlist(
@@ -64,8 +64,8 @@ def modifyModlist(
     case_ignore_attr_types_set = {v.lower() for v in case_ignore_attr_types or []}
     modlist: list[LDAPModListModifyEntry] = []
     attrtype_lower_map = {}
-    for a in old_entry:
-        attrtype_lower_map[a.lower()] = a
+    for attr_type in old_entry:
+        attrtype_lower_map[attr_type.lower()] = attr_type
     for attrtype, value in new_entry.items():
         attrtype_lower = attrtype.lower()
         if attrtype_lower in ignore_attr_types_set:
@@ -101,10 +101,9 @@ def modifyModlist(
     if not ignore_oldexistent:
         # Remove all attributes of old_entry which are not present
         # in new_entry at all
-        for a, val in attrtype_lower_map.items():
-            if a in ignore_attr_types_set:
+        for atl, attrtype in attrtype_lower_map.items():
+            if atl in ignore_attr_types_set:
                 # This attribute type is ignored
                 continue
-            attrtype = val
             modlist.append((ldap.MOD_DELETE, attrtype, None))
-    return modlist  # modifyModlist()
+    return modlist

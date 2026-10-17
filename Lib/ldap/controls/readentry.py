@@ -37,8 +37,8 @@ class ReadEntryControl(LDAPControl):
 
     def encodeControlValue(self) -> bytes:
         attributeSelection = AttributeDescriptionList()
-        for i in range(len(self.attrList)):
-            attributeSelection.setComponentByPosition(i, self.attrList[i])
+        for i, attr in enumerate(self.attrList):
+            attributeSelection.setComponentByPosition(i, attr)
         return encoder.encode(attributeSelection)  # type: ignore
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:

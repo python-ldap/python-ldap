@@ -24,7 +24,8 @@ class ByOffsetType(univ.Sequence):
         tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)
     )
     componentType = namedtype.NamedTypes(
-        namedtype.NamedType('offset', univ.Integer()), namedtype.NamedType('contentCount', univ.Integer())
+        namedtype.NamedType('offset', univ.Integer()),
+        namedtype.NamedType('contentCount', univ.Integer()),
     )
 
 
@@ -74,9 +75,9 @@ class VLVRequestControl(RequestControl):
         self.context_id = context_id
 
     def encodeControlValue(self) -> bytes:
-        p = VirtualListViewRequestType()
-        p.setComponentByName('beforeCount', self.before_count)
-        p.setComponentByName('afterCount', self.after_count)
+        vlv = VirtualListViewRequestType()
+        vlv.setComponentByName('beforeCount', self.before_count)
+        vlv.setComponentByName('afterCount', self.after_count)
         if self.offset is not None and self.content_count is not None:
             by_offset = ByOffsetType()
             by_offset.setComponentByName('offset', self.offset)
@@ -88,10 +89,10 @@ class VLVRequestControl(RequestControl):
             target.setComponentByName('greaterThanOrEqual', self.greater_than_or_equal)
         else:
             raise NotImplementedError
-        p.setComponentByName('target', target)
+        vlv.setComponentByName('target', target)
         if self.context_id is not None:
-            p.setComponentByName('contextID', self.context_id)
-        return encoder.encode(p)  # type: ignore
+            vlv.setComponentByName('contextID', self.context_id)
+        return encoder.encode(vlv)  # type: ignore
 
 
 class VirtualListViewResultType(univ.Enumerated):
@@ -125,13 +126,13 @@ class VLVResponseControl(ResponseControl):
         ResponseControl.__init__(self, self.controlType, criticality)
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        p, rest = decoder.decode(encodedControlValue, asn1Spec=VirtualListViewResponseType())
+        drv, rest = decoder.decode(encodedControlValue, asn1Spec=VirtualListViewResponseType())
         assert not rest, 'all data could not be decoded'
-        self.targetPosition = int(p.getComponentByName('targetPosition'))
-        self.contentCount = int(p.getComponentByName('contentCount'))
-        virtual_list_view_result = p.getComponentByName('virtualListViewResult')
+        self.targetPosition = int(drv.getComponentByName('targetPosition'))
+        self.contentCount = int(drv.getComponentByName('contentCount'))
+        virtual_list_view_result = drv.getComponentByName('virtualListViewResult')
         self.virtualListViewResult = int(virtual_list_view_result)
-        context_id = p.getComponentByName('contextID')
+        context_id = drv.getComponentByName('contextID')
         if context_id.hasValue():
             self.contextID: str | None = str(context_id)
         else:
