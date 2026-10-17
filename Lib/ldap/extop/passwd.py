@@ -14,9 +14,18 @@ from ldap.extop import ExtendedResponse
 
 
 class PasswordModifyResponse(ExtendedResponse):
+    """
+    Password Modify extended response
+    """
+
     responseName = None
 
     class PasswordModifyResponseValue(univ.Sequence):
+        """
+        PasswdModifyResponseValue ::= SEQUENCE {
+           genPasswd [0] OCTET STRING OPTIONAL }
+        """
+
         componentType = namedtype.NamedTypes(
             namedtype.OptionalNamedType(
                 'genPasswd',
