@@ -15,6 +15,19 @@ import ldap
 from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl, RequestControl, ResponseControl
 
 
+__all__ = [
+    'AuthorizationIdentityRequestControl',
+    'AuthorizationIdentityResponseControl',
+    'BooleanControl',
+    'GetEffectiveRightsControl',
+    'ManageDSAITControl',
+    'OctetStringInteger',
+    'ProxyAuthzControl',
+    'RelaxRulesControl',
+    'ValueLessRequestControl',
+]
+
+
 class ValueLessRequestControl(RequestControl):
     """
     Base class for controls without a controlValue.

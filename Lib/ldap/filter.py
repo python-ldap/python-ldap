@@ -17,6 +17,9 @@ from ldap.functions import strf_secs
 from ldap.pkginfo import __version__  # noqa: F401
 
 
+__all__ = ['escape_filter_chars', 'filter_format', 'is_filter', 'time_span_filter']
+
+
 def escape_filter_chars(assertion_value: str, escape_mode: int = 0) -> str:
     """
     Replace all special characters found in assertion_value
