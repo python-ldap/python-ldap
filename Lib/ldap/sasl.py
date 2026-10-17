@@ -31,14 +31,31 @@ CB_ECHOPROMPT = 0x4005
 CB_NOECHOPROMPT = 0x4006
 CB_GETREALM = 0x4008
 
+# SASL mechs known to only require username and password
+SASL_PASSWORD_MECHS = {
+    'CRAM-MD5',
+    'DIGEST-MD5',
+    'LOGIN',
+    'NTLM',
+    'OTP',
+    'PLAIN',
+    'SCRAM-SHA-1',
+}
 
-class sasl:
+# SASL mechs known to not require application-provided authc information
+SASL_NONINTERACTIVE_MECHS = {
+    'EXTERNAL',
+    'GSSAPI',
+}
+
+
+class SaslAuth:
     """
     This class handles SASL interactions for authentication.
     If an instance of this class is passed to ldap's sasl_bind_s()
     method, the library will call its callback() method. For
     specific SASL authentication mechanisms, this method can be
-    overridden
+    overridden.
     """
 
     def __init__(self, cb_value_dict: dict[int, str], mech: str | bytes) -> None:
@@ -97,48 +114,61 @@ class sasl:
         return cb_result
 
 
-class cram_md5(sasl):
+sasl = SaslAuth  # for backwards compatibility
+
+
+class SaslPasswordAuth(SaslAuth):
+    """
+    This class handles password-based SASL authentication mechs
+    like PLAIN, DIGEST-MD5 or CRAM-MD5 etc.
+    """
+
+    def __init__(self, authc_id: str, password: str, authz_id: str = '', mech: str = '') -> None:
+        super().__init__({CB_AUTHNAME: authc_id, CB_PASS: password, CB_USER: authz_id}, mech)
+
+
+class cram_md5(SaslPasswordAuth):
     """
     This class handles SASL CRAM-MD5 authentication.
     """
 
     def __init__(self, authc_id: str, password: str, authz_id: str = '') -> None:
-        auth_dict = {
-            CB_AUTHNAME: authc_id,
-            CB_PASS: password,
-            CB_USER: authz_id,
-        }
-        sasl.__init__(self, auth_dict, 'CRAM-MD5')
+        super().__init__(authc_id, password, authz_id, 'CRAM-MD5')
 
 
-class digest_md5(sasl):
+class digest_md5(SaslPasswordAuth):
     """
     This class handles SASL DIGEST-MD5 authentication.
     """
 
     def __init__(self, authc_id: str, password: str, authz_id: str = '') -> None:
-        auth_dict = {
-            CB_AUTHNAME: authc_id,
-            CB_PASS: password,
-            CB_USER: authz_id,
-        }
-        sasl.__init__(self, auth_dict, 'DIGEST-MD5')
+        super().__init__(authc_id, password, authz_id, 'DIGEST-MD5')
 
 
-class gssapi(sasl):
+class SaslNoninteractiveAuth(SaslAuth):
+    """
+    This class handles non-interactive SASL authentication mechs
+    like EXTERNAL or GSSAPI.
+    """
+
+    def __init__(self, authz_id: str = '', mech: str = '') -> None:
+        super().__init__({CB_USER: authz_id}, mech)
+
+
+class gssapi(SaslNoninteractiveAuth):
     """
     This class handles SASL GSSAPI (i.e. Kerberos V) authentication.
     """
 
     def __init__(self, authz_id: str = '') -> None:
-        sasl.__init__(self, {CB_USER: authz_id}, 'GSSAPI')
+        super().__init__(authz_id, 'GSSAPI')
 
 
-class external(sasl):
+class external(SaslNoninteractiveAuth):
     """
     This class handles SASL EXTERNAL authentication
     (i.e. X.509 client certificate)
     """
 
     def __init__(self, authz_id: str = '') -> None:
-        sasl.__init__(self, {CB_USER: authz_id}, 'EXTERNAL')
+        super().__init__(authz_id, 'EXTERNAL')
