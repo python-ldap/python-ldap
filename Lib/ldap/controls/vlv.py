@@ -7,16 +7,16 @@ See https://www.python-ldap.org/ for project details.
 
 from __future__ import annotations
 
+from pyasn1.codec.ber import decoder, encoder
+from pyasn1.type import namedtype, namedval, tag, univ
+
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
+
 
 __all__ = [
     'VLVRequestControl',
     'VLVResponseControl',
 ]
-
-from pyasn1.codec.ber import decoder, encoder
-from pyasn1.type import namedtype, namedval, tag, univ
-
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
 
 
 class ByOffsetType(univ.Sequence):

@@ -5,12 +5,13 @@ ldap.controls.pwdpolicy - classes for Password Policy controls
 See https://www.python-ldap.org/ for project details.
 """
 
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, ResponseControl
+
+
 __all__ = [
     'PasswordExpiredControl',
     'PasswordExpiringControl',
 ]
-
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, ResponseControl
 
 
 class PasswordExpiringControl(ResponseControl):

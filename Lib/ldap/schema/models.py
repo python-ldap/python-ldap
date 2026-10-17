@@ -20,6 +20,22 @@ from ldap.schema.subentry import SCHEMA_ATTR_MAPPING, SCHEMA_CLASS_MAPPING
 from ldap.schema.tokenizer import LDAPTokenDict, parse_tokens, split_tokens
 
 
+__all__ = [
+    'NOT_HUMAN_READABLE_LDAP_SYNTAXES',
+    'AttributeType',
+    'AttributeUsage',
+    'DITContentRule',
+    'DITStructureRule',
+    'Entry',
+    'LDAPSyntax',
+    'MatchingRule',
+    'MatchingRuleUse',
+    'NameForm',
+    'ObjectClass',
+    'SchemaElement',
+]
+
+
 EntryBase: TypeAlias = MutableMapping[str, list[bytes]]
 
 

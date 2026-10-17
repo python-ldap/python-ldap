@@ -15,6 +15,9 @@ from ldap._types import LDAPEntryDict
 from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl
 
 
+__all__ = ['PostReadControl', 'PreReadControl', 'ReadEntryControl']
+
+
 class ReadEntryControl(LDAPControl):
     """
     Base class for read entry control described in RFC 4527

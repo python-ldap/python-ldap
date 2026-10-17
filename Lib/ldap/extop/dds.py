@@ -14,6 +14,9 @@ from pyasn1_modules.rfc2251 import LDAPDN
 from ldap.extop import ExtendedRequest, ExtendedResponse
 
 
+__all__ = ['RefreshRequest', 'RefreshResponse']
+
+
 class RefreshRequest(ExtendedRequest):
     requestName = '1.3.6.1.4.1.1466.101.119.1'
     defaultRequestTtl = 86400

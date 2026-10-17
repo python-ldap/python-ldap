@@ -6,6 +6,16 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import annotations
 
+import pprint
+import sys
+import time
+from calendar import timegm
+from typing import Any, BinaryIO, Callable, TextIO
+
+import ldap
+from ldap import LDAPError, _ldap
+from ldap.dn import explode_dn, explode_rdn
+from ldap.ldapobject import LDAPObject
 from ldap.pkginfo import __version__  # noqa: F401
 
 
@@ -19,18 +29,6 @@ __all__ = [
     'strf_secs',
     'strp_secs',
 ]
-
-import pprint
-import sys
-import time
-from calendar import timegm
-from typing import Any, BinaryIO, Callable, TextIO
-
-import ldap
-from ldap import LDAPError, _ldap
-from ldap.dn import explode_dn, explode_rdn
-from ldap.ldapobject import LDAPObject
-
 
 if __debug__:
     # Tracing is only supported in debugging mode
