@@ -27,6 +27,6 @@ class PasswordModifyResponse(ExtendedResponse):
         )
 
     def decodeResponseValue(self, value: bytes | None) -> bytes:
-        respValue, _ = decoder.decode(value, asn1Spec=self.PasswordModifyResponseValue())
-        self.genPasswd = bytes(respValue.getComponentByName('genPasswd'))
+        passmod_resp, _ = decoder.decode(value, asn1Spec=self.PasswordModifyResponseValue())
+        self.genPasswd = bytes(passmod_resp.getComponentByName('genPasswd'))
         return self.genPasswd

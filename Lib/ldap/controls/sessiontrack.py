@@ -55,17 +55,15 @@ class SessionTrackingControl(RequestControl):
     ) -> None:
         # criticality MUST be false for this control
         self.criticality = False
-        self.sessionSourceIp, self.sessionSourceName, self.formatOID, self.sessionTrackingIdentifier = (
-            sessionSourceIp,
-            sessionSourceName,
-            formatOID,
-            sessionTrackingIdentifier,
-        )
+        self.sessionSourceIp = sessionSourceIp
+        self.sessionSourceName = sessionSourceName
+        self.formatOID = formatOID
+        self.sessionTrackingIdentifier = sessionTrackingIdentifier
 
     def encodeControlValue(self) -> bytes:
-        s = self.SessionIdentifierControlValue()
-        s.setComponentByName('sessionSourceIp', LDAPString(self.sessionSourceIp))
-        s.setComponentByName('sessionSourceName', LDAPString(self.sessionSourceName))
-        s.setComponentByName('formatOID', LDAPOID(self.formatOID))
-        s.setComponentByName('sessionTrackingIdentifier', LDAPString(self.sessionTrackingIdentifier))
-        return encoder.encode(s)  # type: ignore
+        scv = self.SessionIdentifierControlValue()
+        scv.setComponentByName('sessionSourceIp', LDAPString(self.sessionSourceIp))
+        scv.setComponentByName('sessionSourceName', LDAPString(self.sessionSourceName))
+        scv.setComponentByName('formatOID', LDAPOID(self.formatOID))
+        scv.setComponentByName('sessionTrackingIdentifier', LDAPString(self.sessionTrackingIdentifier))
+        return encoder.encode(scv)  # type: ignore
