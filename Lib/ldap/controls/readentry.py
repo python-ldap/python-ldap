@@ -43,10 +43,10 @@ class ReadEntryControl(LDAPControl):
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
         decodedEntry, _ = decoder.decode(encodedControlValue, asn1Spec=SearchResultEntry())
-        self.dn = str(decodedEntry[0])
+        self.dn = bytes(decodedEntry[0]).decode('UTF-8')
         self.entry = {}
         for attr in decodedEntry[1]:
-            self.entry[str(attr[0])] = [bytes(attr_value) for attr_value in attr[1]]
+            self.entry[bytes(attr[0]).decode('ASCII')] = [bytes(attr_value) for attr_value in attr[1]]
 
 
 class PreReadControl(ReadEntryControl):
