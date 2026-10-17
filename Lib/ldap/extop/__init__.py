@@ -20,6 +20,7 @@ __all__ = [
     'ExtendedRequest',
     'ExtendedResponse',
     # passwd
+    'PasswordModifyRequest',
     'PasswordModifyResponse',
     # dds
     'RefreshRequest',
@@ -38,8 +39,9 @@ class ExtendedRequest:
         (here it is the BER-encoded ASN.1 request value)
     """
 
-    def __init__(self, requestName: str, requestValue: bytes | None) -> None:
-        self.requestName = requestName
+    def __init__(self, requestName: str | None, requestValue: bytes | None) -> None:
+        if requestName is not None:
+            self.requestName = requestName
         self.requestValue = requestValue
 
     def __repr__(self) -> str:
@@ -63,7 +65,7 @@ class ExtendedResponse:
         BER-encoded ASN.1 value of the LDAPv3 extended operation response
     """
 
-    responseName: str | None
+    responseName: str | None = None
 
     def __init__(self, responseName: str | None, encodedResponseValue: bytes | None) -> None:
         self.responseName = responseName
@@ -81,4 +83,4 @@ class ExtendedResponse:
 
 
 from ldap.extop.dds import RefreshRequest, RefreshResponse  # noqa: E402
-from ldap.extop.passwd import PasswordModifyResponse  # noqa: E402
+from ldap.extop.passwd import PasswordModifyRequest, PasswordModifyResponse  # noqa: E402
