@@ -7,19 +7,16 @@ See https://www.python-ldap.org/ for project details.
 
 from __future__ import annotations
 
-
-__all__ = [
-    'SSSRequestControl',
-    'SSSResponseControl',
-]
-
-
 from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import constraint, namedtype, namedval, tag, univ
 
 from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
 
 
+__all__ = [
+    'SSSRequestControl',
+    'SSSResponseControl',
+]
 #    SortKeyList ::= SEQUENCE OF SEQUENCE {
 #                     attributeType   AttributeDescription,
 #                     orderingRule    [0] MatchingRuleId OPTIONAL,

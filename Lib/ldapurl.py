@@ -6,8 +6,14 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import annotations
 
+import html
+from collections.abc import Iterator, MutableMapping
+from urllib.parse import quote, unquote
 
-__version__ = '3.4.7'
+from ldap._types import TypeAlias
+
+
+__version__ = '3.5.0'
 
 __all__ = [
     'LDAP_SCOPE_BASE',
@@ -23,12 +29,6 @@ __all__ = [
     # functions
     'isLDAPUrl',
 ]
-
-import html
-from collections.abc import Iterator, MutableMapping
-from urllib.parse import quote, unquote
-
-from ldap._types import TypeAlias
 
 
 LDAP_SCOPE_BASE = 0
