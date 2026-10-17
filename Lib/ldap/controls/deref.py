@@ -91,8 +91,8 @@ class DereferenceControl(LDAPControl):
         for i, (deref_attr, deref_attribute_names) in enumerate(self.derefSpecs.items()):
             deref_spec = DerefSpec()
             deref_attributes = AttributeList()
-            for j in range(len(deref_attribute_names)):
-                deref_attributes.setComponentByPosition(j, deref_attribute_names[j])
+            for j, deref_attribute_name in enumerate(deref_attribute_names):
+                deref_attributes.setComponentByPosition(j, deref_attribute_name)
             deref_spec.setComponentByName('derefAttr', AttributeDescription(deref_attr))
             deref_spec.setComponentByName('attributes', deref_attributes)
             deref_specs.setComponentByPosition(i, deref_spec)

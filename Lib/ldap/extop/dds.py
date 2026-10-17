@@ -41,18 +41,18 @@ class RefreshRequest(ExtendedRequest):
         self.requestTtl = requestTtl or self.defaultRequestTtl
 
     def encodedRequestValue(self) -> bytes:
-        p = self.RefreshRequestValue()
-        p.setComponentByName(
+        req_value = self.RefreshRequestValue()
+        req_value.setComponentByName(
             'entryName',
             LDAPDN(self.entryName).subtype(implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 0)),
         )
-        p.setComponentByName(
+        req_value.setComponentByName(
             'requestTtl',
             univ.Integer(self.requestTtl).subtype(  # type: ignore[no-untyped-call]
                 implicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatSimple, 1)
             ),
         )
-        return encoder.encode(p)  # type: ignore[no-any-return]
+        return encoder.encode(req_value)  # type: ignore[no-any-return]
 
 
 class RefreshResponse(ExtendedResponse):
@@ -69,6 +69,6 @@ class RefreshResponse(ExtendedResponse):
         )
 
     def decodeResponseValue(self, value: bytes | None) -> int:
-        respValue, _ = decoder.decode(value, asn1Spec=self.RefreshResponseValue())
-        self.responseTtl = int(respValue.getComponentByName('responseTtl'))
+        refresh_response, _ = decoder.decode(value, asn1Spec=self.RefreshResponseValue())
+        self.responseTtl = int(refresh_response.getComponentByName('responseTtl'))
         return self.responseTtl
