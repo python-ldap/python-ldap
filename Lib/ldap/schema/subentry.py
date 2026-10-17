@@ -9,7 +9,7 @@ from __future__ import annotations
 import copy
 import warnings
 from collections.abc import Iterable, MutableMapping
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 from urllib.request import urlopen
 
 import ldap.schema
@@ -98,7 +98,6 @@ class SubSchema:
         sub_schema_sub_entry: LDAPEntryDict,
         check_uniqueness: int = 1,
     ) -> None:
-
         # SchemaElement class -> Element name -> Element OID
         self.name2oid: dict[type[SchemaElement], cidict[str]] = {}
 
@@ -151,13 +150,10 @@ class SubSchema:
                         if check_uniqueness and name in self.name2oid[se_class]:
                             self.non_unique_names[se_class][se_id] = None
                             raise NameNotUnique(attr_value.decode('utf-8', errors='backslashreplace'))
-                        else:
-                            self.name2oid[se_class][name] = se_id
+                        self.name2oid[se_class][name] = se_id
 
         # Turn set into list, maybe more handy for applications
         self.non_unique_oids = list(non_unique_oids)
-
-        # return subSchema.__init__()
 
     def ldap_entry(self) -> dict[str, list[str]]:
         """
@@ -276,15 +272,12 @@ class SubSchema:
         if nameoroid_stripped in self.sed[se_class]:
             # name_or_oid is already a registered OID
             return nameoroid_stripped
-        else:
-            try:
-                result_oid = self.name2oid[se_class][nameoroid_stripped]
-            except KeyError:
-                if raise_keyerror:
-                    raise KeyError(f'No registered {se_class.__name__}-OID for nameoroid {nameoroid_stripped!r}')
-                else:
-                    result_oid = nameoroid_stripped
-        return result_oid
+        try:
+            return self.name2oid[se_class][nameoroid_stripped]
+        except KeyError:
+            if raise_keyerror:
+                raise KeyError(f'No registered {se_class.__name__}-OID for nameoroid {nameoroid_stripped!r}')
+            return nameoroid_stripped
 
     def get_inheritedattr(
         self,
@@ -300,10 +293,7 @@ class SubSchema:
         Raises KeyError if no schema element is found by nameoroid.
         """
         se = self.sed[se_class][self.getoid(se_class, nameoroid)]
-        try:
-            result = getattr(se, name)
-        except AttributeError:
-            result = None
+        result = getattr(se, name, None)
         if result is None and hasattr(se, 'sup') and se.sup:
             assert isinstance(se.sup, list)
             # FIXME: sup can be multi-valued
@@ -326,19 +316,13 @@ class SubSchema:
         """
         se_oid = self.getoid(se_class, nameoroid)
         try:
-            se_obj = self.sed[se_class][se_oid]
+            return cast(SchemaElementSubclass, self.sed[se_class][se_oid])
         except KeyError:
             if raise_keyerror:
                 raise KeyError(
                     f'No ldap.schema.{se_class.__name__} instance with nameoroid {nameoroid!r} and se_oid {se_oid!r}'
                 )
-            elif default is None:
-                return None
-            else:
-                se_obj = default
-
-        assert isinstance(se_obj, se_class)
-        return se_obj
+            return default
 
     def get_inheritedobj(
         self,
@@ -421,9 +405,8 @@ class SubSchema:
         if content_rule:
             # Return AUXILIARY object classes from DITContentRule instance
             return list(content_rule.aux)
-        else:
-            # list all AUXILIARY object classes
-            return self.listall(ObjectClass, [('kind', [2])])
+        # list all AUXILIARY object classes
+        return self.listall(ObjectClass, [('kind', [2])])
 
     def attribute_types(  # noqa: C901
         self,
@@ -546,7 +529,7 @@ class SubSchema:
                                 del l[a]
                                 break
 
-        return r_must, r_may  # attribute_types()
+        return r_must, r_may
 
 
 def urlfetch(

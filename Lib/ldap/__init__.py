@@ -50,10 +50,7 @@ from ldap._ldap import *  # noqa: E402
 # call into libldap to initialize it right now
 LIBLDAP_API_INFO = _ldap.get_option(_ldap.OPT_API_INFO)
 
-OPT_NAMES_DICT = {}
-for k, v in vars(_ldap).items():
-    if k.startswith('OPT_'):
-        OPT_NAMES_DICT[v] = k
+OPT_NAMES_DICT = {val: key for key, val in vars(_ldap).items() if key.startswith('OPT_')}
 
 LDAPLockBaseClass = threading.Lock
 

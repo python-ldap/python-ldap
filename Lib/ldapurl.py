@@ -172,7 +172,7 @@ class LDAPUrlExtensions(LDAPUrlExtensionsBase):
         return len(self._data)
 
     def __str__(self) -> str:
-        return ','.join(str(v) for v in self.values())
+        return ','.join(str(val) for val in self.values())
 
     def __repr__(self) -> str:
         return f'<{self.__class__.__module__}.{self.__class__.__name__} instance at {hex(id(self))}: {self._data}>'
@@ -185,12 +185,12 @@ class LDAPUrlExtensions(LDAPUrlExtensionsBase):
     def parse(self, extListStr: str) -> None:
         for extension_str in extListStr.strip().split(','):
             if extension_str:
-                e = LDAPUrlExtension(extension_str)
-                if e.extype is not None:
-                    self[e.extype] = e
+                ext = LDAPUrlExtension(extension_str)
+                if ext.extype is not None:
+                    self[ext.extype] = ext
 
     def unparse(self) -> str:
-        return ','.join(v.unparse() for v in self.values())
+        return ','.join(val.unparse() for val in self.values())
 
 
 class LDAPUrl:
@@ -285,19 +285,18 @@ class LDAPUrl:
             self.hostport = unquote(rest)
             self.dn = ''
             return
+        if slash_pos != -1 and (qemark_pos == -1 or (slash_pos < qemark_pos)):
+            # Slash separates DN from hostport
+            self.hostport = unquote(rest[:slash_pos])
+            # Eat the slash from rest
+            rest = rest[slash_pos + 1 :]
+        elif qemark_pos != 1 and (slash_pos == -1 or (slash_pos > qemark_pos)):
+            # Question mark separates hostport from rest, DN is assumed to be empty
+            self.hostport = unquote(rest[:qemark_pos])
+            # Do not eat question mark
+            rest = rest[qemark_pos:]
         else:
-            if slash_pos != -1 and (qemark_pos == -1 or (slash_pos < qemark_pos)):
-                # Slash separates DN from hostport
-                self.hostport = unquote(rest[:slash_pos])
-                # Eat the slash from rest
-                rest = rest[slash_pos + 1 :]
-            elif qemark_pos != 1 and (slash_pos == -1 or (slash_pos > qemark_pos)):
-                # Question mark separates hostport from rest, DN is assumed to be empty
-                self.hostport = unquote(rest[:qemark_pos])
-                # Do not eat question mark
-                rest = rest[qemark_pos:]
-            else:
-                raise ValueError('Something completely weird happened!')
+            raise ValueError('Something completely weird happened!')
         paramlist = rest.split('?', 4)
         paramlist_len = len(paramlist)
         if paramlist_len >= 1:

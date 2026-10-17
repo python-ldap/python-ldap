@@ -79,7 +79,7 @@ class SSSRequestControl(RequestControl):
             if reverse_order:
                 rule = rule[1:]
             if ':' in rule:
-                attribute_type, ordering_rule = rule.split(':')
+                attribute_type, ordering_rule = rule.split(':', 1)
             else:
                 attribute_type, ordering_rule = rule, None
             q.setComponentByName('attributeType', attribute_type)
