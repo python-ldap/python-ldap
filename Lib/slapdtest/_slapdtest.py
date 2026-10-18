@@ -505,7 +505,7 @@ class SlapdObject:
 
     def _cli_slap(
         self, cmd: str | None = None, extra_args: list[str] | None = None, stdin_data: bytes | None = None
-    ):  # pragma: no cover
+    ) -> tuple[bytes, bytes]:  # pragma: no cover
         """Entry point for slap* commands directly modifying DB files."""
         if self._proc is not None:
             self._log.warning('Directly modifying DB files while slapd is running')
@@ -528,7 +528,7 @@ class SlapdObject:
         bind_pw: str | None = None,
         stdin_data: bytes | None = None,
         tool: str | None = None,
-    ):  # pragma: no cover
+    ) -> tuple[bytes, bytes]:  # pragma: no cover
         """
         Entry point for ldap* commands, interacting with running slapd
         """
@@ -568,7 +568,7 @@ class SlapdObject:
         return self._cli_exec(args, stdin_data=stdin_data)
 
     # no cover to avoid spurious coverage changes
-    def _cli_exec(self, args, stdin_data=None):  # pragma: no cover
+    def _cli_exec(self, args: list[str], stdin_data: bytes | None = None) -> tuple[bytes, bytes]:  # pragma: no cover
         self._log.debug('Run command: %r', ' '.join(args))
         proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         self._log.debug('stdin_data=%r', stdin_data)
@@ -585,19 +585,19 @@ class SlapdObject:
         """
         Runs ldapwhoami on this slapd instance
         """
-        return self._cli_ldap(self.PATH_LDAPWHOAMI, extra_args=extra_args, **kws)
+        self._cli_ldap(self.PATH_LDAPWHOAMI, extra_args=extra_args, **kws)
 
     def ldapadd(self, ldif: str, extra_args: list[str] | None = None, **kws: Any) -> None:
         """
         Runs ldapadd on this slapd instance, passing it the ldif content
         """
-        return self._cli_ldap(self.PATH_LDAPADD, extra_args=extra_args, stdin_data=ldif.encode('utf-8'), **kws)
+        self._cli_ldap(self.PATH_LDAPADD, extra_args=extra_args, stdin_data=ldif.encode('utf-8'), **kws)
 
     def ldapmodify(self, ldif: str, extra_args: list[str] | None = None, **kws: Any) -> None:
         """
         Runs ldapmodify on this slapd instance, passing it the ldif content
         """
-        return self._cli_ldap(self.PATH_LDAPMODIFY, extra_args=extra_args, stdin_data=ldif.encode('utf-8'), **kws)
+        self._cli_ldap(self.PATH_LDAPMODIFY, extra_args=extra_args, stdin_data=ldif.encode('utf-8'), **kws)
 
     def ldapdelete(self, dn: str, recursive: bool = False, extra_args: list[str] | None = None, **kws: Any) -> None:
         """
@@ -608,13 +608,13 @@ class SlapdObject:
         if recursive:
             extra_args.append('-r')
         extra_args.append(dn)
-        return self._cli_ldap(self.PATH_LDAPDELETE, extra_args=extra_args, **kws)
+        self._cli_ldap(self.PATH_LDAPDELETE, extra_args=extra_args, **kws)
 
     def slapadd(self, ldif: str | None, extra_args: list[str] | None = None) -> None:
         """
         Runs slapadd on this slapd instance, passing it the ldif content
         """
-        return self._cli_slap(
+        self._cli_slap(
             'add',
             stdin_data=ldif.encode('utf-8') if ldif else None,
             extra_args=extra_args,
