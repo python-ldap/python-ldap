@@ -27,6 +27,7 @@ jobs:
           - "3.13"
           - "3.13t"
           - "3.14"
+          - "3.15"
           - "3.14t"
           - "pypy3.9"
           - "pypy3.10"
@@ -67,6 +68,7 @@ jobs:
           - py312
           - py313
           - py314
+          - py315
           - py3-nosasltls
           - py3-trace
           - pypy3
