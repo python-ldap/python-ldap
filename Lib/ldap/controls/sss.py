@@ -97,7 +97,7 @@ class SSSRequestControl(RequestControl):
             p.setComponentByPosition(i, q)
         return p
 
-    def encodeControlValue(self) -> bytes:
+    def encode(self) -> bytes:
         return encoder.encode(self.asn1())  # type: ignore
 
 
@@ -138,8 +138,8 @@ class SSSResponseControl(ResponseControl):
     def __init__(self, criticality: bool = False):
         ResponseControl.__init__(self, self.controlType, criticality)
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        p, rest = decoder.decode(encodedControlValue, asn1Spec=SortResultType())
+    def decode(self, value: bytes) -> None:
+        p, rest = decoder.decode(value, asn1Spec=SortResultType())
         assert not rest, 'all data could not be decoded'
         sort_result = p.getComponentByName('sortResult')
         self.sortResult = int(sort_result)

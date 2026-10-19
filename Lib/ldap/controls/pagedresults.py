@@ -35,7 +35,7 @@ class SimplePagedResultsControl(RequestControl, ResponseControl, register=False)
         size: int = 10,
         cookie: str | bytes | None = '',
     ) -> None:
-        self.criticality = criticality
+        super().__init__(self.controlType, criticality)
         self.size = size
 
         if cookie is None:
@@ -45,13 +45,13 @@ class SimplePagedResultsControl(RequestControl, ResponseControl, register=False)
         else:
             self.cookie = cookie
 
-    def encodeControlValue(self) -> bytes:
+    def encode(self) -> bytes:
         pc = PagedResultsControlValue()
         pc.setComponentByName('size', univ.Integer(self.size))
         pc.setComponentByName('cookie', LDAPString(self.cookie))
         return encoder.encode(pc)  # type: ignore
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=PagedResultsControlValue())
+    def decode(self, value: bytes) -> None:
+        decodedValue, _ = decoder.decode(value, asn1Spec=PagedResultsControlValue())
         self.size = int(decodedValue.getComponentByName('size'))
         self.cookie = bytes(decodedValue.getComponentByName('cookie'))

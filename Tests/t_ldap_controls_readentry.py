@@ -17,11 +17,11 @@ PRC_DEC = b'0\x0b\x04\tentryUUID'
 class TestLibldapControls(unittest.TestCase):
     def test_pagedresults_encode(self):
         pr = readentry.PostReadControl(True, ['entryUUID'])
-        self.assertEqual(pr.encodeControlValue(), PRC_DEC)
+        self.assertEqual(pr.encode(), PRC_DEC)
 
     def test_readentry_decode(self):
         pr = readentry.PostReadControl(True, ['entryUUID'])
-        pr.decodeControlValue(PRC_ENC)
+        pr.decode(PRC_ENC)
         self.assertIsInstance(pr.dn, str)
         self.assertEqual(pr.entry, {'entryUUID': [b'5d96cc2c-8e13-103a-8ca5-2f74868e0e44']})
 

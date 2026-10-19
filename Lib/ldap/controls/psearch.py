@@ -65,12 +65,14 @@ class PersistentSearchControl(RequestControl):
         changesOnly: bool = False,
         returnECs: bool = True,
     ) -> None:
-        self.criticality, self.changesOnly, self.returnECs = criticality, changesOnly, returnECs
+        super().__init__(self.controlType, criticality)
+        self.changesOnly = changesOnly
+        self.returnECs = returnECs
         if isinstance(changeTypes, int):
             changeTypes = [changeTypes]
         self.changeTypes = changeTypes or CHANGE_TYPES_INT.keys()
 
-    def encodeControlValue(self) -> bytes:
+    def encode(self) -> bytes:
         # Assume a sequence type of names of integers to be OR-ed
         changeTypes_int = 0
         for ct in self.changeTypes:
@@ -120,8 +122,8 @@ class EntryChangeNotificationControl(ResponseControl):
 
     controlType = '2.16.840.1.113730.3.4.7'
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        ecncValue, _ = decoder.decode(encodedControlValue, asn1Spec=EntryChangeNotificationValue())
+    def decode(self, value: bytes) -> None:
+        ecncValue, _ = decoder.decode(value, asn1Spec=EntryChangeNotificationValue())
         self.changeType = int(ecncValue.getComponentByName('changeType'))
         previousDN = ecncValue.getComponentByName('previousDN')
         if previousDN.hasValue():

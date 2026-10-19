@@ -32,10 +32,10 @@ class AssertionControl(RequestControl):
     controlType = ldap.CONTROL_ASSERT
 
     def __init__(self, criticality: bool = True, filterstr: str = '(objectClass=*)') -> None:
-        self.criticality = criticality
+        super().__init__(self.controlType, criticality)
         self.filterstr = filterstr
 
-    def encodeControlValue(self) -> bytes:
+    def encode(self) -> bytes:
         return _ldap.encode_assertion_control(self.filterstr)  # type: ignore
 
 
@@ -55,10 +55,10 @@ class MatchedValuesControl(RequestControl):
         criticality: bool = False,
         filterstr: str = '(objectClass=*)',
     ) -> None:
-        self.criticality = criticality
+        super().__init__(self.controlType, criticality)
         self.filterstr = filterstr
 
-    def encodeControlValue(self) -> bytes:
+    def encode(self) -> bytes:
         return _ldap.encode_valuesreturnfilter_control(self.filterstr)  # type: ignore
 
 
@@ -75,11 +75,11 @@ class SimplePagedResultsControl(LDAPControl):
     controlType = ldap.CONTROL_PAGEDRESULTS
 
     def __init__(self, criticality: bool = False, size: int | None = None, cookie: str | bytes | None = None) -> None:
-        self.criticality = criticality
+        super().__init__(self.controlType, criticality)
         self.size, self.cookie = size, cookie
 
-    def encodeControlValue(self) -> bytes:
+    def encode(self) -> bytes:
         return _ldap.encode_page_control(self.size, self.cookie)  # type: ignore
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        self.size, self.cookie = _ldap.decode_page_control(encodedControlValue)
+    def decode(self, value: bytes) -> None:
+        self.size, self.cookie = _ldap.decode_page_control(value)

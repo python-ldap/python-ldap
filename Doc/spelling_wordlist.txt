@@ -71,12 +71,9 @@ isn
 Keepalive
 Kerberos
 keyerror
-knownLDAPControls
 kwarg
 ldap
 ldapadd
-ldapControls
-ldapControlTuples
 ldapdelete
 ldapi
 LDAPObject
@@ -142,6 +139,7 @@ stderr
 stdout
 str
 Subclasses
+subclasses
 subentry
 subschema
 substr
