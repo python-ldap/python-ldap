@@ -12,7 +12,7 @@ from pyasn1_modules.rfc2251 import AttributeDescriptionList, SearchResultEntry
 
 import ldap
 from ldap._types import LDAPEntryDict
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl
+from ldap.controls import LDAPControl
 
 
 __all__ = ['PostReadControl', 'PreReadControl', 'ReadEntryControl']
@@ -72,9 +72,6 @@ class PreReadControl(ReadEntryControl):
     controlType = ldap.CONTROL_PRE_READ
 
 
-KNOWN_RESPONSE_CONTROLS[PreReadControl.controlType] = PreReadControl
-
-
 class PostReadControl(ReadEntryControl):
     """
     Class for post-read control described in RFC 4527
@@ -93,6 +90,3 @@ class PostReadControl(ReadEntryControl):
     """
 
     controlType = ldap.CONTROL_POST_READ
-
-
-KNOWN_RESPONSE_CONTROLS[PostReadControl.controlType] = PostReadControl

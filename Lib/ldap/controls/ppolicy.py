@@ -10,7 +10,7 @@ from __future__ import annotations
 from pyasn1.codec.der import decoder
 from pyasn1.type import constraint, namedtype, namedval, tag, univ
 
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, ResponseControl, ValueLessRequestControl
+from ldap.controls import ResponseControl, ValueLessRequestControl
 
 
 __all__ = ['PasswordPolicyControl']
@@ -103,6 +103,3 @@ class PasswordPolicyControl(ValueLessRequestControl, ResponseControl):
         error = ppolicyValue.getComponentByName('error')
         if error.hasValue():
             self.error = int(error)
-
-
-KNOWN_RESPONSE_CONTROLS[PasswordPolicyControl.controlType] = PasswordPolicyControl

@@ -19,7 +19,7 @@ from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import constraint, namedtype, namedval, univ
 from pyasn1_modules.rfc2251 import LDAPDN
 
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
+from ldap.controls import RequestControl, ResponseControl
 
 
 # ---------------------------------------------------------------------------
@@ -133,6 +133,3 @@ class EntryChangeNotificationControl(ResponseControl):
             self.changeNumber: int | None = int(changeNumber)
         else:
             self.changeNumber = None
-
-
-KNOWN_RESPONSE_CONTROLS[EntryChangeNotificationControl.controlType] = EntryChangeNotificationControl

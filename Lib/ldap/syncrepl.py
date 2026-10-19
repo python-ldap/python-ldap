@@ -14,7 +14,7 @@ from pyasn1.type import constraint, namedtype, namedval, tag, univ
 
 from ldap import RES_INTERMEDIATE, RES_SEARCH_ENTRY, RES_SEARCH_RESULT
 from ldap._types import LDAPEntryDict
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
+from ldap.controls import RequestControl, ResponseControl
 from ldap.ldapobject import SimpleLDAPObject
 from ldap.pkginfo import __author__, __license__, __version__  # noqa: F401
 
@@ -171,9 +171,6 @@ class SyncStateControl(ResponseControl):
         self.entryUUID = str(uuid)
 
 
-KNOWN_RESPONSE_CONTROLS[SyncStateControl.controlType] = SyncStateControl
-
-
 class SyncDoneValue(univ.Sequence):
     """
     syncDoneValue ::= SEQUENCE {
@@ -213,9 +210,6 @@ class SyncDoneControl(ResponseControl):
             self.refreshDeletes = bool(refresh_deletes)
         else:
             self.refreshDeletes = False
-
-
-KNOWN_RESPONSE_CONTROLS[SyncDoneControl.controlType] = SyncDoneControl
 
 
 class RefreshDelete(univ.Sequence):

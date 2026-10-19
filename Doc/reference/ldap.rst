@@ -1253,7 +1253,7 @@ and wait for and return with the server's result, or with
    consider using the method :py:meth:`extop_result()` or
    :py:meth:`extop_s()` instead.
 
-   *resp_ctrl_classes* is a dictionary mapping the OID of a response controls to a
+   *resp_ctrl_classes* is a dictionary mapping the OID of a response control to a
    :py:class:`ldap.controls.ResponseControl` class of response controls known by the
    application. So the response control value will be automatically decoded.
    If :py:const:`None` the global dictionary :py:data:`ldap.controls.KNOWN_RESPONSE_CONTROLS`

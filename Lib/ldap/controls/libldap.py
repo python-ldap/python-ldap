@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import ldap
 from ldap import _ldap
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl, RequestControl
+from ldap.controls import LDAPControl, RequestControl
 from ldap.pkginfo import __version__
 
 
@@ -83,6 +83,3 @@ class SimplePagedResultsControl(LDAPControl):
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
         self.size, self.cookie = _ldap.decode_page_control(encodedControlValue)
-
-
-KNOWN_RESPONSE_CONTROLS[ldap.CONTROL_PAGEDRESULTS] = SimplePagedResultsControl
