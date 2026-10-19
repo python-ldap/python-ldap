@@ -10,7 +10,7 @@ from __future__ import annotations
 from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import constraint, namedtype, namedval, tag, univ
 
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
+from ldap.controls import RequestControl, ResponseControl
 
 
 __all__ = [
@@ -151,6 +151,3 @@ class SSSResponseControl(ResponseControl):
         # backward compatibility class attributes
         self.result = self.sortResult
         self.attribute_type_error = self.attributeType
-
-
-KNOWN_RESPONSE_CONTROLS[SSSResponseControl.controlType] = SSSResponseControl

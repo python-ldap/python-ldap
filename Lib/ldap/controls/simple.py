@@ -12,7 +12,7 @@ from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import univ
 
 import ldap
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl, RequestControl, ResponseControl
+from ldap.controls import LDAPControl, RequestControl, ResponseControl
 
 
 __all__ = [
@@ -154,9 +154,6 @@ class AuthorizationIdentityResponseControl(ResponseControl):
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
         self.authzId = encodedControlValue.decode('utf-8')
-
-
-KNOWN_RESPONSE_CONTROLS[AuthorizationIdentityResponseControl.controlType] = AuthorizationIdentityResponseControl
 
 
 class GetEffectiveRightsControl(RequestControl):

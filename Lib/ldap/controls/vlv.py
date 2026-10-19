@@ -10,7 +10,7 @@ from __future__ import annotations
 from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import namedtype, namedval, tag, univ
 
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
+from ldap.controls import RequestControl, ResponseControl
 
 
 __all__ = [
@@ -142,6 +142,3 @@ class VLVResponseControl(ResponseControl):
         self.content_count = self.contentCount
         self.result = self.virtualListViewResult
         self.context_id = self.contextID
-
-
-KNOWN_RESPONSE_CONTROLS[VLVResponseControl.controlType] = VLVResponseControl

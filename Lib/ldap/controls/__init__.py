@@ -83,6 +83,13 @@ class ResponseControl:
         sets the criticality of the received control (boolean)
     """
 
+    def __init_subclass__(cls, *, register: bool = True, **kwargs: object) -> None:
+        super().__init_subclass__(**kwargs)
+
+        control_type = cls.__dict__.get('controlType')  # prevent inherited classes to be registered
+        if register and control_type:
+            KNOWN_RESPONSE_CONTROLS.setdefault(control_type, cls)
+
     def __init__(self, controlType: str | None = None, criticality: bool = False) -> None:
         self.controlType = controlType
         self.criticality = criticality
