@@ -34,18 +34,18 @@ class ReadEntryControl(LDAPControl):
     """
 
     def __init__(self, criticality: bool = False, attrList: list[str] | None = None) -> None:
-        self.criticality = criticality
+        super().__init__(self.controlType, criticality)
         self.attrList = attrList or []
         self.entry: LDAPEntryDict | None = None
 
-    def encodeControlValue(self) -> bytes:
+    def encode(self) -> bytes:
         attributeSelection = AttributeDescriptionList()
         for i, attr in enumerate(self.attrList):
             attributeSelection.setComponentByPosition(i, attr)
         return encoder.encode(attributeSelection)  # type: ignore
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        decodedEntry, _ = decoder.decode(encodedControlValue, asn1Spec=SearchResultEntry())
+    def decode(self, value: bytes) -> None:
+        decodedEntry, _ = decoder.decode(value, asn1Spec=SearchResultEntry())
         self.dn = str(decodedEntry[0])
         self.entry = {}
         for attr in decodedEntry[1]:
