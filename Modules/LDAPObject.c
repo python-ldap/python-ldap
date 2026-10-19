@@ -1313,6 +1313,48 @@ l_ldap_whoami_s(LDAPObject *self, PyObject *args)
     return result;
 }
 
+static PyObject *
+l_ldap_whoami(LDAPObject *self, PyObject *args)
+{
+    PyObject *serverctrls = Py_None;
+    PyObject *clientctrls = Py_None;
+    LDAPControl **server_ldcs = NULL;
+    LDAPControl **client_ldcs = NULL;
+    int msgid;
+    int ldaperror;
+
+    if (!PyArg_ParseTuple(args, "|OO:whoami", &serverctrls, &clientctrls))
+        return NULL;
+    if (not_valid(self))
+        return NULL;
+
+    if (!Py_IsNone(serverctrls)) {
+        if (!LDAPControls_from_object(serverctrls, &server_ldcs))
+            return NULL;
+    }
+
+    if (!Py_IsNone(clientctrls)) {
+        if (!LDAPControls_from_object(clientctrls, &client_ldcs)) {
+            LDAPControl_List_DEL(server_ldcs);
+            return NULL;
+        }
+    }
+
+    LDAP_BEGIN_ALLOW_THREADS(self);
+    ldaperror = ldap_whoami(self->ldap, server_ldcs, client_ldcs, &msgid);
+    LDAP_END_ALLOW_THREADS(self);
+
+    LDAPControl_List_DEL(server_ldcs);
+    LDAPControl_List_DEL(client_ldcs);
+
+    if (ldaperror != LDAP_SUCCESS) {
+        PyObject *module = PyType_GetModuleByDef(Py_TYPE((PyObject *)self), LDAPMod_moduledef);
+        return LDAPerror(module, self->ldap);
+    }
+
+    return PyLong_FromLong(msgid);
+}
+
 #ifdef HAVE_TLS
 /* ldap_start_tls_s */
 
@@ -1530,6 +1572,7 @@ static PyMethodDef l_ldap_methods[] = {
 #ifdef HAVE_TLS
     {"start_tls_s", (PyCFunction)l_ldap_start_tls_s, METH_VARARGS},
 #endif
+    {"whoami", (PyCFunction)l_ldap_whoami, METH_VARARGS},
     {"whoami_s", (PyCFunction)l_ldap_whoami_s, METH_VARARGS},
     {"passwd", (PyCFunction)l_ldap_passwd, METH_VARARGS},
     {"set_option", (PyCFunction)l_ldap_set_option, METH_VARARGS},

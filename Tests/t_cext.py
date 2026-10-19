@@ -687,9 +687,15 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertEqual(pmsg[0][1]['cn'], [b'IAmRenamedAgain'])
 
     def test_whoami(self):
+        authzid = 'dn:' + self.server.root_dn
         l = self._open_conn()
         r = l.whoami_s()
-        self.assertEqual('dn:' + self.server.root_dn, r)
+        self.assertEqual(authzid, r)
+
+        m = l.whoami()
+        _type, _data, _msgid, _ctrls, oid, value = l.result4(m, _ldap.MSG_ALL, self.timeout, 0, 0, 1)
+        self.assertIsNone(oid)
+        self.assertEqual(value, authzid.encode('UTF-8'))
 
     def test_whoami_unbound(self):
         l = self._open_conn(bind=False)
@@ -863,6 +869,7 @@ class TestLdapCExtension(SlapdTestCase):
         l = self._open_conn()
         self.assertInvalidControls(l.simple_bind, '', '')
         self.assertInvalidControls(l.whoami_s)
+        self.assertInvalidControls(l.whoami)
         self.assertInvalidControls(l.passwd, 'dn', 'initial', 'changed')
         self.assertInvalidControls(l.add_ext, 'dn', [('cn', b'cn')])
         self.assertInvalidControls(l.modify_ext, 'dn', [(_ldap.MOD_ADD, 'attr', [b'value'])])
