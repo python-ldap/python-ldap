@@ -10,7 +10,7 @@ from __future__ import annotations
 from pyasn1.codec.der import decoder
 from pyasn1.type import constraint, namedtype, namedval, tag, univ
 
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, ResponseControl, ValueLessRequestControl
+from ldap.controls import ResponseControl, ValueLessRequestControl
 
 
 __all__ = ['PasswordPolicyControl']
@@ -86,13 +86,13 @@ class PasswordPolicyControl(ValueLessRequestControl, ResponseControl):
     controlType = '1.3.6.1.4.1.42.2.27.8.5.1'
 
     def __init__(self, criticality: bool = False) -> None:
-        self.criticality = criticality
+        super().__init__(self.controlType, criticality)
         self.timeBeforeExpiration: int | None = None
         self.graceAuthNsRemaining: int | None = None
         self.error: int | None = None
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        ppolicyValue, _ = decoder.decode(encodedControlValue, asn1Spec=PasswordPolicyResponseValue())
+    def decode(self, value: bytes) -> None:
+        ppolicyValue, _ = decoder.decode(value, asn1Spec=PasswordPolicyResponseValue())
         warning = ppolicyValue.getComponentByName('warning')
         if warning.hasValue():
             if 'timeBeforeExpiration' in warning:
@@ -103,6 +103,3 @@ class PasswordPolicyControl(ValueLessRequestControl, ResponseControl):
         error = ppolicyValue.getComponentByName('error')
         if error.hasValue():
             self.error = int(error)
-
-
-KNOWN_RESPONSE_CONTROLS[PasswordPolicyControl.controlType] = PasswordPolicyControl

@@ -5,7 +5,7 @@ ldap.controls.pwdpolicy - classes for Password Policy controls
 See https://www.python-ldap.org/ for project details.
 """
 
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, ResponseControl
+from ldap.controls import ResponseControl
 
 
 __all__ = [
@@ -21,11 +21,8 @@ class PasswordExpiringControl(ResponseControl):
 
     controlType = '2.16.840.1.113730.3.4.5'
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        self.gracePeriod = int(encodedControlValue)
-
-
-KNOWN_RESPONSE_CONTROLS[PasswordExpiringControl.controlType] = PasswordExpiringControl
+    def decode(self, value: bytes) -> None:
+        self.gracePeriod = int(value)
 
 
 class PasswordExpiredControl(ResponseControl):
@@ -35,8 +32,5 @@ class PasswordExpiredControl(ResponseControl):
 
     controlType = '2.16.840.1.113730.3.4.4'
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        self.passwordExpired = encodedControlValue == b'0'
-
-
-KNOWN_RESPONSE_CONTROLS[PasswordExpiredControl.controlType] = PasswordExpiredControl
+    def decode(self, value: bytes) -> None:
+        self.passwordExpired = value == b'0'

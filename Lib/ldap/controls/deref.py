@@ -11,7 +11,7 @@ from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import namedtype, tag, univ
 from pyasn1_modules.rfc2251 import LDAPDN, AttributeDescription, AttributeDescriptionList, AttributeValue
 
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl
+from ldap.controls import LDAPControl
 
 
 __all__ = [
@@ -97,11 +97,11 @@ class DereferenceControl(LDAPControl):
             deref_specs.setComponentByPosition(i, deref_spec)
         return deref_specs
 
-    def encodeControlValue(self) -> bytes:
+    def encode(self) -> bytes:
         return encoder.encode(self._deref_specs())  # type: ignore
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=DerefResultControlValue())
+    def decode(self, value: bytes) -> None:
+        decodedValue, _ = decoder.decode(value, asn1Spec=DerefResultControlValue())
         # Starting from the inside out:
         #   The innermost dict maps attribute names to lists of attribute values
         #       (note: the attribute values are encoded as str, not bytes)
@@ -115,6 +115,3 @@ class DereferenceControl(LDAPControl):
                 self.derefRes[str(deref_attr)].append((str(deref_val), partial_attrs_dict))
             except KeyError:
                 self.derefRes[str(deref_attr)] = [(str(deref_val), partial_attrs_dict)]
-
-
-KNOWN_RESPONSE_CONTROLS[DereferenceControl.controlType] = DereferenceControl

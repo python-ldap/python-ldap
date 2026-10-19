@@ -14,7 +14,7 @@ from pyasn1.type import constraint, namedtype, namedval, tag, univ
 
 from ldap import RES_INTERMEDIATE, RES_SEARCH_ENTRY, RES_SEARCH_RESULT
 from ldap._types import LDAPEntryDict
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
+from ldap.controls import RequestControl, ResponseControl
 from ldap.ldapobject import SimpleLDAPObject
 from ldap.pkginfo import __author__, __license__, __version__  # noqa: F401
 
@@ -99,7 +99,7 @@ class SyncRequestControl(RequestControl):
         self.mode = mode
         self.reloadHint = reloadHint
 
-    def encodeControlValue(self) -> bytes:
+    def encode(self) -> bytes:
         rcv = SyncRequestValue()
         rcv.setComponentByName('mode', SyncRequestMode(self.mode))
         if self.cookie is not None:
@@ -158,8 +158,8 @@ class SyncStateControl(ResponseControl):
     controlType = '1.3.6.1.4.1.4203.1.9.1.2'
     opnames = ('present', 'add', 'modify', 'delete')
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        d = decoder.decode(encodedControlValue, asn1Spec=SyncStateValue())
+    def decode(self, value: bytes) -> None:
+        d = decoder.decode(value, asn1Spec=SyncStateValue())
         state = d[0].getComponentByName('state')
         uuid = UUID(bytes=bytes(d[0].getComponentByName('entryUUID')))
         cookie = d[0].getComponentByName('cookie')
@@ -169,9 +169,6 @@ class SyncStateControl(ResponseControl):
             self.cookie = None
         self.state = self.__class__.opnames[int(state)]
         self.entryUUID = str(uuid)
-
-
-KNOWN_RESPONSE_CONTROLS[SyncStateControl.controlType] = SyncStateControl
 
 
 class SyncDoneValue(univ.Sequence):
@@ -201,8 +198,8 @@ class SyncDoneControl(ResponseControl):
 
     controlType = '1.3.6.1.4.1.4203.1.9.1.3'
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        d = decoder.decode(encodedControlValue, asn1Spec=SyncDoneValue())
+    def decode(self, value: bytes) -> None:
+        d = decoder.decode(value, asn1Spec=SyncDoneValue())
         cookie = d[0].getComponentByName('cookie')
         if cookie.hasValue():
             self.cookie: str | None = str(cookie)
@@ -213,9 +210,6 @@ class SyncDoneControl(ResponseControl):
             self.refreshDeletes = bool(refresh_deletes)
         else:
             self.refreshDeletes = False
-
-
-KNOWN_RESPONSE_CONTROLS[SyncDoneControl.controlType] = SyncDoneControl
 
 
 class RefreshDelete(univ.Sequence):

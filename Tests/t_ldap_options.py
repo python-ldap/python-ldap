@@ -8,11 +8,14 @@ os.environ['LDAPNOINIT'] = '1'
 from pyasn1.error import PyAsn1Error
 
 import ldap
-from ldap.controls import RequestControl, RequestControlTuples
+from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, RequestControlTuples
 from ldap.controls.openldap import SearchNoOpControl
 from ldap.controls.pagedresults import SimplePagedResultsControl
 from ldap.ldapobject import SimpleLDAPObject
 from slapdtest import SlapdTestCase, requires_tls
+
+
+KNOWN_RESPONSE_CONTROLS[SimplePagedResultsControl.controlType] = SimplePagedResultsControl
 
 
 SENTINEL = object()

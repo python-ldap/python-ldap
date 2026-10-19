@@ -10,7 +10,7 @@ from __future__ import annotations
 from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import constraint, namedtype, namedval, tag, univ
 
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
+from ldap.controls import RequestControl, ResponseControl
 
 
 __all__ = [
@@ -97,7 +97,7 @@ class SSSRequestControl(RequestControl):
             p.setComponentByPosition(i, q)
         return p
 
-    def encodeControlValue(self) -> bytes:
+    def encode(self) -> bytes:
         return encoder.encode(self.asn1())  # type: ignore
 
 
@@ -138,8 +138,8 @@ class SSSResponseControl(ResponseControl):
     def __init__(self, criticality: bool = False):
         ResponseControl.__init__(self, self.controlType, criticality)
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        p, rest = decoder.decode(encodedControlValue, asn1Spec=SortResultType())
+    def decode(self, value: bytes) -> None:
+        p, rest = decoder.decode(value, asn1Spec=SortResultType())
         assert not rest, 'all data could not be decoded'
         sort_result = p.getComponentByName('sortResult')
         self.sortResult = int(sort_result)
@@ -151,6 +151,3 @@ class SSSResponseControl(ResponseControl):
         # backward compatibility class attributes
         self.result = self.sortResult
         self.attribute_type_error = self.attributeType
-
-
-KNOWN_RESPONSE_CONTROLS[SSSResponseControl.controlType] = SSSResponseControl
