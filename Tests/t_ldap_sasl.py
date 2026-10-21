@@ -72,6 +72,15 @@ class TestSasl(SlapdTestCase):
         ldap_conn.sasl_interactive_bind_s('', auth)
         self.assertEqual(ldap_conn.whoami_s().lower(), f'dn:{self.server.root_dn.lower()}')
 
+    @requires_ldapi()
+    def test_external_ldapi_async(self):
+        ldap_conn = self.ldap_object_class(self.server.ldapi_uri)
+
+        msgid = ldap_conn.sasl_bind('', 'EXTERNAL', '')
+        self.assertIsInstance(msgid, int)
+        ldap_conn.result(msgid, all=1)
+        self.assertEqual(ldap_conn.whoami_s().lower(), f'dn:{self.server.root_dn.lower()}')
+
     @requires_tls()
     def test_external_tlscert(self):
         ldap_conn = self.ldap_object_class(self.server.ldap_uri)

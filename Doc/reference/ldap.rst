@@ -1268,6 +1268,14 @@ and wait for and return with the server's result, or with
    *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
 
 
+.. py:method:: LDAPObject.sasl_bind(dn, mechanism, cred[, serverctrls=None [, clientctrls=None]]) -> int
+
+   Send a SASL bind request asynchronously and return its message ID. Use
+   :py:meth:`result()` with the message ID to retrieve the bind response.
+
+   *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
+
+
 .. py:method:: LDAPObject.sasl_non_interactive_bind_s(sasl_mech[, serverctrls=None [, clientctrls=None [, sasl_flags=ldap.SASL_QUIET [, authz_id='']]]]) -> None
 
    This call is used to bind to the directory with a SASL bind request with

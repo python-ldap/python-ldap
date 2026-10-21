@@ -876,6 +876,8 @@ class TestLdapCExtension(SlapdTestCase):
         self.assertInvalidControls(l.extop, 'oid', 'value')
         if hasattr(l, 'sasl_bind_s'):
             self.assertInvalidControls(l.sasl_bind_s, 'dn', 'MECH', 'CRED')
+        if hasattr(l, 'sasl_bind'):
+            self.assertInvalidControls(l.sasl_bind, 'dn', 'MECH', 'CRED')
         if hasattr(l, 'sasl_interactive_bind_s'):
             self.assertInvalidControls(l.sasl_interactive_bind_s, 'who', 'SASLObject', post=(1,))
         self.assertInvalidControls(l.unbind_ext)
