@@ -30,6 +30,7 @@ import ldap.cidict
 import ldap.functions
 import ldap.sasl
 from ldap import LDAPError, _ldap
+from ldap._types import LDAPMessageMode
 from ldap.controls import DecodeControlTuples, RequestControlTuples
 from ldap.extop import ExtendedRequest, ExtendedResponse, PasswordModifyResponse
 from ldap.schema.subentry import SCHEMA_ATTRS
@@ -550,7 +551,7 @@ class SimpleLDAPObject:
     def extop_result(
         self,
         msgid: int = ldap.RES_ANY,
-        all: bool = True,
+        all: LDAPMessageMode = True,
         timeout: float | None = None,
     ) -> tuple[str | None, bytes]:
         # FIXME: The timeout argument isn't used?
@@ -747,7 +748,7 @@ class SimpleLDAPObject:
     def result(
         self,
         msgid: int = ldap.RES_ANY,
-        all: bool = True,
+        all: LDAPMessageMode = True,
         timeout: float | None = None,
     ) -> tuple[int | None, Any | None]:
         """
@@ -806,7 +807,7 @@ class SimpleLDAPObject:
     def result2(
         self,
         msgid: int = ldap.RES_ANY,
-        all: bool = True,
+        all: LDAPMessageMode = True,
         timeout: float | None = None,
     ) -> tuple[int | None, Any | None, int | None]:
         resp_type, resp_data, resp_msgid, _resp_ctrls = self.result3(msgid, all, timeout)
@@ -815,7 +816,7 @@ class SimpleLDAPObject:
     def result3(
         self,
         msgid: int = ldap.RES_ANY,
-        all: bool = True,
+        all: LDAPMessageMode = True,
         timeout: float | None = None,
         resp_ctrl_classes: dict[str, type[ResponseControl]] | None = None,
     ) -> tuple[int | None, Any | None, int | None, list[ResponseControl] | None]:
@@ -833,7 +834,7 @@ class SimpleLDAPObject:
     def result4(
         self,
         msgid: int = ldap.RES_ANY,
-        all: bool = True,
+        all: LDAPMessageMode = True,
         timeout: float | None = None,
         add_ctrls: bool = False,
         add_intermediates: bool = False,
