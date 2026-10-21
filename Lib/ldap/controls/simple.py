@@ -7,6 +7,7 @@ See https://www.python-ldap.org/ for details.
 from __future__ import annotations
 
 import struct
+from typing import cast
 
 from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import univ
@@ -73,7 +74,7 @@ class BooleanControl(LDAPControl):
         self.booleanValue = booleanValue
 
     def encodeControlValue(self) -> bytes:
-        return encoder.encode(self.booleanValue, asn1Spec=univ.Boolean())  # type: ignore
+        return cast(bytes, encoder.encode(self.booleanValue, asn1Spec=univ.Boolean()))
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
         decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=univ.Boolean())

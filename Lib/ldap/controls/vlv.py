@@ -7,6 +7,8 @@ See https://www.python-ldap.org/ for project details.
 
 from __future__ import annotations
 
+from typing import cast
+
 
 __all__ = [
     'VLVRequestControl',
@@ -91,7 +93,7 @@ class VLVRequestControl(RequestControl):
         p.setComponentByName('target', target)
         if self.context_id is not None:
             p.setComponentByName('contextID', self.context_id)
-        return encoder.encode(p)  # type: ignore
+        return cast(bytes, encoder.encode(p))
 
 
 class VirtualListViewResultType(univ.Enumerated):
