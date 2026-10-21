@@ -1051,7 +1051,7 @@ and wait for and return with the server's result, or with
    :py:class:`ldap.extop.ExtendedResponse` this class is used to return an
    object of this class instead of a raw BER value in respvalue.
 
-.. py:method:: LDAPObject.extop_result(self,msgid=ldap.RES_ANY,all=1,timeout=None) -> (respoid,respvalue)
+.. py:method:: LDAPObject.extop_result(self,msgid=ldap.RES_ANY,all=True,timeout=None) -> (respoid,respvalue)
 
    Wrapper method around :py:meth:`result4()` just for retrieving
    the result of an extended operation sent before.
@@ -1090,10 +1090,10 @@ and wait for and return with the server's result, or with
    see :ref:`bytes_mode`.
 
 
-.. py:method:: LDAPObject.modrdn(dn, newrdn [, delold=1]) -> int
+.. py:method:: LDAPObject.modrdn(dn, newrdn [, delold=True]) -> int
 
 
-.. py:method::  LDAPObject.modrdn_s(dn, newrdn [, delold=1]) -> None
+.. py:method::  LDAPObject.modrdn_s(dn, newrdn [, delold=True]) -> None
 
    Perform a ``modify RDN`` operation, (i.e. a renaming operation).
    These routines take *dn* (the DN of the entry whose RDN is to be changed,
@@ -1141,9 +1141,9 @@ and wait for and return with the server's result, or with
 
 
 
-.. py:method:: LDAPObject.rename(dn, newrdn [, newsuperior=None [, delold=1 [, serverctrls=None [, clientctrls=None]]]]) -> int
+.. py:method:: LDAPObject.rename(dn, newrdn [, newsuperior=None [, delold=True [, serverctrls=None [, clientctrls=None]]]]) -> int
 
-.. py:method:: LDAPObject.rename_s(dn, newrdn [, newsuperior=None [, delold=1 [, serverctrls=None [, clientctrls=None]]]]) -> None
+.. py:method:: LDAPObject.rename_s(dn, newrdn [, newsuperior=None [, delold=True [, serverctrls=None [, clientctrls=None]]]]) -> None
 
    Perform a ``Rename`` operation, (i.e. a renaming operation).
    These routines take *dn* (the DN of the entry whose RDN is to be changed,
@@ -1159,7 +1159,7 @@ and wait for and return with the server's result, or with
    The *dn* and *newdn* arguments are text strings; see :ref:`bytes_mode`.
 
 
-.. py:method:: LDAPObject.result([msgid=RES_ANY [, all=1 [, timeout=None]]]) -> 2-tuple
+.. py:method:: LDAPObject.result([msgid=RES_ANY [, all=True [, timeout=None]]]) -> 2-tuple
 
    This method is used to wait for and return the result of an operation
    previously initiated by one of the LDAP *asynchronous* operations
@@ -1221,7 +1221,7 @@ and wait for and return with the server's result, or with
 
 
 
-.. py:method:: LDAPObject.result2([msgid=RES_ANY [, all=1 [, timeout=None]]]) -> 3-tuple
+.. py:method:: LDAPObject.result2([msgid=RES_ANY [, all=True [, timeout=None]]]) -> 3-tuple
 
    This method behaves almost exactly like :py:meth:`result()`. But
    it returns a 3-tuple also containing the message id of the
@@ -1231,12 +1231,12 @@ and wait for and return with the server's result, or with
    threads which invoked a particular LDAP operation.
 
 
-.. py:method:: LDAPObject.result3([msgid=RES_ANY [, all=1 [, timeout=None]]]) -> 4-tuple
+.. py:method:: LDAPObject.result3([msgid=RES_ANY [, all=True [, timeout=None]]]) -> 4-tuple
 
    This method behaves almost exactly like :py:meth:`result2()`. But it
    returns an extra item in the tuple, the decoded server controls.
 
-.. py:method:: LDAPObject.result4([msgid=RES_ANY [, all=1 [, timeout=None [, add_ctrls=0 [, add_intermediates=0 [, add_extop=0 [, resp_ctrl_classes=None]]]]]]]) -> 6-tuple
+.. py:method:: LDAPObject.result4([msgid=RES_ANY [, all=True [, timeout=None [, add_ctrls=False [, add_intermediates=False [, add_extop=False [, resp_ctrl_classes=None]]]]]]]) -> 6-tuple
 
    This method behaves almost exactly like :py:meth:`result3()`. But it
    returns an extra items in the tuple, the decoded results of an extended response.
@@ -1315,15 +1315,15 @@ and wait for and return with the server's result, or with
       :meth:`~LDAPObject.simple_bind` and :meth:`~LDAPObject.simple_bind_s`
       now accept ``None`` for *who* and *cred*, too.
 
-.. py:method:: LDAPObject.search(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0]]]) ->int
+.. py:method:: LDAPObject.search(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=False]]]) ->int
 
-.. py:method:: LDAPObject.search_s(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0]]]) ->list|None
+.. py:method:: LDAPObject.search_s(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=False]]]) ->list|None
 
-.. py:method:: LDAPObject.search_st(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0 [, timeout=-1]]]]) -> list|None
+.. py:method:: LDAPObject.search_st(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=False [, timeout=-1]]]]) -> list|None
 
-.. py:method:: LDAPObject.search_ext(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0 [, serverctrls=None [, clientctrls=None [, timeout=-1 [, sizelimit=0]]]]]]]) -> int
+.. py:method:: LDAPObject.search_ext(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=False [, serverctrls=None [, clientctrls=None [, timeout=-1 [, sizelimit=0]]]]]]]) -> int
 
-.. py:method:: LDAPObject.search_ext_s(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=0 [, serverctrls=None [, clientctrls=None [, timeout=-1 [, sizelimit=0]]]]]]]) -> list|None
+.. py:method:: LDAPObject.search_ext_s(base, scope [,filterstr='(objectClass=*)' [, attrlist=None [, attrsonly=False [, serverctrls=None [, clientctrls=None [, timeout=-1 [, sizelimit=0]]]]]]]) -> list|None
 
    Perform an LDAP search operation, with *base* as the DN of the entry
    at which to start the search, *scope* being one of

@@ -92,12 +92,9 @@ class SyncRequestControl(RequestControl):
         criticality: int | bool = True,
         cookie: str | bytes | None = None,
         mode: str = 'refreshOnly',
-        reloadHint: bool = False,
+        reloadHint: bool | None = None,
     ) -> None:
-        if criticality:
-            self.criticality = True
-        else:
-            self.criticality = False
+        self.criticality = bool(criticality)
         self.cookie = cookie
         self.mode = mode
         self.reloadHint = reloadHint
@@ -107,7 +104,7 @@ class SyncRequestControl(RequestControl):
         rcv.setComponentByName('mode', SyncRequestMode(self.mode))
         if self.cookie is not None:
             rcv.setComponentByName('cookie', SyncCookie(self.cookie))
-        if self.reloadHint:
+        if self.reloadHint is not None:
             rcv.setComponentByName('reloadHint', univ.Boolean(self.reloadHint))
         return encoder.encode(rcv)  # type: ignore
 
@@ -438,7 +435,7 @@ class SyncreplConsumer(_Base):
         self,
         msgid: int = -1,
         timeout: int | None = None,
-        all: int = 0,
+        all: bool = False,
     ) -> bool:
         """
         polls for and processes responses to the syncrepl_search() operation.
@@ -447,7 +444,7 @@ class SyncreplConsumer(_Base):
 
         If timeout is specified, raises ldap.TIMEOUT in the event of a timeout.
 
-        If all is set to a nonzero value, poll() will return only when finished
+        If all is true, poll() will return only when finished
         or when an exception is raised.
 
         """
@@ -455,9 +452,9 @@ class SyncreplConsumer(_Base):
             type, msg, _mid, ctrls, _n, _v = self.result4(
                 msgid=msgid,
                 timeout=timeout,
-                add_intermediates=1,
-                add_ctrls=1,
-                all=0,
+                add_intermediates=True,
+                add_ctrls=True,
+                all=False,
             )
 
             if type == RES_SEARCH_RESULT:

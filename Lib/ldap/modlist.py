@@ -38,7 +38,7 @@ def modifyModlist(
     old_entry: LDAPEntryDict,
     new_entry: LDAPEntryDict,
     ignore_attr_types: list[str] | None = None,
-    ignore_oldexistent: int = 0,
+    ignore_oldexistent: bool = False,
     case_ignore_attr_types: list[str] | None = None,
 ) -> LDAPModifyModList:
     """
@@ -51,7 +51,7 @@ def modifyModlist(
     ignore_attr_types
         List of attribute type names to be ignored completely
     ignore_oldexistent
-        If non-zero attribute type names which are in old_entry
+        If true attribute type names which are in old_entry
         but are not found in new_entry at all are not deleted.
         This is handy for situations where your application
         sets attribute value to '' for deleting an attribute.
