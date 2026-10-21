@@ -15,6 +15,20 @@ import ldap
 from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl, RequestControl, ResponseControl
 
 
+__all__ = [
+    'AuthorizationIdentityRequestControl',
+    'AuthorizationIdentityResponseControl',
+    'BooleanControl',
+    'GetEffectiveRightsControl',
+    'ManageDSAITControl',
+    'OctetStringInteger',
+    'ProxyAuthzControl',
+    'RelaxRulesControl',
+    'SubentriesControl',
+    'ValueLessRequestControl',
+]
+
+
 class ValueLessRequestControl(RequestControl):
     """
     Base class for controls without a controlValue.
@@ -159,3 +173,15 @@ class GetEffectiveRightsControl(RequestControl):
         else:
             encoded = authzId
         RequestControl.__init__(self, self.controlType, criticality, encoded)
+
+
+class SubentriesControl(BooleanControl):
+    """
+    Subentries Control (RFC 3672)
+    https://tools.ietf.org/html/rfc3672#section-3
+    """
+
+    controlType: str = '1.3.6.1.4.1.4203.1.10.1'
+
+    def __init__(self, criticality: bool = False, value: bool = False):
+        super().__init__(self.controlType, criticality, value)
