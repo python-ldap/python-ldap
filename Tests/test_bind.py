@@ -1,5 +1,6 @@
 import os
-import unittest
+
+import pytest
 
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -24,7 +25,7 @@ class TestBinds(SlapdTestCase):
 
     def test_simple_bind(self):
         l = self._get_ldapobject(False)
-        with self.assertRaises(ldap.INVALID_CREDENTIALS):
+        with pytest.raises(ldap.INVALID_CREDENTIALS):
             l.simple_bind_s(self.dn_unicode, self.unicode_val)
 
     def test_unicode_bind(self):
@@ -36,19 +37,15 @@ class TestBinds(SlapdTestCase):
 
     def test_unicode_bind_no_bytesmode(self):
         l = self._get_ldapobject(False)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             l.simple_bind_s(self.dn_bytes, self.unicode_val)
 
         # Works fine in Python 3 because 'cred' (the password) is read in
         # using the "s#" format which, unlike "s", accepts either a str
         # (unicode) *or* bytes.
         #
-        # with self.assertRaises(TypeError):
+        # with pytest.raises(TypeError):
         #     l.simple_bind_s(self.dn_unicode, self.unicode_val_bytes)
 
-        with self.assertRaises(ldap.INVALID_CREDENTIALS):
+        with pytest.raises(ldap.INVALID_CREDENTIALS):
             l.simple_bind_s(self.dn_unicode, self.unicode_val)
-
-
-if __name__ == '__main__':
-    unittest.main()
