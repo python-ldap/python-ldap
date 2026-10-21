@@ -1404,6 +1404,15 @@ and wait for and return with the server's result, or with
    These methods are all synchronous in nature.
 
 
+.. py:method:: LDAPObject.whoami([serverctrls=None [, clientctrls=None]]) -> int
+
+   Send the LDAP "Who Am I?" extended operation asynchronously and return
+   its message ID. Use :py:meth:`extop_result()` with the message ID to
+   retrieve the response.
+
+   *serverctrls* and *clientctrls* like described in section :ref:`ldap-controls`.
+
+
 .. py:method:: LDAPObject.whoami_s() -> string
 
    This synchronous method implements the LDAP "Who Am I?"

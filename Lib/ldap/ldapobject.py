@@ -1031,6 +1031,23 @@ class SimpleLDAPObject:
     ) -> str:
         return self._ldap_call(self._l.whoami_s, serverctrls, clientctrls)  # type: ignore[no-any-return]
 
+    def whoami(
+        self,
+        serverctrls: list[RequestControl] | None = None,
+        clientctrls: list[RequestControl] | None = None,
+    ) -> int:
+        """
+        whoami([serverctrls=None[,clientctrls=None]]) -> int
+
+        Send a Who Am I? extended operation asynchronously. Use the returned
+        message ID with :meth:`extop_result` to retrieve the response.
+        """
+        return self._ldap_call(  # type: ignore[no-any-return]
+            self._l.whoami,
+            RequestControlTuples(serverctrls),
+            RequestControlTuples(clientctrls),
+        )
+
     def get_option(self, option: int) -> Any:
         result = self._ldap_call(self._l.get_option, option)
         if option == ldap.OPT_SERVER_CONTROLS or option == ldap.OPT_CLIENT_CONTROLS:
