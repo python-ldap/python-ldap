@@ -72,5 +72,7 @@ repos:
     rev: v0.0.90
     hooks:
       - id: ty
+        entry: sh -c 'uv check --quiet --preview-features=check-command --ty-version=0.0.90 "$@" || true' --
+        verbose: true
         additional_dependencies:
           - types-pyasn1==0.6.0.20250914
