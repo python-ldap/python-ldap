@@ -7,6 +7,8 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import annotations
 
+from typing import cast
+
 import ldap
 from ldap import _ldap
 from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl, RequestControl
@@ -34,7 +36,7 @@ class AssertionControl(RequestControl):
         self.filterstr = filterstr
 
     def encodeControlValue(self) -> bytes:
-        return _ldap.encode_assertion_control(self.filterstr)  # type: ignore
+        return cast(bytes, _ldap.encode_assertion_control(self.filterstr))
 
 
 class MatchedValuesControl(RequestControl):
@@ -57,7 +59,7 @@ class MatchedValuesControl(RequestControl):
         self.filterstr = filterstr
 
     def encodeControlValue(self) -> bytes:
-        return _ldap.encode_valuesreturnfilter_control(self.filterstr)  # type: ignore
+        return cast(bytes, _ldap.encode_valuesreturnfilter_control(self.filterstr))
 
 
 class SimplePagedResultsControl(LDAPControl):
@@ -77,7 +79,7 @@ class SimplePagedResultsControl(LDAPControl):
         self.size, self.cookie = size, cookie
 
     def encodeControlValue(self) -> bytes:
-        return _ldap.encode_page_control(self.size, self.cookie)  # type: ignore
+        return cast(bytes, _ldap.encode_page_control(self.size, self.cookie))
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
         self.size, self.cookie = _ldap.decode_page_control(encodedControlValue)
