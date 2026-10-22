@@ -32,6 +32,7 @@ changeTypes
 Christoph
 cidict
 clientctrls
+codebase
 conf
 connection-less LDAP
 continue to
@@ -67,6 +68,7 @@ Etingof
 extype
 exvalue
 favour
+fallbacks
 filterstr
 filterStr
 formatOID
