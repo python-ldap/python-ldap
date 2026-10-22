@@ -3,11 +3,20 @@ name: CI
 
 on:
   push:
+    # prevent duplicated run on PR + push
+    # TODO: there is no easy way to prevent duplicate runs but allow single feature-branch run without a PR
+    - main
+    - '[0-9]+.[0-9]+'
   pull_request:
   schedule:
     # every Monday
     - cron: '30 4 * * 1'
   workflow_dispatch:
+
+# cancel obsolete running jobs after a second force push
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
