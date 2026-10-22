@@ -1,13 +1,54 @@
 Released 3.5.0 (unreleased)
 ---------------------------
 
+New features:
+
+* :func:`ldap.dn.dn2str` now supports format flags for selecting the DN output
+  format
+
+* Added :meth:`ldap.dn.normalize`
+
+* Added :func:`ldap.filter.is_filter` for checking whether a filter string is
+  valid
+
+* :class:`ldif.LDIFParser` now supports ``add``, ``delete`` and
+  ``modrdn``/``moddn``/``rename`` change records, including their associated
+  controls and attributes
+
+* Added :class:`ldap.sasl.SaslPasswordAuth` and
+  :class:`ldap.sasl.SaslNoninteractiveAuth` base classes for implementing
+  SASL authentication helpers
+
+* :exc:`ldap.LDAPError` now includes a ``referrals`` field containing all
+  referral URLs returned by the server
+
+* Added :class:`ldap.syncrepl.OpenLDAPSyncreplCookie` for tracking cookies in
+  multi-provider OpenLDAP syncrepl sessions
+
 Breaking:
+
+* Python 3.9 is now the minimum supported Python version
 
 * :attr:`~ldap.schema.models.SchemaElement.token_defaults` class attribute had to
   go, we could not find a safe way to keep it working with subclasses and are
   unaware of any users either
 
 API changes:
+
+* VLV context IDs are now exposed as opaque :class:`bytes` values instead of
+  :class:`str`
+
+* :class:`ldap.extop.dds.RefreshRequest` now accepts byte strings for
+  ``entryName`` and encodes Unicode values as UTF-8
+
+* :meth:`ldap.ldapobject.SimpleLDAPObject.connect` explicitly establishes a
+  connection when supported by the loaded libldap version
+
+* The runtime libldap vendor version is exposed as
+  ``_ldap._VENDOR_VERSION_RUNTIME``
+
+* :meth:`ldap.syncrepl.SyncreplConsumer.syncrepl_search` now accepts a
+  ``reloadHint`` parameter
 
 * The deprecated :data:`ldap.OPT_X_TLS` option has been removed, as announced in the
   3.4.3 release notes. The ``OPT_X_TLS_*`` option constants (such as
@@ -45,6 +86,20 @@ Fixes:
 
 * corrected :mod:`ldap.functions` export list to remove long gone items
 
+* LDAP exception classes that share a result code are no longer overwritten
+  during module initialization
+
+* Unbound :class:`ldap.ldapobject.ReconnectLDAPObject` instances can now be
+  pickled
+
+Documentation:
+
+* Documented the behavior of :data:`ldap.OPT_CLIENT_CONTROLS` and
+  :data:`ldap.OPT_SERVER_CONTROLS`
+
+* Expanded the :mod:`ldap.dn` documentation with the structure returned by
+  :func:`ldap.dn.str2dn`
+
 
 Deprecations:
 
@@ -56,6 +111,27 @@ Deprecations:
   go away eventually
 
 Infrastructure:
+
+* The codebase is now fully type annotated and compatible with static type
+  checking using ``mypy`` and ``ty``
+
+* The codebase was reformatted and standardized with Ruff, including four-space
+  Python indentation and PEP 8-compatible style. C sources are now formatted
+  with clang-format, and pre-commit hooks provide automated formatting and
+  linting checks
+
+* Tests were migrated to pytest, and pytest is now an optional ``slapdtest``
+  extra rather than a runtime dependency
+
+* Packaging metadata was modernized to PEP 621
+
+* Added testing and packaging support for Python 3.15
+
+* Added testing and packaging support for Python 3.14 and free-threaded
+  CPython builds
+
+* The C extension now builds against the Python Limited API on supported
+  CPython versions and supports free-threaded Python builds
 
 * Building from source now requires setuptools >= 77, needed for the
   PEP 639 license metadata in ``pyproject.toml``
