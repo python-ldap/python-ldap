@@ -1,0 +1,162 @@
+---
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+      - '[0-9]+.[0-9]+'
+  pull_request:
+    paths:
+      - 'Lib/**'
+      - 'Modules/**'
+      - 'Tests/**'
+      - '.clang-format'
+      - '.pre-commit-config.yaml'
+      - 'pyproject.toml'
+      - 'setup.cfg'
+      - 'setup.py'
+      - 'tox.ini'
+      - '.github/**'
+  schedule:
+    - cron: '30 4 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  ubuntu:
+    # name: ${{ matrix.ubuntu }} / Python ${{ matrix.python }}
+    name: ${{ matrix.ubuntu }} / ${{ matrix.tox_env }}
+    runs-on: ${{ matrix.ubuntu }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: '3.9'
+            ubuntu: ubuntu-22.04
+            tox_env: py39
+            mypy: true
+          - python: '3.10'
+            ubuntu: ubuntu-22.04
+            tox_env: py310
+            mypy: false
+          - python: '3.11'
+            ubuntu: ubuntu-22.04
+            tox_env: py311
+            mypy: false
+          - python: '3.12'
+            ubuntu: ubuntu-24.04
+            tox_env: py312
+            mypy: false
+          - python: '3.13'
+            ubuntu: ubuntu-24.04
+            tox_env: py313
+            mypy: false
+          - python: '3.13t'
+            ubuntu: ubuntu-24.04
+            tox_env: py313t
+            mypy: false
+          - python: '3.14'
+            ubuntu: ubuntu-26.04
+            tox_env: py314
+            mypy: true
+          - python: '3.14t'
+            ubuntu: ubuntu-26.04
+            tox_env: py314t
+            mypy: false
+          - python: '3.15'
+            ubuntu: ubuntu-26.04
+            tox_env: py315
+            mypy: false
+          - python: 'pypy3.9'
+            ubuntu: ubuntu-22.04
+            tox_env: pypy3.9
+            mypy: false
+          - python: 'pypy3.10'
+            ubuntu: ubuntu-24.04
+            tox_env: pypy3.10
+            mypy: false
+          - python: 'pypy3.11'
+            ubuntu: ubuntu-26.04
+            tox_env: pypy3.11
+            mypy: false
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ldap-utils slapd enchant-2 libldap2-dev libsasl2-dev apparmor-utils
+      - name: Disable AppArmor profile for slapd
+        run: sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.slapd
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: '0.13.4'
+          python-version: ${{ matrix.python }}
+          activate-environment: true
+          enable-cache: true
+          cache-python: true
+          cache-dependency-glob: |
+            pyproject.toml
+            setup.cfg
+            setup.py
+            tox.ini
+      - name: Install tox
+        if: matrix.python == '3.9' || matrix.python == 'pypy3.9'
+        run: uv pip install 'tox<5'
+
+      - name: Install tox with uv
+        if: matrix.python != '3.9' && matrix.python != 'pypy3.9'
+        run: uv pip install tox tox-uv-bare
+      # cache tox environments?
+      # - uses: actions/cache@v4
+      #   with:
+      #     path: .tox
+      #     key: tox-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('tox.ini', 'setup.py', 'setup.cfg') }}
+      - name: Run unit tests
+        run: tox -e "${{ matrix.tox_env }}"
+      - name: Run mypy (Python 3.9 and 3.14)
+        if: matrix.mypy == 'true'
+        run: tox -e mypy
+      - name: Run trace tests
+        if: matrix.python == '3.9'
+        run: tox -e py3-trace
+      - name: Run no-SASL/TLS tests
+        if: matrix.python == '3.9'
+        run: tox -e py3-nosasltls
+
+  fedora:
+    name: Fedora / ${{ matrix.tox_env }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        tox_env:
+          - py39
+          - py310
+          - py311
+          - py312
+          - py313
+          - py313t
+          - py314
+          - py314t
+          - py315
+          - py3-nosasltls
+          - py3-trace
+          - pypy3
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run Fedora tests
+        uses: fedora-python/tox-github-action@v41.0
+        with:
+          tox_env: ${{ matrix.tox_env }}
+          dnf_install: >
+            @c-development openldap-devel python3-devel
+            openldap-servers openldap-clients lcov clang-analyzer valgrind
+            enchant python3-setuptools
