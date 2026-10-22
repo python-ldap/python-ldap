@@ -1,0 +1,65 @@
+---
+name: Documentation
+
+on:
+  push:
+    branches:
+      - main
+      - '[0-9]+.[0-9]+'
+  pull_request:
+    paths:
+      - 'Doc/**'
+      - 'Lib/**'
+      - 'Modules/**'
+      - '*.rst'
+      - '*.md'
+      - '.github/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  ubuntu:
+    name: Documentation / Ubuntu 24.04
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev enchant-2
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: '0.13.4'
+          python-version: '3.13'
+          activate-environment: true
+          enable-cache: true
+          cache-python: true
+          cache-dependency-glob: |
+            pyproject.toml
+            setup.cfg
+            setup.py
+            tox.ini
+      - name: Install tox and tox-uv
+        run: uv pip install tox tox-uv-bare
+      - name: Build Sphinx documentation + spellcheck
+        run: tox -e doc
+
+  fedora:
+    name: Documentation / Fedora
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: Sphinx HTML and spelling (Fedora)
+        uses: fedora-python/tox-github-action@v41.0
+        with:
+          tox_env: doc
+          dnf_install: >
+            @c-development openldap-devel python3-devel
+            enchant python3-setuptools
