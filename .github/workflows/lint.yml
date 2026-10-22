@@ -1,0 +1,37 @@
+---
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+      - '[0-9]+.[0-9]+'
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  prek:
+    name: Pre-commit
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libldap2-dev libsasl2-dev libssl-dev build-essential
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: '0.13.4'
+          enable-cache: true
+          cache-dependency-glob: |
+            .pre-commit-config.yaml
+            pyproject.toml
+      - uses: j178/prek-action@v1
