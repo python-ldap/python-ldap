@@ -7,18 +7,17 @@ See https://www.python-ldap.org/ for project details.
 
 from __future__ import annotations
 
-
-__all__ = [
-    'DEREF_CONTROL_OID',
-    'DereferenceControl',
-]
-
 from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import namedtype, tag, univ
 from pyasn1_modules.rfc2251 import LDAPDN, AttributeDescription, AttributeDescriptionList, AttributeValue
 
 from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl
 
+
+__all__ = [
+    'DEREF_CONTROL_OID',
+    'DereferenceControl',
+]
 
 DEREF_CONTROL_OID = '1.3.6.1.4.1.4203.666.5.16'
 
@@ -86,20 +85,20 @@ class DereferenceControl(LDAPControl):
         LDAPControl.__init__(self, self.controlType, criticality)
         self.derefSpecs = derefSpecs or {}
 
-    def _derefSpecs(self) -> DerefSpecs:
+    def _deref_specs(self) -> DerefSpecs:
         deref_specs = DerefSpecs()
         for i, (deref_attr, deref_attribute_names) in enumerate(self.derefSpecs.items()):
             deref_spec = DerefSpec()
             deref_attributes = AttributeList()
-            for j in range(len(deref_attribute_names)):
-                deref_attributes.setComponentByPosition(j, deref_attribute_names[j])
+            for j, deref_attribute_name in enumerate(deref_attribute_names):
+                deref_attributes.setComponentByPosition(j, deref_attribute_name)
             deref_spec.setComponentByName('derefAttr', AttributeDescription(deref_attr))
             deref_spec.setComponentByName('attributes', deref_attributes)
             deref_specs.setComponentByPosition(i, deref_spec)
         return deref_specs
 
     def encodeControlValue(self) -> bytes:
-        return encoder.encode(self._derefSpecs())  # type: ignore
+        return encoder.encode(self._deref_specs())  # type: ignore
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
         decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=DerefResultControlValue())

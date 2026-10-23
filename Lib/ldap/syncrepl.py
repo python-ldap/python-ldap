@@ -94,10 +94,7 @@ class SyncRequestControl(RequestControl):
         mode: str = 'refreshOnly',
         reloadHint: bool = False,
     ) -> None:
-        if criticality:
-            self.criticality = True
-        else:
-            self.criticality = False
+        self.criticality = bool(criticality)
         self.cookie = cookie
         self.mode = mode
         self.reloadHint = reloadHint

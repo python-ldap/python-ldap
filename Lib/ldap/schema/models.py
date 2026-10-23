@@ -20,6 +20,22 @@ from ldap.schema.subentry import SCHEMA_ATTR_MAPPING, SCHEMA_CLASS_MAPPING
 from ldap.schema.tokenizer import LDAPTokenDict, parse_tokens, split_tokens
 
 
+__all__ = [
+    'NOT_HUMAN_READABLE_LDAP_SYNTAXES',
+    'AttributeType',
+    'AttributeUsage',
+    'DITContentRule',
+    'DITStructureRule',
+    'Entry',
+    'LDAPSyntax',
+    'MatchingRule',
+    'MatchingRuleUse',
+    'NameForm',
+    'ObjectClass',
+    'SchemaElement',
+]
+
+
 EntryBase: TypeAlias = MutableMapping[str, list[bytes]]
 
 
@@ -88,9 +104,9 @@ class SchemaElement:
         self.set_id(oid)
         self._set_attrs(tokens, schema_element_attributes)
 
-    def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
-        self.desc = d.get('DESC', (None,))[0]
-        self.names = d.get('NAME', ())
+    def _set_attrs(self, l: list[str], opts: LDAPTokenDict) -> None:
+        self.desc = opts.get('DESC', (None,))[0]
+        self.names = opts.get('NAME', ())
 
     def set_id(self, element_id: str) -> None:
         self.oid = element_id
@@ -98,19 +114,16 @@ class SchemaElement:
     def get_id(self) -> str:
         return self.oid
 
-    def key_attr(self, key: str, value: str | None, quoted: int = 0) -> str:
-        if value is None:
+    @staticmethod
+    def key_attr(key: str, value: str | None, quoted: int = 0) -> str:
+        if not value:
             return ''
-        elif not isinstance(value, str):
-            raise TypeError(f'value has to be of str, was {value!r}')
-        elif value == '':
-            return ''
-        elif quoted:
+        if quoted:
             return " {} '{}'".format(key, value.replace("'", "\\'"))
-        else:
-            return f' {key} {value}'
+        return f' {key} {value}'
 
-    def key_list(self, key: str, values: tuple[str, ...], sep: str = ' ', quoted: int = 0) -> str:
+    @staticmethod
+    def key_list(key: str, values: tuple[str, ...], sep: str = ' ', quoted: int = 0) -> str:
         assert isinstance(values, tuple), TypeError(f'values has to be a tuple, was {values!r}')
         if not values:
             return ''
@@ -122,8 +135,7 @@ class SchemaElement:
 
         if len(quoted_values) == 1:
             return f' {key} {quoted_values[0]}'
-        else:
-            return f' {key} ( {sep.join(quoted_values)} )'
+        return f' {key} ( {sep.join(quoted_values)} )'
 
     def __str__(self) -> str:
         result = [str(self.oid)]
@@ -192,25 +204,25 @@ class ObjectClass(SchemaElement):
     sup: tuple[str, ...]
     x_origin: tuple[str, ...]
 
-    def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
-        super()._set_attrs(l, d)
-        self.obsolete = 'OBSOLETE' in d
-        self.must = d.get('MUST', ())
-        self.may = d.get('MAY', ())
-        self.x_origin = d.get('X-ORIGIN', ())
+    def _set_attrs(self, l: list[str], opts: LDAPTokenDict) -> None:
+        super()._set_attrs(l, opts)
+        self.obsolete = 'OBSOLETE' in opts
+        self.must = opts.get('MUST', ())
+        self.may = opts.get('MAY', ())
+        self.x_origin = opts.get('X-ORIGIN', ())
 
         # Default is STRUCTURAL, see RFC2552 or draft-ietf-ldapbis-syntaxes
         self.kind = 0
-        if 'ABSTRACT' in d:
+        if 'ABSTRACT' in opts:
             self.kind = 1
-        elif 'AUXILIARY' in d:
+        elif 'AUXILIARY' in opts:
             self.kind = 2
 
-        if self.kind == 0 and len(d.get('SUP', ())) == 0 and self.oid != '2.5.6.0':
+        if self.kind == 0 and len(opts.get('SUP', ())) == 0 and self.oid != '2.5.6.0':
             # STRUCTURAL object classes are sub-classes of 'top' by default
             self.sup: tuple[str, ...] = ('top',)
         else:
-            self.sup = d.get('SUP', ())
+            self.sup = opts.get('SUP', ())
 
     def __str__(self) -> str:
         result = [str(self.oid)]
@@ -332,18 +344,18 @@ class AttributeType(SchemaElement):
     x_origin: tuple[str, ...]
     x_ordered: str | None
 
-    def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
-        super()._set_attrs(l, d)
-        self.obsolete = 'OBSOLETE' in d
-        self.sup = d.get('SUP', ())
-        self.equality = d.get('EQUALITY', (None,))[0]
-        self.ordering = d.get('ORDERING', (None,))[0]
-        self.substr = d.get('SUBSTR', (None,))[0]
-        self.x_origin = d.get('X-ORIGIN', ())
-        self.x_ordered = d.get('X-ORDERED', (None,))[0]
+    def _set_attrs(self, l: list[str], opts: LDAPTokenDict) -> None:
+        super()._set_attrs(l, opts)
+        self.obsolete = 'OBSOLETE' in opts
+        self.sup = opts.get('SUP', ())
+        self.equality = opts.get('EQUALITY', (None,))[0]
+        self.ordering = opts.get('ORDERING', (None,))[0]
+        self.substr = opts.get('SUBSTR', (None,))[0]
+        self.x_origin = opts.get('X-ORIGIN', ())
+        self.x_ordered = opts.get('X-ORDERED', (None,))[0]
 
         try:
-            syntax = d.get('SYNTAX', (None,))[0]
+            syntax = opts.get('SYNTAX', (None,))[0]
         except IndexError:
             self.syntax = None
             self.syntax_len = None
@@ -362,11 +374,11 @@ class AttributeType(SchemaElement):
                             self.syntax_len = int(i[1:-1])
                 else:
                     self.syntax_len = int(syntax_len[:-1])
-        self.single_value = 'SINGLE-VALUE' in d
-        self.collective = 'COLLECTIVE' in d
-        self.no_user_mod = 'NO-USER-MODIFICATION' in d
+        self.single_value = 'SINGLE-VALUE' in opts
+        self.collective = 'COLLECTIVE' in opts
+        self.no_user_mod = 'NO-USER-MODIFICATION' in opts
         self.usage = 0
-        usage = d.get('USAGE', (None,))[0]
+        usage = opts.get('USAGE', (None,))[0]
         if usage is not None:
             self.usage = AttributeUsage.get(usage, 0)
 
@@ -431,13 +443,13 @@ class LDAPSyntax(SchemaElement):
 
     not_human_readable: bool
 
-    def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
-        super()._set_attrs(l, d)
-        self.x_subst = d.get('X-SUBST', (None,))[0]
+    def _set_attrs(self, l: list[str], opts: LDAPTokenDict) -> None:
+        super()._set_attrs(l, opts)
+        self.x_subst = opts.get('X-SUBST', (None,))[0]
         self.not_human_readable = (
-            self.oid in NOT_HUMAN_READABLE_LDAP_SYNTAXES or d.get('X-NOT-HUMAN-READABLE', (None,))[0] == 'TRUE'
+            self.oid in NOT_HUMAN_READABLE_LDAP_SYNTAXES or opts.get('X-NOT-HUMAN-READABLE', (None,))[0] == 'TRUE'
         )
-        self.x_binary_transfer_required = d.get('X-BINARY-TRANSFER-REQUIRED', (None,))[0] == 'TRUE'
+        self.x_binary_transfer_required = opts.get('X-BINARY-TRANSFER-REQUIRED', (None,))[0] == 'TRUE'
 
     def __str__(self) -> str:
         result = [str(self.oid)]
@@ -489,10 +501,10 @@ class MatchingRule(SchemaElement):
     obsolete: bool
     syntax: str | None
 
-    def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
-        super()._set_attrs(l, d)
-        self.obsolete = 'OBSOLETE' in d
-        self.syntax = d.get('SYNTAX', (None,))[0]
+    def _set_attrs(self, l: list[str], opts: LDAPTokenDict) -> None:
+        super()._set_attrs(l, opts)
+        self.obsolete = 'OBSOLETE' in opts
+        self.syntax = opts.get('SYNTAX', (None,))[0]
 
     def __str__(self) -> str:
         result = [str(self.oid)]
@@ -545,10 +557,10 @@ class MatchingRuleUse(SchemaElement):
     obsolete: bool
     applies: tuple[str, ...]
 
-    def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
-        super()._set_attrs(l, d)
-        self.obsolete = 'OBSOLETE' in d
-        self.applies = d.get('APPLIES', ())
+    def _set_attrs(self, l: list[str], opts: LDAPTokenDict) -> None:
+        super()._set_attrs(l, opts)
+        self.obsolete = 'OBSOLETE' in opts
+        self.applies = opts.get('APPLIES', ())
 
     def __str__(self) -> str:
         result = [str(self.oid)]
@@ -621,13 +633,13 @@ class DITContentRule(SchemaElement):
     may: tuple[str, ...]
     nots: tuple[str, ...]
 
-    def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
-        super()._set_attrs(l, d)
-        self.obsolete = 'OBSOLETE' in d
-        self.aux = d.get('AUX', ())
-        self.must = d.get('MUST', ())
-        self.may = d.get('MAY', ())
-        self.nots = d.get('NOT', ())
+    def _set_attrs(self, l: list[str], opts: LDAPTokenDict) -> None:
+        super()._set_attrs(l, opts)
+        self.obsolete = 'OBSOLETE' in opts
+        self.aux = opts.get('AUX', ())
+        self.must = opts.get('MUST', ())
+        self.may = opts.get('MAY', ())
+        self.nots = opts.get('NOT', ())
 
     def __str__(self) -> str:
         result = [str(self.oid)]
@@ -695,11 +707,11 @@ class DITStructureRule(SchemaElement):
     def get_id(self) -> str:
         return self.ruleid
 
-    def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
-        super()._set_attrs(l, d)
-        self.obsolete = 'OBSOLETE' in d
-        self.form = d.get('FORM', (None,))[0]
-        self.sup = d.get('SUP', ())
+    def _set_attrs(self, l: list[str], opts: LDAPTokenDict) -> None:
+        super()._set_attrs(l, opts)
+        self.obsolete = 'OBSOLETE' in opts
+        self.form = opts.get('FORM', (None,))[0]
+        self.sup = opts.get('SUP', ())
 
     def __str__(self) -> str:
         result = [str(self.ruleid)]
@@ -762,12 +774,12 @@ class NameForm(SchemaElement):
     must: tuple[str, ...]
     may: tuple[str, ...]
 
-    def _set_attrs(self, l: list[str], d: LDAPTokenDict) -> None:
-        super()._set_attrs(l, d)
-        self.obsolete = 'OBSOLETE' in d
-        self.oc = d.get('OC', (None,))[0]
-        self.must = d.get('MUST', ())
-        self.may = d.get('MAY', ())
+    def _set_attrs(self, l: list[str], opts: LDAPTokenDict) -> None:
+        super()._set_attrs(l, opts)
+        self.obsolete = 'OBSOLETE' in opts
+        self.oc = opts.get('OC', (None,))[0]
+        self.must = opts.get('MUST', ())
+        self.may = opts.get('MAY', ())
 
     def __str__(self) -> str:
         result = [str(self.oid)]

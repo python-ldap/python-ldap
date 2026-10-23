@@ -6,8 +6,14 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import annotations
 
+import html
+from collections.abc import Iterator, MutableMapping
+from urllib.parse import quote, unquote
 
-__version__ = '3.4.7'
+from ldap._types import TypeAlias
+
+
+__version__ = '3.5.0'
 
 __all__ = [
     'LDAP_SCOPE_BASE',
@@ -24,17 +30,17 @@ __all__ = [
     'isLDAPUrl',
 ]
 
-import html
-from collections.abc import Iterator, MutableMapping
-from urllib.parse import quote, unquote
-
-from ldap._types import TypeAlias
-
 
 LDAP_SCOPE_BASE = 0
 LDAP_SCOPE_ONELEVEL = 1
 LDAP_SCOPE_SUBTREE = 2
 LDAP_SCOPE_SUBORDINATES = 3
+
+LDAPURL_SCHEMES = {
+    'ldap://',
+    'ldaps://',
+    'ldapi://',
+}
 
 SEARCH_SCOPE_STR = {
     None: '',
@@ -55,14 +61,14 @@ SEARCH_SCOPE = {
 }
 
 
-def isLDAPUrl(s: str) -> bool:
-    """Returns True if s is a LDAP URL, else False"""
-    return s.lower().startswith(('ldap://', 'ldaps://', 'ldapi://'))
+def isLDAPUrl(val: str) -> bool:
+    """Returns True if val is a LDAP URL, else False"""
+    return val.lower().startswith(tuple(LDAPURL_SCHEMES))
 
 
-def ldapUrlEscape(s: str) -> str:
-    """Returns URL encoding of string s"""
-    return quote(s).replace(',', '%2C').replace('/', '%2F')
+def ldapUrlEscape(val: str) -> str:
+    """Returns URL encoding of string val"""
+    return quote(val, safe='').replace('/', '%2F')
 
 
 class LDAPUrlExtension:
@@ -107,6 +113,9 @@ class LDAPUrlExtension:
         self.extype = self.extype.strip()
 
     def unparse(self) -> str:
+        """
+        generate string representation of single LDAP URL extension
+        """
         if self.exvalue is None:
             return '{}{}'.format('!' * (self.critical > 0), self.extype)
         else:
@@ -172,7 +181,7 @@ class LDAPUrlExtensions(LDAPUrlExtensionsBase):
         return len(self._data)
 
     def __str__(self) -> str:
-        return ','.join(str(v) for v in self.values())
+        return ','.join(str(val) for val in self.values())
 
     def __repr__(self) -> str:
         return f'<{self.__class__.__module__}.{self.__class__.__name__} instance at {hex(id(self))}: {self._data}>'
@@ -183,14 +192,20 @@ class LDAPUrlExtensions(LDAPUrlExtensionsBase):
         return self._data == other._data
 
     def parse(self, extListStr: str) -> None:
+        """
+        parse string into list of LDAPURLExtension instances
+        """
         for extension_str in extListStr.strip().split(','):
             if extension_str:
-                e = LDAPUrlExtension(extension_str)
-                if e.extype is not None:
-                    self[e.extype] = e
+                ext = LDAPUrlExtension(extension_str)
+                if ext.extype is not None:
+                    self[ext.extype] = ext
 
     def unparse(self) -> str:
-        return ','.join(v.unparse() for v in self.values())
+        """
+        return comma-separated string representation of LDAP URL extensions
+        """
+        return ','.join(val.unparse() for val in self.values())
 
 
 class LDAPUrl:
@@ -285,19 +300,18 @@ class LDAPUrl:
             self.hostport = unquote(rest)
             self.dn = ''
             return
+        if slash_pos != -1 and (qemark_pos == -1 or (slash_pos < qemark_pos)):
+            # Slash separates DN from hostport
+            self.hostport = unquote(rest[:slash_pos])
+            # Eat the slash from rest
+            rest = rest[slash_pos + 1 :]
+        elif qemark_pos != 1 and (slash_pos == -1 or (slash_pos > qemark_pos)):
+            # Question mark separates hostport from rest, DN is assumed to be empty
+            self.hostport = unquote(rest[:qemark_pos])
+            # Do not eat question mark
+            rest = rest[qemark_pos:]
         else:
-            if slash_pos != -1 and (qemark_pos == -1 or (slash_pos < qemark_pos)):
-                # Slash separates DN from hostport
-                self.hostport = unquote(rest[:slash_pos])
-                # Eat the slash from rest
-                rest = rest[slash_pos + 1 :]
-            elif qemark_pos != 1 and (slash_pos == -1 or (slash_pos > qemark_pos)):
-                # Question mark separates hostport from rest, DN is assumed to be empty
-                self.hostport = unquote(rest[:qemark_pos])
-                # Do not eat question mark
-                rest = rest[qemark_pos:]
-            else:
-                raise ValueError('Something completely weird happened!')
+            raise ValueError('Something completely weird happened!')
         paramlist = rest.split('?', 4)
         paramlist_len = len(paramlist)
         if paramlist_len >= 1:

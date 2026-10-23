@@ -6,22 +6,6 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import annotations
 
-
-__version__ = '3.4.7'
-
-__all__ = [
-    # functions
-    'CreateLDIF',
-    'LDIFCopy',
-    'LDIFParser',
-    'LDIFRecordList',
-    # classes
-    'LDIFWriter',
-    'ParseLDIF',
-    # constants
-    'ldif_pattern',
-]
-
 import re
 import warnings
 from base64 import b64decode, b64encode
@@ -37,6 +21,22 @@ from ldap._types import (
     LDAPModListAddEntry,
     LDAPModListModifyEntry,
 )
+
+
+__version__ = '3.5.0'
+
+__all__ = [
+    # functions
+    'CreateLDIF',
+    'LDIFCopy',
+    'LDIFParser',
+    'LDIFRecordList',
+    # classes
+    'LDIFWriter',
+    'ParseLDIF',
+    # constants
+    'ldif_pattern',
+]
 
 
 attrtype_pattern = r'[\w;.-]+(;[\w_-]+)*'
@@ -727,7 +727,7 @@ class LDIFRecordList(LDIFParser):
     Collect all records of a LDIF file. It can be a memory hog!
 
     Records are stored in :attr:`.all_records` as a single list
-    of 2-tuples (dn, entry), after calling :meth:`.parse`.
+    of 2-tuples (dn, entry), after calling :meth:`LDIFParser.parse`.
     """
 
     def __init__(

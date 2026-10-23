@@ -13,6 +13,8 @@ from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl, RequestControl
 from ldap.pkginfo import __version__
 
 
+__all__ = ['AssertionControl', 'MatchedValuesControl', 'SimplePagedResultsControl']
+
 assert _ldap.__version__ == __version__, ImportError(
     f'ldap {__version__} and _ldap {_ldap.__version__} version mismatch!'
 )

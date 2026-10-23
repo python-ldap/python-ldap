@@ -14,9 +14,18 @@ from ldap.extop import ExtendedResponse
 
 
 class PasswordModifyResponse(ExtendedResponse):
+    """
+    Password Modify extended response
+    """
+
     responseName = None
 
     class PasswordModifyResponseValue(univ.Sequence):
+        """
+        PasswdModifyResponseValue ::= SEQUENCE {
+           genPasswd [0] OCTET STRING OPTIONAL }
+        """
+
         componentType = namedtype.NamedTypes(
             namedtype.OptionalNamedType(
                 'genPasswd',
@@ -27,6 +36,6 @@ class PasswordModifyResponse(ExtendedResponse):
         )
 
     def decodeResponseValue(self, value: bytes | None) -> bytes:
-        respValue, _ = decoder.decode(value, asn1Spec=self.PasswordModifyResponseValue())
-        self.genPasswd = bytes(respValue.getComponentByName('genPasswd'))
+        passmod_resp, _ = decoder.decode(value, asn1Spec=self.PasswordModifyResponseValue())
+        self.genPasswd = bytes(passmod_resp.getComponentByName('genPasswd'))
         return self.genPasswd

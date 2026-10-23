@@ -7,14 +7,14 @@ See https://www.python-ldap.org/ for project details.
 
 from __future__ import annotations
 
-
-__all__ = ['SimplePagedResultsControl']
-
 from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import namedtype, univ
 from pyasn1_modules.rfc2251 import LDAPString
 
 from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
+
+
+__all__ = ['SimplePagedResultsControl']
 
 
 class PagedResultsControlValue(univ.Sequence):

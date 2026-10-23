@@ -6,6 +6,16 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import annotations
 
+import pprint
+import sys
+import time
+from calendar import timegm
+from typing import Any, BinaryIO, Callable, TextIO
+
+import ldap
+from ldap import LDAPError, _ldap
+from ldap.dn import explode_dn, explode_rdn
+from ldap.ldapobject import LDAPObject
 from ldap.pkginfo import __version__  # noqa: F401
 
 
@@ -20,21 +30,12 @@ __all__ = [
     'strp_secs',
 ]
 
-import pprint
-import sys
-import time
-from calendar import timegm
-from typing import Any, BinaryIO, Callable, TextIO
-
-import ldap
-from ldap import LDAPError, _ldap
-from ldap.dn import explode_dn, explode_rdn
-from ldap.ldapobject import LDAPObject
-
-
 if __debug__:
     # Tracing is only supported in debugging mode
     import traceback
+
+# format string used for Generalized Time attributes values with UTC
+DATETIME_FORMAT_UTC = r'%Y%m%d%H%M%SZ'
 
 
 def _ldap_function_call(
@@ -128,23 +129,23 @@ def set_option(option: int, invalue: Any) -> int:
     return _ldap_function_call(None, _ldap.set_option, option, invalue)  # type: ignore
 
 
-def escape_str(escape_func: Callable[[str], str], s: str, *args: str) -> str:
+def escape_str(escape_func: Callable[[str], str], fmt: str, *args: str) -> str:
     """
     Applies escape_func() to all items of `args' and returns a string based
     on format string `s'.
     """
-    return s % tuple(escape_func(v) for v in args)
+    return fmt % tuple(escape_func(v) for v in args)
 
 
 def strf_secs(secs: float) -> str:
     """
     Convert seconds since epoch to a string compliant to LDAP syntax GeneralizedTime
     """
-    return time.strftime('%Y%m%d%H%M%SZ', time.gmtime(secs))
+    return time.strftime(DATETIME_FORMAT_UTC, time.gmtime(secs))
 
 
-def strp_secs(dt_str: str) -> int:
+def strp_secs(dt_str: str) -> float:
     """
     Convert LDAP syntax GeneralizedTime to seconds since epoch
     """
-    return timegm(time.strptime(dt_str, '%Y%m%d%H%M%SZ'))
+    return timegm(time.strptime(dt_str, DATETIME_FORMAT_UTC))
