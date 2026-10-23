@@ -7,7 +7,6 @@ See https://www.python-ldap.org/ for details.
 from __future__ import annotations
 
 import re
-import warnings
 from collections.abc import Mapping
 from typing import Any, Union
 
@@ -66,88 +65,51 @@ def split_tokens(s: str) -> list[str]:
     return parts
 
 
-def parse_tokens(tokens: list[str], known_tokens: list[str]) -> tuple[str, LDAPTokenDict]:
+def extract_tokens(
+    tokens: list[str],
+    known_tokens: Mapping[str, Any],
+) -> dict[str, Any]:
     """
-    Process a list of tokens and return a dictionary of known tokens with all
-    values
+    Return a dictionary of known tokens with their parsed values.
 
-    Arguments:
-
-    tokens
-        A list of tokens to process.
-
-    known_tokens
-        A list of known tokens, unknown tokens will be ignored
-
-    Returns:
-
-    A tuple of the oid of the schema element and a dictionary mapping the
-    found tokens to their value(s).
+    The dictionary is initialized with the provided default values.
+    Unknown tokens are ignored.
     """
+    if len(tokens) < 3 or tokens[0] != '(' or tokens[-1] != ')':
+        raise ValueError(tokens)
 
-    assert len(tokens) > 2, ValueError(tokens)
-    assert tokens[0].strip() == '(', ValueError(tokens)
-    assert tokens[-1].strip() == ')', ValueError(tokens)
-
-    oid = tokens[1]
-    result = {}
-
+    result = dict(known_tokens)
     i = 2
-    while i < len(tokens):
+    end = len(tokens) - 1
+
+    while i < end:
         token = tokens[i]
         i += 1
+        next_token = tokens[i]
 
-        if token not in known_tokens:
+        if token not in result:
             # Skip unrecognized token
             continue
 
-        if i >= len(tokens):
-            break
-
-        next_token = tokens[i]
-
-        if next_token in known_tokens:
-            # non-valued
-            value: LDAPTokenDictValue = ()
-
+        value: LDAPTokenDictValue
+        if i >= end or next_token in result:
+            # non-valued token
+            value = ()
         elif next_token == '(':
-            # multi-valued
+            # multi-valued token
             i += 1  # Consume left parentheses
             start = i
-            while i < len(tokens) and tokens[i] != ')':
-                i += 1
-            value = tuple(filter(lambda v: v != '$', tokens[start:i]))
-            i += 1  # Consume right parentheses
 
+            while i < end and tokens[i] != ')':
+                i += 1
+
+            value = tuple(value for value in tokens[start:i] if value != '$')
+            i += 1  # Consume right parentheses
         else:
-            # single-valued
+            # single-valued token
             value = (next_token,)
             i += 1  # Consume single value
 
         result[token] = value
 
-    return oid, result
-
-
-def extract_tokens(
-    l: list[str],
-    known_tokens: Mapping[str, Any],
-) -> dict[str, Any]:
-    """
-    Returns dictionary of known tokens with all values
-
-    Deprecated since 3.5.0, use parse_tokens() instead. Unlike
-    parse_tokens(), the returned dict is pre-populated with the defaults
-    from known_tokens and the OID is not returned.
-    """
-    warnings.warn(
-        'ldap.schema.tokenizer.extract_tokens() is deprecated, use parse_tokens() instead',
-        category=DeprecationWarning,
-        stacklevel=2,
-    )
-    result = dict(known_tokens)
-    if len(l) > 2:
-        result.update(parse_tokens(l, list(known_tokens))[1])
-    else:
-        assert l[0].strip() == '(' and l[-1].strip() == ')', ValueError(l)
     return result
