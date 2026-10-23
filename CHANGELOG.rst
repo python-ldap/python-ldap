@@ -3,10 +3,6 @@ Released 3.5.0 (unreleased)
 
 Breaking:
 
-* :attr:`~ldap.schema.models.SchemaElement.token_defaults` class attribute had to
-  go, we could not find a safe way to keep it working with subclasses and are
-  unaware of any users either
-
 API changes:
 
 * The deprecated :data:`ldap.OPT_X_TLS` option has been removed, as announced in the
