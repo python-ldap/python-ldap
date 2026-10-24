@@ -9,7 +9,7 @@ from __future__ import annotations
 import copy
 import warnings
 from collections.abc import Iterable, MutableMapping
-from typing import Any, TypeVar, cast
+from typing import Literal, TypeVar, cast, overload
 from urllib.request import urlopen
 
 import ldap.schema
@@ -288,18 +288,92 @@ class SubSchema:
                     result_oid = nameoroid_stripped
         return result_oid
 
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[AttributeType],
+        nameoroid: str,
+        name: Literal['syntax', 'equality', 'ordering', 'substr', 'x_ordered'],
+    ) -> str | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[AttributeType],
+        nameoroid: str,
+        name: Literal['single_value', 'obsolete', 'collective', 'no_user_mod'],
+    ) -> bool | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[AttributeType],
+        nameoroid: str,
+        name: Literal['syntax_len', 'usage'],
+    ) -> int | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[ObjectClass],
+        nameoroid: str,
+        name: Literal['must', 'may', 'sup', 'names', 'x_origin'],
+    ) -> tuple[str, ...] | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[SchemaElementSubclass],
+        nameoroid: str,
+        name: Literal['must', 'may', 'sup', 'names', 'x_origin'],
+    ) -> tuple[str, ...] | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[SchemaElementSubclass],
+        nameoroid: str,
+        name: Literal['obsolete', 'not_human_readable', 'x_binary_transfer_required'],
+    ) -> bool | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[SchemaElementSubclass],
+        nameoroid: str,
+        name: Literal[
+            'desc', 'equality', 'form', 'oc', 'oid', 'ordering', 'ruleid', 'substr', 'syntax', 'x_ordered', 'x_subst'
+        ],
+    ) -> str | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[SchemaElementSubclass],
+        nameoroid: str,
+        name: Literal['names', 'applies', 'aux', 'nots', 'sup'],
+    ) -> tuple[str, ...] | None: ...
+
+    @overload
     def get_inheritedattr(
         self,
         se_class: type[SchemaElementSubclass],
         nameoroid: str,
         name: str,
-    ) -> Any:
+    ) -> object: ...
+
+    def get_inheritedattr(
+        self,
+        se_class: type[SchemaElementSubclass],
+        nameoroid: str,
+        name: str,
+    ) -> object:  # or: tuple[str, ...] | tuple[()] | str | int | bool | None
         """
         Get a possibly inherited attribute specified by name
         of a schema element specified by nameoroid.
-        Returns None if class attribute is not set at all.
 
-        Raises KeyError if no schema element is found by nameoroid.
+        Return None when the attribute is missing and raise KeyError when
+        the schema element itself cannot be found.
         """
         se = self._get_elements(se_class)[self.getoid(se_class, nameoroid)]
         result = getattr(se, name, None)
@@ -307,10 +381,6 @@ class SubSchema:
         if result is None and sup:
             # FIXME: sup can be multi-valued; preserve first-superior behavior
             result = self.get_inheritedattr(se_class, sup[0], name)
-
-        # The return type could be something like this:
-        # tuple[str, ...] | tuple[None] | str | int | None
-        # But we have no control over what is passed as "name"...
         return result
 
     def get_obj(
