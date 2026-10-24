@@ -9,7 +9,7 @@ from __future__ import annotations
 import copy
 import warnings
 from collections.abc import Iterable, MutableMapping
-from typing import Any, TypeVar, cast
+from typing import Any, Optional, TypeVar, cast
 from urllib.request import urlopen
 
 import ldap.schema
@@ -295,7 +295,7 @@ class SubSchema:
         se = self.sed[se_class][self.getoid(se_class, nameoroid)]
         result = getattr(se, name, None)
         if result is None and hasattr(se, 'sup') and se.sup:
-            assert isinstance(se.sup, list)
+            assert isinstance(se.sup, (list, tuple))
             # FIXME: sup can be multi-valued
             result = self.get_inheritedattr(se_class, se.sup[0], name)
 
@@ -351,16 +351,10 @@ class SubSchema:
         """
         Get the syntax of an attribute type specified by name or OID
         """
-        at_oid = self.getoid(AttributeType, nameoroid)
         try:
-            at_obj = self.get_inheritedobj(AttributeType, at_oid)
+            return cast(Optional[str], self.get_inheritedattr(AttributeType, nameoroid, 'syntax'))
         except KeyError:
             return None
-
-        if at_obj is None:
-            return None
-        else:
-            return at_obj.syntax
 
     def get_structural_oc(self, oc_list: Iterable[str]) -> str | None:
         """
