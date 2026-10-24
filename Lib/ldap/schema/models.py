@@ -6,7 +6,8 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import annotations
 
-from collections.abc import Iterator, Mapping, MutableMapping
+from collections import UserDict
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, ClassVar, TypedDict, cast
 
 
@@ -21,8 +22,6 @@ from ldap.cidict import cidict
 from ldap.schema.subentry import SCHEMA_ATTR_MAPPING, SCHEMA_CLASS_MAPPING
 from ldap.schema.tokenizer import extract_tokens, split_tokens
 
-
-EntryBase: TypeAlias = MutableMapping[str, list[bytes]]
 
 TokenDefaults: TypeAlias = Mapping[str, object]
 
@@ -944,7 +943,7 @@ SCHEMA_CLASS_MAPPING[NameForm.schema_attribute] = NameForm
 SCHEMA_ATTR_MAPPING[NameForm] = NameForm.schema_attribute
 
 
-class Entry(EntryBase):
+class Entry(UserDict[str, list[bytes]]):
     """
     Schema-aware implementation of an LDAP entry class.
 
@@ -955,13 +954,13 @@ class Entry(EntryBase):
     def __init__(self, schema: ldap.schema.subentry.SubSchema, dn: str, entry: LDAPEntryDict) -> None:
         self._keytuple2attrtype: dict[tuple[str, ...], str] = {}
         self._attrtype2keytuple: dict[str, tuple[str, ...]] = {}
-        self.data: dict[tuple[str, ...], list[bytes]] = {}
+        self.data: dict[str, list[bytes]] = {}
         self._s = schema
-        self.dn = dn
+        self.dn: str = dn
         super().__init__()
         self.update(entry)
 
-    def _at2key(self, nameoroid: str) -> tuple[str, ...]:
+    def name2key(self, nameoroid: str) -> tuple[str, ...]:
         """
         Return tuple of OID and all sub-types of attribute type specified
         in nameoroid.
@@ -978,51 +977,40 @@ class Entry(EntryBase):
             self._attrtype2keytuple[nameoroid] = t
             return t
 
-    def update(self, dict: MutableMapping[str, list[bytes]]) -> None:  # type: ignore
-        for key, value in dict.items():
-            self[key] = value
+    _at2key = name2key  # do we need backwards compat for a private method?
 
-    def __contains__(self, nameoroid: object) -> bool:
-        if not isinstance(nameoroid, str):
+    def _canonical_key(self, nameoroid: str) -> str:
+        key = self.name2key(nameoroid)
+        return self._keytuple2attrtype[key]
+
+    def __contains__(self, key: object) -> bool:
+        if not isinstance(key, str):
             return False
-        return self._at2key(nameoroid) in self.data
+        return self.name2key(key) in self._keytuple2attrtype
 
-    def __getitem__(self, nameoroid: object) -> list[bytes]:
-        if not isinstance(nameoroid, str):
-            raise KeyError
-        k = self._at2key(nameoroid)
-        return self.data[k]
+    def __getitem__(self, key: str) -> list[bytes]:
+        return self.data[self._canonical_key(key)]
 
-    def __setitem__(self, nameoroid: object, attr_values: list[bytes]) -> None:
-        if not isinstance(nameoroid, str):
-            raise KeyError
-        k = self._at2key(nameoroid)
-        self._keytuple2attrtype[k] = nameoroid
-        self.data[k] = attr_values
+    def __setitem__(self, key: str, item: list[bytes]) -> None:
+        resolved = self.name2key(key)
+        previous = self._keytuple2attrtype.get(resolved)
+        if previous is not None and previous != key:
+            del self.data[previous]
+        self._keytuple2attrtype[resolved] = key
+        self.data[key] = item
 
-    def __delitem__(self, nameoroid: object) -> None:
-        if not isinstance(nameoroid, str):
-            raise KeyError
-        k = self._at2key(nameoroid)
-        del self.data[k]
-        del self._attrtype2keytuple[nameoroid]
-        del self._keytuple2attrtype[k]
+    def __delitem__(self, key: str) -> None:
+        resolved = self.name2key(key)
+        canonical = self._keytuple2attrtype[resolved]
+        del self.data[canonical]
+        del self._keytuple2attrtype[resolved]
+        # Remove aliases referring to the deleted attribute
+        for name, cached in tuple(self._attrtype2keytuple.items()):
+            if cached == resolved:
+                del self._attrtype2keytuple[name]
 
-    def __len__(self) -> int:
-        return len(self.data)
-
-    def has_key(self, nameoroid: str) -> bool:
-        k = self._at2key(nameoroid)
-        return k in self.data
-
-    def keys(self) -> list[str]:  # type: ignore
-        return self._keytuple2attrtype.values()  # type: ignore
-
-    def items(self) -> list[tuple[str, list[bytes]]]:  # type: ignore
-        return [(k, self[k]) for k in self.keys()]
-
-    def __iter__(self) -> Iterator[str]:
-        return iter(self.keys())
+    def has_key(self, key: str) -> bool:
+        return key in self
 
     def copy(self) -> Self:
         inst = self.__class__.__new__(self.__class__)
