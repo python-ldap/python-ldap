@@ -14,6 +14,9 @@ from ldap.ldapobject import LDAPObject
 from ldap.pkginfo import __author__, __license__, __version__  # noqa: F401
 
 
+__all__ = ['ResultProcessor']
+
+
 if TYPE_CHECKING:
     _Base = LDAPObject
 else:
