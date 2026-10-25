@@ -171,7 +171,7 @@ class ObjectClass(SchemaElement):
       element
     """
 
-    schema_attribute = 'objectClasses'
+    schema_attribute: ClassVar[str] = 'objectClasses'
     known_tokens: ClassVar[list[str]] = [
         'NAME',
         'DESC',
@@ -301,7 +301,7 @@ class AttributeType(SchemaElement):
       the attribute as their RDN are ordered among their siblings.
     """
 
-    schema_attribute = 'attributeTypes'
+    schema_attribute: ClassVar[str] = 'attributeTypes'
     known_tokens: ClassVar[list[str]] = [
         'NAME',
         'DESC',
@@ -421,7 +421,7 @@ class LDAPSyntax(SchemaElement):
       human-readable (X-NOT-HUMAN-READABLE)
     """
 
-    schema_attribute = 'ldapSyntaxes'
+    schema_attribute: ClassVar[str] = 'ldapSyntaxes'
     known_tokens: ClassVar[list[str]] = [
         'NAME',
         'DESC',
@@ -479,7 +479,7 @@ class MatchingRule(SchemaElement):
       (string, or None if missing)
     """
 
-    schema_attribute = 'matchingRules'
+    schema_attribute: ClassVar[str] = 'matchingRules'
     known_tokens: ClassVar[list[str]] = [
         'NAME',
         'DESC',
@@ -535,7 +535,7 @@ class MatchingRuleUse(SchemaElement):
       (tuple of strings)
     """
 
-    schema_attribute = 'matchingRuleUse'
+    schema_attribute: ClassVar[str] = 'matchingRuleUse'
     known_tokens: ClassVar[list[str]] = [
         'NAME',
         'DESC',
@@ -605,7 +605,7 @@ class DITContentRule(SchemaElement):
       object class. (tuple of strings)
     """
 
-    schema_attribute = 'dITContentRules'
+    schema_attribute: ClassVar[str] = 'dITContentRules'
     known_tokens: ClassVar[list[str]] = [
         'NAME',
         'DESC',
@@ -676,7 +676,7 @@ class DITStructureRule(SchemaElement):
       of superior entries in the DIT (tuple of strings)
     """
 
-    schema_attribute = 'dITStructureRules'
+    schema_attribute: ClassVar[str] = 'dITStructureRules'
     known_tokens: ClassVar[list[str]] = [
         'NAME',
         'DESC',
@@ -748,7 +748,7 @@ class NameForm(SchemaElement):
       (tuple of strings)
     """
 
-    schema_attribute = 'nameForms'
+    schema_attribute: ClassVar[str] = 'nameForms'
     known_tokens: ClassVar[list[str]] = [
         'NAME',
         'DESC',
