@@ -69,13 +69,13 @@ print("""#----------------------------------------------------------------------
 """)
 
 pr = PostReadControl(criticality=True, attrList=['uid'])
-msg_id = l.rename(new_test_dn, 'uid=ablume2', delold=1, serverctrls=[pr])
+msg_id = l.rename(new_test_dn, 'uid=ablume2', delold=True, serverctrls=[pr])
 _, _, _, resp_ctrls = l.result3(msg_id)
 print('resp_ctrls[0].dn:', resp_ctrls[0].dn)
 print('resp_ctrls[0].entry:', pprint.pformat(resp_ctrls[0].entry))
 
 pr = PreReadControl(criticality=True, attrList=['uid'])
-msg_id = l.rename(new_test_dn2, 'uid=ablume', delold=1, serverctrls=[pr])
+msg_id = l.rename(new_test_dn2, 'uid=ablume', delold=True, serverctrls=[pr])
 _, _, _, resp_ctrls = l.result3(msg_id)
 print('resp_ctrls[0].dn:', resp_ctrls[0].dn)
 print('resp_ctrls[0].entry:', pprint.pformat(resp_ctrls[0].entry))

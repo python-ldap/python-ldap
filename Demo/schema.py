@@ -63,4 +63,4 @@ print(str(schema.get_obj(ldap.schema.MatchingRuleUse, '2.5.13.0')))
 print(str(schema.get_obj(ldap.schema.AttributeType, 'name')))
 print(str(schema.get_inheritedobj(ldap.schema.AttributeType, 'cn', ['syntax', 'equality', 'substr', 'ordering'])))
 
-must_attr, may_attr = schema.attribute_types(['person', 'organizationalPerson', 'inetOrgPerson'], raise_keyerror=0)
+must_attr, may_attr = schema.attribute_types(['person', 'organizationalPerson', 'inetOrgPerson'], raise_keyerror=False)
