@@ -46,8 +46,8 @@ class SearchNoOpControl(ValueLessRequestControl, ResponseControl):
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
         decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=self.SearchNoOpControlValue())
         self.resultCode = int(decodedValue[0])
-        self.numSearchResults = int(decodedValue[1])
-        self.numSearchContinuations = int(decodedValue[2])
+        self.numSearchResults: int = int(decodedValue[1])
+        self.numSearchContinuations: int = int(decodedValue[2])
 
 
 ldap.controls.KNOWN_RESPONSE_CONTROLS[SearchNoOpControl.controlType] = SearchNoOpControl
