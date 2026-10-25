@@ -14,13 +14,10 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 import ldap.schema
-from ldap._types import LDAPEntryDict, TypeAlias
+from ldap._types import LDAPEntryDict, LDAPTokenDict
 from ldap.cidict import cidict
 from ldap.schema.subentry import SCHEMA_ATTR_MAPPING, SCHEMA_CLASS_MAPPING
-from ldap.schema.tokenizer import LDAPTokenDict, parse_tokens, split_tokens
-
-
-EntryBase: TypeAlias = MutableMapping[str, list[bytes]]
+from ldap.schema.tokenizer import parse_tokens, split_tokens
 
 
 NOT_HUMAN_READABLE_LDAP_SYNTAXES = {
@@ -788,7 +785,7 @@ SCHEMA_CLASS_MAPPING[NameForm.schema_attribute] = NameForm
 SCHEMA_ATTR_MAPPING[NameForm] = NameForm.schema_attribute
 
 
-class Entry(EntryBase):
+class Entry(LDAPEntryDict):
     """
     Schema-aware implementation of an LDAP entry class.
 
