@@ -57,6 +57,55 @@ class BaseTestOptions:
             self.set_option(option, old)
             self.assertEqual(self.get_option(option), old)
 
+    def test_boolean_options(self):
+        class BoolValue:
+            def __init__(self, value):
+                self.value = value
+
+            def __bool__(self):
+                return self.value
+
+        class LenValue:
+            def __init__(self, value):
+                self.value = value
+
+            def __len__(self):
+                return self.value
+
+        for option in (ldap.OPT_RESTART, ldap.OPT_REFERRALS):
+            old = self.get_option(option)
+            try:
+                for value in (False, True):
+                    for flag in (value, BoolValue(value), LenValue(int(value))):
+                        self.set_option(option, flag)
+                        self.assertEqual(bool(self.get_option(option)), value)
+            finally:
+                self.set_option(option, old)
+
+    def test_boolean_conversion_error(self):
+        error = RuntimeError('boolean conversion failed')
+
+        class BrokenBool:
+            def __bool__(self):
+                raise error
+
+        class BrokenLen:
+            def __len__(self):
+                raise error
+
+        for option in (ldap.OPT_RESTART, ldap.OPT_REFERRALS):
+            for value in (BrokenBool(), BrokenLen()):
+                with self.subTest(option=option, value=type(value).__name__):
+                    old = self.get_option(option)
+                    try:
+                        self.set_option(option, False)
+                        with self.assertRaises(RuntimeError) as caught:
+                            self.set_option(option, value)
+                        self.assertIs(caught.exception, error)
+                        self.assertFalse(self.get_option(option))
+                    finally:
+                        self.set_option(option, old)
+
     def test_invalid(self):
         with self.assertRaises(ValueError):
             self.get_option(-1)
