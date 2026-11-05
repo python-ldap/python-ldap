@@ -1377,8 +1377,9 @@ class ReconnectLDAPObject(SimpleLDAPObject):
             return func(self, *args, **kwargs)
 
     def set_option(self, option: int, invalue: Any) -> Any:
+        response = SimpleLDAPObject.set_option(self, option, invalue)
         self._options.append((option, invalue))
-        return SimpleLDAPObject.set_option(self, option, invalue)
+        return response
 
     # FIXME: The following method signatures could match the SimpleLDAPObject counterpart?
     def bind_s(self, *args: Any, **kwargs: Any) -> Any:
