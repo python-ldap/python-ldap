@@ -20,6 +20,22 @@ from ldap.schema.subentry import SCHEMA_ATTR_MAPPING, SCHEMA_CLASS_MAPPING
 from ldap.schema.tokenizer import LDAPTokenDict, parse_tokens, split_tokens
 
 
+__all__ = [
+    'NOT_HUMAN_READABLE_LDAP_SYNTAXES',
+    'AttributeType',
+    'AttributeUsage',
+    'DITContentRule',
+    'DITStructureRule',
+    'Entry',
+    'LDAPSyntax',
+    'MatchingRule',
+    'MatchingRuleUse',
+    'NameForm',
+    'ObjectClass',
+    'SchemaElement',
+]
+
+
 EntryBase: TypeAlias = MutableMapping[str, list[bytes]]
 
 
@@ -98,19 +114,16 @@ class SchemaElement:
     def get_id(self) -> str:
         return self.oid
 
-    def key_attr(self, key: str, value: str | None, quoted: int = 0) -> str:
-        if value is None:
+    @staticmethod
+    def key_attr(key: str, value: str | None, quoted: int = 0) -> str:
+        if not value:
             return ''
-        elif not isinstance(value, str):
-            raise TypeError(f'value has to be of str, was {value!r}')
-        elif value == '':
-            return ''
-        elif quoted:
+        if quoted:
             return " {} '{}'".format(key, value.replace("'", "\\'"))
-        else:
-            return f' {key} {value}'
+        return f' {key} {value}'
 
-    def key_list(self, key: str, values: tuple[str, ...], sep: str = ' ', quoted: int = 0) -> str:
+    @staticmethod
+    def key_list(key: str, values: tuple[str, ...], sep: str = ' ', quoted: int = 0) -> str:
         assert isinstance(values, tuple), TypeError(f'values has to be a tuple, was {values!r}')
         if not values:
             return ''
@@ -122,8 +135,7 @@ class SchemaElement:
 
         if len(quoted_values) == 1:
             return f' {key} {quoted_values[0]}'
-        else:
-            return f' {key} ( {sep.join(quoted_values)} )'
+        return f' {key} ( {sep.join(quoted_values)} )'
 
     def __str__(self) -> str:
         result = [str(self.oid)]

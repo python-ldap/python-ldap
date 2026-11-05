@@ -2,9 +2,6 @@
 filters.py - misc stuff for handling LDAP filter strings (see RFC2254)
 
 See https://www.python-ldap.org/ for details.
-
-Compatibility:
-- Tested with Python 2.0+
 """
 
 from __future__ import annotations
@@ -15,6 +12,9 @@ from collections.abc import Iterable
 from ldap import _ldap
 from ldap.functions import strf_secs
 from ldap.pkginfo import __version__  # noqa: F401
+
+
+__all__ = ['escape_filter_chars', 'filter_format', 'is_filter', 'time_span_filter']
 
 
 def escape_filter_chars(assertion_value: str, escape_mode: int = 0) -> str:
