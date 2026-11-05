@@ -9,7 +9,7 @@ from __future__ import annotations
 import copy
 import warnings
 from collections.abc import Iterable, MutableMapping
-from typing import Any, TypeVar
+from typing import Literal, TypeVar, cast, overload
 from urllib.request import urlopen
 
 import ldap.schema
@@ -129,13 +129,13 @@ class SubSchema:
                 se_instance = se_class(attr_value)
                 se_id = se_instance.get_id()
 
-                if check_uniqueness and se_id in self.sed[se_class]:
+                if check_uniqueness and se_id in self._get_elements(se_class):
                     non_unique_oids.add(se_id)
                     if check_uniqueness == 1:
                         # Add to subschema by adding suffix to ID
                         suffix_counter = 1
                         new_se_id = se_id
-                        while new_se_id in self.sed[se_class]:
+                        while new_se_id in self._get_elements(se_class):
                             new_se_id = ';'.join((se_id, str(suffix_counter)))
                             suffix_counter += 1
                         se_id = new_se_id
@@ -157,7 +157,9 @@ class SubSchema:
         # Turn set into list, maybe more handy for applications
         self.non_unique_oids = list(non_unique_oids)
 
-        # return subSchema.__init__()
+    def _get_elements(self, se_class: type[SchemaElementSubclass]) -> dict[str, SchemaElementSubclass]:
+        """Return the registry for a schema class with its concrete value type."""
+        return cast(dict[str, SchemaElementSubclass], self.sed[se_class])
 
     def ldap_entry(self) -> dict[str, list[str]]:
         """
@@ -198,7 +200,7 @@ class SubSchema:
             of possible values for the attribute name. If any filter matches,
             the element will be included in the returned list.
         """
-        avail_se = self.sed[schema_element_class]
+        avail_se = self._get_elements(schema_element_class)
         if schema_element_filters:
             result = []
             for se_key, se in avail_se.items():
@@ -273,7 +275,7 @@ class SubSchema:
         Get an OID by name or OID
         """
         nameoroid_stripped = nameoroid.split(';', maxsplit=1)[0].strip()
-        if nameoroid_stripped in self.sed[se_class]:
+        if nameoroid_stripped in self._get_elements(se_class):
             # name_or_oid is already a registered OID
             return nameoroid_stripped
         else:
@@ -286,32 +288,99 @@ class SubSchema:
                     result_oid = nameoroid_stripped
         return result_oid
 
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[AttributeType],
+        nameoroid: str,
+        name: Literal['syntax', 'equality', 'ordering', 'substr', 'x_ordered'],
+    ) -> str | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[AttributeType],
+        nameoroid: str,
+        name: Literal['single_value', 'obsolete', 'collective', 'no_user_mod'],
+    ) -> bool | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[AttributeType],
+        nameoroid: str,
+        name: Literal['syntax_len', 'usage'],
+    ) -> int | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[ObjectClass],
+        nameoroid: str,
+        name: Literal['must', 'may', 'sup', 'names', 'x_origin'],
+    ) -> tuple[str, ...] | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[SchemaElementSubclass],
+        nameoroid: str,
+        name: Literal['must', 'may', 'sup', 'names', 'x_origin'],
+    ) -> tuple[str, ...] | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[SchemaElementSubclass],
+        nameoroid: str,
+        name: Literal['obsolete', 'not_human_readable', 'x_binary_transfer_required'],
+    ) -> bool | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[SchemaElementSubclass],
+        nameoroid: str,
+        name: Literal[
+            'desc', 'equality', 'form', 'oc', 'oid', 'ordering', 'ruleid', 'substr', 'syntax', 'x_ordered', 'x_subst'
+        ],
+    ) -> str | None: ...
+
+    @overload
+    def get_inheritedattr(
+        self,
+        se_class: type[SchemaElementSubclass],
+        nameoroid: str,
+        name: Literal['names', 'applies', 'aux', 'nots', 'sup'],
+    ) -> tuple[str, ...] | None: ...
+
+    @overload
     def get_inheritedattr(
         self,
         se_class: type[SchemaElementSubclass],
         nameoroid: str,
         name: str,
-    ) -> Any:
+    ) -> object: ...
+
+    def get_inheritedattr(
+        self,
+        se_class: type[SchemaElementSubclass],
+        nameoroid: str,
+        name: str,
+    ) -> object:  # or: tuple[str, ...] | tuple[()] | str | int | bool | None
         """
         Get a possibly inherited attribute specified by name
         of a schema element specified by nameoroid.
-        Returns None if class attribute is not set at all.
 
-        Raises KeyError if no schema element is found by nameoroid.
+        Return None when the attribute is missing and raise KeyError when
+        the schema element itself cannot be found.
         """
-        se = self.sed[se_class][self.getoid(se_class, nameoroid)]
-        try:
-            result = getattr(se, name)
-        except AttributeError:
-            result = None
-        if result is None and hasattr(se, 'sup') and se.sup:
-            assert isinstance(se.sup, list)
-            # FIXME: sup can be multi-valued
-            result = self.get_inheritedattr(se_class, se.sup[0], name)
-
-        # The return type could be something like this:
-        # tuple[str, ...] | tuple[None] | str | int | None
-        # But we have no control over what is passed as "name"...
+        se = self._get_elements(se_class)[self.getoid(se_class, nameoroid)]
+        result = getattr(se, name, None)
+        sup = getattr(se, 'sup', ())
+        if result is None and sup:
+            # FIXME: sup can be multi-valued; preserve first-superior behavior
+            result = self.get_inheritedattr(se_class, sup[0], name)
         return result
 
     def get_obj(
@@ -326,19 +395,13 @@ class SubSchema:
         """
         se_oid = self.getoid(se_class, nameoroid)
         try:
-            se_obj = self.sed[se_class][se_oid]
+            return self._get_elements(se_class)[se_oid]
         except KeyError:
             if raise_keyerror:
                 raise KeyError(
                     f'No ldap.schema.{se_class.__name__} instance with nameoroid {nameoroid!r} and se_oid {se_oid!r}'
                 )
-            elif default is None:
-                return None
-            else:
-                se_obj = default
-
-        assert isinstance(se_obj, se_class)
-        return se_obj
+            return default
 
     def get_inheritedobj(
         self,
@@ -350,17 +413,13 @@ class SubSchema:
         Get a schema element by name or OID with all class attributes
         set including inherited class attributes
         """
-        # FIXME: could use a TypeVar to limit the return value to an se_class instance
-        inherited = inherited or []
-        se = copy.copy(self.sed[se_class].get(self.getoid(se_class, nameoroid)))
+        se = self.get_obj(se_class, nameoroid)
         if se is None:
             return None
-        assert isinstance(se, se_class)
-
-        if se and hasattr(se, 'sup'):
-            for class_attr_name in inherited:
+        se = copy.copy(se)
+        if hasattr(se, 'sup'):
+            for class_attr_name in inherited or ():
                 setattr(se, class_attr_name, self.get_inheritedattr(se_class, nameoroid, class_attr_name))
-
         return se
 
     def get_syntax(self, nameoroid: str) -> str | None:
@@ -464,8 +523,7 @@ class SubSchema:
 
         if '1.3.6.1.4.1.1466.101.120.111' in object_class_oids:
             # Object class 'extensibleObject' MAY carry every attribute type
-            for at_obj in self.sed[AttributeType].values():
-                assert isinstance(at_obj, AttributeType), ValueError(at_obj.oid)
+            for at_obj in self._get_elements(AttributeType).values():
                 r_may[at_obj.oid] = at_obj
 
         # Loop over OIDs of all given object classes
@@ -478,13 +536,12 @@ class SubSchema:
             # Cache this OID as already being processed
             oid_cache[object_class_oid] = None
             try:
-                object_class = self.sed[ObjectClass][object_class_oid]
+                object_class = self._get_elements(ObjectClass)[object_class_oid]
             except KeyError:
                 if raise_keyerror:
                     raise
                 # Ignore this object class
                 continue
-            assert isinstance(object_class, ObjectClass)
             assert hasattr(object_class, 'must'), ValueError(object_class_oid)
             assert hasattr(object_class, 'may'), ValueError(object_class_oid)
             for a in object_class.must:
@@ -533,7 +590,7 @@ class SubSchema:
                 for a in list(l):
                     for afk, afv in attr_type_filter:
                         try:
-                            schema_attr_type = self.sed[AttributeType][a]
+                            schema_attr_type = self._get_elements(AttributeType)[a]
                         except KeyError:
                             if raise_keyerror:
                                 raise KeyError(f'No attribute type found in sub schema by name {a}')
