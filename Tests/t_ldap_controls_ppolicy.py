@@ -20,12 +20,12 @@ class TestControlsPPolicy(unittest.TestCase):
 
     def test_ppolicy_graceauth(self):
         pp = ppolicy.PasswordPolicyControl()
-        pp.decodeControlValue(PP_GRACEAUTH)
+        pp.decode(PP_GRACEAUTH)
         self.assertPPolicy(pp, graceAuthNsRemaining=2)
 
     def test_ppolicy_timebefore(self):
         pp = ppolicy.PasswordPolicyControl()
-        pp.decodeControlValue(PP_TIMEBEFORE)
+        pp.decode(PP_TIMEBEFORE)
         self.assertPPolicy(pp, timeBeforeExpiration=50)
 
 

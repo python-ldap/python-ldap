@@ -10,7 +10,7 @@ from __future__ import annotations
 from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import namedtype, namedval, tag, univ
 
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
+from ldap.controls import RequestControl, ResponseControl
 
 
 __all__ = [
@@ -74,7 +74,7 @@ class VLVRequestControl(RequestControl):
         self.greater_than_or_equal = greater_than_or_equal
         self.context_id = context_id
 
-    def encodeControlValue(self) -> bytes:
+    def encode(self) -> bytes:
         vlv = VirtualListViewRequestType()
         vlv.setComponentByName('beforeCount', self.before_count)
         vlv.setComponentByName('afterCount', self.after_count)
@@ -125,8 +125,8 @@ class VLVResponseControl(ResponseControl):
     def __init__(self, criticality: bool = False) -> None:
         ResponseControl.__init__(self, self.controlType, criticality)
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        drv, rest = decoder.decode(encodedControlValue, asn1Spec=VirtualListViewResponseType())
+    def decode(self, value: bytes) -> None:
+        drv, rest = decoder.decode(value, asn1Spec=VirtualListViewResponseType())
         assert not rest, 'all data could not be decoded'
         self.targetPosition = int(drv.getComponentByName('targetPosition'))
         self.contentCount = int(drv.getComponentByName('contentCount'))
@@ -142,6 +142,3 @@ class VLVResponseControl(ResponseControl):
         self.content_count = self.contentCount
         self.result = self.virtualListViewResult
         self.context_id = self.contextID
-
-
-KNOWN_RESPONSE_CONTROLS[VLVResponseControl.controlType] = VLVResponseControl

@@ -19,7 +19,7 @@ from pyasn1.codec.ber import decoder, encoder
 from pyasn1.type import constraint, namedtype, namedval, univ
 from pyasn1_modules.rfc2251 import LDAPDN
 
-from ldap.controls import KNOWN_RESPONSE_CONTROLS, RequestControl, ResponseControl
+from ldap.controls import RequestControl, ResponseControl
 
 
 # ---------------------------------------------------------------------------
@@ -65,12 +65,14 @@ class PersistentSearchControl(RequestControl):
         changesOnly: bool = False,
         returnECs: bool = True,
     ) -> None:
-        self.criticality, self.changesOnly, self.returnECs = criticality, changesOnly, returnECs
+        super().__init__(self.controlType, criticality)
+        self.changesOnly = changesOnly
+        self.returnECs = returnECs
         if isinstance(changeTypes, int):
             changeTypes = [changeTypes]
         self.changeTypes = changeTypes or CHANGE_TYPES_INT.keys()
 
-    def encodeControlValue(self) -> bytes:
+    def encode(self) -> bytes:
         # Assume a sequence type of names of integers to be OR-ed
         changeTypes_int = 0
         for ct in self.changeTypes:
@@ -120,8 +122,8 @@ class EntryChangeNotificationControl(ResponseControl):
 
     controlType = '2.16.840.1.113730.3.4.7'
 
-    def decodeControlValue(self, encodedControlValue: bytes) -> None:
-        ecncValue, _ = decoder.decode(encodedControlValue, asn1Spec=EntryChangeNotificationValue())
+    def decode(self, value: bytes) -> None:
+        ecncValue, _ = decoder.decode(value, asn1Spec=EntryChangeNotificationValue())
         self.changeType = int(ecncValue.getComponentByName('changeType'))
         previousDN = ecncValue.getComponentByName('previousDN')
         if previousDN.hasValue():
@@ -133,6 +135,3 @@ class EntryChangeNotificationControl(ResponseControl):
             self.changeNumber: int | None = int(changeNumber)
         else:
             self.changeNumber = None
-
-
-KNOWN_RESPONSE_CONTROLS[EntryChangeNotificationControl.controlType] = EntryChangeNotificationControl

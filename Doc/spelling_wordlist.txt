@@ -94,12 +94,9 @@ Keepalive
 Kerberos
 keyerror
 Kijewski
-knownLDAPControls
 ldap
 LDAP
 ldapadd
-ldapControls
-ldapControlTuples
 ldapdelete
 ldapi
 LDAPObject
@@ -180,6 +177,7 @@ str
 Ströder
 subclasses
 Subclasses
+subclasses
 subentry
 subschema
 substr
