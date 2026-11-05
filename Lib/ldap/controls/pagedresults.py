@@ -7,6 +7,8 @@ See https://www.python-ldap.org/ for project details.
 
 from __future__ import annotations
 
+from typing import cast
+
 
 __all__ = ['SimplePagedResultsControl']
 
@@ -48,7 +50,7 @@ class SimplePagedResultsControl(RequestControl, ResponseControl):
         pc = PagedResultsControlValue()
         pc.setComponentByName('size', univ.Integer(self.size))
         pc.setComponentByName('cookie', LDAPString(self.cookie))
-        return encoder.encode(pc)  # type: ignore
+        return cast(bytes, encoder.encode(pc))
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
         decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=PagedResultsControlValue())
