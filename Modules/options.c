@@ -72,7 +72,10 @@ LDAP_set_option(LDAPObject *self, int option, PyObject *value)
     case LDAP_OPT_CONNECT_ASYNC:
 #endif
         /* Truth-value options */
-        ptr = PyObject_IsTrue(value) ? LDAP_OPT_ON : LDAP_OPT_OFF;
+        intval = PyObject_IsTrue(value);
+        if (intval < 0)
+            return 0;
+        ptr = intval ? LDAP_OPT_ON : LDAP_OPT_OFF;
         break;
 
     case LDAP_OPT_DEREF:
