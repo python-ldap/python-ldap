@@ -6,7 +6,7 @@ See https://www.python-ldap.org/ for project details.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any, cast
 from uuid import UUID
 
 from pyasn1.codec.ber import decoder, encoder
@@ -369,13 +369,7 @@ class SyncInfoMessage:
             setattr(self, attr, val)
 
 
-if TYPE_CHECKING:
-    _Base = SimpleLDAPObject
-else:
-    _Base = object
-
-
-class SyncreplConsumer(_Base):
+class SyncreplConsumer:
     """
     SyncreplConsumer - LDAP syncrepl consumer object.
     """
@@ -432,7 +426,8 @@ class SyncreplConsumer(_Base):
             search_args['serverctrls'] = [syncreq]
 
         self.__refreshDone = False
-        return self.search_ext(base, scope, **search_args)
+        conn = cast(SimpleLDAPObject, self)
+        return conn.search_ext(base, scope, **search_args)
 
     def syncrepl_poll(  # noqa: C901
         self,
@@ -451,8 +446,9 @@ class SyncreplConsumer(_Base):
         or when an exception is raised.
 
         """
+        conn = cast(SimpleLDAPObject, self)
         while True:
-            type, msg, _mid, ctrls, _n, _v = self.result4(
+            type, msg, _mid, ctrls, _n, _v = conn.result4(
                 msgid=msgid,
                 timeout=timeout,
                 add_intermediates=1,
