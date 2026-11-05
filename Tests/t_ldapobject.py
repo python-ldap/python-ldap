@@ -458,6 +458,20 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
             self._ldap_conn.result()
         self.assertEqual(cm.exception.args[0]['msgid'], msgid)
 
+    def test_async_whoami(self):
+        from ldap.extop.whoami import WhoAmIResponse
+
+        authz_id = 'dn:' + self.server.root_dn
+
+        l = self.ldap_object_class(self.server.ldap_uri)
+        l.simple_bind_s(self.server.root_dn, self.server.root_pw)
+        msgid = l.whoami()
+        _oid, value = l.extop_result(msgid)
+        self.assertEqual(value.decode('UTF-8').lower(), authz_id.lower())
+
+        res = WhoAmIResponse(_oid, value)
+        self.assertEqual(res.dn, authz_id[3:])
+
     def test_passwd_s(self):
         l = self._ldap_conn
 
