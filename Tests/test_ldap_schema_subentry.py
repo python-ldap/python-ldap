@@ -5,7 +5,8 @@ See https://www.python-ldap.org/ for details.
 """
 
 import os
-import unittest
+
+import pytest
 
 
 # Switch off processing .ldaprc or ldap.conf before importing _ldap
@@ -26,7 +27,7 @@ TEST_SUBSCHEMA_FILES = (
 )
 
 
-class TestSubschemaLDIF(unittest.TestCase):
+class TestSubschemaLDIF:
     """
     test ldap.schema.SubSchema with subschema subentries read from LDIF files
     """
@@ -45,40 +46,39 @@ class TestSubschemaLDIF(unittest.TestCase):
                 must, may = sub_schema.attribute_types([objclass])
 
                 for oid, attributetype in must.items():
-                    self.assertEqual(attributetype.oid, oid)
+                    assert attributetype.oid == oid
                 for oid, attributetype in may.items():
-                    self.assertEqual(attributetype.oid, oid)
+                    assert attributetype.oid == oid
 
 
-class TestSubschemaUrlfetch(unittest.TestCase):
+class TestSubschemaUrlfetch:
     def test_urlfetch_file(self):
         freeipa_uri = f'file://{TEST_SUBSCHEMA_FILES[0]}'
         dn, schema = ldap.schema.urlfetch(freeipa_uri)
-        self.assertEqual(dn, 'cn=schema')
-        self.assertIsInstance(schema, ldap.schema.subentry.SubSchema)
+        assert dn == 'cn=schema'
+        assert isinstance(schema, ldap.schema.subentry.SubSchema)
         obj = schema.get_obj(ObjectClass, '2.5.6.9')
-        self.assertEqual(
-            str(obj),
+        assert str(obj) == (
             "( 2.5.6.9 NAME 'groupOfNames' SUP top STRUCTURAL MUST cn "
             'MAY ( member $ businessCategory $ seeAlso $ owner $ ou $ o '
-            "$ description ) X-ORIGIN 'RFC 4519' )",
+            "$ description ) X-ORIGIN 'RFC 4519' )"
         )
 
 
-class TestXOrigin(unittest.TestCase):
+class TestXOrigin:
     def get_attribute_type(self, oid):
         openldap_uri = f'file://{TEST_SUBSCHEMA_FILES[0]}'
         _dn, schema = ldap.schema.urlfetch(openldap_uri)
         return schema.get_obj(AttributeType, oid)
 
     def test_origin_none(self):
-        self.assertEqual(self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1').x_origin, ())
+        assert self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1').x_origin == ()
 
     def test_origin_string(self):
-        self.assertEqual(self.get_attribute_type('2.16.840.1.113730.3.1.2091').x_origin, ('Netscape',))
+        assert self.get_attribute_type('2.16.840.1.113730.3.1.2091').x_origin == ('Netscape',)
 
     def test_origin_multi_valued(self):
-        self.assertEqual(self.get_attribute_type('1.3.6.1.4.1.11.1.3.1.1.3').x_origin, ('RFC4876', 'user defined'))
+        assert self.get_attribute_type('1.3.6.1.4.1.11.1.3.1.1.3').x_origin == ('RFC4876', 'user defined')
 
     def test_origin_none_str(self):
         """Check string representation of an attribute without X-ORIGIN"""
@@ -87,14 +87,11 @@ class TestXOrigin(unittest.TestCase):
         # - is still syntactically valid.
         # Checking the full output makes the test simpler,
         # though might need to be adjusted in the future.
-        self.assertEqual(
-            str(self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1')),
-            (
-                '( 2.16.840.1.113719.1.301.4.24.1 '
-                + "NAME 'krbHostServer' "
-                + 'EQUALITY caseExactIA5Match '
-                + 'SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )'
-            ),
+        assert str(self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1')) == (
+            '( 2.16.840.1.113719.1.301.4.24.1 '
+            + "NAME 'krbHostServer' "
+            + 'EQUALITY caseExactIA5Match '
+            + 'SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )'
         )
 
     def test_origin_string_str(self):
@@ -104,15 +101,12 @@ class TestXOrigin(unittest.TestCase):
         # - is still syntactically valid.
         # Checking the full output makes the test simpler,
         # though might need to be adjusted in the future.
-        self.assertEqual(
-            str(self.get_attribute_type('2.16.840.1.113730.3.1.2091')),
-            (
-                '( 2.16.840.1.113730.3.1.2091 '
-                + "NAME 'nsslapd-suffix' "
-                + "DESC 'Netscape defined attribute type' "
-                + 'SYNTAX 1.3.6.1.4.1.1466.115.121.1.12 '
-                + "X-ORIGIN 'Netscape' )"
-            ),
+        assert str(self.get_attribute_type('2.16.840.1.113730.3.1.2091')) == (
+            '( 2.16.840.1.113730.3.1.2091 '
+            + "NAME 'nsslapd-suffix' "
+            + "DESC 'Netscape defined attribute type' "
+            + 'SYNTAX 1.3.6.1.4.1.1466.115.121.1.12 '
+            + "X-ORIGIN 'Netscape' )"
         )
 
     def test_origin_multi_valued_str(self):
@@ -122,40 +116,39 @@ class TestXOrigin(unittest.TestCase):
         # - is still syntactically valid.
         # Checking the full output makes the test simpler,
         # though might need to be adjusted in the future.
-        self.assertEqual(
-            str(self.get_attribute_type('1.3.6.1.4.1.11.1.3.1.1.3')),
-            (
-                "( 1.3.6.1.4.1.11.1.3.1.1.3 NAME 'searchTimeLimit' "
-                + "DESC 'Maximum time an agent or service allows for a search "
-                + "to complete' "
-                + 'EQUALITY integerMatch '
-                + 'ORDERING integerOrderingMatch '
-                + 'SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 '
-                + 'SINGLE-VALUE '
-                + "X-ORIGIN ( 'RFC4876' 'user defined' ) )"
-            ),
+        assert str(self.get_attribute_type('1.3.6.1.4.1.11.1.3.1.1.3')) == (
+            "( 1.3.6.1.4.1.11.1.3.1.1.3 NAME 'searchTimeLimit' "
+            + "DESC 'Maximum time an agent or service allows for a search "
+            + "to complete' "
+            + 'EQUALITY integerMatch '
+            + 'ORDERING integerOrderingMatch '
+            + 'SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 '
+            + 'SINGLE-VALUE '
+            + "X-ORIGIN ( 'RFC4876' 'user defined' ) )"
         )
 
     def test_set_origin_str(self):
         """Check that setting X-ORIGIN to a string makes entry unusable"""
         attr = self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1')
         attr.x_origin = 'Netscape'
-        self.assertRaises(AssertionError, str, attr)
+        with pytest.raises(AssertionError):
+            str(attr)
 
     def test_set_origin_list(self):
         """Check that setting X-ORIGIN to a list makes entry unusable"""
         attr = self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1')
         attr.x_origin = []
-        self.assertRaises(AssertionError, str, attr)
+        with pytest.raises(AssertionError):
+            str(attr)
 
     def test_set_origin_tuple(self):
         """Check that setting X-ORIGIN to a tuple works"""
         attr = self.get_attribute_type('2.16.840.1.113719.1.301.4.24.1')
         attr.x_origin = ('user defined',)
-        self.assertIn(" X-ORIGIN 'user defined' ", str(attr))
+        assert " X-ORIGIN 'user defined' " in str(attr)
 
 
-class TestAttributes(unittest.TestCase):
+class TestAttributes:
     def get_schema(self):
         openldap_uri = f'file://{TEST_SUBSCHEMA_FILES[0]}'
         _dn, schema = ldap.schema.urlfetch(openldap_uri)
@@ -165,50 +158,50 @@ class TestAttributes(unittest.TestCase):
         """Check types and values of attributes of a minimal AttributeType"""
         # (OID 2.999 is actually "/Example", for use in documentation)
         attr = AttributeType('( 2.999 )')
-        self.assertEqual(attr.oid, '2.999')
-        self.assertEqual(attr.names, ())
-        self.assertEqual(attr.desc, None)
-        self.assertEqual(attr.obsolete, False)
-        self.assertEqual(attr.single_value, False)
-        self.assertEqual(attr.syntax, None)
-        self.assertEqual(attr.no_user_mod, False)
-        self.assertEqual(attr.equality, None)
-        self.assertEqual(attr.substr, None)
-        self.assertEqual(attr.ordering, None)
-        self.assertEqual(attr.usage, 0)
-        self.assertEqual(attr.sup, ())
-        self.assertEqual(attr.x_origin, ())
+        assert attr.oid == '2.999'
+        assert attr.names == ()
+        assert attr.desc is None
+        assert not attr.obsolete
+        assert not attr.single_value
+        assert attr.syntax is None
+        assert not attr.no_user_mod
+        assert attr.equality is None
+        assert attr.substr is None
+        assert attr.ordering is None
+        assert attr.usage == 0
+        assert attr.sup == ()
+        assert attr.x_origin == ()
 
     def test_empty_objectclass_attrs(self):
         """Check types and values of attributes of a minimal ObjectClass"""
         # (OID 2.999 is actually "/Example", for use in documentation)
         cls = ObjectClass('( 2.999 )')
-        self.assertEqual(cls.oid, '2.999')
-        self.assertEqual(cls.names, ())
-        self.assertEqual(cls.desc, None)
-        self.assertEqual(cls.obsolete, False)
-        self.assertEqual(cls.must, ())
-        self.assertEqual(cls.may, ())
-        self.assertEqual(cls.kind, 0)
-        self.assertEqual(cls.sup, ('top',))
-        self.assertEqual(cls.x_origin, ())
+        assert cls.oid == '2.999'
+        assert cls.names == ()
+        assert cls.desc is None
+        assert not cls.obsolete
+        assert cls.must == ()
+        assert cls.may == ()
+        assert cls.kind == 0
+        assert cls.sup == ('top',)
+        assert cls.x_origin == ()
 
     def test_attributetype_attrs(self):
         """Check types and values of an AttributeType object's attributes"""
         schema = self.get_schema()
         attr = schema.get_obj(AttributeType, '1.3.6.1.4.1.11.1.3.1.1.3')
         expected_desc = 'Maximum time an agent or service allows for a search to complete'
-        self.assertEqual(attr.oid, '1.3.6.1.4.1.11.1.3.1.1.3')
-        self.assertEqual(attr.names, ('searchTimeLimit',))
-        self.assertEqual(attr.desc, expected_desc)
-        self.assertEqual(attr.obsolete, False)
-        self.assertEqual(attr.single_value, True)
-        self.assertEqual(attr.syntax, '1.3.6.1.4.1.1466.115.121.1.27')
-        self.assertEqual(attr.no_user_mod, False)
-        self.assertEqual(attr.equality, 'integerMatch')
-        self.assertEqual(attr.ordering, 'integerOrderingMatch')
-        self.assertEqual(attr.sup, ())
-        self.assertEqual(attr.x_origin, ('RFC4876', 'user defined'))
+        assert attr.oid == '1.3.6.1.4.1.11.1.3.1.1.3'
+        assert attr.names == ('searchTimeLimit',)
+        assert attr.desc == expected_desc
+        assert not attr.obsolete
+        assert attr.single_value
+        assert attr.syntax == '1.3.6.1.4.1.1466.115.121.1.27'
+        assert not attr.no_user_mod
+        assert attr.equality == 'integerMatch'
+        assert attr.ordering == 'integerOrderingMatch'
+        assert attr.sup == ()
+        assert attr.x_origin == ('RFC4876', 'user defined')
 
     def test_objectclass_attrs(self):
         """Check types and values of an ObjectClass object's attributes"""
@@ -223,49 +216,40 @@ class TestAttributes(unittest.TestCase):
             'o',
             'description',
         )
-        self.assertEqual(cls.oid, '2.5.6.9')
-        self.assertEqual(cls.names, ('groupOfNames',))
-        self.assertEqual(cls.desc, None)
-        self.assertEqual(cls.obsolete, False)
-        self.assertEqual(cls.must, ('cn',))
-        self.assertEqual(cls.may, expected_may)
-        self.assertEqual(cls.kind, 0)
-        self.assertEqual(cls.sup, ('top',))
-        self.assertEqual(cls.x_origin, ('RFC 4519',))
+        assert cls.oid == '2.5.6.9'
+        assert cls.names == ('groupOfNames',)
+        assert cls.desc is None
+        assert not cls.obsolete
+        assert cls.must == ('cn',)
+        assert cls.may == expected_may
+        assert cls.kind == 0
+        assert cls.sup == ('top',)
+        assert cls.x_origin == ('RFC 4519',)
 
 
 class TestSubschemaUrlfetchSlapd(SlapdTestCase):
     ldap_object_class = SimpleLDAPObject
 
-    def assertSlapdSchema(self, dn, schema):
-        self.assertEqual(dn, 'cn=Subschema')
-        self.assertIsInstance(schema, ldap.schema.subentry.SubSchema)
+    def check_slapd_schema(self, dn, schema):
+        assert dn == 'cn=Subschema'
+        assert isinstance(schema, ldap.schema.subentry.SubSchema)
         obj = schema.get_obj(ObjectClass, '1.3.6.1.1.3.1')
-        self.assertEqual(
-            str(obj), "( 1.3.6.1.1.3.1 NAME 'uidObject' DESC 'RFC2377: uid object' SUP top AUXILIARY MUST uid )"
-        )
+        assert str(obj) == "( 1.3.6.1.1.3.1 NAME 'uidObject' DESC 'RFC2377: uid object' SUP top AUXILIARY MUST uid )"
         entries = schema.ldap_entry()
-        self.assertIsInstance(entries, dict)
-        self.assertEqual(
-            sorted(entries),
-            [
-                'attributeTypes',
-                'ldapSyntaxes',
-                'matchingRuleUse',
-                'matchingRules',
-                'objectClasses',
-            ],
-        )
+        assert isinstance(entries, dict)
+        assert sorted(entries) == [
+            'attributeTypes',
+            'ldapSyntaxes',
+            'matchingRuleUse',
+            'matchingRules',
+            'objectClasses',
+        ]
 
     def test_urlfetch_ldap(self):
         dn, schema = ldap.schema.urlfetch(self.server.ldap_uri)
-        self.assertSlapdSchema(dn, schema)
+        self.check_slapd_schema(dn, schema)
 
     @requires_ldapi()
     def test_urlfetch_ldapi(self):
         dn, schema = ldap.schema.urlfetch(self.server.ldapi_uri)
-        self.assertSlapdSchema(dn, schema)
-
-
-if __name__ == '__main__':
-    unittest.main()
+        self.check_slapd_schema(dn, schema)
