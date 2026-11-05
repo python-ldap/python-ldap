@@ -34,7 +34,7 @@ for id_attr in ('uidNumber', 'gidNumber'):
     # collect result
     ldap_result = []
     try:
-        for res_type, res_data, res_msgid, res_controls in l.allresults(msg_id, add_ctrls=0):
+        for res_type, res_data, res_msgid, res_controls in l.allresults(msg_id, add_ctrls=False):
             ldap_result.extend(res_data)
     except ldap.SIZELIMIT_EXCEEDED:
         pass

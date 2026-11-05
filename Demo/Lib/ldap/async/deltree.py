@@ -28,7 +28,7 @@ class DeleteLeafs(ldap.asyncsearch.AsyncSearchHandler):
             searchScope,
             filterStr='(objectClass=*)',
             attrList=['hasSubordinates', 'numSubordinates'],
-            attrsOnly=0,
+            attrsOnly=False,
         )
 
     def _processSingleResult(self, resultType, resultItem):

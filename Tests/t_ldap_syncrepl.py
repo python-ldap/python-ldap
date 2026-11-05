@@ -184,7 +184,7 @@ class SyncreplClient(SimpleLDAPObject, SyncreplConsumer):
         """
         SimpleLDAPObject.cancel(self, self.search_id)
 
-    def poll(self, timeout=None, all=0):
+    def poll(self, timeout=None, all=False):
         """
         Take the params, add the syncrepl search ID, and call the proper poll.
         """
@@ -305,7 +305,7 @@ class BaseSyncreplTests:
         Test doing a full refresh cycle, and check what we got.
         """
         self.tester.search(self.suffix, 'refreshOnly')
-        poll_result = self.tester.poll(all=1, timeout=None)
+        poll_result = self.tester.poll(all=True, timeout=None)
         self.assertFalse(poll_result)
         self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
 
@@ -317,7 +317,7 @@ class BaseSyncreplTests:
 
         # Make sure to stop the test before going into persist mode.
         while self.tester.refresh_done is not True:
-            poll_result = self.tester.poll(all=0, timeout=None)
+            poll_result = self.tester.poll(all=False, timeout=None)
             self.assertTrue(poll_result)
 
         self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
@@ -330,7 +330,7 @@ class BaseSyncreplTests:
 
         # Run a quick refresh, that shouldn't have any changes.
         while self.tester.refresh_done is not True:
-            poll_result = self.tester.poll(all=0, timeout=None)
+            poll_result = self.tester.poll(all=False, timeout=None)
             self.assertTrue(poll_result)
 
         # Again, server data should not have changed.
@@ -338,7 +338,7 @@ class BaseSyncreplTests:
 
         # Run a search with timeout.
         # Nothing is changing the server, so it shoud timeout.
-        self.assertRaises(ldap.TIMEOUT, self.tester.poll, all=0, timeout=1)
+        self.assertRaises(ldap.TIMEOUT, self.tester.poll, all=False, timeout=1)
 
     def test_refreshAndPersist_cancelled(self):
         """
@@ -348,7 +348,7 @@ class BaseSyncreplTests:
 
         # Run a quick refresh, that shouldn't have any changes.
         while self.tester.refresh_done is not True:
-            poll_result = self.tester.poll(all=0, timeout=None)
+            poll_result = self.tester.poll(all=False, timeout=None)
             self.assertTrue(poll_result)
 
         # Again, server data should not have changed.
@@ -358,7 +358,7 @@ class BaseSyncreplTests:
         self.tester.cancel()
 
         # Run another poll, without timeout, but which should cancel out.
-        self.assertRaises(ldap.CANCELLED, self.tester.poll, all=1, timeout=None)
+        self.assertRaises(ldap.CANCELLED, self.tester.poll, all=True, timeout=None)
 
         # Server data should still be intact.
         self.assertEqual(self.tester.dn_attrs, LDAP_ENTRIES)
@@ -428,7 +428,7 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
 
             # Run a quick refresh, that shouldn't have any changes.
             while self.tester.refresh_done is not True:
-                poll_result = self.tester.poll(all=0, timeout=None)
+                poll_result = self.tester.poll(all=False, timeout=None)
                 self.assertTrue(poll_result)
 
             # Again, server data should not have changed.
@@ -467,7 +467,7 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
             # Wait till server2 catches up
             while tester2.refresh_done is not True or tester2.cookie.unparse() != self.tester.cookie.unparse():
                 try:
-                    poll_result = tester2.poll(all=0, timeout=None)
+                    poll_result = tester2.poll(all=False, timeout=None)
                     self.assertTrue(poll_result)
                 except ldap.NO_SUCH_OBJECT:
                     # 2.6+ Allows a refreshAndPersist against an empty DB, but
@@ -514,10 +514,10 @@ class TestMPRSyncrepl(BaseSyncreplTests, SlapdTestCase):
                 or csn2 not in tester2.cookie.unparse()
             ):
                 if csn1 not in self.tester.cookie.unparse() or csn2 not in self.tester.cookie.unparse():
-                    poll_result = self.tester.poll(all=0, timeout=5)
+                    poll_result = self.tester.poll(all=False, timeout=5)
                     self.assertTrue(poll_result)
                 if csn1 not in tester2.cookie.unparse() or csn2 not in tester2.cookie.unparse():
-                    poll_result = tester2.poll(all=0, timeout=5)
+                    poll_result = tester2.poll(all=False, timeout=5)
                     self.assertTrue(poll_result)
 
             self.assertEqual(self.tester.cookie.unparse(), tester2.cookie.unparse())

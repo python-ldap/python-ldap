@@ -46,8 +46,8 @@ class SearchNoOpControl(ValueLessRequestControl, ResponseControl):
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
         decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=self.SearchNoOpControlValue())
         self.resultCode = int(decodedValue[0])
-        self.numSearchResults = int(decodedValue[1])
-        self.numSearchContinuations = int(decodedValue[2])
+        self.numSearchResults: int = int(decodedValue[1])
+        self.numSearchContinuations: int = int(decodedValue[2])
 
 
 ldap.controls.KNOWN_RESPONSE_CONTROLS[SearchNoOpControl.controlType] = SearchNoOpControl
@@ -83,7 +83,7 @@ class SearchNoOpMixIn(_Base):
                 timeout=timeout,
                 serverctrls=[SearchNoOpControl(criticality=True)],
             )
-            _, _, _, search_response_ctrls = self.result3(msg_id, all=1, timeout=timeout)
+            _, _, _, search_response_ctrls = self.result3(msg_id, all=True, timeout=timeout)
         except (ldap.TIMEOUT, ldap.TIMELIMIT_EXCEEDED, ldap.SIZELIMIT_EXCEEDED, ldap.ADMINLIMIT_EXCEEDED):
             if msg_id is not None:
                 self.abandon(msg_id)
