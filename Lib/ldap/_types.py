@@ -7,7 +7,7 @@ See https://www.python-ldap.org/ for details.
 from __future__ import annotations
 
 import sys
-from collections.abc import MutableMapping, Sequence
+from collections.abc import Mapping, MutableMapping, Sequence
 from typing import TYPE_CHECKING, Optional, Union
 
 from ldap.pkginfo import __version__  # noqa: F401
@@ -65,3 +65,10 @@ LDAPControlTuples = list[LDAPControlTuple]
 LDAPSearchResult = tuple[str, LDAPEntryDict]
 """The type of a search result, a tuple with a DN string and a dict of
 attributes."""
+
+LDAPTokenDictValue: TypeAlias = Union[tuple[()], tuple[str, ...]]
+"""The kind of values which may be found in a token dict."""
+
+LDAPTokenDict: TypeAlias = Mapping[str, LDAPTokenDictValue]
+"""The type of the dict used to keep track of tokens while parsing schema
+(Mapping because of variance)."""
