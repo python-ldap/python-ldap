@@ -26,6 +26,18 @@ SCHEMA_CLASS_MAPPING: cidict[type[SchemaElement]] = cidict()
 # The reverse of SCHEMA_CLASS_MAPPING
 SCHEMA_ATTR_MAPPING: dict[type[SchemaElement], str] = {}
 
+SCHEMA_ATTRS: list[str] = []
+
+SchemaElementSubclass = TypeVar('SchemaElementSubclass', bound='SchemaElement')
+
+
+def register_schema_class(schema_class: type[SchemaElementSubclass]) -> type[SchemaElementSubclass]:
+    SCHEMA_ATTRS.append(schema_class.schema_attribute)
+    SCHEMA_CLASS_MAPPING[schema_class.schema_attribute] = schema_class
+    SCHEMA_ATTR_MAPPING[schema_class] = schema_class.schema_attribute
+    return schema_class
+
+
 # Note: this cannot be moved up due to circular imports:
 #       ldap.schema.models imports the two dicts above
 from ldap.schema.models import (  # noqa: E402
@@ -34,11 +46,6 @@ from ldap.schema.models import (  # noqa: E402
     ObjectClass,
     SchemaElement,
 )
-
-
-SchemaElementSubclass = TypeVar('SchemaElementSubclass', bound=SchemaElement)
-
-SCHEMA_ATTRS = list(SCHEMA_CLASS_MAPPING)
 
 
 class SubschemaError(ValueError):
