@@ -13,3 +13,4 @@ from ldap.schema.subentry import (  # noqa: F401
     urlfetch,
 )
 from ldap.schema.models import *
+from ldap.schema.tokenizer import parse_tokens, split_tokens  # noqa: F401

@@ -15,6 +15,9 @@ from ldap._types import LDAPEntryDict
 from ldap.controls import KNOWN_RESPONSE_CONTROLS, LDAPControl
 
 
+__all__ = ['PostReadControl', 'PreReadControl', 'ReadEntryControl']
+
+
 class ReadEntryControl(LDAPControl):
     """
     Base class for read entry control described in RFC 4527
@@ -37,8 +40,8 @@ class ReadEntryControl(LDAPControl):
 
     def encodeControlValue(self) -> bytes:
         attributeSelection = AttributeDescriptionList()
-        for i in range(len(self.attrList)):
-            attributeSelection.setComponentByPosition(i, self.attrList[i])
+        for i, attr in enumerate(self.attrList):
+            attributeSelection.setComponentByPosition(i, attr)
         return encoder.encode(attributeSelection)  # type: ignore
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
