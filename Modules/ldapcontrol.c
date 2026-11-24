@@ -128,6 +128,9 @@ LDAPControls_from_object(PyObject *list, LDAPControl ***controls_ret)
     }
 
     len = PySequence_Length(list);
+    if (len < 0)
+        return 0;
+
     ldcs = PyMem_NEW(LDAPControl *, len + 1);
 
     if (ldcs == NULL) {

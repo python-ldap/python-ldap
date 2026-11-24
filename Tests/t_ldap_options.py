@@ -225,5 +225,44 @@ class TestLDAPObjectOptions(BaseTestOptions, SlapdTestCase):
             )
 
 
+class TestControlSequenceErrors(unittest.TestCase):
+    def test_control_sequence_length_errors(self):
+        class UnsizedControls:
+            def __getitem__(self, index):
+                raise IndexError
+
+        class RaisingControls(UnsizedControls):
+            def __len__(self):
+                raise RuntimeError('control length failed')
+
+        class NegativeLengthControls(UnsizedControls):
+            def __len__(self):
+                return -1  # noqa: PLE0303 - exercise an invalid sequence length
+
+        # The public connection wrapper converts controls to a list first.
+        # Exercise the native connection setter too, without contacting a server.
+        conn = ldap._ldap.initialize('ldap://localhost')
+        try:
+            for setter, getter in ((ldap.set_option, ldap.get_option), (conn.set_option, conn.get_option)):
+                for option in (ldap.OPT_SERVER_CONTROLS, ldap.OPT_CLIENT_CONTROLS):
+                    old = getter(option)
+                    try:
+                        for controls, error in (
+                            (UnsizedControls(), TypeError),
+                            (RaisingControls(), RuntimeError),
+                            (NegativeLengthControls(), ValueError),
+                        ):
+                            with self.subTest(setter=setter, option=option, controls=type(controls).__name__):
+                                with self.assertRaises(error):
+                                    setter(option, controls)
+                                # A failed conversion must not poison later calls.
+                                setter(option, TEST_CTRL)
+                                self.assertEqual(getter(option), TEST_CTRL_EXPECTED)
+                    finally:
+                        setter(option, old)
+        finally:
+            conn.unbind_ext()
+
+
 if __name__ == '__main__':
     unittest.main()
