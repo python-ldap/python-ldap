@@ -9,17 +9,10 @@ from __future__ import annotations
 import re
 import warnings
 from collections.abc import Mapping
-from typing import Any, Union
+from typing import Any
 
-from ldap._types import TypeAlias
+from ldap._types import LDAPTokenDict, LDAPTokenDictValue
 
-
-LDAPTokenDictValue: TypeAlias = Union[tuple[()], tuple[str, ...]]
-"""The kind of values which may be found in a token dict."""
-
-LDAPTokenDict: TypeAlias = Mapping[str, LDAPTokenDictValue]
-"""The type of the dict used to keep track of tokens while parsing schema
-(Mapping because of variance)."""
 
 TOKENS_FINDALL = re.compile(
     r'(\()'  # opening parenthesis
