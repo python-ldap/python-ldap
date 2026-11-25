@@ -331,6 +331,11 @@ class Test00_SimpleLDAPObject(SlapdTestCase):
         with self.assertRaises(ldap.TIMEOUT):
             l.result(m, timeout=0.001)
 
+    def test008_result4_nonblocking_no_response(self):
+        l = self.ldap_object_class(self.server.ldap_uri)
+        self.assertEqual(l.result4(ldap.RES_ANY, all=0, timeout=0, add_ctrls=0), (None, None, None, [], None, None))
+        self.assertEqual(l.result4(ldap.RES_ANY, all=0, timeout=0, add_ctrls=1), (None, None, None, [], None, None))
+
     def assertIsSubclass(self, cls, other):
         self.assertTrue(issubclass(cls, other), cls.__mro__)
 
