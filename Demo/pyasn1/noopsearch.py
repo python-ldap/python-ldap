@@ -55,7 +55,7 @@ try:
         timeout=SEARCH_TIMEOUT,
         serverctrls=[SearchNoOpControl(criticality=True)],
     )
-    _, _, _, search_response_ctrls = ldap_conn.result3(msg_id, all=1, timeout=SEARCH_TIMEOUT)
+    _, _, _, search_response_ctrls = ldap_conn.result3(msg_id, all=True, timeout=SEARCH_TIMEOUT)
 except (ldap.TIMEOUT, ldap.TIMELIMIT_EXCEEDED, ldap.SIZELIMIT_EXCEEDED, ldap.ADMINLIMIT_EXCEEDED):
     ldap_conn.abandon(msg_id)
     sys.exit(1)

@@ -59,10 +59,10 @@ while True:
     try:
         res_type, res_data, res_msgid, _, _, _ = ldap_conn.result4(
             msg_id,
-            all=0,
+            all=False,
             timeout=10.0,
-            add_ctrls=1,
-            add_intermediates=1,
+            add_ctrls=True,
+            add_intermediates=True,
             resp_ctrl_classes={EntryChangeNotificationControl.controlType: EntryChangeNotificationControl},
         )
     except ldap.TIMEOUT:

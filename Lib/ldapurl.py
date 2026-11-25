@@ -6,8 +6,15 @@ See https://www.python-ldap.org/ for details.
 
 from __future__ import annotations
 
+import html
+from collections.abc import Iterator, MutableMapping
+from typing import ClassVar
+from urllib.parse import quote, unquote
 
-__version__ = '3.4.7'
+from ldap._types import TypeAlias
+
+
+__version__ = '3.5.0'
 
 __all__ = [
     'LDAP_SCOPE_BASE',
@@ -23,13 +30,6 @@ __all__ = [
     # functions
     'isLDAPUrl',
 ]
-
-import html
-from collections.abc import Iterator, MutableMapping
-from urllib.parse import quote, unquote
-
-from ldap._types import TypeAlias
-
 
 LDAP_SCOPE_BASE = 0
 LDAP_SCOPE_ONELEVEL = 1
@@ -79,8 +79,16 @@ class LDAPUrlExtension:
             Value of extension
     """
 
+    critical: bool
+    extype: str | None
+    exvalue: str | None
+
     def __init__(
-        self, extensionStr: str | None = None, critical: int = 0, extype: str | None = None, exvalue: str | None = None
+        self,
+        extensionStr: str | None = None,
+        critical: bool = False,
+        extype: str | None = None,
+        exvalue: str | None = None,
     ) -> None:
         self.critical = critical
         self.extype = extype
@@ -220,7 +228,16 @@ class LDAPUrl:
           Maps automagically to X-BINDPW LDAP URL extension
     """
 
-    attr2extype = {'who': 'bindname', 'cred': 'X-BINDPW'}
+    attr2extype: ClassVar[dict[str, str]] = {'who': 'bindname', 'cred': 'X-BINDPW'}
+    urlscheme: str
+    hostport: str
+    dn: str
+    attrs: list[str] | None
+    scope: int | None
+    filterstr: str | None
+    extensions: LDAPUrlExtensions | None
+    who: str | None
+    cred: str | None
 
     def __init__(
         self,

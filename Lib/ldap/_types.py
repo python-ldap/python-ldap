@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import sys
 from collections.abc import MutableMapping, Sequence
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Literal, Optional, Union
 
 from ldap.pkginfo import __version__  # noqa: F401
 
@@ -33,6 +33,9 @@ __all__ = [
     'LDAPSearchResult',
     'TypeAlias',
 ]
+
+LDAPMessageMode = Union[Literal[0, 1, 2], bool]
+"""The type of a message retrieval mode (:const:`ldap.MSG_ONE`, :const:`ldap.MSG_ALL`, or :const:`ldap.MSG_RECEIVED`)."""
 
 LDAPModListAddEntry = tuple[str, list[bytes]]
 """The type of an addition entry in a modlist."""

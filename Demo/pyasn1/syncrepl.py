@@ -181,7 +181,7 @@ while watcher_running:
     )
 
     try:
-        while ldap_connection.syncrepl_poll(all=1, msgid=ldap_search):
+        while ldap_connection.syncrepl_poll(all=True, msgid=ldap_search):
             pass
     except KeyboardInterrupt:
         # User asked to exit

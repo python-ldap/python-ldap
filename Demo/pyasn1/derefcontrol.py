@@ -44,7 +44,7 @@ msg_id = l.search_ext(
     serverctrls=[dc],
 )
 
-for res_type, res_data, res_msgid, res_controls in l.allresults(msg_id, add_ctrls=1):
+for res_type, res_data, res_msgid, res_controls in l.allresults(msg_id, add_ctrls=True):
     for dn, entry, deref_control in res_data:
         # process dn and entry
         print(dn, entry['objectClass'])
