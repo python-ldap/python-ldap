@@ -6,7 +6,7 @@ See https://www.python-ldap.org/ for project details.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 from uuid import UUID
 
 from pyasn1.codec.ber import decoder, encoder
@@ -109,7 +109,7 @@ class SyncRequestControl(RequestControl):
             rcv.setComponentByName('cookie', SyncCookie(self.cookie))
         if self.reloadHint:
             rcv.setComponentByName('reloadHint', univ.Boolean(self.reloadHint))
-        return encoder.encode(rcv)  # type: ignore
+        return cast(bytes, encoder.encode(rcv))
 
 
 class SyncStateOp(univ.Enumerated):

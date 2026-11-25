@@ -7,6 +7,8 @@ See https://www.python-ldap.org/ for project details.
 
 from __future__ import annotations
 
+from typing import cast
+
 
 __all__ = [
     'DEREF_CONTROL_OID',
@@ -99,7 +101,7 @@ class DereferenceControl(LDAPControl):
         return deref_specs
 
     def encodeControlValue(self) -> bytes:
-        return encoder.encode(self._derefSpecs())  # type: ignore
+        return cast(bytes, encoder.encode(self._derefSpecs()))
 
     def decodeControlValue(self, encodedControlValue: bytes) -> None:
         decodedValue, _ = decoder.decode(encodedControlValue, asn1Spec=DerefResultControlValue())

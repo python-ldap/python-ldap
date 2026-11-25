@@ -7,6 +7,8 @@ See https://www.python-ldap.org/ for project details.
 
 from __future__ import annotations
 
+from typing import cast
+
 
 __all__ = [
     'SSSRequestControl',
@@ -91,7 +93,7 @@ class SSSRequestControl(RequestControl):
         return p
 
     def encodeControlValue(self) -> bytes:
-        return encoder.encode(self.asn1())  # type: ignore
+        return cast(bytes, encoder.encode(self.asn1()))
 
 
 class SortResultType(univ.Sequence):
