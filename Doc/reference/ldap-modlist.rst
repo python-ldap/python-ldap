@@ -20,7 +20,7 @@ The :mod:`ldap.modlist` module defines the following functions:
    in the result at all.
 
 
-.. function:: modifyModlist( old_entry, new_entry [, ignore_attr_types=[] [, ignore_oldexistent=0 [, case_ignore_attr_types=None]]]) -> list
+.. function:: modifyModlist( old_entry, new_entry [, ignore_attr_types=[] [, ignore_oldexistent=0 [, case_ignore_attr_types=None, strict_order_attr_types=None]]]) -> list
 
    This function builds a list suitable for passing it directly as argument
    *modlist* to method :py:meth:`ldap.ldapobject.LDAPObject.modify` or
@@ -48,6 +48,11 @@ The :mod:`ldap.modlist` module defines the following functions:
    the comparison will be conducted case-insensitive. It is useful in
    situations where a LDAP server normalizes values and one wants to avoid
    unnecessary changes (e.g. case of attribute type names in DNs).
+
+   *strict_order_attr_types* is a list of attribute type names for which
+   value ordering should be considered - differences in the order of values
+   without a difference in the value contents will be treated as a change
+   for these attribute types instead of being ignored.
 
    .. note::
       Replacing attribute values is always done with a
