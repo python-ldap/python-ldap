@@ -125,7 +125,7 @@ class EntryChangeNotificationControl(ResponseControl):
         self.changeType = int(ecncValue.getComponentByName('changeType'))
         previousDN = ecncValue.getComponentByName('previousDN')
         if previousDN.hasValue():
-            self.previousDN: str | None = str(previousDN)
+            self.previousDN: str | None = bytes(previousDN).decode('UTF-8')
         else:
             self.previousDN = None
         changeNumber = ecncValue.getComponentByName('changeNumber')

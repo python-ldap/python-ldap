@@ -82,9 +82,9 @@ class SSSRequestControl(RequestControl):
                 attribute_type, ordering_rule = rule.split(':')
             else:
                 attribute_type, ordering_rule = rule, None
-            q.setComponentByName('attributeType', attribute_type)
+            q.setComponentByName('attributeType', attribute_type.encode('ascii'))
             if ordering_rule:
-                q.setComponentByName('orderingRule', ordering_rule)
+                q.setComponentByName('orderingRule', ordering_rule.encode('ascii'))
             if reverse_order:
                 q.setComponentByName('reverseOrder', 1)
             p.setComponentByPosition(i, q)
