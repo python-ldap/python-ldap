@@ -164,8 +164,49 @@ title = "python-ldap coverage report"
 
 [tool.mypy]
 strict = true
+show_error_codes = true
+explicit_package_bases = true
+namespace_packages = true
+mypy_path = [
+ "Lib",
+# "stubs",
+]
 files = ["Lib/"]
 
 [[tool.mypy.overrides]]
-module = ["pyasn1.*", "pyasn1_modules.*"]
+module = "pyasn1.*"
 ignore_missing_imports = true
+disallow_untyped_calls = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = false
+disallow_untyped_decorators = false
+
+[[tool.mypy.overrides]]
+module = "pyasn1_modules.*"
+ignore_missing_imports = true
+
+[tool.ty.terminal]
+output-format = "concise"
+
+[tool.ty.environment]
+# extra-paths = ["stubs"]
+python-version = "3.9"
+
+[tool.ty.src]
+include = ["Lib/"]
+
+[tool.ty.analysis]
+replace-imports-with-any = [
+    "pyasn1.**",
+    "pyasn1_modules.**",
+]
+
+[[tool.ty.overrides]]
+include = [
+    "Doc/**",
+    "Demo/**",
+]
+
+[tool.ty.overrides.rules]
+all = "ignore"
